@@ -1,0 +1,71 @@
+# =====================================================================
+# VitaMap — apps/web (Next.js 15) en modo standalone
+# Build multi-stage. Compila better-sqlite3 y posibles módulos nativos
+# en una etapa con toolchain; runtime queda fino (Node 22 slim).
+# =====================================================================
+
+# ---------- Stage 1: install deps con toolchain nativo ---------------
+FROM node:22-bookworm-slim AS deps
+WORKDIR /repo
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      build-essential python3 cmake git ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Manifiestos del workspace (mejor cache de capa que copiar todo).
+COPY package.json package-lock.json* ./
+COPY apps/web/package.json apps/web/package.json
+
+# Ignorar postinstall que requiera red/secret. Si falta lockfile, fallback a install.
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+
+# ---------- Stage 2: build de Next.js ---------------------------------
+FROM node:22-bookworm-slim AS build
+WORKDIR /repo
+
+COPY --from=deps /repo/node_modules ./node_modules
+COPY --from=deps /repo/apps/web/node_modules ./apps/web/node_modules
+COPY . .
+
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_OUTPUT_TRACING_ROOT=/repo
+ENV NODE_ENV=production
+
+WORKDIR /repo/apps/web
+RUN npx next build
+
+
+# ---------- Stage 3: runtime ----------------------------------------
+FROM node:22-bookworm-slim AS runtime
+WORKDIR /app
+
+# Pipeline OCR:
+#   tesseract-ocr + paquetes de idioma (spa, eng) para transcripción
+#   poppler-utils provee pdftoppm (rasterizar PDFs escaneados)
+# Documentado en docs/DECISIONS.md (ADR-008).
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      ca-certificates tini \
+      tesseract-ocr tesseract-ocr-spa tesseract-ocr-eng \
+      poppler-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+
+# Estructura del standalone: copia el server.js + node_modules embebidos
+# + assets estáticos + public/.
+COPY --from=build /repo/apps/web/.next/standalone/ ./
+COPY --from=build /repo/apps/web/.next/static ./apps/web/.next/static
+COPY --from=build /repo/apps/web/public ./apps/web/public
+
+EXPOSE 3000
+
+# Healthcheck: /api/health responde 200 cuando el servidor está listo.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD node -e "fetch('http://localhost:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+
+ENTRYPOINT ["tini", "--"]
+CMD ["node", "apps/web/server.js"]

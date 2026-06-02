@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: oklch(0.99 0.005 95);
+  --color-foreground: oklch(0.18 0.02 250);
+  --color-muted: oklch(0.6 0.02 250);
+  --color-card: oklch(0.97 0.005 95);
+  --color-border: oklch(0.9 0.01 250);
+  --color-accent: oklch(0.55 0.13 200);
+  --color-warning: oklch(0.65 0.15 60);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-background: oklch(0.16 0.02 250);
+    --color-foreground: oklch(0.95 0.01 95);
+    --color-muted: oklch(0.65 0.02 250);
+    --color-card: oklch(0.22 0.02 250);
+    --color-border: oklch(0.3 0.02 250);
+  }
+}
+
+html,
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+.vital-reveal-text {
+  color: transparent;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.16), rgba(132, 204, 22, 0.5)),
+    url("/images/plant.jpg");
+  background-position: 44% 76%;
+  background-size: 118% auto;
+  background-blend-mode: screen, normal;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-stroke: 0.25px color-mix(in oklch, var(--color-foreground) 36%, transparent);
+  text-shadow: 0 0 18px color-mix(in oklch, var(--color-accent) 18%, transparent);
+  animation: vital-letter-breath 18s ease-in-out infinite alternate;
+}
+
+@keyframes vital-letter-breath {
+  from {
+    background-position: 38% 82%;
+    background-size: 108% auto;
+  }
+
+  to {
+    background-position: 56% 64%;
+    background-size: 138% auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vital-reveal-text {
+    animation: none;
+  }
+}

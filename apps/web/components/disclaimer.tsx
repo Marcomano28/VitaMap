@@ -1,0 +1,36 @@
+import { copy, type Locale } from "@/lib/i18n";
+
+/**
+ * Aviso legal obligatorio. Se inyecta en TODA respuesta del modelo y en el
+ * pie de página global. NUNCA se confía al LLM su inclusión: aquí lo mete
+ * el código.
+ */
+export function Disclaimer({ locale = "es" }: { locale?: Locale }) {
+  const t = copy[locale].disclaimer;
+
+  return (
+    <footer className="border-t border-[var(--color-border)] bg-[var(--color-card)]">
+      <div className="mx-auto max-w-4xl px-4 py-4 text-xs text-[var(--color-muted)] leading-relaxed">
+        <p>
+          <strong className="text-[var(--color-warning)]">{t.label}</strong>{" "}
+          {t.text}
+        </p>
+      </div>
+    </footer>
+  );
+}
+
+/**
+ * Versión inline para inyectar en cada respuesta del chat. Usar SIEMPRE
+ * desde el código de renderizado de mensajes del modelo, nunca delegar
+ * en el prompt.
+ */
+export function InlineDisclaimer({ locale = "es" }: { locale?: Locale }) {
+  const t = copy[locale].disclaimer;
+
+  return (
+    <p className="mt-3 text-xs text-[var(--color-muted)] italic border-l-2 border-[var(--color-border)] pl-3">
+      {t.inline}
+    </p>
+  );
+}

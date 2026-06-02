@@ -1,0 +1,779 @@
+================================================================================
+VITAMAP — FLUJO END-TO-END EXPLICADO
+Desde que el usuario abre la URL hasta que lee una respuesta del asistente.
+Todos los recovecos en lenguaje llano, con los términos técnicos a la vista.
+================================================================================
+
+
+ESTE DOCUMENTO PARA QUIÉN
+=========================
+
+Para quien quiera entender de verdad qué ocurre cuando alguien usa VitaMap
+en producción. No es la documentación del desarrollador (eso vive en el
+código y en docs/DECISIONS.md). Es la película completa, paso a paso, con
+los términos técnicos explicados al lado para que no haya cajas negras.
+
+Asumimos que el stack está desplegado en un VPS de Hetzner según
+`infra/docker-compose.yml`: cuatro contenedores corriendo (caddy, web, llm,
+backup), DNS apuntando al VPS, certificado TLS válido.
+
+
+================================================================================
+ANTES DE QUE LLEGUE EL USUARIO: LO QUE YA ESTÁ EN MARCHA
+================================================================================
+
+En el VPS hay cuatro procesos vivos esperando peticiones.
+
+CADDY es el portero. Es un servidor web que escucha en los puertos 80 y
+443. Su trabajo: aceptar conexiones HTTPS, validar el certificado, decifrar
+el tráfico, y pasarlo al contenedor que toque. También renueva el
+certificado automáticamente cada 60 días pidiéndoselo a Let's Encrypt (una
+autoridad gratuita que emite certificados TLS).
+
+WEB es el contenedor Next.js. Es donde vive la lógica de la aplicación: las
+páginas, los formularios, las API routes (los endpoints internos), el
+acceso al sistema de ficheros donde están los datos. Escucha en el puerto
+3000, pero ese puerto solo es visible desde la red interna de Docker (no
+desde Internet).
+
+LLM es un contenedor con `llama.cpp server`, un programa que carga un
+modelo de lenguaje en memoria y expone un endpoint HTTP compatible con el
+protocolo de OpenAI. El modelo que tiene cargado es Qwen3-4B-Instruct
+cuantizado a Q4_K_M (~2.5 GB en disco, ~5 GB en RAM al ejecutarse). Solo
+escucha en la red interna en el puerto 8080.
+
+BACKUP es un proceso sidecar que cada 24 horas hace un snapshot cifrado de
+toda la carpeta /data y lo sube a Backblaze B2 (un almacenamiento de
+objetos compatible con S3, en EU, barato). Usa restic, una herramienta que
+cifra antes de subir, así que el proveedor de almacenamiento nunca ve los
+datos en claro.
+
+Además de estos cuatro, dentro del contenedor `web` hay piezas en memoria
+que conviene nombrar:
+
+- Una base de datos SQLite en data/auth.sqlite. Es un fichero. Dentro hay
+  tablas de BetterAuth (usuarios, sesiones, contraseñas hasheadas) y la
+  tabla audit_event con su hash chain (de la que hablaremos más adelante).
+- node-llama-cpp cargando tres modelos pequeños en memoria para QMD: uno
+  para generar embeddings (Qwen3-Embedding-0.6B, ~700 MB), uno para
+  rerankear resultados (qwen3-reranker-0.6B, ~700 MB) y uno para expandir
+  queries (un modelo fine-tuned de tobi, ~1.1 GB). Estos viven en el
+  proceso Node, no en el contenedor `llm`.
+
+
+================================================================================
+PASO 1: ABRIR LA URL EN EL NAVEGADOR
+================================================================================
+
+El voluntario abre Chrome y teclea `vitamap.tu-dominio.com`.
+
+Lo primero que pasa es resolución DNS. El navegador pregunta al resolver
+configurado del sistema (normalmente el del ISP o un DNS público como
+Cloudflare 1.1.1.1) por la dirección IP del dominio. Cloudflare DNS, donde
+está apuntado tu dominio, responde con la IP pública del VPS. Esta respuesta
+puede ir cacheada en el resolver durante el TTL configurado (típicamente 5
+minutos a 1 hora), así que peticiones posteriores son instantáneas.
+
+Con la IP, el navegador abre una conexión TCP al puerto 443. Caddy acepta
+la conexión. Empieza el handshake TLS:
+
+  - El navegador envía un "Client Hello" indicando qué versiones de TLS y
+    qué suites criptográficas soporta.
+  - Caddy responde con un "Server Hello" eligiendo TLS 1.3 (el más
+    moderno, obligatorio en nuestra Caddyfile), y le envía el certificado
+    público del dominio.
+  - El navegador valida el certificado: comprueba que está firmado por una
+    CA de confianza (Let's Encrypt → ISRG Root X1), que el nombre del
+    certificado coincide con el dominio, y que no está expirado.
+  - Ambas partes derivan una clave de sesión simétrica mediante un
+    intercambio Diffie-Hellman efímero (ECDHE). Esa clave se usará para
+    cifrar todo el tráfico de la sesión.
+
+Una vez establecida la conexión cifrada, el navegador envía la petición
+HTTP: `GET / HTTP/2 Host: vitamap.tu-dominio.com Cookie: ...`.
+
+Caddy mira el host header, encuentra que coincide con el bloque
+{$PUBLIC_DOMAIN} de su Caddyfile, y hace reverse proxy a `web:3000`. El
+prefijo `web` es el nombre del servicio en Docker Compose, que se resuelve
+internamente al IP del contenedor `web` en la red `vitamap`.
+
+La petición llega a Next.js. Como es `GET /`, se enruta a `app/page.tsx`,
+la landing pública (no requiere sesión). Next.js renderiza el HTML en el
+servidor (Server-Side Rendering) y lo devuelve. Caddy lo recoge, lo cifra
+con la clave de sesión, lo envía al navegador. El navegador parsea el
+HTML, pide los assets estáticos (JavaScript, CSS) por la misma conexión, y
+los renderiza.
+
+Tiempo total típico de este flujo en un VPS Hetzner desde Europa: 200-500
+ms para la primera carga, ~50 ms para cargas posteriores con cookies y
+caché de TLS.
+
+
+================================================================================
+PASO 2: VER /register Y EMPEZAR EL ALTA
+================================================================================
+
+El usuario hace click en "Solicitar acceso al piloto". El navegador
+navega a `/register`.
+
+Aquí pasa algo importante. Antes de que Next.js renderice esa página,
+**el middleware** corre. El middleware es un fichero `middleware.ts` que
+Next.js ejecuta sobre cada petición antes de que llegue al handler de la
+ruta. El nuestro funciona en "Edge runtime" — un entorno minimalista de
+JavaScript optimizado para latencia, sin acceso al sistema de ficheros ni
+a librerías nativas.
+
+El middleware mira el path. `/register` no está en la lista de rutas
+protegidas (`/memory`, `/upload`, `/chat`, etc.), así que deja pasar. Si
+el usuario hubiera intentado ir directamente a `/memory` sin sesión, el
+middleware habría detectado que no hay cookie `better-auth.session_token`
+y le habría redirigido a `/login?next=/memory`.
+
+La página de registro es un React Server Component. Se renderiza en el
+servidor leyendo dos constantes de `lib/consent.ts`: el texto del
+documento de consentimiento y la versión actual (`2026-06-01`). El HTML
+generado se envía al navegador. Cuando el usuario hace scroll por el
+consentimiento, marca los checkboxes y rellena email + contraseña, todo
+ocurre solo en su navegador — no hay petición a nada todavía.
+
+
+================================================================================
+PASO 3: ENVIAR EL FORMULARIO DE ALTA
+================================================================================
+
+El usuario hace click en "Crear cuenta y entrar".
+
+El formulario tiene `action={registerAction}`. Eso significa que cuando
+envía, no se hace una POST tradicional a una URL: se invoca una **Server
+Action** de Next.js. Esto es una función JavaScript que vive en el
+servidor pero el cliente la llama como si fuese una función local.
+Por debajo, Next.js envía una POST con el contenido del FormData a una URL
+interna (algo como `/register`) con un encabezado especial que indica a
+Next.js qué función ejecutar.
+
+`registerAction` corre en el contenedor `web`, en Node 22. Lo primero que
+hace es extraer del FormData los seis valores: email, password,
+password_repeat, ack_educational, ack_consent. Hace validaciones básicas
+(ambas contraseñas iguales, longitud mínima 10, ambos checkboxes
+marcados). Si algo falla, hace `redirect('/register?error=...')`, lo cual
+le dice al navegador "ve a esta URL otra vez" — pero ahora con un mensaje
+de error que la página renderiza en rojo.
+
+Si todo valida, llama a `getAuth().api.signUpEmail({ body: {email, password,
+name}, headers: await headers() })`. Esto es la API de BetterAuth.
+
+Lo que hace BetterAuth por debajo:
+
+  1. Comprueba en la BD `data/auth.sqlite`, tabla `user`, si ya existe
+     una fila con ese email. Si existe, lanza un error de "user already
+     exists".
+
+  2. Si no existe, hashea la contraseña con scrypt. scrypt es un
+     algoritmo de derivación de claves diseñado para ser lento y caro de
+     paralelizar — un atacante que robase la base de datos no podría
+     probar millones de contraseñas por segundo. La operación tarda
+     ~100-300 ms intencionadamente.
+
+  3. Inserta una fila en la tabla `user`: id (un UUID generado),
+     email, emailVerified=false, name, createdAt, updatedAt.
+
+  4. Inserta una fila en la tabla `account` enlazada al user: providerId
+     ="credential", accountId=el email, password=<hash scrypt>.
+
+  5. Como `autoSignIn: true` está activado, crea una sesión: inserta una
+     fila en la tabla `session` con id=<otro UUID>, userId, expiresAt
+     (ahora + 14 días), token=<otro UUID criptográficamente seguro>.
+
+  6. Devuelve un objeto con headers que incluyen un
+     `Set-Cookie: better-auth.session_token=<token>; HttpOnly; SameSite=Lax; Secure; Path=/`.
+     Esa cookie es la prueba de identidad. HttpOnly significa que
+     JavaScript del lado del cliente no puede leerla (defensa contra XSS).
+     Secure significa que solo se envía sobre HTTPS. SameSite=Lax limita
+     CSRF.
+
+De vuelta en `registerAction`, ahora con el userId, llamamos a
+`logAuditEventSafe` dos veces: una para registrar `auth.register`, otra
+para `auth.consent.granted` con `payloadSum: "version=2026-06-01"`. Cada
+llamada hace lo siguiente en `lib/audit.ts`:
+
+  1. Abre la BD `data/auth.sqlite` (singleton: solo se abre una vez por
+     proceso).
+  2. Lee la última fila de `audit_event` para obtener su `event_hash`.
+     Si la tabla está vacía, usa 64 ceros como `prev_hash`.
+  3. Calcula `event_hash = sha256(prev_hash || ts || actor || action ||
+     subject_id || payload_sum)`. Esto es el "hash chain": cada evento
+     incluye el hash del anterior, formando una cadena. Manipular un
+     evento pasado rompe la cadena de todos los posteriores y es
+     detectable.
+  4. Inserta la fila en `audit_event` con todos los campos.
+
+Estos dos eventos son lo que demuestra ante un auditor que ese usuario
+concreto firmó esa versión del consentimiento en ese momento.
+
+Finalmente, `redirect('/memory')`. Next.js devuelve al navegador una
+respuesta especial diciéndole "Set-Cookie + redirigir a /memory". El
+navegador guarda la cookie y carga `/memory`.
+
+
+================================================================================
+PASO 4: EL NAVEGADOR YA TIENE COOKIE — ENTRADA AL DASHBOARD
+================================================================================
+
+GET /memory llega al servidor. El navegador adjunta automáticamente la
+cookie de sesión.
+
+Middleware corre. Ve que `/memory` está en la lista de rutas protegidas.
+Mira las cookies. Encuentra `better-auth.session_token=<token>`. Como solo
+hace verificación ligera (presencia, no validez), deja pasar.
+
+Llega a `app/(app)/memory/page.tsx`. Es un Server Component. La primera
+línea ejecutable es `const userId = await requireUserId()`. Esto es donde
+ocurre la verificación REAL de la sesión:
+
+  1. `requireUserId()` está en `lib/session.ts`.
+  2. Llama a `auth.api.getSession({ headers: await headers() })`.
+  3. BetterAuth lee la cookie `better-auth.session_token` del Headers
+     object.
+  4. Busca en la tabla `session` de SQLite una fila con `token` que
+     coincida.
+  5. Verifica que `expiresAt > ahora`. Si está expirada, devuelve null.
+  6. Si la sesión es válida, va a la tabla `user` y lee la información
+     del usuario.
+  7. Por optimización, BetterAuth cachea esta respuesta en memoria
+     durante 5 minutos (`cookieCache`) para no hacer 100 lecturas a
+     SQLite por carga de página.
+
+Si la sesión es válida, `requireUserId()` devuelve `session.user.id` (un
+UUID tipo `abc123de-...`). Si no, hace `redirect('/login')`.
+
+Con el userId en mano, el Server Component renderiza el HTML de
+`/memory`: el header de bienvenida, las cuatro tarjetas de entrada
+(Subir, Cuestionarios, Observación, Imagen), el footer con el disclaimer
+legal. Lo devuelve a Caddy → al navegador.
+
+
+================================================================================
+PASO 5: SUBIR UNA ANALÍTICA EN PDF
+================================================================================
+
+El usuario va a `/upload`. Hace click en el dropzone y selecciona su
+analítica `bloodwork-mayo-2026.pdf`.
+
+El dropzone es un Client Component (`use client` en su primera línea).
+Esto significa que su JavaScript se ejecuta en el navegador, no en el
+servidor. Sus interacciones con el usuario (drag, drop, click) las
+maneja React en el cliente.
+
+Cuando el usuario suelta el fichero, el dropzone construye un FormData
+en JavaScript del cliente, le añade el File del PDF y un campo `category`
+= "lab", y hace `fetch('/api/upload?category=lab', { method: 'POST',
+body: formData, credentials: 'same-origin' })`. `credentials: 'same-origin'`
+asegura que las cookies se envíen con la petición.
+
+La petición sale del navegador → Caddy → contenedor `web` → handler
+`POST /api/upload`. El handler corre en Node runtime (no Edge) porque
+necesita acceso a `better-sqlite3` y al sistema de ficheros.
+
+Primer paso del handler: `requireUserIdFromRequest(req)`. Lo mismo que en
+páginas pero leyendo de `req.headers` directamente. Si falla, devuelve
+401 Unauthorized.
+
+Segundo paso: `req.formData()`. Next.js parsea el cuerpo multipart. El
+fichero llega como un objeto File del estándar Web. Validamos:
+
+  - file.size > 0 y < 10 MB (cota dura en el handler, coherente con
+    `bodySizeLimit` configurado en `next.config.ts`).
+  - file.type es "application/pdf" o un image/* conocido.
+
+Tercer paso: `await file.arrayBuffer()` → `new Uint8Array(buffer)`. Ahora
+tenemos los bytes del PDF en RAM dentro del proceso Node.
+
+Cuarto paso: `createInboxItem({ userId, originalName, mimeType, buffer,
+category })`. Esto hace varias cosas en `lib/inbox.ts`:
+
+  - Genera un id UUID.
+  - Calcula SHA-256 del buffer (para detectar duplicados o corrupción).
+  - Crea la carpeta `data/users/<userId>/inbox/<uuid>/`.
+  - Escribe meta.json con status=pending, originalName, size, sha256,
+    uploadedAt, etc.
+  - Cifra el buffer con age:
+
+    `encryptForUser(userId, buffer)` deriva una passphrase única:
+    `HMAC-SHA256(MASTER_KEY, "user:" + userId)` y la usa para cifrar
+    con la librería `age-encryption` (puro JavaScript, no requiere
+    binarios). El resultado es un Uint8Array con la cabecera age + el
+    contenido cifrado con ChaCha20-Poly1305.
+
+  - Escribe los bytes cifrados en `original.pdf.age`.
+
+Quinto paso: `runExtraction(userId, id)`. Esto puede tardar 15-60
+segundos dependiendo del PDF, así que el handler queda esperando. Lo que
+hace por dentro:
+
+  (a) Lee `original.pdf.age` y lo descifra a memoria con
+      `decryptForUser`. El PDF en claro NUNCA se escribe a disco.
+
+  (b) Llama a `ocrPdf(buffer)` en `lib/ocr.ts`:
+
+      - Primero intenta extracción nativa con pdfjs-dist. Esta librería
+        carga el PDF, recorre sus páginas, y extrae el texto que ya está
+        codificado dentro del fichero. Para una analítica generada por
+        un sistema digital moderno, esto devuelve texto limpio en
+        ~200 ms.
+
+      - Si el texto extraído es demasiado corto (<80 caracteres) o tiene
+        demasiados caracteres no-ASCII (>40%), la heurística decide que
+        es un PDF escaneado y degrada a OCR real:
+
+        - Crea un directorio temporal en /tmp.
+        - Llama a `pdftoppm` (binario de poppler-utils instalado en el
+          contenedor) que convierte cada página del PDF en una imagen
+          PNG de 300 DPI.
+        - Llama a `tesseract` para cada PNG. Tesseract es un motor OCR
+          open source. Le pasamos los lenguajes `spa+eng` para que
+          reconozca palabras en español e inglés. Tesseract escribe el
+          texto de cada página en un .txt.
+        - Concatena los textos en una única cadena.
+
+      - Devuelve el texto y limpia el directorio temporal.
+
+  (c) Guarda el texto OCR en `raw-text.txt` dentro de la carpeta del
+      item del inbox. Esto es útil para revisión humana y para auditoría.
+
+  (d) Como la categoría es "lab", llama a `extractLabResult(ocrText)`
+      en `lib/extraction.ts`:
+
+      - Construye dos mensajes para el LLM. El system prompt es muy
+        estricto: "Eres un extractor de datos clínicos. Devuelve
+        EXCLUSIVAMENTE JSON con esta forma exacta: {...schema...}.
+        NUNCA incluyas nombre del paciente, DNI, etc."
+      - El user message es el texto OCR (cortado a 12.000 caracteres
+        máximo para no reventar el contexto del modelo).
+      - Hace `chat(...)` que llama a Qwen3-4B vía el contenedor `llm`.
+        Internamente esto es un POST HTTP a `http://llm:8080/v1/chat/
+        completions` con el cuerpo OpenAI-compatible y temperature=0.
+        Llama.cpp procesa los tokens uno a uno y devuelve la respuesta
+        ~10-30 segundos después.
+      - La respuesta es texto. Extraemos el primer bloque que parezca
+        JSON con una regex, lo parseamos con JSON.parse, y lo validamos
+        contra el schema Zod `LabResultExtraction`. Si la validación
+        falla, hacemos un reintento con un prompt de reparación que
+        muestra al modelo su salida anterior y le pide corregirla.
+
+  (e) Guarda el JSON validado en `extracted.json`.
+
+  (f) Actualiza meta.json: status="extracted", extractedAt=ahora.
+
+Sexto paso del handler: `logAuditEventSafe(...)` registra
+`document.upload` y `document.extract`. Hash chain extendido.
+
+Séptimo paso: devuelve `{ id: meta.id, meta: finalMeta }` como JSON.
+
+El dropzone client recibe la respuesta, actualiza su lista de items
+"Listo para revisar", y llama a `router.refresh()`. Esto le dice a
+Next.js que vuelva a renderizar el Server Component de `/upload` desde
+cero. El nuevo render lee `listInbox(userId)` que ahora encuentra el
+item nuevo, y lo añade a la lista visible.
+
+
+================================================================================
+PASO 6: REVISAR LA EXTRACCIÓN Y CONFIRMAR
+================================================================================
+
+El usuario hace click en "Revisar" → va a `/inbox/<id>`.
+
+Server Component. `requireUserId()`. `getInboxItem(userId, id)` lee tres
+ficheros del disco: meta.json, raw-text.txt, extracted.json. Los devuelve
+empaquetados.
+
+La página renderiza un formulario con:
+- Inputs editables para `observed_at` (date picker), `lab_name`.
+- Una tabla HTML con una fila por cada marcador extraído. Cada fila
+  tiene cuatro inputs: name, value, unit, range, y un select para flag
+  (low/normal/high/unknown). Los `name` de los inputs siguen el patrón
+  `marker_name_0`, `marker_value_0`, etc. (indexados).
+- Un textarea para notas.
+- Un botón "Confirmar y añadir a la memoria" + un botón "Descartar".
+- El texto OCR completo al fondo, para que el usuario pueda comprobar
+  que lo extraído coincide con lo que aparece en su analítica.
+
+El usuario revisa, corrige un par de unidades que el LLM puso mal
+(p. ej. ponía "mg/dL" cuando era "mg/dL" o ponía "ng/L" cuando era
+"ng/mL"), borra un marcador irrelevante limpiando el campo name.
+
+Click en "Confirmar".
+
+El form invoca la Server Action `commitInboxItemAction`. Esta vez sí
+recibe FormData con todos los valores editados, los campos de la tabla
+con sus índices, etc. Hace:
+
+  1. `requireUserId()`.
+  2. `getInboxItem(userId, id)` para validar que el item existe.
+  3. `parseMarkersFromForm(formData)` recorre todos los `marker_name_<i>`
+     que existan, lee el valor de cada uno, ignora los que tienen name
+     vacío (eso es el truco para "borrar fila"), construye un array de
+     LabMarker con los valores parseados (los números se hacen Number con
+     conversión de coma a punto para el formato europeo).
+  4. Construye el objeto `LabResultExtraction` con los datos editados y
+     lo valida con Zod. Si el usuario metió algo inválido (p. ej. fecha
+     mal formada), Zod lanza, y el formulario muestra el error.
+  5. `promoteInboxOriginalToDocuments(userId, id)`: mueve el fichero
+     cifrado `inbox/<id>/original.pdf.age` a
+     `documents/<id>.pdf.age`. Devuelve la nueva ruta.
+  6. `writeLabResult(userId, data, finalPath)` en `lib/memory.ts`:
+     - Construye un slug del nombre del laboratorio.
+     - Calcula el nombre del fichero: `<fecha>-<slug>.md`.
+     - Genera el cuerpo del markdown: una cabecera, la fecha, una tabla
+       Markdown con los marcadores en columnas legibles, una sección
+       de notas, y al pie una referencia al fichero cifrado.
+     - Construye el frontmatter como objeto YAML: `type: lab_result`,
+       `observed_at`, `lab_name`, `markers: [...]` (el array completo
+       de objetos), `original_document`, `tags`.
+     - Llama a `gray-matter.stringify(body, frontmatter)` que produce
+       el texto completo: `---\n<yaml>\n---\n<body>`.
+     - Escribe el fichero en `data/users/<userId>/memory/labs/
+       <fecha>-<slug>.md`.
+
+  7. `reindexUser(userId)` en `lib/qmd.ts`. Esto es lo que hace que el
+     RAG vea el nuevo documento. Por dentro:
+
+     - Llama a `createStore({ dbPath: data/users/<userId>/index.sqlite,
+       config: { collections: { memory: { path: <userMemoryDir>, pattern:
+       "**/*.md" } } } })`. Esto abre o crea el fichero SQLite que es
+       el índice QMD del usuario. QMD configura el SQLite con
+       extensiones FTS5 (búsqueda full-text) y sqlite-vec (vectores).
+
+     - `store.update({ collections: ["memory"] })`. QMD escanea todos los
+       ficheros .md de la carpeta de memoria, calcula su hash, compara
+       con lo que tiene en la tabla `documents`. Para los nuevos o
+       modificados, los lee, los chunkea (rompe en trozos de ~900
+       tokens con detección inteligente de bordes markdown — los cortes
+       caen en cabeceras o entre párrafos, no en medio de una frase),
+       inserta los chunks en la tabla `content_vectors` y los textos en
+       el índice FTS5 (BM25, búsqueda léxica).
+
+     - `store.embed({ force: false })`. Para los chunks que aún no tienen
+       embedding, QMD llama al modelo Qwen3-Embedding-0.6B (cargado en
+       memoria al inicio del proceso) y obtiene un vector de 1024
+       dimensiones por chunk. Los guarda en la tabla `vectors_vec`
+       (sqlite-vec usa una representación binaria optimizada).
+
+     - `store.close()`.
+
+     Tras esto, el documento del usuario está indexado y listo para ser
+     recuperado en la siguiente consulta al chat.
+
+  8. `logAuditEventSafe({ action: "document.commit", ... })`.
+  9. `revalidatePath('/upload')` y `revalidatePath('/memory')`: marca
+     esas rutas como "stale" para que Next.js las regenere al próximo
+     visit (la lista del inbox ya no muestra el item porque se promocionó).
+  10. `redirect('/memory')`.
+
+El navegador recibe el redirect, va a /memory. Vuelve a pasar por
+middleware → requireUserId → render. Esta vez el usuario ve su memoria
+con la analítica registrada (cuando construyamos el visor, claro; ahora
+mismo solo muestra los puntos de entrada).
+
+
+================================================================================
+PASO 7: HACER UNA PREGUNTA EN /chat
+================================================================================
+
+El usuario va a /chat. Escribe: "He visto que mi colesterol LDL está alto.
+¿Qué dice mi historial y la evidencia?".
+
+Asumamos que el chat ya tiene UI (próximo hito; ahora mismo es
+placeholder). El cliente JavaScript hace `fetch('/api/chat', { method:
+'POST', body: JSON.stringify({ message: "...", history: [] }), headers: {
+'Content-Type': 'application/json' }, credentials: 'same-origin' })`.
+
+POST /api/chat llega al handler en Node runtime. Pasos:
+
+  1. `requireUserIdFromRequest(req)` → userId desde la sesión.
+
+  2. Valida el body con Zod. message no vacío, máx 4000 caracteres,
+     history como array de mensajes role+content.
+
+  3. `queryMemoryAndKB(userId, message, { limit: 5, minScore: 0.3 })`.
+     Esta es la pieza central del RAG dual. Lo que hace por dentro:
+
+     (a) Abre en paralelo dos stores QMD:
+         - userStore = createStore para data/users/<userId>/index.sqlite
+         - kbStore = createStore para data/kb-index.sqlite
+
+     (b) Promise.all sobre dos searches:
+         - userStore.search({ query: message, limit: 5, minScore: 0.3 })
+         - kbStore.search({ query: message, limit: 5, minScore: 0.3 })
+
+     Cada search por dentro hace varias cosas (es lo más sofisticado del
+     sistema):
+
+         i. EXPANSIÓN DE QUERY. El modelo fine-tuned
+            qmd-query-expansion-1.7B recibe la pregunta original y
+            genera 2 variantes semánticas. Por ejemplo:
+              Original: "colesterol LDL está alto"
+              Variante 1: "valores elevados de LDL en analítica reciente"
+              Variante 2: "LDL fuera del rango de referencia"
+            Esto ayuda a recuperar documentos donde el término exacto no
+            aparece pero la idea sí.
+
+         ii. RECUPERACIÓN PARALELA. Por cada una de las 3 queries
+             (original + 2 variantes), QMD lanza dos búsquedas:
+               - BM25 sobre el índice FTS5 (búsqueda léxica clásica
+                 ponderando frecuencia inversa).
+               - Vectorial sobre sqlite-vec: calcula el embedding de la
+                 query (Qwen3-Embedding-0.6B), y busca los k chunks más
+                 cercanos por distancia coseno.
+             Total: 6 listas de resultados.
+
+         iii. FUSIÓN RRF. Reciprocal Rank Fusion combina las 6 listas en
+             una. Para cada documento que aparece en cualquier lista, su
+             score final es la suma de 1/(60+rango+1) por cada
+             aparición. Documentos que aparecen alto en varias listas
+             ganan. Documentos que solo aparecen en una lista pierden.
+             Además: bonus de +0.05 si quedó #1 en alguna lista (preserva
+             matches exactos), +0.02 si quedó #2 o #3.
+
+         iv. TOP-30. Se quedan los 30 documentos mejor rankeados.
+
+         v. RERANKING LLM. El modelo qwen3-reranker-0.6B (un cross-encoder
+            ligero) recibe pares (query, documento) uno a uno y devuelve
+            un score 0-10 con su confianza (basado en la probabilidad
+            del token "yes" vs "no" en su salida). Es lento pero preciso.
+
+         vi. POSITION-AWARE BLENDING. El score final se mezcla así:
+             - Rank 1-3 en RRF: 75% RRF + 25% reranker (preservar
+               matches exactos)
+             - Rank 4-10: 60% RRF + 40% reranker
+             - Rank 11+: 40% RRF + 60% reranker (confiar más en el
+               reranker para los más dudosos)
+
+         vii. Devuelve los top 5 con score, snippet (un extracto del
+              chunk), title, displayPath, etc.
+
+     (c) Mapeo a RetrievedChunk. Por cada hit, mi capa lee el
+         frontmatter del fichero markdown original. Para hits personales,
+         abre el fichero en data/users/<userId>/memory/<rel-path>, lee
+         con `gray-matter`, extrae observed_at del frontmatter, lo
+         añade al chunk. Para hits de evidencia, abre data/kb/<rel-path>,
+         extrae evidence_level y source_url.
+
+     (d) Cierra ambos stores.
+
+     (e) Devuelve { personal: [...], evidence: [...] }.
+
+  4. wrapForPrompt. Envuelve cada chunk en una etiqueta XML-like:
+
+       <source type="personal" observed_at="2026-05-15" doc="labs/...">
+       <snippet del chunk>
+       </source>
+
+       <source type="evidence" level="grade-b" url="..." doc="guidelines/...">
+       <snippet del chunk>
+       </source>
+
+     Los concatena todos.
+
+  5. Construye los mensajes para el LLM:
+       - system: el SOCRATIC_SYSTEM_PROMPT (un prompt largo que dice al
+         modelo: nunca diagnostiques, siempre cita la fuente con su
+         level, usa formato socrático, etc.)
+       - history (vacío en la primera consulta)
+       - user: contextBlock + "\n\n---\n\nPregunta del usuario:\n" + el
+         mensaje original.
+
+  6. `chat({ messages, temperature: 0.4, maxTokens: 1024 })` en
+     `lib/llm.ts`. Hace POST a `http://llm:8080/v1/chat/completions` con
+     el cuerpo OpenAI-compatible (model: qwen3-4b-instruct, messages,
+     temperature, max_tokens, stream: false). El contenedor `llm`
+     recibe la petición, llama.cpp procesa los tokens, devuelve la
+     respuesta completa cuando termina. En CCX13 esto tarda 15-25
+     segundos típicamente.
+
+  7. La respuesta (un string) es el "draft" del modelo. Antes de
+     mostrarla, pasa por el guardrail:
+
+     `checkResponse(draft)` en `lib/guardrail.ts`:
+       - Hace una SEGUNDA llamada al mismo modelo, pero con el
+         GUARDRAIL_CLASSIFIER_PROMPT que pide clasificar el texto y
+         devolver un JSON `{"verdict": "safe"|"rewrite"|"block",
+         "flags": [...]}`.
+       - Parsea el JSON.
+       - Si parsing falla, hace fail-closed: devuelve "rewrite".
+
+     - Si verdict === "safe": el texto se devuelve tal cual.
+     - Si verdict === "rewrite": `rewriteSocratic(draft)` hace una
+       TERCERA llamada al modelo con un prompt que dice "reescribe esto
+       en estilo socrático, sustituye afirmaciones por preguntas,
+       mantén las etiquetas <source>". El resultado reemplaza al
+       draft.
+     - Si verdict === "block": el texto se reemplaza por un mensaje
+       neutro: "No puedo ofrecer una respuesta segura. Te sugiero
+       hablarlo con un profesional sanitario."
+
+  8. Construye el array de citations a partir de personal + evidence,
+     con los campos seguros para mostrar al cliente (sin el cuerpo
+     completo del chunk, solo metadata).
+
+  9. `logAuditEventSafe({ action: "chat.query", subjectId: userId,
+     payloadSum: "personal=2 evidence=3 verdict=safe" })`. Importante:
+     NUNCA loguear el texto de la pregunta ni la respuesta en el audit
+     log — eso sería logging de PII de salud.
+
+  10. Devuelve JSON: `{ text: finalText, citations: [...], guardrail:
+      { verdict, flags } }`.
+
+
+================================================================================
+PASO 8: LEER LA RESPUESTA
+================================================================================
+
+El cliente JavaScript recibe el JSON y renderiza la respuesta en la UI:
+
+- El texto principal aparece en una burbuja.
+- Las citas aparecen abajo, cada una con un badge indicando el tipo
+  (personal vs evidence) y, para las de evidence, el nivel (Cochrane A,
+  Grade B, etc.). Las personales muestran la fecha (observed_at) del
+  documento original. Click en una cita abre el documento original (o
+  un preview del fragmento).
+- En cada respuesta, el código (no el modelo) inyecta el disclaimer
+  inline: "Información educativa. No constituye diagnóstico ni
+  recomendación clínica. Consulta con un profesional sanitario."
+- En el footer global de la app, el Disclaimer largo siempre visible.
+
+El usuario lee algo así (ejemplo de cómo se vería un buen output):
+
+  "Observo que en tu analítica del 15 de mayo tu LDL fue 165 mg/dL,
+  fuera del rango de referencia que aparece etiquetado como <100. En
+  evidencia clínica reciente <source type=evidence level=grade-a>, los
+  factores que influyen en LDL incluyen dieta rica en grasas saturadas,
+  factores genéticos, y sedentarismo. ¿Has notado cambios en tu
+  alimentación o nivel de actividad en las semanas previas a esta
+  analítica?"
+
+Esto NO dice "tienes hipercolesterolemia" (eso lo bloquearía el
+guardrail). NO recomienda "toma estatinas" (idem). SÍ ofrece una
+observación, la conecta con evidencia, y devuelve la pelota al usuario
+con una pregunta socrática.
+
+
+================================================================================
+LO QUE PASA EN PARALELO MIENTRAS TODO ESTO OCURRE
+================================================================================
+
+Mientras el usuario está usando la app:
+
+- Caddy comprueba cada 12 horas si el certificado TLS está a menos de
+  30 días de expirar. Si lo está, lanza un challenge ACME a Let's
+  Encrypt y obtiene un certificado nuevo. Sin interrupción del
+  servicio.
+
+- El sidecar backup, cada 24 horas a una hora aleatoria con jitter,
+  monta /data en read-only, lo pasa por restic que lo cifra con la
+  passphrase del repo (distinta de MASTER_KEY) y lo sube a Backblaze
+  B2 en EU. Aplica política de retención: 7 daily, 4 weekly, 6
+  monthly. Una vez por backup hace `restic check --read-data-subset=1%`
+  que verifica que un 1% aleatorio de los datos del repo se pueden
+  desencriptar (defensa contra corrupción silenciosa).
+
+- node-llama-cpp dentro del proceso `web` mantiene los modelos
+  auxiliares (embedding, reranker, query expansion) cargados en RAM
+  entre peticiones. Si llevan >5 minutos sin usarse, sus contextos se
+  liberan (los modelos siguen en RAM, solo se libera el KV cache que es
+  lo que crece).
+
+- El contenedor `llm` mantiene Qwen3-4B en RAM permanentemente. Su KV
+  cache se reusa entre peticiones cuando es posible (prefix caching de
+  llama.cpp), lo que acelera respuestas a queries con system prompt
+  similar.
+
+- SQLite escribe en modo WAL (write-ahead log). Esto significa que las
+  escrituras van primero a un fichero auxiliar (.sqlite-wal) y se
+  consolidan al fichero principal en checkpoints. Permite que un lector
+  no bloquee a un escritor y al revés.
+
+
+================================================================================
+LO QUE NO OCURRE Y POR QUÉ ES IMPORTANTE
+================================================================================
+
+En todo este flujo, hay cosas que NO pasan. La ausencia es lo que define
+el producto:
+
+- NO hay llamada a OpenAI, Anthropic, Google, Mistral ni a ningún
+  proveedor externo de IA en ningún momento. Toda la inferencia (LLM
+  principal, embeddings, reranker, query expansion, guardrail) ocurre
+  dentro del VPS.
+
+- NO se envía PII (información personal identificable) del usuario fuera
+  del VPS. Ni a APIs, ni a servicios de analítica, ni a servidores de
+  logs externos. El único tráfico saliente con contenido del usuario
+  son los backups cifrados a B2, y B2 no puede leerlos sin la
+  passphrase de restic que solo vive en el VPS.
+
+- NO se logea el contenido de las preguntas, las respuestas, las
+  observaciones ni los valores clínicos en el audit log. El audit log
+  registra HECHOS (quién hizo qué acción cuándo) con resúmenes
+  cuantitativos (cuántos chunks, qué veredicto), no el contenido.
+
+- NO se confía al LLM la decisión de incluir el disclaimer legal. Lo
+  inyecta el código de UI en cada respuesta, en el footer global, y en
+  el resultado de los assessments. Si el modelo lo "olvida" en su
+  respuesta, da igual: el código ya lo añadió.
+
+- NO se confía al LLM la decisión de no diagnosticar. El guardrail es
+  una segunda pasada del modelo con un prompt distinto y unas reglas
+  claras, y reescribe o bloquea. Si el modelo principal se desboca, la
+  red de seguridad atrapa.
+
+
+================================================================================
+DESPEDIDA: EL USUARIO CIERRA LA APP
+================================================================================
+
+El usuario cierra la pestaña. Su cookie de sesión queda en el navegador,
+válida 14 días. Si vuelve dentro de ese plazo, accede directo sin
+re-login. Si en algún momento usa /settings → "Cerrar esta sesión",
+BetterAuth marca su fila en `session` como expirada y devuelve un
+`Set-Cookie` que vacía la cookie del navegador. Si en su próximo
+intento de acceder a una ruta protegida ya no hay cookie, el middleware
+le manda a /login.
+
+Si el usuario decide irse de VitaMap para siempre, va a /settings →
+sección de borrado. Escribe BORRAR + su contraseña. La server action:
+
+  1. Loguea `auth.consent.revoked` y `user.purge:start` (estos
+     sobreviven al borrado).
+  2. `rm -rf data/users/<userId>/` — la memoria entera, los documentos
+     cifrados, el índice QMD. Irreversible.
+  3. Llama a BetterAuth para eliminar el usuario, validando la
+     contraseña como protección final contra ejecuciones accidentales.
+  4. Loguea `user.purge:complete`.
+  5. Redirige a /.
+
+Lo que queda tras el borrado: en `audit_event` tres filas con el UUID
+del usuario (que ya no se puede asociar a un email porque la fila de
+`user` se eliminó), con timestamps y la versión del consentimiento que
+revocó. Eso es lo que se enseña al regulador para demostrar que el
+borrado se hizo bien.
+
+
+================================================================================
+RESUMEN EN UNA FRASE
+================================================================================
+
+Un voluntario abre una URL, prueba HTTPS contra un VPS europeo cifrado
+en disco, firma su consentimiento, registra observaciones y analíticas
+que se cifran al recibirse y se transforman en markdown indexados por
+un motor RAG local, y conversa con un modelo open source que reside en
+el mismo VPS y nunca habla con nadie fuera, todo bajo una capa de
+guardrails que asegura que nunca cruza la línea entre "educativo
+reflexivo" y "consejo clínico".
+
+La arquitectura entera está construida para que esa frase sea
+verificable, no aspiracional.
+
+
+================================================================================
+                                 -- fin --
+================================================================================

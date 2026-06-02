@@ -1,0 +1,48 @@
+# =====================================================================
+# VitaMap — Caddy 2
+# TLS automático vía Let's Encrypt. Apunta DNS A/AAAA al VPS antes de up.
+# =====================================================================
+
+{
+	# Email para avisos de Let's Encrypt. Cambiar antes de producción.
+	email {$CADDY_EMAIL:admin@vitamap.local}
+
+	# Endurecer: deshabilitar admin API en producción.
+	admin off
+}
+
+# Dominio principal — pasar por variable de entorno PUBLIC_DOMAIN.
+{$PUBLIC_DOMAIN:localhost} {
+	encode zstd gzip
+
+	# Cabeceras de seguridad mínimas. Ajustar CSP cuando se integre auth.
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "geolocation=(), microphone=(), camera=()"
+		-Server
+	}
+
+	# /api/health no requiere auth ni logging detallado.
+	@health path /api/health
+	handle @health {
+		reverse_proxy web:3000
+	}
+
+	# Resto de la app.
+	reverse_proxy web:3000 {
+		header_up X-Real-IP {remote_host}
+		header_up X-Forwarded-For {remote_host}
+		header_up X-Forwarded-Proto {scheme}
+	}
+
+	log {
+		output file /data/access.log {
+			roll_size 10mb
+			roll_keep 5
+		}
+		format json
+	}
+}

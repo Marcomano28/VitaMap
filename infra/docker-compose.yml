@@ -1,0 +1,119 @@
+# =====================================================================
+# VitaMap — Fase 1 (piloto 3 usuarios en VPS CCX13)
+# Cuatro servicios: caddy (TLS + reverse proxy), web (Next.js + QMD),
+# llm (llama.cpp server), backup (restic cron a Backblaze B2).
+# =====================================================================
+
+name: vitamap
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - vitamap
+    depends_on:
+      web:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.web
+    image: vitamap/web:latest
+    restart: unless-stopped
+    environment:
+      # Apunta al servicio LLM por nombre de servicio en la red interna.
+      LLM_BASE_URL: http://llm:8080/v1
+      LLM_MODEL: ${LLM_MODEL:-qwen3-4b-instruct}
+      LLM_API_KEY: ${LLM_API_KEY:-not-needed-for-local}
+      QMD_EMBED_MODEL: ${QMD_EMBED_MODEL:-hf:Qwen/Qwen3-Embedding-0.6B-GGUF/Qwen3-Embedding-0.6B-Q8_0.gguf}
+      DATA_ROOT: /data
+      KB_INDEX_PATH: /data/kb-index.sqlite
+      AUTH_DB_PATH: /data/auth.sqlite
+      MASTER_KEY: ${MASTER_KEY:?MASTER_KEY required}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET required}
+      BETTER_AUTH_URL: ${PUBLIC_URL:?PUBLIC_URL required}
+      NEXT_PUBLIC_APP_URL: ${PUBLIC_URL}
+      NODE_ENV: production
+      # QMD descarga modelos GGUF aquí en primer arranque.
+      XDG_CACHE_HOME: /data/.cache
+    volumes:
+      - vitamap_data:/data
+    networks:
+      - vitamap
+    depends_on:
+      llm:
+        condition: service_healthy
+
+  llm:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    restart: unless-stopped
+    # El modelo se descarga con infra/scripts/download-model.sh ANTES de
+    # levantar el stack. Queda en el volumen llm_models montado en /models.
+    command:
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "8080"
+      - "--model"
+      - "/models/${LLM_MODEL_FILE:-qwen3-4b-instruct-q4_k_m.gguf}"
+      - "--ctx-size"
+      - "8192"
+      - "--threads"
+      - "${LLM_THREADS:-2}"
+      - "--n-gpu-layers"
+      - "0"
+      - "--alias"
+      - "${LLM_MODEL:-qwen3-4b-instruct}"
+    volumes:
+      - llm_models:/models
+    networks:
+      - vitamap
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 90s
+      retries: 5
+
+  backup:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.backup
+    image: vitamap/backup:latest
+    restart: unless-stopped
+    environment:
+      RESTIC_REPOSITORY: ${RESTIC_REPOSITORY:?RESTIC_REPOSITORY required}
+      RESTIC_PASSWORD: ${RESTIC_PASSWORD:?RESTIC_PASSWORD required}
+      B2_ACCOUNT_ID: ${B2_ACCOUNT_ID:-}
+      B2_ACCOUNT_KEY: ${B2_ACCOUNT_KEY:-}
+      BACKUP_TARGET: /data
+      RETENTION_KEEP_DAILY: "7"
+      RETENTION_KEEP_WEEKLY: "4"
+      RETENTION_KEEP_MONTHLY: "6"
+    volumes:
+      - vitamap_data:/data:ro
+    networks:
+      - vitamap
+
+networks:
+  vitamap:
+    driver: bridge
+
+volumes:
+  vitamap_data:
+    # Persistencia principal. En el host vive en /var/lib/docker/volumes/
+    # vitamap_vitamap_data por defecto. Encima ya hay LUKS a nivel disco.
+  llm_models:
+    # Modelos GGUF, descargados antes del primer up.
+  caddy_data:
+  caddy_config:

@@ -1,0 +1,92 @@
+/**
+ * Guardrail anti-diagnóstico.
+ *
+ * Segunda pasada del LLM sobre la respuesta generada. Si detecta lenguaje
+ * diagnóstico o prescriptivo, la marca para reescritura o bloqueo.
+ *
+ * Implementación dependiente de lib/llm.ts (chat non-streaming).
+ */
+
+import { chat, GUARDRAIL_CLASSIFIER_PROMPT } from "./llm";
+
+export type GuardrailVerdict = "safe" | "rewrite" | "block";
+
+export interface GuardrailDecision {
+  verdict: GuardrailVerdict;
+  text?: string;
+  flags: GuardrailFlag[];
+}
+
+export type GuardrailFlag =
+  | "diagnostic_statement"
+  | "treatment_recommendation"
+  | "dosage_recommendation"
+  | "medication_name_without_evidence"
+  | "absolute_certainty"
+  | "missing_evidence_tag";
+
+const ALL_FLAGS: GuardrailFlag[] = [
+  "diagnostic_statement",
+  "treatment_recommendation",
+  "dosage_recommendation",
+  "medication_name_without_evidence",
+  "absolute_certainty",
+  "missing_evidence_tag",
+];
+
+function extractJson(raw: string): { verdict: string; flags: string[] } | null {
+  const m = raw.match(/\{[\s\S]*\}/);
+  if (!m) return null;
+  try {
+    const parsed = JSON.parse(m[0]) as { verdict?: string; flags?: string[] };
+    if (typeof parsed.verdict !== "string") return null;
+    return {
+      verdict: parsed.verdict,
+      flags: Array.isArray(parsed.flags) ? parsed.flags : [],
+    };
+  } catch {
+    return null;
+  }
+}
+
+export async function checkResponse(text: string): Promise<GuardrailDecision> {
+  const raw = await chat({
+    messages: [
+      { role: "system", content: GUARDRAIL_CLASSIFIER_PROMPT },
+      { role: "user", content: text },
+    ],
+    temperature: 0,
+    maxTokens: 200,
+  });
+
+  const parsed = extractJson(raw);
+  if (!parsed) {
+    // Si el clasificador falla, fail-closed: tratar como "rewrite" para
+    // forzar revisión humana.
+    return { verdict: "rewrite", flags: ["missing_evidence_tag"] };
+  }
+
+  const verdict: GuardrailVerdict =
+    parsed.verdict === "safe" || parsed.verdict === "block"
+      ? parsed.verdict
+      : "rewrite";
+
+  const flags = parsed.flags.filter((f): f is GuardrailFlag =>
+    (ALL_FLAGS as string[]).includes(f),
+  );
+
+  return { verdict, flags };
+}
+
+const REWRITE_PROMPT = `Reescribe el siguiente texto en estilo socrático y observacional. No emitas diagnósticos. No recomiendes tratamientos. Convierte afirmaciones clínicas directas en preguntas o en observaciones acompañadas de su nivel de evidencia citado. Mantén las etiquetas <source>...</source> que ya aparezcan. Responde solo con el texto reescrito.`;
+
+export async function rewriteSocratic(text: string): Promise<string> {
+  return chat({
+    messages: [
+      { role: "system", content: REWRITE_PROMPT },
+      { role: "user", content: text },
+    ],
+    temperature: 0.3,
+    maxTokens: 1024,
+  });
+}

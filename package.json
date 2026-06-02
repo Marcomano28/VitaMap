@@ -1,0 +1,19 @@
+{
+  "name": "vitamap",
+  "version": "0.1.0",
+  "private": true,
+  "description": "VitaMap — personal health intelligence platform (monorepo root)",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @vitamap/web",
+    "build": "npm run build -w @vitamap/web",
+    "start": "npm run start -w @vitamap/web",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

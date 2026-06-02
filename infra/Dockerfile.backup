@@ -1,0 +1,18 @@
+# =====================================================================
+# VitaMap — backup sidecar
+# Restic + B2/S3 backend. Loop diario con sleep 24h.
+# =====================================================================
+FROM debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      restic ca-certificates tini curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /backup
+
+COPY infra/scripts/backup-loop.sh /usr/local/bin/backup-loop.sh
+COPY infra/scripts/restore.sh /usr/local/bin/restore.sh
+RUN chmod +x /usr/local/bin/backup-loop.sh /usr/local/bin/restore.sh
+
+ENTRYPOINT ["tini", "--"]
+CMD ["/usr/local/bin/backup-loop.sh"]
