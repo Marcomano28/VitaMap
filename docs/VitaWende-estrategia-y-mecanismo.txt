@@ -159,7 +159,15 @@ ORDEN ESTRATÉGICO RECOMENDADO
 ────────────────────────────────────────────────
 
 IV. LA ARQUITECTURA DE ENTIDADES
-Por qué VitaMap y VitaWende deben ser estructuras separadas
+Consideración para cuando el proyecto active su dimensión cívica
+
+NOTA: Esta sección no describe el estado actual del proyecto ni su
+identidad pública. VitaWende existe hoy como marco conceptual y portal
+de entrada a VitaMap — no como organización registrada. La separación
+legal descrita aquí solo se vuelve necesaria si y cuando un número
+suficiente de usuarios decide activar la dimensión cívica del proyecto
+y se requiere una estructura formal para gestionar la iniciativa
+ciudadana. Hasta ese momento, es una previsión, no una realidad.
 
 VitaMap es una herramienta educativa. Su encuadre legal deliberado
 la mantiene fuera de la regulación de dispositivo médico (MDR europeo)
