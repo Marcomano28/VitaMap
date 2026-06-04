@@ -105,6 +105,55 @@ El campo `status: draft` actúa como cerrojo: `store.update()` filtra entradas c
 
 ---
 
+## Perspectiva de diseño — Guía de orientación para el usuario real
+
+### El problema
+
+VitaMap asume implícitamente un usuario que sabe qué documentos tiene, dónde están, y cómo conseguirlos. En la práctica, la mayoría de personas nunca ha pensado en esos términos. Saben que "van al médico" y que "les hacen analíticas", pero no saben que esos datos existen en formato digital, que tienen derecho a pedirlos, ni qué hacer con ellos una vez los tienen.
+
+Sin una guía clara dentro de la propia app, el voluntario llega a la pantalla de subida de documentos y no sabe qué subir, qué buscar, ni cómo empezar. El resultado es que la plataforma queda vacía de datos reales y el asistente no puede ser útil.
+
+### Qué debe contener esta guía
+
+No es un manual técnico ni un texto legal. Es una respuesta a la pregunta que cualquier usuario nuevo se hace: **¿por dónde empiezo?**
+
+El contenido mínimo, en lenguaje llano:
+
+**Bloque 1 — Qué documentos son útiles**
+Una lista concreta y reconocible para cualquier persona:
+- Analíticas de sangre u orina (las que te da el laboratorio o el médico)
+- Informes de consultas o ingresos hospitalarios
+- Historial de medicación actual o pasada
+- Resultados de pruebas de imagen (resonancias, ecografías — el informe escrito, no la imagen)
+- Vacunas
+- Cualquier informe de especialista que tengas en papel o PDF
+
+**Bloque 2 — Cómo conseguir los que no tienes a mano**
+- Tu médico de cabecera puede darte un resumen de tu historial si lo pides
+- Tu hospital puede enviarte el informe de cualquier ingreso pasado (tienes derecho a pedirlo)
+- Si tienes seguro público en Alemania: tu aseguradora tiene una app donde puedes descargar todo tu historial digital en unos pocos pasos — se explica con capturas o un texto paso a paso
+- Si tienes seguro privado: contacta directamente con tu aseguradora
+
+**Bloque 3 — Qué hace VitaMap con esos documentos**
+Una explicación breve y honesta: el documento se guarda cifrado en tu dispositivo (o en el servidor solo tuyo), nunca sale a ningún servicio externo, y tú puedes borrarlo cuando quieras. El asistente lo lee para responder mejor a tus preguntas, pero no lo comparte ni lo analiza fuera de tu sesión.
+
+**Bloque 4 — Qué no necesitas hacer**
+Desmentir malentendidos frecuentes: no hace falta digitalizar todos los documentos de golpe, no hace falta que sean perfectos ni completos, no hace falta entender los valores médicos para subirlos (el asistente los explica), y no hace falta ningún conocimiento técnico.
+
+### Dónde vive en la app
+
+Una ruta dedicada `/guide` o `/empezar`, accesible desde la navegación principal con un nombre simple como "Cómo empezar" o "Primera vez aquí". No es un modal ni un tooltip: es una página completa, tranquila, que el usuario puede leer a su ritmo y releer cuando quiera.
+
+La pantalla de subida de documentos (`/upload`) debería tener un enlace visible a esta guía, especialmente cuando el buzón está vacío.
+
+### Cuándo construirlo
+
+**Antes de admitir el primer voluntario real** (requisito previo a Fase 1, no opcional). Un voluntario que llega sin orientación y no sabe qué hacer en los primeros cinco minutos no vuelve. La guía es tan importante para la retención del piloto como cualquier funcionalidad técnica.
+
+El contenido puede escribirse antes de que la página exista — de hecho conviene redactarlo con los primeros voluntarios candidatos antes de programar nada, para asegurarse de que responde a sus dudas reales y no a las que imaginas que tendrán.
+
+---
+
 ## Fase 0 — Desarrollo local · **0 €/mes** · semanas 1-3
 
 Objetivo: arquitectura completa funcionando end-to-end en tu portátil con QMD como pieza central, antes de pagar nada.
