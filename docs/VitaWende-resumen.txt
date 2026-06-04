@@ -1,0 +1,124 @@
+VITAWENDE — RESUMEN DEL PROYECTO
+Documento de trabajo · Versión 0.1 · Junio 2026
+
+────────────────────────────────────────────────
+
+EL PUNTO DE PARTIDA
+
+En Alemania, los coches tienen una revisión técnica obligatoria cada dos años.
+Las personas, no.
+
+No es que sea imposible organizarlo. Es que nadie lo ha propuesto todavía
+como un derecho concreto, financiado y accesible para todos.
+
+El sistema sanitario alemán funciona razonablemente bien cuando uno ya está
+enfermo. Funciona mucho peor cuando uno quiere saber cómo está antes de
+estarlo. Las revisiones preventivas existen, pero llegan tarde, son parciales,
+y rara vez conectan lo que sabe el cardiólogo con lo que sabe el internista,
+y menos aún con lo que el propio paciente ha notado en los últimos meses.
+
+Eso se puede cambiar. Sin grandes gestos. Con el mismo pragmatismo con que
+Alemania construyó otras cosas que funcionan.
+
+────────────────────────────────────────────────
+
+LA PROPUESTA
+
+Centros de salud integral distribuidos por el territorio. Cada ciudadano
+tendría derecho a una revisión completa cada uno o dos años: no solo
+analíticas de rutina, sino un mapa real de su estado de salud — marcadores
+de longevidad, capacidad funcional, diagnóstico de los sistemas que el
+paciente quiera explorar.
+
+Eso incluye medicina convencional con los instrumentos más actuales.
+E incluye, para quien lo elija, sistemas de diagnóstico de la medicina
+tradicional china o del ayurveda — no como alternativa a la ciencia,
+sino como marcos que capturan dimensiones que los análisis de sangre
+no miden. Combinados, con honestidad sobre lo que cada uno sabe y
+lo que no sabe.
+
+Los centros tendrían dos condiciones deliberadas: equipamiento técnico
+de primer nivel y entorno natural. No por estética. Porque una revisión
+que pretende ser completa necesita tiempo y calma que un ambulatorio
+no puede ofrecer.
+
+────────────────────────────────────────────────
+
+LA HERRAMIENTA PERSONAL: VITAMAP
+
+VitaMap es la parte del proyecto que ya existe hoy.
+
+Es un software que cada persona instala en su propio servidor o dispositivo.
+Guarda analíticas, observaciones, cuestionarios clínicos validados. Permite
+conversar con un asistente que lee ese historial y responde citando siempre
+de dónde viene cada afirmación. No diagnostica. No sustituye al médico.
+Ayuda a entender los propios datos y a llegar a la consulta con mejores
+preguntas.
+
+Los datos no salen del servidor del usuario. No van a ninguna nube externa.
+No se usan para entrenar ningún modelo. El historial es del paciente,
+no de la plataforma.
+
+No es una app de bienestar. No cuenta pasos ni mide el sueño con una pulsera.
+Es un archivo médico personal que crece con el tiempo y que el usuario
+controla completamente.
+
+────────────────────────────────────────────────
+
+EL MECANISMO
+
+La ley alemana permite que los ciudadanos obliguen al Bundestag a celebrar
+una audiencia pública con 50.000 firmas verificadas. A escala europea,
+un millón de firmas obliga a la Comisión Europea a responder formalmente
+a la propuesta.
+
+VitaWende usa ese mecanismo. No hay otro camino más directo ni más legítimo.
+
+Las personas que usan VitaMap y entienden desde la experiencia lo que
+significa tener acceso ordenado a su propio historial de salud son
+exactamente las personas con más razones concretas para querer que eso
+exista como derecho para todos. La herramienta y la iniciativa ciudadana
+se refuerzan sin confundirse.
+
+────────────────────────────────────────────────
+
+LO QUE VITAWENDE NO ES
+
+No es un movimiento de medicina alternativa. No propone reemplazar
+la medicina convencional con ninguna otra cosa.
+
+No es un partido ni tiene posición sobre ningún tema que no sea este.
+
+No es una empresa que vende salud ni un servicio de suscripción.
+
+No tiene la respuesta a todo. Tiene una pregunta concreta: ¿por qué
+el Estado alemán financia el tratamiento de enfermedades que podrían
+haberse detectado antes, y no financia la detección?
+
+────────────────────────────────────────────────
+
+EL ESTADO ACTUAL
+
+VitaMap existe como prototipo funcional con los componentes básicos
+operativos: subida y cifrado de documentos médicos, lectura automática
+de analíticas, asistente con acceso al historial personal y a una
+base de evidencia científica, cuestionarios clínicos validados,
+registro de observaciones libres.
+
+La recogida de firmas y la infraestructura de los centros son los
+próximos pasos.
+
+────────────────────────────────────────────────
+
+EL NOMBRE
+
+VitaWende.
+
+Del latín vita — vida — y del alemán Wende — cambio de dirección.
+
+Como la Energiewende, pero para la salud.
+
+────────────────────────────────────────────────
+
+VitaWende · Documento de trabajo · Junio 2026
+Sujeto a revisión y conversación.
