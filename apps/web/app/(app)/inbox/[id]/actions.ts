@@ -7,6 +7,7 @@ import {
   getInboxItem,
   promoteInboxOriginalToDocuments,
 } from "@/lib/inbox";
+import { enqueueInboxExtraction } from "@/lib/inbox-queue";
 import { LabResultExtraction, type LabMarker } from "@/lib/extraction";
 import { writeLabResult } from "@/lib/memory";
 import { logAuditEventSafe } from "@/lib/audit";
@@ -95,4 +96,13 @@ export async function discardInboxItemAction(formData: FormData) {
     payloadSum: `id=${id} stage=inbox`,
   });
   redirect("/upload");
+}
+
+export async function retryInboxExtractionAction(formData: FormData) {
+  const userId = await requireUserId();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+  await enqueueInboxExtraction({ userId, id });
+  revalidatePath("/upload");
+  revalidatePath(`/inbox/${id}`);
 }

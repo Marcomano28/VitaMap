@@ -1,6 +1,11 @@
 import { notFound } from "next/navigation";
 import { getInboxItem } from "@/lib/inbox";
-import { commitInboxItemAction, discardInboxItemAction } from "./actions";
+import { InboxAutoRefresh } from "@/components/inbox-auto-refresh";
+import {
+  commitInboxItemAction,
+  discardInboxItemAction,
+  retryInboxExtractionAction,
+} from "./actions";
 import { requireUserId } from "@/lib/session";
 
 export const metadata = { title: "Revisar documento" };
@@ -18,9 +23,11 @@ export default async function InboxItemPage({ params }: PageProps) {
 
   const ex = item.extracted;
   const isLab = item.meta.category === "lab";
+  const isActive = item.meta.status === "pending" || item.meta.status === "extracting";
 
   return (
     <div className="space-y-8">
+      <InboxAutoRefresh enabled={isActive} />
       <header className="space-y-2">
         <h1 className="text-2xl font-semibold">Revisar: {item.meta.originalName}</h1>
         <p className="text-sm text-[var(--color-muted)]">
@@ -34,7 +41,26 @@ export default async function InboxItemPage({ params }: PageProps) {
         )}
       </header>
 
-      {!isLab ? (
+      {isActive ? (
+        <section className="rounded-md border border-[var(--color-border)] bg-[var(--color-card)] p-4 text-sm text-[var(--color-muted)]">
+          {item.meta.status === "pending"
+            ? "El documento está en cola para OCR y extracción."
+            : "El documento se está procesando. Esta página se actualizará automáticamente."}
+        </section>
+      ) : item.meta.status === "failed" ? (
+        <section className="space-y-3 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
+          <p>No se pudo completar el OCR o la extracción.</p>
+          <form action={retryInboxExtractionAction}>
+            <input type="hidden" name="id" value={item.meta.id} />
+            <button
+              type="submit"
+              className="rounded-md border border-red-300 px-3 py-1 hover:bg-red-100 dark:border-red-800 dark:hover:bg-red-900/40"
+            >
+              Reintentar extracción
+            </button>
+          </form>
+        </section>
+      ) : !isLab ? (
         <section className="rounded-md border border-[var(--color-border)] bg-[var(--color-card)] p-4 text-sm text-[var(--color-muted)]">
           La revisión estructurada solo se aplica a analíticas (categoría
           &quot;lab&quot;). Para otros documentos, descarta y vuelve a subir

@@ -121,8 +121,8 @@ export function UploadDropzone({ defaultCategory = "lab" }: Props) {
                 }
               >
                 {it.state === "queued" && "En cola"}
-                {it.state === "uploading" && "Procesando…"}
-                {it.state === "ok" && "Listo para revisar"}
+                {it.state === "uploading" && "Subiendo..."}
+                {it.state === "ok" && "En cola para OCR"}
                 {it.state === "error" && `Error: ${it.message}`}
               </span>
             </li>

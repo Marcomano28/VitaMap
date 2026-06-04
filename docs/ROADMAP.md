@@ -23,6 +23,88 @@ Lo que SÍ cambia entre fases: tamaño del modelo LLM principal, host (CPU/GPU),
 
 ---
 
+## Perspectiva de diseño — Memoria conversacional y consentimiento diferido
+
+### El problema que esta perspectiva resuelve
+
+Los formularios estructurados (PHQ-9, GAD-7, entrada de analíticas) capturan datos cuando el usuario está en modo _declarativo_: sabe qué quiere registrar, lo redacta y lo envía. Pero hay otro modo de acceso a la propia salud que los formularios no alcanzan: el modo _narrativo_, en el que el usuario simplemente habla —sobre cómo se siente, qué le ocurrió, qué le preocupa— sin ninguna intención explícita de crear un registro.
+
+Ese modo narrativo es frecuente y clínicamente valioso. Aparece cuando alguien lleva días con baja energía y todavía no lo ha relacionado con nada concreto, cuando describe el contexto emocional de un síntoma físico, o cuando necesita ser escuchado —o escucharse a sí mismo— antes de poder formular una pregunta. Psicológicamente, el acto de narrar cumple una función reguladora por sí mismo, independientemente de que genere datos. Ignorar esa función, o interrumpirla con formularios, erosionaría la confianza del usuario en la plataforma como espacio seguro.
+
+El reto es doble: respetar la naturaleza fluida de esa conversación mientras se preserva la posibilidad de extraer, con consentimiento explícito y posterior a la conversación, los datos clínicamente relevantes que contenga.
+
+### El flujo de consentimiento diferido
+
+La clave conceptual es separar el momento de la conversación del momento del registro. El usuario habla con libertad; solo cuando la conversación ha terminado —o ha llegado a un punto de cierre natural— el sistema propone, sin automatizar, convertir parte de esa conversación en memoria estructurada.
+
+```
+conversación libre (sin formulario, sin estructura impuesta)
+        ↓
+  el modelo detecta señales de cierre o el usuario las activa
+        ↓
+  [extracción LLM]  →  borrador .md con frontmatter  (status: draft, no indexado aún)
+        ↓
+  preguntas complementarias del modelo  →  el usuario las responde o las omite
+        ↓
+  reporte presentado en pantalla para revisión: el usuario edita, elimina fragmentos, o rechaza
+        ↓
+  [aprobación explícita del usuario]
+        ↓
+  audit_event "memory.write"  →  store.update()  →  memory/conversations/<fecha>-session.md
+```
+
+Este flujo tiene tres propiedades críticas para el encuadre GDPR y para la confianza del usuario:
+
+1. **Nada se escribe sin aprobación activa.** El borrador existe solo en memoria de sesión hasta que el usuario pulsa aprobar. Si cierra la ventana o rechaza, no queda rastro más allá del audit log de la sesión (que registra que hubo una conversación, no su contenido).
+2. **El usuario es el editor final.** El borrador se presenta como un documento editable, no como un informe generado. El modelo propone; el usuario decide qué parte de su narrativa merece vivir como dato.
+3. **El consentimiento queda trazado.** El evento `memory.write` en `audit_event` incluye `extraction_source: conversation`, `approved_at`, y `user_edited: boolean` (si el usuario modificó el borrador antes de aprobar). Esto acredita el Art. 9.2.a RGPD para datos de salud generados por conversación.
+
+### Qué extrae el modelo y qué no
+
+El prompt de extracción distingue explícitamente entre dos tipos de contenido:
+
+- **Extraíble**: síntomas con contexto temporal ("llevo tres días con dolor de cabeza vespertino"), estados emocionales con patrón ("cuando trabajo más de diez horas seguidas noto ansiedad"), cambios de hábito percibidos, preguntas que el usuario quiere retener para una consulta futura, correlaciones que el propio usuario menciona.
+- **No extraíble**: desahogos sin señal clínica, relatos sobre terceras personas, contenido que el usuario ha marcado explícitamente como privado durante la conversación ("esto no lo quiero guardar"), y cualquier fragmento cuya extracción cosifique la experiencia sin añadir valor clínico.
+
+El borrador incluye solo el primer tipo. La distinción no es delegable al criterio del modelo en producción: está fijada en el prompt de sistema del paso de extracción, que se revisa con cada cambio de modelo LLM.
+
+### El guardrail específico para contenido de crisis
+
+El guardrail diagnóstico genérico que corre en todas las respuestas del chat **no es suficiente aquí**. Una conversación narrativa larga puede contener señales de crisis (ideación suicida, riesgo de daño) expresadas de forma indirecta, sin el vocabulario clínico que detecta el clasificador estándar.
+
+Se añade un segundo clasificador, ejecutado sobre la conversación completa antes de iniciar la extracción, con un prompt específico para detección de crisis según criterios Columbia (C-SSRS simplificado). Si el clasificador devuelve `crisis: true`, el flujo de extracción **no se activa**. En su lugar, la UI muestra un aviso fijo con recursos de ayuda (Teléfono de la Esperanza, línea de crisis local según país del usuario configurado en perfil). El aviso se registra en audit log como `safety.crisis_detected` sin guardar el contenido de la conversación.
+
+Este clasificador corre sobre el mismo LLM local en una llamada adicional. Su prompt es conservador: ante la duda clasifica como crisis. Los falsos positivos (mostrar el aviso de recursos sin que haya crisis real) son aceptables y preferibles al inverso.
+
+### Implementación por fases
+
+**Fase 0** — Diseñar y probar el prompt de extracción con conversaciones propias. Validar que Qwen3-4B distingue correctamente entre contenido extraíble y no extraíble, y que el clasificador de crisis no genera falsos negativos en casos test conocidos. No se implementa UI todavía: el borrador se vuelca a consola o a un fichero temporal para revisión manual.
+
+**Fase 1** — UI mínima del flujo completo: botón "revisar esta conversación" en el chat, visor del borrador editable (campo de texto con el markdown generado), botón aprobar/rechazar, y escritura en `memory/conversations/` con el evento en audit log. El clasificador de crisis activo en todas las sesiones de chat. Las preguntas complementarias del modelo se implementan como un segundo turno del chat antes de generar el borrador.
+
+**Fase 2** — Refinamiento: detección automática de señales de cierre conversacional (en lugar de botón manual), sugerencia proactiva de extracción cuando el modelo detecta densidad clínica alta en la conversación, y primer análisis longitudinal de patrones extraídos por conversación frente a patrones de formularios estructurados (¿coinciden? ¿el modo narrativo captura algo que los formularios pierden?).
+
+### Nota sobre el modelo de datos
+
+El fichero resultante sigue siendo un markdown con frontmatter YAML, coherente con el principio rector de "memoria como markdown". El tipo de entrada es `conversation` (junto a los ya existentes `observation`, `lab`, `assessment`, `note`). El frontmatter incluye los campos añadidos para este flujo:
+
+```yaml
+---
+type: conversation
+date: 2026-06-04
+status: approved          # draft → approved (nunca se indexa en status draft)
+extraction_source: conversation
+session_duration_min: 18  # duración aproximada de la sesión
+user_edited: true         # el usuario modificó el borrador antes de aprobar
+approved_at: 2026-06-04T19:43:00Z
+tags: [energia, sueño, ansiedad]
+---
+```
+
+El campo `status: draft` actúa como cerrojo: `store.update()` filtra entradas con `status != approved`, así que un borrador nunca llega al índice QMD aunque el fichero exista en disco. Esto elimina la posibilidad de que un borrador no aprobado influya en respuestas futuras del RAG.
+
+---
+
 ## Fase 0 — Desarrollo local · **0 €/mes** · semanas 1-3
 
 Objetivo: arquitectura completa funcionando end-to-end en tu portátil con QMD como pieza central, antes de pagar nada.

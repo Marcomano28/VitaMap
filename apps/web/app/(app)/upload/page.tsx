@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { listInbox } from "@/lib/inbox";
 import { UploadDropzone } from "@/components/upload-dropzone";
-import { discardInboxItemAction } from "./actions";
+import { InboxAutoRefresh } from "@/components/inbox-auto-refresh";
+import { discardInboxItemAction, retryInboxExtractionAction } from "./actions";
 import { requireUserId } from "@/lib/session";
 
 export const metadata = { title: "Subir documentos" };
@@ -9,6 +10,7 @@ export const dynamic = "force-dynamic";
 
 const STATUS_LABEL: Record<string, string> = {
   pending: "En cola",
+  extracting: "Extrayendo",
   extracted: "Listo para revisar",
   failed: "Error",
 };
@@ -16,9 +18,11 @@ const STATUS_LABEL: Record<string, string> = {
 export default async function UploadPage() {
   const userId = await requireUserId();
   const inbox = await listInbox(userId);
+  const hasActiveJobs = inbox.some((it) => it.status === "pending" || it.status === "extracting");
 
   return (
     <div className="space-y-8">
+      <InboxAutoRefresh enabled={hasActiveJobs} />
       <header className="space-y-2">
         <h1 className="text-2xl font-semibold">Subir documentos</h1>
         <p className="text-sm text-[var(--color-muted)]">
@@ -58,7 +62,9 @@ export default async function UploadPage() {
                       ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200"
                       : it.status === "failed"
                         ? "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200"
-                        : "bg-[var(--color-card)] text-[var(--color-muted)]"
+                        : it.status === "extracting"
+                          ? "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200"
+                          : "bg-[var(--color-card)] text-[var(--color-muted)]"
                   }`}
                 >
                   {STATUS_LABEL[it.status] ?? it.status}
@@ -70,6 +76,17 @@ export default async function UploadPage() {
                   >
                     Revisar
                   </Link>
+                )}
+                {it.status === "failed" && (
+                  <form action={retryInboxExtractionAction}>
+                    <input type="hidden" name="id" value={it.id} />
+                    <button
+                      type="submit"
+                      className="text-sm rounded-md border border-[var(--color-border)] px-3 py-1 hover:bg-[var(--color-card)]"
+                    >
+                      Reintentar
+                    </button>
+                  </form>
                 )}
                 <form action={discardInboxItemAction}>
                   <input type="hidden" name="id" value={it.id} />
