@@ -40,7 +40,10 @@ export default async function UploadPage() {
         <h2 className="font-medium">Buzón ({inbox.length})</h2>
         {inbox.length === 0 ? (
           <p className="text-sm text-[var(--color-muted)]">
-            Aún no hay documentos pendientes.
+            Aún no hay documentos pendientes.{" "}
+            <Link href="/guide" className="underline hover:text-[var(--color-foreground)]">
+              ¿No sabes qué subir?
+            </Link>
           </p>
         ) : (
           <ul className="divide-y divide-[var(--color-border)] rounded-md border border-[var(--color-border)]">

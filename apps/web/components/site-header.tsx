@@ -15,6 +15,7 @@ export async function SiteHeader() {
     { href: "/upload", label: t.upload },
     { href: "/assess", label: t.assess },
     { href: "/chat", label: t.chat },
+    { href: "/guide", label: t.guide },
   ];
 
   return (

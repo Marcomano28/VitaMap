@@ -14,6 +14,7 @@ export const copy = {
       upload: "Subir",
       assess: "Cuestionarios",
       chat: "Conversar",
+      guide: "Guía",
       requestAccess: "Solicitar acceso",
       login: "Acceder",
       settings: "Ajustes",
@@ -103,6 +104,60 @@ export const copy = {
       inline:
         "Información educativa. No constituye diagnóstico ni recomendación clínica. Consulta con un profesional sanitario.",
     },
+    guide: {
+      title: "¿Por dónde empiezo?",
+      intro:
+        "No hace falta saber nada técnico ni médico para usar VitaMap. Esta página explica qué documentos son útiles, cómo conseguirlos y qué hace la herramienta con ellos.",
+      blocks: [
+        {
+          heading: "Qué documentos son útiles",
+          body: "Cualquier cosa que tu médico, laboratorio u hospital te haya dado en algún momento:",
+          items: [
+            "Analíticas de sangre u orina",
+            "Informes de consultas con especialistas",
+            "Informes de alta tras un ingreso hospitalario",
+            "Historial de medicación actual o pasada",
+            "Resultados de pruebas de imagen (el informe escrito, no la imagen)",
+            "Carnet de vacunación",
+          ],
+          note: "No hace falta tenerlos todos. Empieza por lo que tengas a mano.",
+        },
+        {
+          heading: "Cómo conseguir los que no tienes",
+          body: "Tienes derecho a pedir copias de todo tu historial médico. Algunas vías concretas:",
+          items: [
+            "Tu médico de cabecera puede darte un resumen de tu historial si se lo pides en consulta.",
+            "Cualquier hospital está obligado a enviarte el informe de un ingreso anterior si lo solicitas por escrito.",
+            "Si tienes seguro público en Alemania (AOK, TK, Barmer, DAK u otra): entra en la app de tu aseguradora, busca la sección «ePA» o «Meine Gesundheitsdaten», y descarga tu historial completo. Suele ser un botón visible desde el menú principal.",
+            "Si tienes seguro privado: contacta con tu aseguradora y pide la exportación de tu historial en formato digital.",
+          ],
+          note: "Si tienes dudas con la app de tu aseguradora, el servicio de atención al cliente puede guiarte paso a paso por teléfono.",
+        },
+        {
+          heading: "Qué hace VitaMap con esos documentos",
+          body: "Cuando subes un documento, esto es exactamente lo que ocurre:",
+          items: [
+            "El archivo se cifra en cuanto llega al servidor — nadie más puede leerlo.",
+            "Un proceso automático intenta leer los valores del documento (fechas, resultados, marcadores). Tú revisas esa lectura antes de confirmarla.",
+            "Una vez confirmado, los datos pasan a tu memoria personal. El asistente puede referirse a ellos cuando le hagas preguntas.",
+            "El documento original cifrado se conserva en tu carpeta. Puedes borrarlo cuando quieras.",
+          ],
+          note: "Nada de lo que subes sale de tu servidor. No se envía a ningún servicio externo ni se usa para entrenar ningún modelo.",
+        },
+        {
+          heading: "Lo que no hace falta hacer",
+          body: "",
+          items: [
+            "No hace falta digitalizar todos los documentos de golpe. Empieza con uno.",
+            "No hace falta entender los valores médicos para subirlos — el asistente te ayuda a interpretarlos.",
+            "No hace falta que los documentos sean perfectos ni recientes.",
+            "No hace falta ningún conocimiento técnico.",
+          ],
+          note: "",
+        },
+      ],
+      uploadCta: "Subir mi primer documento",
+    },
   },
   de: {
     nav: {
@@ -110,6 +165,7 @@ export const copy = {
       upload: "Hochladen",
       assess: "Fragebögen",
       chat: "Gespräch",
+      guide: "Leitfaden",
       requestAccess: "Zugang anfragen",
       login: "Anmelden",
       settings: "Einstellungen",
@@ -198,6 +254,60 @@ export const copy = {
         "VitaMap ist ein pädagogisches Werkzeug. Es stellt keine Diagnosen und gibt keine Behandlungsempfehlungen. Es ersetzt keine Beratung durch qualifiziertes medizinisches Fachpersonal.",
       inline:
         "Pädagogische Information. Keine Diagnose und keine klinische Empfehlung. Bitte sprich mit medizinischem Fachpersonal.",
+    },
+    guide: {
+      title: "Wo fange ich an?",
+      intro:
+        "Für VitaMap sind keine technischen oder medizinischen Vorkenntnisse nötig. Diese Seite erklärt, welche Unterlagen hilfreich sind, wie du sie bekommst und was das Tool damit macht.",
+      blocks: [
+        {
+          heading: "Welche Unterlagen sind nützlich",
+          body: "Alles, was dir dein Arzt, Labor oder Krankenhaus je ausgehändigt hat:",
+          items: [
+            "Blut- oder Urinuntersuchungen",
+            "Befundberichte von Fachärzten",
+            "Entlassungsbriefe nach einem Krankenhausaufenthalt",
+            "Aktuelle oder frühere Medikationspläne",
+            "Bildgebungsberichte (der schriftliche Befund, nicht das Bild selbst)",
+            "Impfpass",
+          ],
+          note: "Du musst nicht alles haben. Fang mit dem an, was gerade griffbereit ist.",
+        },
+        {
+          heading: "Wie du fehlende Unterlagen bekommst",
+          body: "Du hast das Recht, deine gesamte Krankengeschichte anzufordern. Konkrete Wege:",
+          items: [
+            "Dein Hausarzt kann dir auf Anfrage eine Zusammenfassung deiner Krankengeschichte geben.",
+            "Jedes Krankenhaus ist verpflichtet, dir den Entlassungsbrief eines früheren Aufenthalts auf schriftliche Anfrage zuzusenden.",
+            "Bei gesetzlicher Krankenversicherung (AOK, TK, Barmer, DAK usw.): Öffne die App deiner Krankenkasse, suche den Bereich «ePA» oder «Meine Gesundheitsdaten» und lade deine komplette Akte herunter. Der Knopf dafür ist meist im Hauptmenü sichtbar.",
+            "Bei privater Krankenversicherung: Kontaktiere deine Versicherung und bitte um einen digitalen Export deiner Krankenakte.",
+          ],
+          note: "Wenn du mit der App deiner Krankenkasse nicht weiterkommst, hilft dir der telefonische Kundenservice Schritt für Schritt.",
+        },
+        {
+          heading: "Was VitaMap mit diesen Unterlagen macht",
+          body: "Wenn du ein Dokument hochlädst, passiert genau Folgendes:",
+          items: [
+            "Die Datei wird sofort beim Eingang verschlüsselt — niemand sonst kann sie lesen.",
+            "Ein automatischer Prozess versucht, die Werte im Dokument zu lesen (Daten, Ergebnisse, Marker). Du prüfst diese Auswertung, bevor du sie bestätigst.",
+            "Nach der Bestätigung gehen die Daten in dein persönliches Gedächtnis. Der Assistent kann darauf Bezug nehmen, wenn du Fragen stellst.",
+            "Das verschlüsselte Original bleibt in deinem Bereich. Du kannst es jederzeit löschen.",
+          ],
+          note: "Alles, was du hochlädst, verlässt deinen Server nicht. Es wird weder an externe Dienste gesendet noch zum Training eines Modells verwendet.",
+        },
+        {
+          heading: "Was du nicht tun musst",
+          body: "",
+          items: [
+            "Du musst nicht alle Unterlagen auf einmal digitalisieren. Fang mit einer an.",
+            "Du musst die Laborwerte nicht verstehen, um sie hochzuladen — der Assistent hilft dir dabei.",
+            "Die Unterlagen müssen nicht vollständig oder aktuell sein.",
+            "Es sind keine technischen Kenntnisse erforderlich.",
+          ],
+          note: "",
+        },
+      ],
+      uploadCta: "Mein erstes Dokument hochladen",
     },
   },
 } as const;
