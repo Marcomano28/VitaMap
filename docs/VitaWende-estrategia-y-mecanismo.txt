@@ -1,6 +1,12 @@
 VITAWENDE — ESTRATEGIA Y FUNDAMENTO LEGAL
 Documento de trabajo · Versión 0.1 · Junio 2026
 
+NOTA DE USO: Este es un documento interno para quienes construyen
+el proyecto. No es material de comunicación pública. Desde el punto
+de vista del usuario, VitaWende es ante todo un contexto y una
+experiencia — el sentido político y el mecanismo cívico son capas
+que se descubren desde adentro, no la puerta de entrada.
+
 ────────────────────────────────────────────────
 
 I. LA INVERSIÓN DELIBERADA
