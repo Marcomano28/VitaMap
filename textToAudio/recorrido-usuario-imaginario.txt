@@ -1,0 +1,483 @@
+EL RECORRIDO
+Viaje de un usuario imaginario por VitaWende y VitaMap
+Texto paralelo: experiencia visual · arquitectura técnica
+
+Formato para conversión a audio / podcast.
+Dos voces. Pueden leerse juntas o por separado.
+
+  NARRADOR    — lo que el usuario ve, siente y descubre
+  ARQUITECTO  — lo que ocurre en el sistema detrás de cada gesto
+
+─────────────────────────────────────────────────────────────────
+
+
+━━━ ESCENA 1 — EL ENCUENTRO ━━━
+
+NARRADOR
+Alguien le habló de esto. No fue una campaña ni un anuncio.
+Fue una conversación en la que alguien dijo:
+"hay una cosa que se llama VitaWende, no sé bien qué es,
+pero tiene algo que ver con la salud y con entender
+lo que te pasa antes de que algo falle."
+
+Escribe el nombre en el navegador.
+La página carga.
+
+No aparece una interfaz de colores brillantes.
+No hay una bienvenida con animaciones.
+Hay una puerta oscura. Alta. Casi sin ornamento.
+Una línea azul recorre el marco, como agua eléctrica.
+Encima, en metal negro:
+
+  VITAMAP
+  Memoria personal. Evidencia. Preguntas.
+
+ARQUITECTO
+El navegador resuelve el dominio.
+La petición viaja por HTTPS — TLS 1.3 negociado automáticamente.
+Caddy, el servidor en la puerta exterior, tiene el certificado
+Let's Encrypt renovado sin intervención humana.
+Añade cabeceras de seguridad: HSTS, X-Frame-Options,
+X-Content-Type-Options, Referrer-Policy.
+La petición llega a Next.js.
+El middleware comprueba si hay cookie de sesión.
+No la hay. Redirige silenciosamente a /register.
+
+
+━━━ ESCENA 2 — EL UMBRAL ━━━
+
+NARRADOR
+Hay una persona esperando. No lleva bata.
+Tableta fina. Guantes grises. Voz tranquila.
+
+Antes de que el usuario diga nada, la persona habla.
+Solo dice una cosa:
+
+  "Aquí la seguridad no empieza cuando alguien con autoridad te mira.
+   Empieza antes. En la puerta. En el permiso.
+   En la forma de guardar una frase.
+   En la manera de no decir más de lo que se sabe."
+
+Hay dos casillas en la pantalla.
+No son términos legales de siete páginas.
+Son dos reconocimientos cortos.
+
+El primero dice: esto es una herramienta educativa,
+no un dispositivo médico, no sustituye a ningún profesional.
+El segundo dice: entiendo que mis datos de salud van
+a guardarse en un servidor bajo mi control,
+bajo las condiciones del RGPD, Art. 9.2.a.
+
+El usuario marca las dos casillas.
+Escribe su email. Escribe una contraseña.
+Pulsa entrar.
+
+ARQUITECTO
+BetterAuth recibe el formulario de registro.
+Hashea la contraseña con bcrypt — el original nunca se guarda.
+Crea el usuario en data/auth.sqlite.
+Registra dos eventos en audit_event:
+  auth.register    — actor=userId, ts=ahora
+  auth.consent.granted — payload: educational_ack=true, gdpr_art9=true
+Cada evento contiene el hash SHA-256 del evento anterior.
+La cadena comienza.
+Se emite una cookie httpOnly — JavaScript del navegador no puede leerla.
+El userId nunca sale del servidor en ninguna respuesta.
+El middleware ahora reconoce la sesión. La ruta /memory se abre.
+
+
+━━━ ESCENA 3 — LA PRIMERA SALA ━━━
+
+NARRADOR
+Al otro lado de la puerta: silencio.
+No hay pantallas gigantes. No hay música ambiental.
+
+A la izquierda, servidores pequeños.
+Respiran suavemente, como lámparas encendidas.
+
+A la derecha, vitrinas con nombres:
+  SQLite · QMD · age · audit_event · guardrail
+
+La guía no los explica todavía.
+Los deja existir un momento, como objetos.
+
+Al fondo, una luz verde. Quieta. Profunda.
+Como una esmeralda con luz propia.
+Eso es VitaMap.
+
+El usuario avanza hacia ella.
+
+ARQUITECTO
+Next.js renderiza /memory en el servidor.
+requireUserId() extrae el userId de la sesión — no del cliente.
+listInbox() lee data/users/<userId>/inbox/ — carpeta vacía aún.
+El visor de memoria devuelve cero entradas.
+El índice QMD del usuario no existe todavía:
+se creará la primera vez que haya algo que indexar.
+La pantalla muestra cuatro puertas:
+subir un documento, completar un cuestionario,
+anotar una observación, guardar una imagen.
+El usuario se detiene frente a la primera.
+
+
+━━━ ESCENA 4 — EL PRIMER DOCUMENTO ━━━
+
+NARRADOR
+Recuerda que tiene una analítica de hace tres meses.
+Está en una carpeta de descargas, entre facturas y fotos.
+La busca. La arrastra hasta la pantalla.
+
+La pantalla la recibe.
+No hay barras de carga. No hay espera aparente.
+Solo un mensaje breve: "En cola para lectura."
+
+El usuario se sienta. Espera.
+Tres segundos. Cinco.
+La pantalla dice: "Leyendo."
+Luego: "Listo para revisar."
+
+ARQUITECTO
+POST /api/upload recibe el archivo como multipart/form-data.
+requireUserIdFromRequest() valida la sesión.
+Se comprueba el tamaño: máximo 10 MB.
+createInboxItem() genera un UUID para el documento.
+encryptForUser() deriva la clave del usuario con HMAC-SHA256
+usando MASTER_KEY + "user:" + userId.
+El PDF original se cifra con age y se guarda en disco.
+El archivo sin cifrar no toca el disco en ningún momento.
+audit_event: document.upload registrado.
+enqueueInboxExtraction() mete el trabajo en la cola en memoria.
+La respuesta llega al cliente en 202: "en cola."
+
+El worker procesa el trabajo:
+runExtraction() descifra el PDF en memoria — no en disco.
+pdfjs-dist intenta extraer texto nativo.
+Si el texto es escaso, pdftoppm convierte páginas a imagen.
+Tesseract lee con diccionarios español e inglés.
+El texto crudo se guarda en raw-text.txt.
+extractLabResult() llama al LLM local con el texto.
+El modelo devuelve JSON: lab_name, observed_at, markers[].
+Zod valida el esquema. Si falla, un intento de reparación.
+El JSON validado se guarda en extracted.json.
+El meta.json del documento pasa a status: extracted.
+La UI detecta el cambio en el próximo refresco automático.
+
+
+━━━ ESCENA 5 — LA REVISIÓN ━━━
+
+NARRADOR
+La pantalla muestra una tabla.
+Los nombres de los marcadores, sus valores, sus unidades.
+El rango de referencia. Un indicador: normal, bajo, alto.
+
+El usuario reconoce algunos. Otros no.
+Corrige un nombre que el sistema leyó mal.
+Cambia una fecha que no coincide.
+Lee las notas al pie.
+
+Al fondo de la pantalla, un botón:
+"Confirmar y añadir a la memoria."
+
+Lo pulsa.
+
+ARQUITECTO
+commitInboxItemAction() recibe el FormData.
+Lee los marcadores editados campo a campo.
+parseMarkersFromForm() reconstruye el array de LabMarker.
+LabResultExtraction.parse() valida el conjunto con Zod.
+promoteInboxOriginalToDocuments() mueve el PDF cifrado
+de inbox/<id>/ a documents/<id>.pdf.age.
+writeLabResult() construye el markdown:
+
+  ---
+  type: lab_result
+  observed_at: 2026-03-15
+  lab_name: Labor Berlin
+  markers: [...]
+  original_document: <id>.pdf.age
+  tags: [lab, labor-berlin]
+  ---
+
+  # Analítica — Labor Berlin
+  Fecha: 2026-03-15
+  ## Marcadores
+  | Marcador | Valor | Unidad | Rango | Flag |
+  ...
+
+El archivo se escribe en data/users/<userId>/memory/labs/.
+reindexUser() abre el store QMD del usuario.
+store.update() detecta el nuevo archivo.
+store.embed() genera el embedding con Qwen3-Embedding-0.6B.
+El documento es ahora recuperable por búsqueda semántica.
+audit_event: document.commit registrado con hash encadenado.
+La carpeta del inbox para este documento desaparece.
+
+
+━━━ ESCENA 6 — LA PRIMERA CONVERSACIÓN ━━━
+
+NARRADOR
+El usuario va a la sala del fondo.
+Hay una mesa circular. La superficie duerme.
+
+Se sienta. Escribe:
+
+  "Tengo ferritina baja y llevo semanas con poca energía.
+   ¿Puede estar relacionado?"
+
+La mesa despierta.
+Silencio. Quince segundos. Veinte.
+La guía dijo que podía tardar — aquí no hay prisa.
+
+La respuesta aparece despacio, como si alguien pensara antes de hablar.
+Cita de dónde viene cada afirmación.
+Hace preguntas en lugar de dar certezas.
+No dice "tienes anemia." Dice "estos patrones pueden tener varias causas,
+y hay preguntas que podrías llevar a tu médico."
+
+El usuario lee. Relee. Anota algo en papel.
+
+ARQUITECTO
+POST /api/chat recibe message + history[].
+requireUserIdFromRequest() valida sesión.
+Body.parse() valida con Zod: mensaje no vacío, historial máximo 20.
+queryMemoryAndKB() abre dos stores en paralelo:
+  openUserStore(): data/users/<userId>/index.sqlite
+  openKbStore(): data/kb-index.sqlite
+Los dos stores ejecutan búsqueda simultánea:
+  query: "ferritina baja energía relación"
+  limit: 5, minScore: 0.3
+  BM25 + vector + reranking interno de QMD.
+Los hits del store personal se mapean con readPersonalFrontmatter():
+  recupera observed_at del markdown, source=personal.
+Los hits de KB se mapean con readEvidenceFrontmatter():
+  recupera evidence_level, source_url, source=evidence.
+wrapForPrompt() envuelve cada chunk:
+  <source type="personal" observed_at="2026-03-15" doc="labs/...">
+  <source type="evidence" level="grade-b" url="..." doc="kb/...">
+Se construye el prompt completo:
+  SOCRATIC_SYSTEM_PROMPT + historial + fuentes + pregunta.
+Llamada al LLM local: llama.cpp server, Qwen3-4B, temperatura 0.4.
+La respuesta llega completa — no streaming en Fase 1.
+checkResponse() llama al mismo LLM como clasificador:
+  ¿hay lenguaje diagnóstico, dosis, certeza absoluta, riesgo?
+  Veredicto: safe / rewrite / block.
+En este caso: safe.
+El endpoint devuelve text + citations + guardrail.verdict.
+audit_event: chat.query — personal=1, evidence=2, verdict=safe.
+
+
+━━━ ESCENA 7 — EL PORTAL SE ILUMINA ━━━
+
+NARRADOR
+El usuario vuelve varios días.
+Añade una observación: "hoy mejor energía, dormí ocho horas."
+Completa el cuestionario PHQ-9 una tarde que se siente bajo.
+Sube otra analítica, más reciente.
+
+No lo hace por disciplina. Lo hace porque algo ha cambiado:
+ahora tiene un lugar donde estos fragmentos encajan,
+donde no se pierden entre aplicaciones y carpetas dispersas.
+
+Una noche nota algo que antes no había visto.
+En la penumbra del recinto — en ese espacio entre el umbral
+y la cápsula luminosa de VitaMap — hay formas.
+Apenas visibles. Como si alguien hubiera trazado líneas
+en la oscuridad con una luz muy tenue.
+
+Botones. Secciones. Un logotipo.
+Una arquitectura completa, dormida pero presente.
+
+ARQUITECTO
+El usuario ha escrito tres archivos en memory/.
+Cada uno generó un evento en audit_event y un ciclo de reindexado.
+El store personal tiene ahora quince chunks indexados.
+El sistema funciona como fue diseñado para funcionar
+con datos reales: la búsqueda devuelve fragmentos propios,
+el asistente los cita, el historial crece.
+
+Lo que el usuario ve en la penumbra es real:
+las rutas /vitawende, /centros, /vision, /manifiesto existen.
+No están destacadas en la navegación principal.
+Están ahí para quien las encuentre.
+Sus botones responden. Su contenido está escrito.
+Son páginas estáticas — sin lógica de servidor,
+sin datos de usuario, sin guardrail.
+Información pura, esperando ser leída.
+
+
+━━━ ESCENA 8 — LAS TRES CARAS ━━━
+
+NARRADOR
+El usuario entra en una de esas páginas en penumbra.
+Hay un texto. Habla de una semilla con forma de pirámide.
+
+Primera cara: el individuo.
+El usuario se reconoce ahí. Es él con su historial,
+con sus preguntas, con su asistente que no diagnostica.
+
+Segunda cara: la comunidad.
+Personas que han tenido la misma experiencia.
+Que entienden, al usar la herramienta, que lo que les falta
+no es mala suerte personal — es ausencia de un derecho
+que todavía no existe.
+
+Tercera cara: el descubrimiento colectivo.
+Cuando suficientes personas han tenido la misma experiencia
+y se reconocen en ella, algo cambia.
+Lo que cada uno vivió en privado se convierte,
+sumado, en un argumento compartido.
+
+El usuario lee despacio.
+No siente que lo están convocando a nada.
+Siente que alguien le está explicando algo
+que él ya sabía pero que nunca había visto nombrado así.
+
+ARQUITECTO
+La página /vitawende/semilla es un Server Component estático.
+No hay llamadas a base de datos. No hay sesión requerida.
+El contenido viene de lib/i18n.ts o de un archivo markdown
+en data/kb/ o docs/ — texto puro renderizado con markdown-view.tsx.
+Cero latencia de LLM. Cero consultas a QMD.
+Lo más ligero del sistema. Lo más denso en significado.
+
+
+━━━ ESCENA 9 — EL MANIFIESTO ━━━
+
+NARRADOR
+Hay otra página. La más larga.
+No tiene estructura de producto. No tiene botones de acción.
+Tiene párrafos. Tiene metáforas.
+
+Habla del trigo sarraceno, de su geometría de tres caras,
+de la forma más estable que puede adoptar un cuerpo pequeño
+para ser llevado por el viento y encontrar tierra donde caer de pie.
+
+Habla de que VitaWende no convence a nadie de nada.
+Crea condiciones para que cada persona llegue a su propia convicción
+a través de su propia experiencia.
+
+Habla de una promesa: el árbol de VitaWende, cuando llegue a florecer,
+no será una institución que habla de salud desde arriba.
+Será un espacio donde la sociedad aprende a reconocerse a sí misma
+en su cuerpo colectivo.
+
+El usuario lee hasta el final.
+Cierra el navegador.
+Sigue pensando.
+
+ARQUITECTO
+El manifiesto es texto plano renderizado.
+No hay nada técnico que describir aquí.
+Eso también es una decisión de arquitectura:
+que el argumento más importante del proyecto
+no dependa de ninguna infraestructura técnica para existir.
+Solo de palabras bien ordenadas
+y de alguien que tenga tiempo de leerlas.
+
+
+━━━ ESCENA 10 — LA DECISIÓN ━━━
+
+NARRADOR
+Unos días después el usuario vuelve.
+Busca el lugar donde estaba el texto sobre las tres caras.
+
+Hay una sección nueva que antes no había visto — o no había notado.
+Dice simplemente: si esto tiene sentido para ti,
+hay una forma de decírselo al mundo.
+
+No es urgente. No hay contador de tiempo.
+No hay presión. Hay una casilla y un campo para el nombre.
+
+El usuario lo piensa.
+Piensa en la analítica que subió hace semanas.
+Piensa en la pregunta que hizo sobre la ferritina
+y en la respuesta que lo ayudó a preparar mejor la consulta médica.
+Piensa en que ese tipo de ayuda no debería ser
+algo que uno tiene que buscar por su cuenta.
+
+Marca la casilla.
+
+ARQUITECTO
+POST /vitawende/firmar recibe nombre + email + consentimiento.
+Este endpoint no toca data/users/.
+No hay datos de salud en este flujo.
+La firma se guarda en una base de datos separada,
+bajo una entidad legal distinta a VitaMap.
+Se emite un email de confirmación.
+audit_event en el sistema VitaWende (no en VitaMap):
+  civic.signature — actor=anonymizedId, ts=ahora.
+El contador público de firmas en /vitawende suma uno.
+
+Detrás de ese número hay una persona
+que entendió desde adentro lo que está pidiendo.
+No desde un argumento abstracto.
+Desde su propia memoria de salud,
+desde sus propias preguntas,
+desde la experiencia concreta de tener acceso
+a algo que debería existir para todos.
+
+Eso es lo que hace este número diferente
+a cualquier otro número en cualquier otra petición.
+
+
+━━━ CODA — EL ÁRBOL ━━━
+
+NARRADOR
+Si se pudiera ver desde arriba, el proceso completo,
+desde ese primer clic en la puerta oscura
+hasta la casilla marcada semanas después —
+parecería insignificante.
+
+Una persona. Un historial. Una firma.
+
+Pero el trigo sarraceno cubre el suelo con rapidez y en profundidad.
+No por agresión. Por abundancia.
+Crece tan plenamente que el terreno que ocupa
+no tiene vacío que llenar con otra cosa.
+
+Cada persona que llega a VitaMap
+y entiende desde adentro lo que significa
+tener acceso ordenado a su propio cuerpo —
+enciende un poco de luz en ese portal en penumbra.
+
+Cuando la luz sea suficiente,
+la plataforma en sombra dejará de estar en sombra.
+No porque alguien la haya lanzado con un gesto de voluntad.
+Sino porque la realidad habrá alcanzado la visión.
+
+ARQUITECTO
+El sistema en ese momento tiene:
+  miles de usuarios activos en data/users/
+  millones de audit_events encadenados
+  una KB de evidencia curada en crecimiento
+  conversaciones que han ayudado a preparar
+    mejores preguntas para mejores consultas médicas
+  una base de firmantes que no imagina algo —
+    que ha vivido algo y lo pide para todos
+
+La infraestructura técnica no cambia.
+Caddy sigue sirviendo el tráfico.
+QMD sigue indexando markdown.
+El LLM local sigue respondiendo sin enviar datos a ninguna nube.
+BetterAuth sigue protegiendo cada sesión.
+El audit log sigue encadenando cada acto.
+
+Lo que cambia es el peso de lo que corre encima de esa infraestructura.
+
+─────────────────────────────────────────────────────────────────
+
+FIN DEL RECORRIDO
+
+Este texto está pensado para ser leído en dos voces.
+El NARRADOR puede ser una voz cálida, pausada, sin urgencia.
+El ARQUITECTO puede ser una voz más seca, más precisa,
+ligeramente más rápida — la voz de alguien que describe mecanismos.
+
+Las dos voces juntas construyen algo que ninguna puede construir sola:
+la sensación de que lo que se vive por fuera
+tiene una razón técnica sólida por dentro,
+y de que la razón técnica tiene una vida humana por fuera.
+
+─────────────────────────────────────────────────────────────────
+
+VitaWende · VitaMap · Texto para audio · Junio 2026
