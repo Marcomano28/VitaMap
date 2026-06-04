@@ -245,6 +245,58 @@ Disparador: tienes >10 voluntarios activos, o el modelo Qwen3-4B/7B de Fase 1 se
 
 ---
 
+## Perspectiva de diseño — Acceso al historial médico real (contexto alemán)
+
+### El problema
+
+Hasta ahora VitaMap asume que el usuario introduce sus datos manualmente: escribe observaciones, rellena cuestionarios, sube PDFs de analíticas. Eso funciona para datos nuevos que el usuario genera desde que empieza a usar la plataforma. Pero toda persona tiene un historial médico previo —años de analíticas, diagnósticos, informes hospitalarios— que vive en el sistema sanitario y que sería el contexto más valioso para el asistente.
+
+La pregunta es: ¿cómo llegan esos datos a VitaMap sin requerir que el usuario los teclee uno a uno?
+
+### Qué ofrece el sistema alemán
+
+Desde enero 2025, todos los asegurados de la sanidad pública alemana tienen derecho a una carpeta digital personal con todo su historial médico (llamada ePA). La ley obliga a las aseguradoras a dársela al paciente si la pide, en un formato estructurado que cualquier software puede leer. Es un derecho del paciente, no un servicio de pago ni una opción técnica avanzada: está garantizado por ley (§341 SGB V).
+
+En la práctica, el asegurado puede:
+1. Entrar en la app de su aseguradora (AOK, TK, Barmer, DAK, etc.)
+2. Solicitar la descarga de su historial completo
+3. Recibir un fichero con todos sus datos: analíticas, diagnósticos, medicación, vacunas, informes de alta
+
+El formato de ese fichero es lo que en el mundo médico se llama FHIR — en términos simples, es un JSON muy bien organizado que cualquier sistema informático puede entender directamente, sin necesidad de OCR ni interpretación.
+
+### Por qué esto importa para VitaMap
+
+La diferencia práctica es grande. Con el pipeline actual (subir un PDF → OCR → extracción con LLM) se pierde información, hay errores de lectura, y el proceso es lento. Con un fichero FHIR descargado de la aseguradora, los datos llegan ya estructurados y completos: no hay que "leerlos", solo transformarlos al formato markdown que usa VitaMap.
+
+Además, para un voluntario del piloto que quiera contribuir con su historial real, el flujo sería tan simple como: descarga tu historial de la app de tu aseguradora, súbelo a VitaMap, y el sistema lo ingiere automáticamente.
+
+### Cómo encaja en la arquitectura
+
+El inbox ya tiene tres tipos de entrada (`lab`, `document`, `image`). Se añadiría un cuarto tipo (`fhir`) que reconoce los ficheros descargados de la aseguradora y los convierte directamente a markdown con frontmatter, sin pasar por OCR. El pipeline de revisión y aprobación es idéntico al actual: el usuario revisa lo que se va a guardar antes de confirmar.
+
+```
+inbox/
+  ├── lab/          ← PDF analítica + OCR (ya funciona)
+  ├── document/     ← PDF genérico + OCR (ya funciona)
+  ├── image/        ← imagen + OCR (ya funciona)
+  └── fhir/         ← historial de la aseguradora, ya estructurado ← Fase 2
+```
+
+### Qué hacer antes del piloto
+
+Antes de implementar nada, el paso concreto es experimental: solicita tu propio historial a tu aseguradora alemana, descárgalo, y súbelo al pipeline OCR actual para ver qué pasa. Eso revela dos cosas en la práctica:
+
+1. Qué información contiene realmente ese historial (hay aseguradoras más completas que otras)
+2. Qué se pierde al tratarlo como PDF en lugar de como fichero estructurado
+
+Con esa base empírica, la decisión de implementar el importador FHIR en Fase 2 tiene datos reales, no solo teoría.
+
+### Lo que no hay que hacer en Fase 0/1
+
+Existe un camino oficial para que una app se conecte directamente a la ePA del paciente sin que el usuario descargue nada (llamado DiGA). Requiere certificación federal, evidencia clínica, auditorías de seguridad, y cuesta años y decenas de miles de euros. No es el camino para VitaMap en ninguna fase del piloto. El modelo correcto para VitaMap es siempre: el paciente descarga sus propios datos y los sube voluntariamente, sin que la plataforma acceda a ningún sistema externo.
+
+---
+
 ## Fase 3 — VPS con GPU dedicada · **~250-350 €/mes** · cuando el piloto demuestre retención
 
 Disparador: 20+ voluntarios activos semanalmente, latencia es la fricción principal reportada, o quieres correr modelos 14B+ a velocidad de chat.
