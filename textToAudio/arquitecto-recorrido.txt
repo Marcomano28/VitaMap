@@ -1,9 +1,9 @@
 EL ARQUITECTO CUENTA EL RECORRIDO
-Una sola voz. Sin teatralización.
-Lo que el usuario vive y lo que sostiene cada momento.
+Voz única. Dos presencias: el arquitecto y el usuario.
+Nada más vive en este espacio todavía.
 
 Para conversión a audio / podcast.
-Lectura pausada. Una sola voz cálida y precisa.
+Lectura pausada. Sin teatralización.
 
 ─────────────────────────────────────────────────────────────────
 
@@ -13,28 +13,32 @@ lo primero que siente no es una bienvenida.
 
 Es la sensación de haber cruzado un umbral.
 
-No hay nada agresivo en la pantalla. No hay colores llamativos
-ni promesas en letra grande. Lo que hay es espacio — y en ese
-espacio, penumbra. La clase de penumbra en la que los ojos
-se ajustan despacio y empiezan a ver lo que hay.
+No hay colores llamativos. No hay promesas en letra grande.
+Lo que hay es espacio — y en ese espacio, penumbra.
+La clase de penumbra en la que los ojos se ajustan despacio
+y empiezan a ver lo que hay.
 
 Hay contornos. Sutiles. Como los muros de un templo antiguo
-que el tiempo y la vegetación han cubierto parcialmente
-sin destruir. Se intuye una arquitectura — un logotipo apenas
-visible, texto con la textura de algo que lleva ahí mucho tiempo,
-secciones que duermen pero existen. Esto es VitaWende.
-El marco. El contenedor. La promesa de algo mayor
-que todavía no ha llegado a su plena luz.
+que el tiempo ha cubierto sin destruir. Una arquitectura intuida —
+un logotipo apenas perceptible, texto con la textura de algo
+que lleva ahí mucho tiempo esperando. Secciones que duermen
+pero existen. La estructura de algo que debería estar habitado
+y que todavía no lo está.
+
+Esto es VitaWende. El marco. El templo en ruinas.
+La promesa de una infraestructura que no ha nacido del todo
+pero cuya geometría ya está trazada en las piedras.
 
 Y entonces, en ese espacio en penumbra, algo llama la atención.
 
 Una pestaña. Un cristal en tono esmeralda.
 No brillante de forma agresiva — luminoso desde adentro,
-con la calma de una piedra preciosa que no necesita focos
-para ser vista. El texto que transluce tiene vida.
-Tiene colores que se mueven despacio. Hay algo ahí.
+con la calma de algo que tiene vida propia y no necesita anunciarse.
+El texto que hay en él transluce color. Transluce movimiento.
 
 Eso es VitaMap.
+El único elemento completamente vivo en este momento.
+El altar.
 
 El usuario hace clic.
 
@@ -43,61 +47,52 @@ El usuario hace clic.
 EL REGISTRO
 ─────────────────────────────────────────────────────────────────
 
-Al activar la pestaña, el sistema hace una comprobación silenciosa.
-Busca una cookie de sesión en el navegador. No la encuentra.
-No hay error, no hay mensaje de alarma. El sistema simplemente
-sabe que este es el primer encuentro, y redirige con suavidad
-hacia el único gesto que falta antes de entrar: registrarse.
+Al activar el cristal, el sistema hace una comprobación silenciosa.
+Busca una señal de que alguien ha estado aquí antes. No la encuentra.
+Sin error, sin alarma — redirige hacia el único gesto
+que precede la entrada: el registro.
 
-La pantalla que aparece no es larga. Hay dos campos —
-email y contraseña — y debajo, dos reconocimientos.
+Lo que aparece no es un formulario largo.
+Son dos campos y dos reconocimientos.
 
-El primero dice que VitaMap es una herramienta educativa.
-Que no emite diagnósticos. Que no reemplaza a ningún profesional.
-No es un disclaimer legal escondido en letra pequeña —
-es el centro de la filosofía del proyecto, y se pide
-que el usuario lo lea y lo marque porque lo ha leído,
+El primero dice que esto es una herramienta educativa.
+Que no emite diagnósticos. Que no reemplaza a nadie.
+No es un disclaimer escondido — es el centro de la filosofía,
+y se pide que quien entra lo lea porque lo ha leído,
 no porque la ley lo exige.
 
 El segundo dice que los datos de salud que se guarden aquí
 vivirán en un servidor bajo el control del usuario,
 bajo las condiciones del artículo 9.2.a del RGPD europeo —
-el artículo que regula el tratamiento de datos sensibles de salud
-solo cuando hay consentimiento explícito y consciente.
+el artículo que protege los datos sensibles de salud
+cuando existe consentimiento explícito y consciente.
 
 El usuario marca las dos casillas. Escribe su email.
 Escribe una contraseña.
 
-En ese momento, en el servidor, ocurren varias cosas a la vez.
+En ese momento, en el servidor, la contraseña nunca se guarda
+tal como se escribe. Un proceso llamado bcrypt la transforma
+en una huella irreversible — se puede verificar si es correcta
+sin conocer el original. El original desaparece en el momento de llegar.
 
-La contraseña nunca se guarda tal como se escribe.
-Un algoritmo llamado bcrypt la transforma en una cadena
-que no tiene vuelta atrás — se puede verificar si la contraseña
-es correcta sin conocer la contraseña. El original desaparece
-en el momento de llegar.
+El sistema de autenticación crea al usuario
+en una base de datos local, un fichero único en el servidor,
+sin procesos adicionales, portable, respaldable en un comando.
 
-El sistema de autenticación — BetterAuth —
-crea el usuario en una base de datos local, SQLite,
-un fichero único en el servidor que no necesita procesos
-adicionales, que es portable, que se puede hacer copia
-de seguridad en un comando.
-
-Y entonces empieza algo que acompañará al usuario
-en cada acto significativo desde este momento:
+Y empieza algo que acompañará cada acto significativo desde ahora:
 el libro de auditoría.
 
-Es una tabla en esa misma base de datos.
-Cada entrada tiene la hora, el tipo de acto, el actor,
-y el hash SHA-256 de la entrada anterior.
-La primera entrada del libro es el registro.
+Es una tabla. Cada entrada tiene la hora exacta, el tipo de acto,
+el actor, y el hash SHA-256 de la entrada anterior.
+La primera entrada es el registro.
 La segunda es el consentimiento.
-Y desde ahí, cada evento importante
-queda encadenado al anterior por su huella digital.
-No se puede alterar un evento pasado sin romper todos los posteriores.
+Desde ahí, cada evento queda encadenado al anterior
+por su huella digital. No se puede alterar un evento pasado
+sin romper todos los que vienen después.
 Es un libro que no olvida y que no miente.
 
-Se emite una cookie al navegador.
-Es httpOnly — JavaScript no puede leerla.
+Se emite una señal de sesión al navegador.
+JavaScript no puede leerla.
 El identificador del usuario nunca viaja como texto visible
 en ninguna URL ni en ningún formulario.
 Sale del servidor solo cuando el servidor lo necesita.
@@ -106,17 +101,17 @@ El usuario entra.
 
 
 ─────────────────────────────────────────────────────────────────
-LA PRIMERA SALA
+EL ALTAR
 ─────────────────────────────────────────────────────────────────
 
-La pantalla que aparece es la memoria.
+La pantalla que aparece es la memoria personal.
 Por ahora está vacía. Eso es correcto.
+Todo altar espera antes de que algo le sea ofrendado.
 
-Hay cuatro opciones: subir un documento, completar un cuestionario,
-escribir una observación, guardar una imagen.
-
-Y en la esquina, un enlace discreto a la guía —
-para quien llegue sin saber por dónde empezar.
+Hay cuatro acciones posibles: subir un documento,
+completar un cuestionario, escribir una observación,
+guardar una imagen. Son las formas que tiene el usuario
+de depositar algo de sí mismo en este espacio.
 
 El usuario tiene una analítica guardada en su ordenador.
 La arrastra hacia la pantalla.
@@ -124,91 +119,74 @@ La arrastra hacia la pantalla.
 El sistema la recibe.
 
 Lo primero que hace con ella no es leerla.
-Es esconderla.
+Es protegerla.
 
-Un proceso derivado de la identidad del usuario — usando una clave
-maestra del servidor y el identificador único del usuario —
-genera una passphrase única para ese archivo.
-El cifrado se llama age. Es moderno, auditado, sin parámetros
-que configurar mal. El PDF original entra en el proceso
-y lo que sale al disco es un bloque de datos que solo se puede abrir
-con esa passphrase. El original sin cifrar nunca toca el disco.
+Una clave derivada de la identidad del usuario —
+generada combinando una clave maestra del servidor
+con el identificador único de cada persona —
+cifra el documento antes de que toque el disco.
+Lo que se guarda no es el PDF. Es un bloque de datos
+que solo puede abrirse con esa clave.
+El original sin cifrar no existe en ningún almacenamiento.
 
-El documento cifrado se guarda en el buzón del usuario,
-junto a un fichero de metadatos: nombre original, tamaño,
-tipo, fecha de subida, estado actual. El estado en este momento es:
-en espera.
+Un proceso paralelo recoge el trabajo fuera del ciclo visible.
+Descifra el documento en memoria — sin escribirlo en disco.
+Intenta extraer el texto que ya está dentro del PDF.
+Si ese texto es pobre, convierte las páginas a imagen
+y las pasa por un lector óptico con diccionarios en español e inglés.
 
-Simultáneamente, un worker ligero recoge el trabajo.
-Lo procesa fuera del ciclo de la pantalla —
-el usuario no espera bloqueado, la interfaz sigue respondiendo.
-
-El worker descifra el documento en memoria.
-En ningún momento sale del servidor. En ningún momento
-toca el disco sin cifrar.
-
-Si es un PDF, el sistema intenta primero extraer el texto
-que ya está dentro del archivo de forma nativa.
-Si ese texto es pobre o ilegible, convierte las páginas a imagen
-y las pasa por un lector óptico de caracteres con diccionarios
-en español e inglés.
-
-El texto resultante — el texto crudo, sin procesar —
-se envía al modelo de lenguaje local.
+El texto resultante va al modelo de lenguaje local.
 No a un servicio externo. Al modelo que vive en el mismo servidor,
-en el mismo stack, que nunca ha hablado con ninguna nube ajena.
+que nunca ha hablado con ninguna nube ajena.
+El traductor. El que convierte el lenguaje del cuerpo
+— cifras, rangos, unidades, fechas —
+en algo que el usuario puede reconocer como propio.
 
-El modelo devuelve un objeto estructurado:
-nombre del laboratorio, fecha de la analítica, lista de marcadores.
-Cada marcador tiene nombre, valor, unidad, rango de referencia,
-y una indicación de si está bajo, normal o alto.
+El modelo devuelve estructura: nombre del laboratorio,
+fecha, lista de marcadores. Cada marcador con su valor,
+su unidad, su rango de referencia, su indicación.
 
-Un validador — Zod — comprueba que el objeto tiene la forma esperada.
-Si algo falla, hace un intento de reparación antes de rendirse.
+Un validador comprueba que todo tiene la forma esperada.
+Si algo falla, hace un intento de reparación.
 
-La pantalla del usuario actualiza sola.
+La pantalla actualiza sola.
 Aparece una tabla editable con lo que el sistema leyó.
 
 
 ─────────────────────────────────────────────────────────────────
-LA REVISIÓN Y LA MEMORIA
+LA OFRENDA REVISADA
 ─────────────────────────────────────────────────────────────────
 
 El usuario revisa la tabla.
 Corrige un nombre que el sistema leyó ligeramente mal.
-Ajusta una fecha. Lee las notas al pie.
+Ajusta una fecha.
 
 Pulsa confirmar.
 
-En ese momento el documento sale del buzón
-y entra en la memoria definitiva.
+El archivo cifrado se mueve a la carpeta permanente.
+En la memoria se crea un archivo de texto — markdown con cabecera YAML.
+No una fila de base de datos. Un archivo que cualquier persona
+puede abrir en cualquier editor, sin dependencias,
+exportable en cualquier momento como parte de sus propias cosas.
 
-El archivo cifrado se mueve a la carpeta de documentos permanentes.
-En la carpeta de memoria se crea un archivo de texto:
-markdown con cabecera YAML. No una fila de base de datos —
-un archivo de texto que cualquier persona puede abrir
-en cualquier editor, que cualquier sistema puede leer,
-que se puede exportar como parte de un ZIP sin dependencias.
+La cabecera: tipo de entrada, fecha, nombre del laboratorio,
+marcadores, referencia al documento cifrado original.
+El cuerpo: la tabla formateada en texto legible.
 
-La cabecera tiene: tipo de entrada, fecha, nombre del laboratorio,
-lista de marcadores, referencia al documento cifrado original.
-El cuerpo tiene la tabla formateada en texto legible.
-
-Ese archivo pasa por el motor de indexación — QMD.
-QMD genera un embedding: una representación numérica
-del significado del texto, usando un modelo de embeddings
-multilingüe de sesenta millones de parámetros
-que vive en el mismo servidor.
+Ese archivo pasa por el motor de indexación.
+Genera una representación numérica de su significado —
+un embedding — usando un modelo multilingüe
+que también vive en el servidor.
 Ese embedding permite encontrar este documento más tarde
 cuando el usuario haga una pregunta relacionada,
 aunque no use las palabras exactas del documento.
 
 El libro de auditoría registra el acto.
-Cuarto evento encadenado en el libro.
+Un evento más encadenado.
 
 
 ─────────────────────────────────────────────────────────────────
-LA CONVERSACIÓN
+EL TRADUCTOR
 ─────────────────────────────────────────────────────────────────
 
 El usuario escribe una pregunta.
@@ -217,175 +195,173 @@ El usuario escribe una pregunta.
    ¿Puede haber relación?"
 
 El sistema no llama al modelo de lenguaje de inmediato.
-Primero busca.
+Primero busca en dos sitios a la vez.
 
-Abre dos índices en paralelo:
-el índice personal del usuario — todo lo que ha guardado —
-y el índice compartido de evidencia científica,
-una colección de guías clínicas, abstracts de estudios
-y documentos de medicina tradicional curados a mano.
+En la memoria personal del usuario — todo lo que ha depositado.
+Y en el índice de evidencia científica —
+guías clínicas, estudios, documentos de medicina tradicional
+curados con criterio.
 
-Cada índice devuelve los fragmentos más relevantes para la pregunta,
-combinando búsqueda por palabras y búsqueda por significado.
-Los fragmentos llegan etiquetados con su origen:
-si vienen de la memoria personal, dicen cuándo fue observado.
-Si vienen de la evidencia, dicen qué nivel de respaldo científico tienen.
+Los fragmentos más relevantes llegan etiquetados con su origen.
+Los de la memoria personal dicen cuándo fueron registrados.
+Los de la evidencia dicen qué nivel de respaldo científico tienen.
 
-Solo entonces se construye el mensaje para el modelo de lenguaje.
-Va primero el conjunto de instrucciones permanentes:
+Solo entonces se construye el mensaje para el modelo.
+
+Primero van las instrucciones permanentes:
 nunca afirmar diagnóstico, nunca recomendar tratamiento,
 citar siempre la fuente, distinguir memoria personal de evidencia,
-formular los patrones como observaciones y preguntas,
-responder en el idioma del usuario.
+responder en el idioma del usuario, formular en preguntas.
 
-Luego van los fragmentos recuperados, etiquetados.
-Luego va la pregunta.
+Luego los fragmentos recuperados, etiquetados.
+Luego la pregunta.
 
 El modelo responde.
 
 La respuesta no se muestra todavía.
-Un segundo proceso la lee completa y decide:
+Un segundo proceso la lee completa:
 ¿hay lenguaje diagnóstico? ¿hay recomendación de dosis?
-¿hay certeza absoluta sobre algo que no debería ser cierto?
+¿hay certeza absoluta sobre algo incierto?
 Si no hay nada de eso, la respuesta pasa.
 Si hay algo, se reescribe. Si el riesgo es mayor, se bloquea.
 
-En este caso la respuesta pasa.
-El usuario la lee. Cita dos fragmentos de su analítica
-y uno de una guía clínica con su nivel de evidencia.
-Hace tres preguntas: sobre el contexto, sobre otros marcadores,
-sobre cuándo notar más cansancio. No da diagnóstico.
-Termina sugiriendo qué preguntas llevar al médico.
+La respuesta pasa.
+
+El usuario la lee. Cita su analítica y una guía clínica.
+Hace preguntas sobre el contexto, sobre otros marcadores,
+sobre cuándo notar más el cansancio.
+Termina sugiriendo qué llevar al médico.
 
 El usuario anota algo en papel.
-Es la primera vez en mucho tiempo que entiende algo
-de sus propios datos sin sentir que necesita un título
-para leerlos.
+
+Es la primera vez en mucho tiempo que entiende algo de sus propios datos
+sin sentir que necesita otro idioma para leerlos.
+El traductor ha hecho su trabajo.
 
 
 ─────────────────────────────────────────────────────────────────
-EL PORTAL SE ILUMINA
+EL SANTUARIO SE VA ILUMINANDO
 ─────────────────────────────────────────────────────────────────
 
 El usuario vuelve. Días después. Semanas.
-Escribe observaciones. Completa un cuestionario de estado de ánimo.
-Sube una analítica más reciente.
+Escribe observaciones. Completa un cuestionario.
+Sube otra analítica.
 
-Cada acto añade un archivo a su memoria.
-Cada archivo añade chunks al índice.
-Cada chunk hace las respuestas futuras más precisas.
+Cada acto añade algo al altar.
+Cada cosa añadida hace las respuestas futuras más precisas.
+El altar crece con el tiempo. Eso es su naturaleza.
 
-Y algo más ocurre, que no es técnico pero es real:
-el portal en penumbra se va iluminando.
+Y en ese crecimiento ocurre algo más, silencioso.
 
-No literalmente. Pero cada persona que usa VitaMap
-y entiende desde adentro lo que significa tener acceso
-a su propio cuerpo organizado — se convierte en un argumento.
-Un argumento vivo. Sin necesidad de convencer a nadie.
-Su existencia redefine lo que es razonable esperar.
+El santuario en penumbra se va iluminando.
 
-Un día el usuario nota algo que no había visto.
-En los márgenes de la pantalla, en esa zona de penumbra
-que siempre estuvo ahí desde el primer día —
-hay contornos más definidos. Secciones. Títulos.
-Un logotipo que antes era apenas una sombra
-ahora tiene forma reconocible.
+No de golpe. No por un acto de voluntad.
+Sino porque cada persona que usa VitaMap
+y entiende desde adentro lo que significa
+tener acceso a su propio cuerpo organizado —
+es un fragmento de luz que se añade al conjunto.
 
-No lo han activado con un botón.
-Se ha ido haciendo visible solo.
+Su existencia no necesita convencer a nadie.
+Simplemente redefine lo que es razonable esperar.
+
+Un día el usuario nota los contornos más definidos.
+Secciones que antes eran sombra tienen ahora forma reconocible.
+Un logotipo que era apenas una mancha tiene ahora líneas claras.
+Los paneles de navegación que dormían bajo la vegetación
+empiezan a emerger como las runas bajo el musgo —
+no inventadas, no nuevas. Siempre estuvieron ahí.
+Solo esperaban ser descubiertas.
 
 
 ─────────────────────────────────────────────────────────────────
 EL DESCUBRIMIENTO
 ─────────────────────────────────────────────────────────────────
 
-El usuario hace clic en uno de esos contornos.
+El usuario hace clic en uno de esos contornos iluminados.
 
-Carga una página que no se parece al dashboard de VitaMap.
-Es diferente. Más tranquila. Sin formularios, sin tablas.
-Texto. Imágenes de un laboratorio moderno con luz natural
-y bosque al fondo. Personas que no llevan batas blancas.
+No es el dashboard de VitaMap.
+Es diferente. Más quieto.
+Texto. Imágenes de un laboratorio con luz natural y bosque al fondo.
+Personas que no llevan bata. Sin máquinas frías en primer plano.
 
 Hay una pregunta en la primera línea:
 
   ¿Por qué sabemos más sobre el estado del motor de un coche
   que sobre el estado del cuerpo que nos lleva por la vida?
 
-El usuario lee. Entiende que hay algo mayor aquí
-de lo que había imaginado. No es solo una app para guardar analíticas.
-Es la parte personal de una idea que tiene escala de sistema.
+El usuario lee. Entiende que lo que usaba no es solo una app.
+Es la parte personal de algo que tiene escala de sistema.
 
-Sigue leyendo. Encuentra la descripción de centros de salud
-que todavía no existen pero que están pensados con detalle:
-laboratorios de última generación, diagnóstico por imagen,
-marcadores de longevidad, y — algo que le llama la atención —
-unidades de medicina tradicional china y ayurveda
-tratadas con el mismo rigor que la medicina convencional.
-No como decoración. Como sistemas de observación que capturan
-dimensiones que los análisis de sangre no miden.
+Lee sobre centros que todavía no existen pero están pensados
+con la misma exactitud que lo que ya usó:
+laboratorios, imagen, marcadores de longevidad,
+y sistemas de diagnóstico complementarios tratados con el mismo rigor
+que la medicina convencional. No como decoración.
+Como marcos de observación que capturan lo que los análisis
+de sangre no miden.
 
-Encuentra una página que habla de una semilla
-con forma de pirámide de tres caras. Geometría de estabilidad.
-La primera cara: el individuo con su historial.
+Encuentra el texto de la semilla de tres caras.
+La primera: el individuo con su historial, su altar, su traductor.
 La segunda: las personas que se reconocen en la misma experiencia.
 La tercera: el descubrimiento colectivo de que lo que falta
-no es mala suerte personal — es ausencia de un derecho
-que todavía no existe.
+no es mala suerte — es ausencia de un derecho que todavía no existe.
 
 Y encuentra el manifiesto.
 
-Lo lee despacio. Habla del trigo sarraceno y de cómo cubre
-el suelo no por agresión sino por abundancia.
-Habla de que VitaWende no convence a nadie de nada —
-crea condiciones para que cada persona llegue
-a su propia convicción a través de su propia experiencia.
+No hay urgencia en el texto.
+No hay convocatoria.
+Hay una descripción honesta de lo que es, de lo que podría ser,
+y de la distancia entre los dos.
 
-Al final hay algo discreto. Una línea y una casilla.
+Al final, una línea discreta y una casilla.
 
   Si esto tiene sentido para ti, hay una forma de decírselo.
 
-No hay urgencia. No hay contador. No hay presión.
 El usuario lo piensa.
-Piensa en la analítica de ferritina.
-Piensa en la pregunta que le ayudó a preparar mejor la consulta.
-Piensa en que ese tipo de ayuda no debería ser
-algo que uno tiene que buscar por su cuenta.
+Piensa en la analítica. En la pregunta sobre la ferritina.
+En que ese tipo de ayuda no debería ser algo que uno busca solo.
 
 Marca la casilla.
 
-
-─────────────────────────────────────────────────────────────────
-LO QUE HAY DETRÁS DEL ÚLTIMO GESTO
-─────────────────────────────────────────────────────────────────
-
-Cuando el usuario marca esa casilla,
-el gesto llega a un sistema separado de VitaMap.
-
-No hay datos de salud en este flujo.
-No hay analíticas, no hay historial, no hay conversaciones.
+Ese gesto llega a un sistema completamente separado de VitaMap.
+Sin datos de salud. Sin historial. Sin conversaciones.
 La firma pertenece al ciudadano, no al paciente.
-Son dos identidades distintas que el sistema mantiene separadas
+Dos identidades que el sistema mantiene separadas
 de forma deliberada — técnica y legalmente.
 
-Lo que el sistema registra es: alguien decidió
-que esto debería existir para todos.
+Lo que el sistema registra es simple:
+alguien que lo ha vivido desde adentro
+decide que debería existir para todos.
 
-Y detrás de ese alguien hay algo que ninguna petición convencional tiene:
-la experiencia concreta de haber usado algo que demuestra
-que el modelo funciona. No es fe política — es evidencia vivida.
 
-Cada firma de este tipo tiene un peso diferente
-a cualquier firma recolectada en la calle o en un formulario online.
-Porque quien firma no imagina algo que podría ser bueno.
-Ha vivido algo que ya es bueno
-y quiere que sea un derecho para todos.
+─────────────────────────────────────────────────────────────────
+LO QUE ESPERA EN LA LUZ
+─────────────────────────────────────────────────────────────────
 
-Ese es el argumento.
-El más difícil de refutar.
-El que no se puede desmontar con un estudio
-porque el estudio somos nosotros.
+Cuando el santuario esté completamente iluminado —
+cuando la penumbra se haya disipado del todo —
+los muros que ahora duermen estarán habitados.
+
+No por cualquier profesional.
+Por los que emerjan de esa misma arquitectura.
+Los que entiendan que el altar personal del usuario
+no se reemplaza con una consulta médica —
+se complementa con ella.
+Los que sepan leer lo que el altar ha acumulado
+y añadirle lo que solo una presencia humana formada puede añadir.
+
+Ese es el santuario completo.
+VitaMap como altar de reunificación consigo mismo.
+VitaWende como el templo que lo rodea y lo da sentido.
+Los profesionales como los que finalmente lo habitan.
+
+Ahora solo hay la penumbra, el cristal esmeralda,
+y el usuario que acaba de encender una pequeña luz
+al marcar una casilla.
+
+Eso es suficiente para empezar.
 
 ─────────────────────────────────────────────────────────────────
 
 VitaWende · VitaMap · Texto para audio · Junio 2026
-Voz única. Lectura pausada. Sin teatralización.
+Voz única. Dos presencias. Lectura pausada.
