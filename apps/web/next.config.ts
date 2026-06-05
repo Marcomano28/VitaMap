@@ -23,7 +23,9 @@ const nextConfig: NextConfig = {
   // En modo standalone Next.js incluye solo el workspace activo; le
   // indicamos la raíz del monorepo para que copie los node_modules
   // hoisteados correctamente.
-  outputFileTracingRoot: process.env.NEXT_OUTPUT_TRACING_ROOT,
+  // En dev no hay NEXT_OUTPUT_TRACING_ROOT; process.cwd() devuelve la raíz
+  // del monorepo cuando npm run dev se arranca desde ahí.
+  outputFileTracingRoot: process.env.NEXT_OUTPUT_TRACING_ROOT ?? process.cwd(),
 };
 
 export default nextConfig;
