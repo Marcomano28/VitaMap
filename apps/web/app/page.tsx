@@ -21,7 +21,7 @@ export default async function VitaWendeShell() {
         VitaWende
       </span>
 
-      <Link href="/register" className="vitawende-crystal">
+      <Link href="/login" className="vitawende-crystal">
         <span className="vitawende-crystal-title">VitaMap</span>
         <span className="vitawende-crystal-sub">{t.crystalSub}</span>
       </Link>
