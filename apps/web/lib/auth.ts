@@ -12,6 +12,7 @@
 import path from "node:path";
 import fs from "node:fs";
 import { betterAuth } from "better-auth";
+import { nextCookies } from "better-auth/next-js";
 import Database from "better-sqlite3";
 import { getEnv } from "./env";
 
@@ -61,6 +62,9 @@ function buildAuth() {
       // cookies son Secure automáticamente al detectar baseURL https.
       useSecureCookies: env.NODE_ENV === "production",
     },
+    // Necesario para que los Server Actions de Next.js puedan escribir
+    // la cookie de sesión al navegador vía next/headers cookies().
+    plugins: [nextCookies()],
   });
 }
 
