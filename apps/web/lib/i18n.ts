@@ -104,6 +104,14 @@ export const copy = {
       inline:
         "Información educativa. No constituye diagnóstico ni recomendación clínica. Consulta con un profesional sanitario.",
     },
+    vitawende: {
+      crystalSub: "Memoria · Evidencia · Preguntas",
+      nav: {
+        semilla: "La semilla",
+        manifiesto: "Manifiesto",
+        centros: "Los centros",
+      },
+    },
     guide: {
       title: "¿Por dónde empiezo?",
       intro:
@@ -254,6 +262,14 @@ export const copy = {
         "VitaMap ist ein pädagogisches Werkzeug. Es stellt keine Diagnosen und gibt keine Behandlungsempfehlungen. Es ersetzt keine Beratung durch qualifiziertes medizinisches Fachpersonal.",
       inline:
         "Pädagogische Information. Keine Diagnose und keine klinische Empfehlung. Bitte sprich mit medizinischem Fachpersonal.",
+    },
+    vitawende: {
+      crystalSub: "Gedächtnis · Evidenz · Fragen",
+      nav: {
+        semilla: "Der Samen",
+        manifiesto: "Manifest",
+        centros: "Die Zentren",
+      },
     },
     guide: {
       title: "Wo fange ich an?",
