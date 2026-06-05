@@ -67,9 +67,27 @@ function buildAuth() {
 type AuthInstance = ReturnType<typeof buildAuth>;
 
 let _auth: AuthInstance | null = null;
+let _ready: Promise<AuthInstance> | null = null;
 
 export function getAuth(): AuthInstance {
   if (_auth) return _auth;
   _auth = buildAuth();
+  // Ejecutar migraciones la primera vez — crea las tablas de BetterAuth
+  // si no existen. Es idempotente y rápido en SQLite.
+  if (!_ready) {
+    _ready = _auth.$context
+      .then((ctx) => ctx.runMigrations())
+      .then(() => _auth!)
+      .catch((err) => {
+        console.error("[auth] runMigrations failed:", err);
+        return _auth!;
+      });
+  }
   return _auth;
+}
+
+/** Espera a que las migraciones hayan terminado antes de operar. */
+export async function getAuthReady(): Promise<AuthInstance> {
+  getAuth();
+  return _ready!;
 }

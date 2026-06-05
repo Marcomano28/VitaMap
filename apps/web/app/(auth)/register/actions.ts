@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { APIError } from "better-auth/api";
-import { getAuth } from "@/lib/auth";
+import { getAuthReady } from "@/lib/auth";
 import { logAuditEventSafe } from "@/lib/audit";
 import { CONSENT_VERSION } from "@/lib/consent";
 
@@ -31,7 +31,8 @@ export async function registerAction(formData: FormData) {
   // Alta + auto-signin.
   let userId: string | undefined;
   try {
-    const result = await getAuth().api.signUpEmail({
+    const auth = await getAuthReady();
+    const result = await auth.api.signUpEmail({
       body: { email, password, name: email.split("@")[0] },
       headers: await headers(),
       asResponse: false,
