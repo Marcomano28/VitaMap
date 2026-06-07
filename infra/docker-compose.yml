@@ -14,6 +14,9 @@ services:
       - "80:80"
       - "443:443"
       - "443:443/udp"
+    environment:
+      PUBLIC_DOMAIN: ${PUBLIC_DOMAIN:?PUBLIC_DOMAIN required}
+      CADDY_EMAIL: ${CADDY_EMAIL:-admin@vitamap.local}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
@@ -44,8 +47,11 @@ services:
       BETTER_AUTH_URL: ${PUBLIC_URL:?PUBLIC_URL required}
       NEXT_PUBLIC_APP_URL: ${PUBLIC_URL}
       NODE_ENV: production
-      # QMD descarga modelos GGUF aquí en primer arranque.
       XDG_CACHE_HOME: /data/.cache
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+      STRIPE_PRICE_ID: ${STRIPE_PRICE_ID}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
     volumes:
       - vitamap_data:/data
     networks:
