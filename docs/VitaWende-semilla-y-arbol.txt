@@ -88,6 +88,125 @@ argumento viviente contra la medicina exclusivamente reactiva. No necesita
 convencer a nadie. Simplemente existe, y su existencia redefine lo que es
 razonable esperar.
 
+Pero el trigo sarraceno ofrece aquí otro matiz. No necesita vencer al cultivo
+dominante en su propio terreno. Puede crecer deprisa en suelos modestos, ocupar
+periodos breves y cubrir espacios que otros cultivos dejan sin atender.
+VitaWende tampoco empieza intentando sustituir al hospital ni disputar su
+capacidad para tratar lo agudo. Ocupa el intervalo que queda entre una consulta
+y la siguiente, entre un análisis aislado y la historia completa, entre no
+estar enfermo y conocer realmente el propio estado. Resuelve un problema
+distinto. Su valor no se declara contra el sistema existente: se demuestra en
+los resultados de las personas que recuperan continuidad, contexto y capacidad
+de participar.
+
+La obsolescencia de la que aquí se habla no es la del hospital como lugar de
+urgencia, cirugía o tratamiento. Es la de una expectativa más estrecha: que
+la salud solo pueda conocerse mediante episodios aislados y desde una única
+mirada profesional.
+
+────────────────────────────────────────────────
+
+LA FECUNDIDAD DEL ENCUENTRO
+
+El trigo sarraceno común tiene otra propiedad menos visible que la forma de
+su semilla. Sus flores presentan heterostilia: unas tienen el estilo largo y
+los estambres cortos; otras, el estilo corto y los estambres largos. La planta
+es autoincompatible. Para producir semilla necesita que dos formas diferentes
+y compatibles se encuentren mediante la polinización.
+
+La imagen importa porque contiene una regla para VitaWende: el conocimiento de
+la salud tampoco debe fecundarse a sí mismo dentro de una sola estructura. No
+surge por completo de una analítica, de una consulta, de una aplicación, de una
+tradición médica ni de la percepción individual tomadas por separado. Necesita
+el encuentro entre fuentes que ocupan posiciones distintas:
+
+  los datos clínicos,
+  los hábitos de vida,
+  el entorno natural y social,
+  el seguimiento longitudinal,
+  la evidencia disponible,
+  y la participación activa del ciudadano.
+
+Ninguna de esas fuentes sustituye a las demás. Los datos clínicos aportan
+precisión, pero sin tiempo pueden ser una fotografía sin argumento. Los hábitos
+y el entorno aportan contexto, pero sin medición pueden quedar en intuición.
+El seguimiento descubre patrones, pero necesita que la persona observe,
+pregunte y decida qué significa lo registrado. La participación ciudadana da
+dirección al conjunto, pero necesita profesionales, instrumentos y evidencia
+para no encerrarse en sus propias certezas.
+
+El hospital tradicional está diseñado, con razón, alrededor de una necesidad
+concreta: un profesional observa, diagnostica y actúa ante un problema. El
+modelo que VitaWende explora comienza antes y continúa después. Es más parecido
+a la heterostilia: la salud emerge del encuentro sostenido entre persona,
+datos, profesionales, tiempo y naturaleza. No es un acto médico aislado. Es
+una relación continua entre sistemas distintos que solo producen conocimiento
+pleno cuando se complementan.
+
+La heterostilia protege también contra una tentación del proyecto: creer que
+VitaMap podría bastarse a sí misma. No puede. Es una de las formas de la flor,
+no la floración entera. Su tarea es conservar memoria, relacionar fuentes y
+preparar mejores preguntas para que el encuentro con las otras formas sea más
+fértil.
+
+────────────────────────────────────────────────
+
+UNA CONVERSACIÓN QUE VIENE DE LEJOS
+
+VitaWende no nace de una doctrina única ni reclama para sí una genealogía
+cerrada. Entra en una conversación antigua sobre qué significa cuidar la
+salud antes de que la enfermedad ocupe todo el campo visible.
+
+La tradición hipocrática entendió la salud como un equilibrio dinámico entre
+la constitución de una persona, sus hábitos, su alimentación, el clima y el
+lugar en que vive. Una frase comúnmente atribuida a Hipócrates — aunque no
+aparece de forma verificable en el corpus conservado — resume bien esa
+orientación: importa conocer a la persona que tiene la enfermedad, no solo
+conocer la enfermedad que tiene. VitaWende recoge de esa tradición la atención
+al contexto, no su teoría antigua de los humores.
+
+Ivan Illich advirtió sobre el peligro de una sociedad que transforma la salud
+en algo que solo puede ser administrado y entregado por instituciones. Su
+crítica no obliga a rechazar la medicina moderna. Obliga a preguntar por sus
+límites: cuándo una intervención amplía la capacidad humana y cuándo termina
+reemplazando la autonomía, la responsabilidad y la capacidad de afrontar la
+vida. VitaWende toma esa pregunta, pero no su versión más extrema: necesita
+hospitales competentes y, al mismo tiempo, ciudadanos que no hayan sido
+expulsados del conocimiento de su propio cuerpo.
+
+Michel Foucault mostró que la clínica moderna no fue solo un conjunto de
+descubrimientos, sino una nueva organización de la mirada. El hospital permitió
+observar, comparar y hacer visible la enfermedad con una precisión inédita.
+Ese logro también concentró la atención en lo que podía localizarse en el
+cuerpo enfermo y ser interpretado por el experto. VitaWende no quiere abolir
+esa mirada. Quiere colocar a su lado otra: la mirada longitudinal de la persona
+que vive en ese cuerpo cuando todavía no hay una lesión, una urgencia o un
+diagnóstico que organice toda la historia.
+
+Estos precedentes no forman una autoridad doctrinal. Funcionan como tres
+advertencias complementarias:
+
+  no separar la enfermedad de la persona y su entorno,
+  no convertir la salud en una capacidad exclusivamente institucional,
+  y no confundir lo clínicamente visible con la totalidad de una vida.
+
+Desde esa conversación, VitaWende formula su propia frase:
+
+  "La mejor medicina es la que evita que la enfermedad
+   llegue a convertirse en destino."
+
+Y su orientación práctica puede expresarse así:
+
+  "No venimos a reparar cuerpos enfermos;
+   venimos a comprender cuerpos sanos
+   antes de que olviden cómo serlo."
+
+La segunda frase no niega la reparación cuando hace falta. Define el espacio
+propio del proyecto: antes de la urgencia, junto a la medicina y durante el
+tiempo largo en que una persona todavía puede observar, comprender y actuar.
+
+────────────────────────────────────────────────
+
 El árbol que crece de esta semilla tiene una estructura específica:
 
                     La sociedad alemana
@@ -170,5 +289,5 @@ Eso es suficiente para plantarla.
 
 ────────────────────────────────────────────────
 
-VitaWende · Documento fundacional · Versión 0.1
-Boceto inicial — sujeto a conversación.
+VitaWende · Documento fundacional · Versión 0.3
+Boceto ampliado — sujeto a conversación.

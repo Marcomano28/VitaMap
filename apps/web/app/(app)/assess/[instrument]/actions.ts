@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { writeAssessment } from "@/lib/memory";
 import { logAuditEventSafe } from "@/lib/audit";
 import { requireUserId } from "@/lib/session";
+import { getLocale } from "@/lib/locale";
 
 const INSTRUMENT_LEN: Record<string, number> = {
   "PHQ-9": 9,
@@ -13,6 +14,7 @@ const INSTRUMENT_LEN: Record<string, number> = {
 
 export async function saveAssessmentAction(formData: FormData) {
   const userId = await requireUserId();
+  const locale = await getLocale();
   const instrumentRaw = String(formData.get("instrument") ?? "");
   if (!(instrumentRaw in INSTRUMENT_LEN)) {
     throw new Error("instrumento desconocido");
@@ -36,13 +38,17 @@ export async function saveAssessmentAction(formData: FormData) {
     total += v;
   }
 
-  await writeAssessment(userId, {
-    instrument,
-    observedAt: observed_at,
-    score: total,
-    subscores,
-    notes,
-  });
+  await writeAssessment(
+    userId,
+    {
+      instrument,
+      observedAt: observed_at,
+      score: total,
+      subscores,
+      notes,
+    },
+    locale,
+  );
 
   await logAuditEventSafe({
     actor: userId,

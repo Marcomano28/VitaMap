@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "node:path";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -23,9 +24,12 @@ const nextConfig: NextConfig = {
   // En modo standalone Next.js incluye solo el workspace activo; le
   // indicamos la raíz del monorepo para que copie los node_modules
   // hoisteados correctamente.
-  // En dev no hay NEXT_OUTPUT_TRACING_ROOT; process.cwd() devuelve la raíz
-  // del monorepo cuando npm run dev se arranca desde ahí.
-  outputFileTracingRoot: process.env.NEXT_OUTPUT_TRACING_ROOT ?? process.cwd(),
+  // npm ejecuta el workspace con cwd=apps/web. Resolver dos niveles hacia
+  // arriba evita que el tracing deje una copia parcial de Next en el
+  // node_modules local del workspace y rompa el siguiente build.
+  outputFileTracingRoot:
+    process.env.NEXT_OUTPUT_TRACING_ROOT ??
+    path.resolve(process.cwd(), "..", ".."),
 };
 
 export default nextConfig;

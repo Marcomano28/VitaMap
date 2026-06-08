@@ -9,7 +9,10 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "seed-kb": "tsx scripts/seed-kb.ts"
+    "seed-kb": "tsx scripts/seed-kb.ts",
+    "invite": "tsx scripts/manage-invitations.ts",
+    "test:invitations": "tsx scripts/test-invitations.ts",
+    "test:billing": "tsx scripts/test-billing.ts"
   },
   "dependencies": {
     "@tobilu/qmd": "^2.0.1",

@@ -1,12 +1,38 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { requireUserId } from "@/lib/session";
 import { readMemoryItem } from "@/lib/memory-reader";
 import { MarkdownView } from "@/components/markdown-view";
 import { deleteMemoryItemAction } from "./actions";
+import { getLocale } from "@/lib/locale";
+import { localize } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Entrada de memoria" };
+
+const TEXT = {
+  es: {
+    metadata: "Entrada de memoria",
+    back: "← Volver a la línea de tiempo",
+    imageInfo:
+      "Imagen descifrada en el servidor solo para esta vista. El archivo en disco sigue cifrado.",
+    frontmatter: "Ver frontmatter en bruto",
+    delete: "Borrar esta entrada (también borra del índice QMD)",
+  },
+  de: {
+    metadata: "Speichereintrag",
+    back: "← Zurück zur Zeitlinie",
+    imageInfo:
+      "Das Bild wird nur für diese Ansicht auf dem Server entschlüsselt. Die Datei auf dem Datenträger bleibt verschlüsselt.",
+    frontmatter: "Rohes Frontmatter anzeigen",
+    delete: "Diesen Eintrag löschen (auch aus dem QMD-Index)",
+  },
+} as const;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return { title: localize(locale, TEXT).metadata };
+}
 
 interface PageProps {
   params: Promise<{ slug: string[] }>;
@@ -18,6 +44,8 @@ export default async function MemoryViewPage({ params }: PageProps) {
   const relPath = slug.map(decodeURIComponent).join("/");
   const item = await readMemoryItem(userId, relPath);
   if (!item) notFound();
+  const locale = await getLocale();
+  const t = localize(locale, TEXT);
 
   const fm = item.frontmatter;
   const type = typeof fm.type === "string" ? fm.type : "unknown";
@@ -30,7 +58,7 @@ export default async function MemoryViewPage({ params }: PageProps) {
     <div className="space-y-6">
       <div className="space-y-1">
         <Link href="/memory/timeline" className="text-xs text-[var(--color-muted)] hover:underline">
-          ← Volver a la línea de tiempo
+          {t.back}
         </Link>
         <h1 className="text-2xl font-semibold">{title}</h1>
         <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--color-muted)]">
@@ -59,8 +87,7 @@ export default async function MemoryViewPage({ params }: PageProps) {
             className="block w-full max-h-[70vh] object-contain bg-[var(--color-card)]"
           />
           <p className="text-xs text-[var(--color-muted)] p-2 border-t border-[var(--color-border)]">
-            Imagen descifrada en el servidor solo para esta vista. El
-            archivo en disco sigue cifrado.
+            {t.imageInfo}
           </p>
         </section>
       )}
@@ -71,7 +98,7 @@ export default async function MemoryViewPage({ params }: PageProps) {
 
       <details className="text-xs">
         <summary className="cursor-pointer text-[var(--color-muted)] hover:underline">
-          Ver frontmatter en bruto
+          {t.frontmatter}
         </summary>
         <pre className="mt-2 rounded bg-[var(--color-card)] p-3 overflow-x-auto">
 {JSON.stringify(fm, null, 2)}
@@ -84,7 +111,7 @@ export default async function MemoryViewPage({ params }: PageProps) {
           type="submit"
           className="text-sm text-red-700 dark:text-red-400 hover:underline"
         >
-          Borrar esta entrada (también borra del índice QMD)
+          {t.delete}
         </button>
       </form>
     </div>

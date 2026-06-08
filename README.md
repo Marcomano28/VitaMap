@@ -89,15 +89,54 @@ cd infra && docker compose --env-file .env up -d --build
 
 ## Acceso y registro
 
-El piloto es **invite-only**. No se publica el sitio. Tú compartes la URL
-con los voluntarios que has invitado, ellos se registran en `/register`
-introduciendo email + contraseña y aceptando los dos reconocimientos
-obligatorios (carácter educativo + consentimiento Art. 9.2.a RGPD).
+El piloto es **invite-only** y requiere una suscripción activa. Los tres
+primeros usuarios aportan **6 €/mes cada uno** para cubrir el VPS compartido
+de 16,65 €/mes, las comisiones y costes operativos menores. La cuota podrá
+reducirse por etapas al crecer el grupo, después de revisar el uso y el coste
+real de infraestructura.
 
-Tras el registro el voluntario entra directamente a `/memory`. Cada
-acción significativa (login, escritura de memoria, subida de documento,
-chat, borrado de cuenta) queda registrada en `audit_event` con hash
-chain en `data/auth.sqlite`.
+El usuario invitado se registra en `/register` con email + contraseña y acepta
+los dos reconocimientos obligatorios (carácter educativo + consentimiento Art.
+9.2.a RGPD). Después completa Checkout en Stripe. El acceso funcional se
+activa únicamente cuando el webhook confirma una suscripción activa; volver
+desde Checkout no basta para conceder acceso.
+
+Las invitaciones se generan desde un entorno administrativo con acceso a la
+misma `AUTH_DB_PATH` que la aplicación:
+
+```bash
+npm run invite -w @vitamap/web -- create persona@example.com --days 7
+npm run invite -w @vitamap/web -- list
+npm run invite -w @vitamap/web -- revoke <invitation-id>
+```
+
+Cada código está ligado a un email, caduca y solo permite una cuenta. VitaMap
+guarda su hash, no el código en claro. El código debe enviarse por un canal
+privado y no incluirse en URLs. El endpoint directo de alta de BetterAuth
+también está bloqueado: solo la acción interna que validó la invitación puede
+crear el usuario.
+
+En el VPS, el comando accede al volumen de producción mediante el servicio
+administrativo de uso puntual:
+
+```bash
+cd infra
+docker compose --env-file .env --profile tools run --rm admin \
+  create persona@example.com --days 7
+```
+
+Antes de abrir el piloto real se aplicará el control de suscripción en servidor:
+sin pago confirmado permanecerán accesibles billing, ajustes, exportación y
+borrado de cuenta, mientras chat, memoria, documentos y assessments quedarán
+bloqueados. El webhook y el estado de billing ya están implementados; el
+control de acceso todavía figura como tarea P0. Cada acción significativa queda
+registrada en `audit_event` con hash chain en `data/auth.sqlite`.
+
+La apertura a datos de salud reales está condicionada por la
+[guía legal y técnica del piloto en Alemania](docs/GUIA-LEGAL-PILOTO-ALEMANIA.md).
+La guía separa las funciones educativas de las que requieren revisión de
+protección de datos o de producto sanitario y define las evidencias necesarias
+antes del primer usuario real.
 
 El borrado de cuenta desde `/settings` purga `data/users/<id>/` por
 completo (memoria + documentos cifrados + índice QMD) y elimina al
@@ -111,11 +150,13 @@ cumplimiento del derecho al olvido.
    con tipo y nivel de evidencia, streaming token-a-token.
 2. **Visor de memoria** — línea de tiempo, filtros por categoría,
    visor de imágenes con descifrado en cliente.
-3. **MFA TOTP opcional** — plugin BetterAuth, activable desde `/settings`.
+3. **MFA antes del piloto real** — TOTP o passkey con recuperación probada,
+   obligatorio antes de custodiar datos de salud de terceros.
 4. **Exportación ZIP de la memoria** — `/settings` con botón de
    portabilidad (Art. 20 RGPD).
-5. **DPIA formal** — antes de admitir el primer voluntario real, tener
-   el documento firmado.
+5. **Expediente legal del piloto** — DSFA/DPIA, registro Art. 30, análisis
+   MDR, contratos de proveedores y documentación de consumidores, según la
+   guía alemana.
 
 ## Licencia y aviso
 

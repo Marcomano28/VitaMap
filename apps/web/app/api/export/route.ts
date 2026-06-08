@@ -18,15 +18,24 @@ import path from "node:path";
 import fs from "node:fs";
 import { Readable } from "node:stream";
 import archiver from "archiver";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { requireUserIdFromRequest, UnauthorizedError } from "@/lib/session";
 import { getEnv } from "@/lib/env";
 import { logAuditEventSafe } from "@/lib/audit";
+import {
+  DEFAULT_LOCALE,
+  isLocale,
+  LOCALE_COOKIE,
+  localize,
+  type Locale,
+} from "@/lib/i18n";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const README = `VitaMap — exportación de memoria
+function exportReadme(locale: Locale): string {
+  const template = localize(locale, {
+    es: `VitaMap — exportación de memoria
 ================================
 
 Este archivo contiene:
@@ -50,10 +59,39 @@ Para re-importar tu memoria en otra instancia de VitaMap, copia el
 contenido de memory/ y documents/ a data/users/<tu_id>/ y ejecuta el
 script de reindexado.
 
-Fecha de exportación: ${new Date().toISOString()}
-`;
+Fecha de exportación: __EXPORT_DATE__
+`,
+    de: `VitaMap — Export des persönlichen Speichers
+==========================================
 
-export async function GET(req: Request) {
+Dieses Archiv enthält:
+
+  memory/        Deine Beobachtungen, Laborbefunde, Fragebögen und
+                 Bilder als Markdown-Dateien (.md) mit YAML-Frontmatter.
+                 Es handelt sich um lesbaren Text, der mit jedem
+                 Texteditor geöffnet werden kann.
+
+  documents/     Die verschlüsselten ORIGINAL-PDFs und -Bilder im
+                 age-Format (https://age-encryption.org). Jede Datei
+                 trägt die Endung .age. Der Schlüssel ist aus
+                 Sicherheitsgründen nicht im Export enthalten. Wenn du
+                 außerhalb von VitaMap auf die Originale zugreifen
+                 möchtest, fordere beim Serverbetreiber den für dein
+                 Konto abgeleiteten Schlüssel an.
+
+  README.txt     Diese Datei.
+
+Zur Übernahme in eine andere VitaMap-Instanz kopierst du memory/ und
+documents/ nach data/users/<deine_id>/ und startest anschließend die
+Neuindexierung.
+
+Exportdatum: __EXPORT_DATE__
+`,
+  });
+  return template.replace("__EXPORT_DATE__", new Date().toISOString());
+}
+
+export async function GET(req: NextRequest) {
   // -- Auth -------------------------------------------------------------
   let userId: string;
   try {
@@ -64,6 +102,8 @@ export async function GET(req: Request) {
     }
     throw err;
   }
+  const rawLocale = req.cookies.get(LOCALE_COOKIE)?.value;
+  const locale = rawLocale && isLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
 
   const userRoot = path.join(getEnv().DATA_ROOT, "users", userId);
   const memoryDir = path.join(userRoot, "memory");
@@ -76,7 +116,7 @@ export async function GET(req: Request) {
 
   if (fs.existsSync(memoryDir)) archive.directory(memoryDir, "memory");
   if (fs.existsSync(documentsDir)) archive.directory(documentsDir, "documents");
-  archive.append(README, { name: "README.txt" });
+  archive.append(exportReadme(locale), { name: "README.txt" });
   archive.finalize();
 
   await logAuditEventSafe({

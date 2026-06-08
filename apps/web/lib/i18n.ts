@@ -1,10 +1,22 @@
 export const LOCALES = ["es", "de"] as const;
 export type Locale = (typeof LOCALES)[number];
 
+export const DEFAULT_LOCALE: Locale = "de";
 export const LOCALE_COOKIE = "vitamap_locale";
 
 export function isLocale(value: string): value is Locale {
   return (LOCALES as readonly string[]).includes(value);
+}
+
+export function localeTag(locale: Locale): "es-ES" | "de-DE" {
+  return locale === "de" ? "de-DE" : "es-ES";
+}
+
+export function localize<T extends Record<Locale, unknown>>(
+  locale: Locale,
+  values: T,
+): T[Locale] {
+  return values[locale];
 }
 
 export const copy = {
@@ -96,6 +108,8 @@ export const copy = {
       blocked: "respuesta bloqueada por el guardrail",
       rewritten: "respuesta reescrita en estilo socrático por el guardrail",
       sources: "Fuentes consultadas",
+      requestFailed:
+        "No se pudo obtener una respuesta. Inténtalo de nuevo en unos segundos.",
     },
     disclaimer: {
       label: "Aviso:",
@@ -255,6 +269,8 @@ export const copy = {
       blocked: "Antwort durch Guardrail blockiert",
       rewritten: "Antwort durch Guardrail in sokratischem Stil umgeschrieben",
       sources: "Genutzte Quellen",
+      requestFailed:
+        "Es konnte keine Antwort geladen werden. Bitte versuche es in einigen Sekunden erneut.",
     },
     disclaimer: {
       label: "Hinweis:",

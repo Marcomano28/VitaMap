@@ -1,25 +1,65 @@
 import { createImageObservationAction } from "./actions";
+import type { Metadata } from "next";
+import { getLocale } from "@/lib/locale";
+import { localize } from "@/lib/i18n";
 
-export const metadata = { title: "Nueva imagen" };
+const TEXT = {
+  es: {
+    title: "Nueva imagen",
+    intro:
+      "Se cifra al subirse. No se aplica análisis automático: solo se almacena y queda asociada a tu descripción.",
+    file: "Archivo (PNG / JPG / WEBP, máx. 10 MB)",
+    date: "Fecha",
+    category: "Categoría",
+    description: "Descripción",
+    descriptionPlaceholder: "Lo que ves o lo que motivó la foto. Sé concreto.",
+    tags: "Etiquetas (separadas por comas)",
+    save: "Guardar imagen",
+    categories: {
+      iridology: "Iridología",
+      "tongue-tcm": "Lengua (MTC)",
+      skin: "Piel",
+      wound: "Herida / lesión",
+      other: "Otro",
+    },
+  },
+  de: {
+    title: "Neues Bild",
+    intro:
+      "Das Bild wird beim Hochladen verschlüsselt. Es findet keine automatische Analyse statt; gespeichert werden nur das Bild und deine Beschreibung.",
+    file: "Datei (PNG / JPG / WEBP, max. 10 MB)",
+    date: "Datum",
+    category: "Kategorie",
+    description: "Beschreibung",
+    descriptionPlaceholder: "Was ist zu sehen oder warum hast du das Foto aufgenommen?",
+    tags: "Schlagwörter (durch Kommas getrennt)",
+    save: "Bild speichern",
+    categories: {
+      iridology: "Iridologie",
+      "tongue-tcm": "Zunge (TCM)",
+      skin: "Haut",
+      wound: "Wunde / Verletzung",
+      other: "Sonstiges",
+    },
+  },
+} as const;
 
-const CATEGORIES = [
-  { value: "iridology", label: "Iridología" },
-  { value: "tongue-tcm", label: "Lengua (MTC)" },
-  { value: "skin", label: "Piel" },
-  { value: "wound", label: "Herida / lesión" },
-  { value: "other", label: "Otro" },
-];
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return { title: localize(locale, TEXT).title };
+}
 
-export default function NewImagePage() {
+export default async function NewImagePage() {
+  const locale = await getLocale();
+  const t = localize(locale, TEXT);
   const today = new Date().toISOString().slice(0, 10);
 
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <h1 className="text-2xl font-semibold">Nueva imagen</h1>
+        <h1 className="text-2xl font-semibold">{t.title}</h1>
         <p className="text-sm text-[var(--color-muted)]">
-          Cifrada al subirse. No se aplica análisis automático — solo se
-          almacena y queda asociada a tu descripción.
+          {t.intro}
         </p>
       </header>
 
@@ -28,7 +68,7 @@ export default function NewImagePage() {
         encType="multipart/form-data"
         className="space-y-4"
       >
-        <Field label="Archivo (PNG / JPG / WEBP, máx. 10 MB)">
+        <Field label={t.file}>
           <input
             type="file"
             name="file"
@@ -39,7 +79,7 @@ export default function NewImagePage() {
         </Field>
 
         <div className="grid sm:grid-cols-2 gap-4">
-          <Field label="Fecha">
+          <Field label={t.date}>
             <input
               type="date"
               name="observed_at"
@@ -48,28 +88,28 @@ export default function NewImagePage() {
               className={inputCls}
             />
           </Field>
-          <Field label="Categoría">
+          <Field label={t.category}>
             <select name="category" defaultValue="iridology" className={inputCls}>
-              {CATEGORIES.map((c) => (
-                <option key={c.value} value={c.value}>
-                  {c.label}
+              {Object.entries(t.categories).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
                 </option>
               ))}
             </select>
           </Field>
         </div>
 
-        <Field label="Descripción">
+        <Field label={t.description}>
           <textarea
             name="description"
             rows={6}
             required
-            placeholder="Lo que ves o lo que motivó la foto. Sé concreto."
+            placeholder={t.descriptionPlaceholder}
             className={inputCls}
           />
         </Field>
 
-        <Field label="Etiquetas (separadas por comas)">
+        <Field label={t.tags}>
           <input type="text" name="tags" className={inputCls} />
         </Field>
 
@@ -77,7 +117,7 @@ export default function NewImagePage() {
           type="submit"
           className="rounded-md bg-[var(--color-foreground)] text-[var(--color-background)] px-4 py-2 text-sm font-medium hover:opacity-90"
         >
-          Guardar imagen
+          {t.save}
         </button>
       </form>
     </div>

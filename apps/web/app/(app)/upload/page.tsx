@@ -1,22 +1,61 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { listInbox } from "@/lib/inbox";
 import { UploadDropzone } from "@/components/upload-dropzone";
 import { InboxAutoRefresh } from "@/components/inbox-auto-refresh";
 import { discardInboxItemAction, retryInboxExtractionAction } from "./actions";
 import { requireUserId } from "@/lib/session";
+import { getLocale } from "@/lib/locale";
+import { localeTag, localize } from "@/lib/i18n";
 
-export const metadata = { title: "Subir documentos" };
 export const dynamic = "force-dynamic";
 
-const STATUS_LABEL: Record<string, string> = {
-  pending: "En cola",
-  extracting: "Extrayendo",
-  extracted: "Listo para revisar",
-  failed: "Error",
-};
+const TEXT = {
+  es: {
+    title: "Subir documentos",
+    intro:
+      "Sube analíticas, informes o imágenes. El archivo se cifra al recibirse. Tras OCR y extracción, podrás revisar los valores antes de añadirlos a tu memoria.",
+    inbox: "Buzón",
+    empty: "Aún no hay documentos pendientes.",
+    help: "¿No sabes qué subir?",
+    statuses: {
+      pending: "En cola",
+      extracting: "Extrayendo",
+      extracted: "Listo para revisar",
+      failed: "Error",
+    },
+    review: "Revisar",
+    retry: "Reintentar",
+    discard: "Descartar",
+  },
+  de: {
+    title: "Dokumente hochladen",
+    intro:
+      "Lade Laborbefunde, Berichte oder Bilder hoch. Die Datei wird beim Eingang verschlüsselt. Nach OCR und Extraktion kannst du die Werte prüfen, bevor sie in deinen Speicher übernommen werden.",
+    inbox: "Eingang",
+    empty: "Es sind noch keine Dokumente in Bearbeitung.",
+    help: "Du weißt nicht, was du hochladen sollst?",
+    statuses: {
+      pending: "In Warteschlange",
+      extracting: "Wird extrahiert",
+      extracted: "Bereit zur Prüfung",
+      failed: "Fehler",
+    },
+    review: "Prüfen",
+    retry: "Erneut versuchen",
+    discard: "Verwerfen",
+  },
+} as const;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return { title: localize(locale, TEXT).title };
+}
 
 export default async function UploadPage() {
   const userId = await requireUserId();
+  const locale = await getLocale();
+  const t = localize(locale, TEXT);
   const inbox = await listInbox(userId);
   const hasActiveJobs = inbox.some((it) => it.status === "pending" || it.status === "extracting");
 
@@ -24,25 +63,23 @@ export default async function UploadPage() {
     <div className="space-y-8">
       <InboxAutoRefresh enabled={hasActiveJobs} />
       <header className="space-y-2">
-        <h1 className="text-2xl font-semibold">Subir documentos</h1>
+        <h1 className="text-2xl font-semibold">{t.title}</h1>
         <p className="text-sm text-[var(--color-muted)]">
-          Sube analíticas, informes o imágenes. El archivo se cifra al
-          recibirse. Tras OCR + extracción, podrás revisar los valores
-          antes de añadirlos a tu memoria.
+          {t.intro}
         </p>
       </header>
 
       <section>
-        <UploadDropzone defaultCategory="lab" />
+        <UploadDropzone defaultCategory="lab" locale={locale} />
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-medium">Buzón ({inbox.length})</h2>
+        <h2 className="font-medium">{t.inbox} ({inbox.length})</h2>
         {inbox.length === 0 ? (
           <p className="text-sm text-[var(--color-muted)]">
-            Aún no hay documentos pendientes.{" "}
+            {t.empty}{" "}
             <Link href="/guide" className="underline hover:text-[var(--color-foreground)]">
-              ¿No sabes qué subir?
+              {t.help}
             </Link>
           </p>
         ) : (
@@ -54,7 +91,7 @@ export default async function UploadPage() {
                     {it.originalName}
                   </p>
                   <p className="text-xs text-[var(--color-muted)]">
-                    {it.category} · {new Date(it.uploadedAt).toLocaleString()} ·{" "}
+                    {it.category} · {new Date(it.uploadedAt).toLocaleString(localeTag(locale))} ·{" "}
                     {(it.size / 1024).toFixed(0)} KB
                     {it.error ? ` · ${it.error.slice(0, 80)}` : ""}
                   </p>
@@ -70,14 +107,14 @@ export default async function UploadPage() {
                           : "bg-[var(--color-card)] text-[var(--color-muted)]"
                   }`}
                 >
-                  {STATUS_LABEL[it.status] ?? it.status}
+                  {t.statuses[it.status as keyof typeof t.statuses] ?? it.status}
                 </span>
                 {it.status === "extracted" && (
                   <Link
                     href={`/inbox/${it.id}`}
                     className="text-sm rounded-md border border-[var(--color-border)] px-3 py-1 hover:bg-[var(--color-card)]"
                   >
-                    Revisar
+                    {t.review}
                   </Link>
                 )}
                 {it.status === "failed" && (
@@ -87,7 +124,7 @@ export default async function UploadPage() {
                       type="submit"
                       className="text-sm rounded-md border border-[var(--color-border)] px-3 py-1 hover:bg-[var(--color-card)]"
                     >
-                      Reintentar
+                      {t.retry}
                     </button>
                   </form>
                 )}
@@ -96,9 +133,9 @@ export default async function UploadPage() {
                   <button
                     type="submit"
                     className="text-xs text-red-700 dark:text-red-400 hover:underline"
-                    aria-label="Descartar"
+                    aria-label={t.discard}
                   >
-                    Descartar
+                    {t.discard}
                   </button>
                 </form>
               </li>

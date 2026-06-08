@@ -8,6 +8,7 @@
  */
 
 import { chat, GUARDRAIL_CLASSIFIER_PROMPT } from "./llm";
+import type { Locale } from "./i18n";
 
 export type GuardrailVerdict = "safe" | "rewrite" | "block";
 
@@ -78,12 +79,15 @@ export async function checkResponse(text: string): Promise<GuardrailDecision> {
   return { verdict, flags };
 }
 
-const REWRITE_PROMPT = `Reescribe el siguiente texto en estilo socrático y observacional. No emitas diagnósticos. No recomiendes tratamientos. Convierte afirmaciones clínicas directas en preguntas o en observaciones acompañadas de su nivel de evidencia citado. Mantén las etiquetas <source>...</source> que ya aparezcan. Responde solo con el texto reescrito.`;
+const REWRITE_PROMPT: Record<Locale, string> = {
+  es: `Reescribe el siguiente texto en español, con un estilo socrático y observacional. No emitas diagnósticos. No recomiendes tratamientos. Convierte afirmaciones clínicas directas en preguntas o en observaciones acompañadas de su nivel de evidencia citado. Mantén las etiquetas <source>...</source> que ya aparezcan. Responde solo con el texto reescrito.`,
+  de: `Formuliere den folgenden Text auf Deutsch in einem sokratischen, beobachtenden Stil neu. Stelle keine Diagnosen und empfehle keine Behandlungen. Verwandle direkte klinische Aussagen in Fragen oder Beobachtungen mit dem angegebenen Evidenzniveau. Behalte vorhandene <source>...</source>-Tags bei. Antworte ausschließlich mit dem neu formulierten Text.`,
+};
 
-export async function rewriteSocratic(text: string): Promise<string> {
+export async function rewriteSocratic(text: string, locale: Locale): Promise<string> {
   return chat({
     messages: [
-      { role: "system", content: REWRITE_PROMPT },
+      { role: "system", content: REWRITE_PROMPT[locale] },
       { role: "user", content: text },
     ],
     temperature: 0.3,

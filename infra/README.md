@@ -117,6 +117,24 @@ docker compose --env-file .env exec backup restic check
 docker compose --env-file .env exec web npx tsx apps/web/scripts/seed-kb.ts -- --force
 ```
 
+### Gestionar invitaciones
+
+El registro está cerrado por servidor. Para crear un código nominativo,
+caducable y de un solo uso contra la base de producción:
+
+```bash
+docker compose --env-file .env --profile tools run --rm admin \
+  create persona@example.com --days 7
+
+docker compose --env-file .env --profile tools run --rm admin list
+
+docker compose --env-file .env --profile tools run --rm admin \
+  revoke <invitation-id>
+```
+
+El código solo aparece al crearlo. Se envía por un canal privado y no se añade
+a URLs, tickets ni logs.
+
 ## Notas operativas
 
 El servicio `llm` corre llama.cpp en CPU con Qwen3-4B Q4_K_M. En una VPS

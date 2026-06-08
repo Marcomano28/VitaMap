@@ -98,7 +98,11 @@ la medicina convencional con ninguna otra cosa.
 
 No es un partido ni tiene posición sobre ningún tema que no sea este.
 
-No es una empresa que vende salud ni un servicio de suscripción.
+No es una empresa que vende salud. VitaWende, como dimensión cívica, no se
+vende ni depende de una suscripción. VitaMap sí puede cobrar una cuota
+transparente de acceso para compartir el coste de su infraestructura privada;
+esa cuota no compra diagnósticos, tratamientos ni influencia sobre las
+respuestas del sistema.
 
 No tiene la respuesta a todo. Tiene una pregunta concreta: ¿por qué
 el Estado alemán financia el tratamiento de enfermedades que podrían

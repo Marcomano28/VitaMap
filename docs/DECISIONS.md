@@ -5,6 +5,93 @@ decisión; nunca se borran, solo se marcan como *superseded* si cambian.
 
 ---
 
+## ADR-012 · Registro cerrado mediante invitaciones nominativas
+**Estado:** aceptada · 2026-06-07
+
+**Contexto.** El piloto se limita inicialmente a tres personas. Ocultar o no
+publicar `/register` no impide que alguien use el formulario o llame
+directamente al endpoint de alta de BetterAuth.
+
+**Decisión.** Cada alta requiere un código administrativo:
+
+- ligado a un email normalizado;
+- generado con 192 bits aleatorios;
+- almacenado únicamente como hash SHA-256;
+- con caducidad de 1 a 90 días;
+- revocable y válido para una sola cuenta;
+- reservado durante el registro para impedir consumo concurrente.
+
+La invitación se consume antes de crear la cuenta. Si BetterAuth rechaza el
+alta, el mismo proceso puede reabrirla; si el proceso se interrumpe, queda
+cerrada antes que permitir una cuenta no autorizada.
+
+El endpoint `/api/auth/sign-up/email` exige además una cabecera interna firmada
+con `BETTER_AUTH_SECRET`. Solo la Server Action que validó la invitación añade
+esa autorización, por lo que llamar directamente a BetterAuth no evita el
+control.
+
+**Operación.** `npm run invite -w @vitamap/web -- create <email>` en local, o
+el servicio Docker de perfil `tools` en el VPS. El código se muestra una sola
+vez y se comparte por un canal privado, nunca dentro de una URL.
+
+**Consecuencias.**
+- La tabla `registration_invitation` comparte `auth.sqlite`.
+- Crear una invitación no crea todavía una cuenta ni concede acceso.
+- El alta continúa necesitando consentimiento y, después, pago confirmado.
+- Las pruebas cubren código incorrecto, email distinto, caducidad, revocación,
+  concurrencia, reintento, uso único y bypass directo de BetterAuth.
+
+---
+
+## ADR-011 · Cuota compartida de infraestructura con acceso por suscripción
+**Estado:** aceptada · 2026-06-07
+
+**Contexto.** VitaMap necesita un VPS europeo para mantener los datos y el
+modelo de IA dentro de la infraestructura controlada. En el piloto inicial,
+el VPS de 4 vCPU, 8 GB de RAM y 160 GB de disco cuesta 16,65 €/mes, antes de
+comisiones de pago y otros costes operativos menores. El proyecto comienza
+con tres usuarios reales y no busca obtener margen vendiendo diagnósticos o
+consejo médico.
+
+**Decisión.** El acceso al piloto es por invitación y requiere una
+suscripción activa de **6 €/mes por usuario**:
+
+```text
+3 usuarios x 6 €/mes = 18 €/mes
+```
+
+La cuota financia la infraestructura compartida que hace posible VitaMap.
+Stripe procesa la suscripción y transfiere los fondos a la cuenta operativa
+del proyecto. VitaMap sigue siendo una herramienta educativa: el pago no
+compra un diagnóstico, tratamiento, consulta médica ni una respuesta clínica
+determinada.
+
+**Evolución de la cuota.** A medida que aumente el número de usuarios activos
+de pago, la cuota podrá reducirse por etapas. El cambio no será automático:
+antes se revisarán el coste real del VPS, las comisiones, los backups, el uso
+de CPU y RAM y la necesidad de ampliar infraestructura. Cada cambio de precio
+se comunicará con antelación y se aplicará de forma transparente.
+
+**Umbral de revisión.** El VPS actual se considera adecuado para un piloto de
+hasta aproximadamente 12 usuarios con uso moderado y poca concurrencia. Al
+acercarse a ese número se revisarán las métricas reales. Llegar a 12 usuarios
+no obliga por sí solo a cambiar de servidor ni garantiza una bajada de cuota:
+la decisión depende de capacidad, latencia y coste de la siguiente categoría.
+
+**Consecuencias.**
+- Registro permitido solo mediante invitación válida.
+- Tras registrarse, el usuario debe completar Checkout y esperar la
+  confirmación del webhook de Stripe.
+- Sin suscripción activa no se habilitan chat, memoria, subida de documentos
+  ni assessments; billing, ajustes, exportación y borrado de cuenta siguen
+  disponibles.
+- Stripe es la fuente de verdad del estado de pago. La URL de retorno de
+  Checkout no activa por sí sola el acceso.
+- La página de suscripción debe explicar precio, periodicidad, renovación,
+  cancelación y finalidad de la cuota.
+
+---
+
 ## ADR-001 · QMD como motor RAG central
 **Estado:** aceptada · 2026-06-01
 

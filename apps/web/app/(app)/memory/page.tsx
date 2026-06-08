@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { copy } from "@/lib/i18n";
 import { getLocale } from "@/lib/locale";
+import type { Metadata } from "next";
 
-export const metadata = { title: "Mi memoria" };
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return { title: copy[locale].memory.title };
+}
 
 export default async function MemoryPage() {
   const locale = await getLocale();

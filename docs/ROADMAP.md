@@ -175,7 +175,10 @@ Objetivo: arquitectura completa funcionando end-to-end en tu portátil con QMD c
 
 **OCR**: **desactivado**. El voluntario introduce valores de analíticas en un formulario que genera markdown estructurado. La fricción manual valida si OCR es realmente necesario antes de invertir en pipeline.
 
-**Datos**: tu propia memoria + 1-2 personas de confianza con consentimiento explícito por mensaje. Sin DPIA formal todavía porque no es despliegue público.
+**Datos**: datos sinteticos, documentos ficticios y, de forma estrictamente
+privada, tu propia memoria. No se incorporan datos de salud de terceros en esta
+fase: que la persona sea de confianza o que el sitio no sea publico no elimina
+las obligaciones del piloto real.
 
 **Lo que validas en esta fase**:
 - Que el RAG dual de QMD cita correctamente cada fuente con su `evidence_level`.
@@ -234,7 +237,11 @@ Objetivo: 3 voluntarios reales con consentimiento informado y DPIA firmada, ejec
 
 **Modelo LLM principal**: Qwen3-4B-Instruct Q4_K_M, latencia ~15-25s por respuesta en 2 vCPU dedicadas. Para uso reflexivo (no chat rápido) es aceptable. Con 3 usuarios la concurrencia simultánea es prácticamente cero.
 
-**OCR**: opcional. Si lo activas, Tesseract 5 instalado en el contenedor `web` y llamado bajo demanda como subproceso desde Node cuando el voluntario sube un PDF. Tras OCR, una llamada al LLM extrae JSON estructurado contra un schema Zod, y el resultado se guarda como **markdown con frontmatter** en `users/<id>/memory/labs/`. El PDF original se cifra con age y se guarda en `documents/`. QMD reindexa automáticamente en el próximo `update`.
+**OCR**: disponible tecnicamente, pero desactivado para datos reales hasta que
+la DSFA y la evaluacion MDR aprueben la extraccion automatizada. Cuando se
+autorice, Tesseract 5 se llama bajo demanda desde el contenedor `web`; una
+llamada al LLM extrae JSON contra un schema Zod y el usuario revisa el resultado
+antes de guardarlo como markdown. El PDF original se cifra con age.
 
 **RAG dual con QMD desde Next.js**:
 
@@ -261,16 +268,36 @@ export async function queryMemoryAndKB(userId: string, query: string) {
 Los resultados se envuelven con `<source>` y se pasan al LLM principal con el system prompt Socrático.
 
 **GDPR — lo que firmas antes de admitir al primer voluntario**:
-- DPIA escrita (plantilla AEPD si aplica).
+- DSFA/DPIA escrita conforme al RGPD, la lista de la DSK y la autoridad
+  competente del Bundesland alemán.
 - Registro Art. 30.
 - Política de privacidad pública en el sitio.
 - Consentimiento Art. 9.2.a por escrito (email + checkbox + log en `audit_event`).
 - Procedimiento de borrado documentado: `DELETE FROM auth WHERE id = X` + `rm -rf /data/users/<id>/` + entrada en audit log. Probado al menos una vez antes del piloto.
 - Política de retención: por defecto datos vivos mientras dure el consentimiento, borrado a petición o tras revocación del consentimiento.
 
+La lista completa de puertas legales, asesoría necesaria y controles técnicos
+está en `docs/GUIA-LEGAL-PILOTO-ALEMANIA.md`. En particular, PHQ-9, GAD-7,
+clasificación de crisis e interpretación personalizada deben permanecer
+desactivados hasta cerrar por escrito su evaluación RGPD y MDR.
+
 **Cuello de botella esperado**: latencia del LLM principal. 15-25s por consulta. Si los voluntarios reportan que se siente "lento", el siguiente paso es Qwen3-7B en lugar de 4B (aún cabe en 8 GB con Q4) o saltar a Fase 2.
 
 **Coste total mensual estimado**: ~13 € VPS CCX13 + ~1 € backups B2 + ~1 € dominio prorrateado = **~15 €/mes**. Más barato que un Netflix.
+
+**Filosofía de pago del piloto**: el acceso es por invitación y requiere una
+suscripción activa. Los tres primeros usuarios pagan **6 €/mes cada uno**,
+aportando 18 €/mes para cubrir un VPS cuyo coste actual es 16,65 €/mes y
+absorber comisiones y costes operativos menores. La cuota financia
+infraestructura compartida; no compra diagnósticos, tratamientos ni consultas
+médicas.
+
+El precio puede bajar por etapas cuando aumente el número de usuarios activos
+de pago, pero nunca se recalcula automáticamente. Antes de cada cambio se
+revisan costes, comisiones, capacidad y métricas de uso, y se comunica la nueva
+cuota con antelación. El VPS actual (4 vCPU, 8 GB RAM, 160 GB de disco) puede
+servir aproximadamente hasta 12 usuarios de uso moderado. Al acercarse a ese
+umbral se decide con métricas reales si mantenerlo o subir de categoría.
 
 ---
 
@@ -382,6 +409,11 @@ Disparador: 20+ voluntarios activos semanalmente, latencia es la fricción princ
 | Monitorización | logs locales | Uptime Kuma self-hosted | + Grafana self-hosted | + alertas |
 | **Total mensual** | **0 €** | **~15 €** | **~135 €** | **~310 €** |
 
+La cuota por usuario no se deriva mecánicamente de esta tabla. Se fija por
+etapas para cubrir el coste real de la infraestructura compartida, incluyendo
+comisiones y margen operativo prudente, y se revisa al cambiar el número de
+usuarios o la categoría del servidor.
+
 ---
 
 ## Trampas a evitar — errores que cuestan caro después
@@ -418,7 +450,10 @@ Disparador: 20+ voluntarios activos semanalmente, latencia es la fricción princ
 6. Implementar el RAG dual en `/api/chat`: dos retrievals paralelos, wrapper `<source type>`, system prompt Socrático con obligación de citar `evidence_level`.
 7. Implementar el guardrail de segunda pasada (clasificador binario diagnóstico/no diagnóstico) como llamada al mismo LLM con prompt minimalista.
 8. Implementar `audit_event` append-only con hash chain en SQLite. Helper `logAuditEvent(actor, action, subjectId, payloadSummary)`.
-9. UI mínima: registro/login (BetterAuth), captura de observación libre que genera markdown con frontmatter en `users/<id>/memory/observations/`, formulario PHQ-9 y GAD-7 que genera markdown con scores, vista de respuestas IA con citas y disclaimer fijo en footer.
+9. UI mínima: registro/login (BetterAuth), captura de observación libre que
+   genera markdown con frontmatter y respuestas IA con citas y disclaimer fijo.
+   PHQ-9, GAD-7, crisis e interpretacion personalizada quedan detras de feature
+   flags desactivados hasta cerrar su evaluacion RGPD y MDR.
 10. Tras cada escritura de markdown, llamar a `store.update()` para reindexar el corpus del usuario afectado.
 11. Probar end-to-end con tus propios datos durante una semana antes de pasar a Fase 1.
 12. Decidir si Fase 1 arranca ya o si Fase 0 necesita iterar más (latencia, calidad de respuestas, ergonomía del flujo).

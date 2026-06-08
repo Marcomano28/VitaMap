@@ -20,6 +20,8 @@ export type AuditAction =
   | "auth.login"
   | "auth.logout"
   | "auth.register"
+  | "auth.invitation.used"
+  | "auth.invitation.failed"
   | "auth.consent.granted"
   | "auth.consent.revoked"
   | "memory.read"

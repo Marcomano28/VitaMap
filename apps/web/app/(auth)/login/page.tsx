@@ -1,7 +1,32 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import { getLocale } from "@/lib/locale";
+import { localize } from "@/lib/i18n";
 import { signInAction } from "./actions";
 
-export const metadata = { title: "Acceder" };
+const TEXT = {
+  es: {
+    title: "Acceder",
+    intro: "Introduce tu email y contraseña.",
+    noAccount: "¿Sin cuenta?",
+    requestAccess: "Solicita acceso al piloto",
+    password: "Contraseña",
+    submit: "Entrar",
+  },
+  de: {
+    title: "Anmelden",
+    intro: "Gib deine E-Mail-Adresse und dein Passwort ein.",
+    noAccount: "Noch kein Konto?",
+    requestAccess: "Zugang zum Piloten anfragen",
+    password: "Passwort",
+    submit: "Anmelden",
+  },
+} as const;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return { title: localize(locale, TEXT).title };
+}
 
 interface PageProps {
   searchParams: Promise<{ error?: string; next?: string }>;
@@ -9,15 +34,17 @@ interface PageProps {
 
 export default async function LoginPage({ searchParams }: PageProps) {
   const sp = await searchParams;
+  const locale = await getLocale();
+  const t = localize(locale, TEXT);
 
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <h1 className="text-2xl font-semibold">Acceder</h1>
+        <h1 className="text-2xl font-semibold">{t.title}</h1>
         <p className="text-sm text-[var(--color-muted)]">
-          Introduce tu email y contraseña. ¿Sin cuenta?{" "}
+          {t.intro} {t.noAccount}{" "}
           <Link href="/register" className="underline">
-            Solicita acceso al piloto
+            {t.requestAccess}
           </Link>
           .
         </p>
@@ -42,7 +69,7 @@ export default async function LoginPage({ searchParams }: PageProps) {
           />
         </Field>
 
-        <Field label="Contraseña">
+        <Field label={t.password}>
           <input
             type="password"
             name="password"
@@ -57,7 +84,7 @@ export default async function LoginPage({ searchParams }: PageProps) {
           type="submit"
           className="w-full rounded-md bg-[var(--color-foreground)] text-[var(--color-background)] px-4 py-2 text-sm font-medium hover:opacity-90"
         >
-          Entrar
+          {t.submit}
         </button>
       </form>
     </div>

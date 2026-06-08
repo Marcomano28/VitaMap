@@ -26,7 +26,7 @@ export function LanguageSwitcher({ locale }: { locale: Locale }) {
   return (
     <div
       className="inline-flex rounded-md border border-[var(--color-border)] overflow-hidden text-xs"
-      aria-label="Language"
+      aria-label={locale === "de" ? "Sprache" : "Idioma"}
     >
       {(["es", "de"] as const).map((l) => (
         <button
@@ -41,6 +41,7 @@ export function LanguageSwitcher({ locale }: { locale: Locale }) {
               : "text-[var(--color-muted)] hover:bg-[var(--color-card)]",
           ].join(" ")}
           aria-pressed={locale === l}
+          title={l === "de" ? "Deutsch" : "Español"}
         >
           {l.toUpperCase()}
         </button>

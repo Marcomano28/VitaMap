@@ -35,6 +35,14 @@ WORKDIR /repo/apps/web
 RUN npx next build
 
 
+# ---------- Target administrativo -----------------------------------
+# Imagen de uso puntual para crear/listar/revocar invitaciones contra el
+# mismo volumen /data de produccion. No se ejecuta como servicio permanente.
+FROM build AS admin
+WORKDIR /repo/apps/web
+ENTRYPOINT ["npx", "tsx", "scripts/manage-invitations.ts"]
+
+
 # ---------- Stage 3: runtime ----------------------------------------
 FROM node:22-bookworm-slim AS runtime
 WORKDIR /app
@@ -44,7 +52,7 @@ WORKDIR /app
 #   poppler-utils provee pdftoppm (rasterizar PDFs escaneados)
 # Documentado en docs/DECISIONS.md (ADR-008).
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      ca-certificates tini \
+      ca-certificates tini sqlite3 \
       tesseract-ocr tesseract-ocr-spa tesseract-ocr-eng \
       poppler-utils \
     && rm -rf /var/lib/apt/lists/*

@@ -12,6 +12,7 @@ import { LabResultExtraction, type LabMarker } from "@/lib/extraction";
 import { writeLabResult } from "@/lib/memory";
 import { logAuditEventSafe } from "@/lib/audit";
 import { requireUserId } from "@/lib/session";
+import { getLocale } from "@/lib/locale";
 
 /**
  * Lee de FormData los markers editados y construye el LabResultExtraction
@@ -50,6 +51,7 @@ function parseMarkersFromForm(fd: FormData): LabMarker[] {
 
 export async function commitInboxItemAction(formData: FormData) {
   const userId = await requireUserId();
+  const locale = await getLocale();
   const id = String(formData.get("id") ?? "");
   if (!id) throw new Error("missing id");
   const item = await getInboxItem(userId, id);
@@ -70,7 +72,7 @@ export async function commitInboxItemAction(formData: FormData) {
   // 1. Mover el cifrado a documents/.
   const finalPath = await promoteInboxOriginalToDocuments(userId, id);
   // 2. Escribir markdown estructurado en memory/labs/.
-  await writeLabResult(userId, data, finalPath);
+  await writeLabResult(userId, data, finalPath, locale);
 
   await logAuditEventSafe({
     actor: userId,

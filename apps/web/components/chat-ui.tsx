@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { MarkdownView } from "./markdown-view";
 import { CitationCard } from "./citation-card";
 import { InlineDisclaimer } from "./disclaimer";
-import { copy, type Locale } from "@/lib/i18n";
+import { copy, DEFAULT_LOCALE, type Locale } from "@/lib/i18n";
 
 interface Citation {
   source: "personal" | "evidence";
@@ -32,7 +32,7 @@ type Message = UserMessage | AssistantMessage;
 
 const HISTORY_FOR_LLM = 10; // últimos N mensajes que enviamos al LLM
 
-export function ChatUI({ locale = "es" }: { locale?: Locale }) {
+export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
   const t = copy[locale].chat;
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -59,6 +59,7 @@ export function ChatUI({ locale = "es" }: { locale?: Locale }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: text,
+          locale,
           history: nextHistory
             .slice(-HISTORY_FOR_LLM - 1, -1) // sin el actual
             .map((m) => ({ role: m.role, content: m.content })),
@@ -70,8 +71,7 @@ export function ChatUI({ locale = "es" }: { locale?: Locale }) {
           window.location.href = "/login?next=/chat";
           return;
         }
-        const txt = await res.text();
-        throw new Error(txt || `HTTP ${res.status}`);
+        throw new Error(t.requestFailed);
       }
       const json = (await res.json()) as {
         text: string;
@@ -88,7 +88,7 @@ export function ChatUI({ locale = "es" }: { locale?: Locale }) {
         },
       ]);
     } catch (err) {
-      setError(String(err).slice(0, 300));
+      setError(err instanceof Error && err.message === t.requestFailed ? err.message : t.requestFailed);
     } finally {
       setLoading(false);
     }
@@ -198,7 +198,7 @@ function AssistantBubble({
           </p>
           <div className="grid sm:grid-cols-2 gap-2">
             {m.citations.map((c, i) => (
-              <CitationCard key={i} c={c} />
+              <CitationCard key={i} c={c} locale={locale} />
             ))}
           </div>
         </div>

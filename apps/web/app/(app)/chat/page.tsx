@@ -2,9 +2,14 @@ import { ChatUI } from "@/components/chat-ui";
 import { copy } from "@/lib/i18n";
 import { getLocale } from "@/lib/locale";
 import { requireUserId } from "@/lib/session";
+import type { Metadata } from "next";
 
-export const metadata = { title: "Conversar" };
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return { title: copy[locale].chat.title };
+}
 
 export default async function ChatPage() {
   await requireUserId();

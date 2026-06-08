@@ -1,8 +1,51 @@
 import Link from "next/link";
-import { CONSENT_TEXT_ES, CONSENT_VERSION } from "@/lib/consent";
+import type { Metadata } from "next";
+import { CONSENT_VERSION, getConsentText } from "@/lib/consent";
+import { getLocale } from "@/lib/locale";
+import { localize } from "@/lib/i18n";
 import { registerAction } from "./actions";
 
-export const metadata = { title: "Solicitar acceso" };
+const TEXT = {
+  es: {
+    title: "Solicitar acceso al piloto",
+    intro:
+      "El piloto es cerrado. Necesitas una invitación personal y vigente. Lee el consentimiento y marca ambos reconocimientos para crear tu cuenta.",
+    existing: "¿Ya tienes una?",
+    login: "Acceder",
+    version: "Versión",
+    invitation: "Código de invitación",
+    password: "Contraseña (mín. 10)",
+    repeatPassword: "Repite la contraseña",
+    acknowledgements: "Reconocimientos obligatorios",
+    educational:
+      "Confirmo que VitaMap es una herramienta educativa, no un dispositivo médico, y que sus respuestas no constituyen consejo clínico.",
+    consent:
+      "Doy mi consentimiento explícito al tratamiento de mis datos de salud conforme al Art. 9.2.a RGPD, en los términos descritos arriba",
+    submit: "Validar invitación y crear cuenta",
+  },
+  de: {
+    title: "Zugang zum Piloten anfragen",
+    intro:
+      "Der Pilot ist geschlossen. Du benötigst eine persönliche, noch gültige Einladung. Lies die Einwilligung und bestätige beide Punkte, um dein Konto anzulegen.",
+    existing: "Du hast bereits ein Konto?",
+    login: "Anmelden",
+    version: "Version",
+    invitation: "Einladungscode",
+    password: "Passwort (mind. 10 Zeichen)",
+    repeatPassword: "Passwort wiederholen",
+    acknowledgements: "Erforderliche Bestätigungen",
+    educational:
+      "Ich bestätige, dass VitaMap ein pädagogisches Werkzeug und kein Medizinprodukt ist und dass seine Antworten keine medizinische Beratung darstellen.",
+    consent:
+      "Ich willige gemäß Art. 9 Abs. 2 lit. a DSGVO ausdrücklich in die Verarbeitung meiner Gesundheitsdaten zu den oben beschriebenen Bedingungen ein",
+    submit: "Einladung prüfen und Konto anlegen",
+  },
+} as const;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return { title: localize(locale, TEXT).title };
+}
 
 interface PageProps {
   searchParams: Promise<{ error?: string }>;
@@ -10,16 +53,17 @@ interface PageProps {
 
 export default async function RegisterPage({ searchParams }: PageProps) {
   const sp = await searchParams;
+  const locale = await getLocale();
+  const t = localize(locale, TEXT);
 
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <h1 className="text-2xl font-semibold">Solicitar acceso al piloto</h1>
+        <h1 className="text-2xl font-semibold">{t.title}</h1>
         <p className="text-sm text-[var(--color-muted)]">
-          Lee atentamente el documento de consentimiento. Marca ambos
-          reconocimientos para crear tu cuenta. ¿Ya tienes una?{" "}
+          {t.intro} {t.existing}{" "}
           <Link href="/login" className="underline">
-            Acceder
+            {t.login}
           </Link>
           .
         </p>
@@ -32,11 +76,22 @@ export default async function RegisterPage({ searchParams }: PageProps) {
       )}
 
       <section className="rounded-md border border-[var(--color-border)] bg-[var(--color-card)] p-4 max-h-72 overflow-auto text-sm whitespace-pre-wrap">
-        {CONSENT_TEXT_ES}
-        {"\n\nVersión: " + CONSENT_VERSION}
+        {getConsentText(locale)}
+        {"\n\n" + t.version + ": " + CONSENT_VERSION}
       </section>
 
       <form action={registerAction} className="space-y-4">
+        <Field label={t.invitation}>
+          <input
+            type="text"
+            name="invitation_code"
+            required
+            autoComplete="off"
+            spellCheck={false}
+            className={inputCls}
+          />
+        </Field>
+
         <Field label="Email">
           <input
             type="email"
@@ -48,7 +103,7 @@ export default async function RegisterPage({ searchParams }: PageProps) {
         </Field>
 
         <div className="grid sm:grid-cols-2 gap-4">
-          <Field label="Contraseña (mín. 10)">
+          <Field label={t.password}>
             <input
               type="password"
               name="password"
@@ -58,7 +113,7 @@ export default async function RegisterPage({ searchParams }: PageProps) {
               className={inputCls}
             />
           </Field>
-          <Field label="Repite la contraseña">
+          <Field label={t.repeatPassword}>
             <input
               type="password"
               name="password_repeat"
@@ -72,22 +127,18 @@ export default async function RegisterPage({ searchParams }: PageProps) {
 
         <fieldset className="space-y-2 rounded-md border border-[var(--color-border)] p-3">
           <legend className="px-1 text-xs uppercase tracking-wide text-[var(--color-muted)]">
-            Reconocimientos obligatorios
+            {t.acknowledgements}
           </legend>
           <label className="flex items-start gap-2 text-sm">
             <input type="checkbox" name="ack_educational" className="mt-1" required />
             <span>
-              Confirmo que VitaMap es una herramienta educativa, no un
-              dispositivo médico, y que sus respuestas no constituyen
-              consejo clínico.
+              {t.educational}
             </span>
           </label>
           <label className="flex items-start gap-2 text-sm">
             <input type="checkbox" name="ack_consent" className="mt-1" required />
             <span>
-              Doy mi consentimiento explícito al tratamiento de mis datos
-              de salud conforme al Art. 9.2.a RGPD, en los términos
-              descritos arriba (versión {CONSENT_VERSION}).
+              {t.consent} ({t.version.toLowerCase()} {CONSENT_VERSION}).
             </span>
           </label>
         </fieldset>
@@ -96,7 +147,7 @@ export default async function RegisterPage({ searchParams }: PageProps) {
           type="submit"
           className="w-full rounded-md bg-[var(--color-foreground)] text-[var(--color-background)] px-4 py-2 text-sm font-medium hover:opacity-90"
         >
-          Crear cuenta y entrar
+          {t.submit}
         </button>
       </form>
     </div>

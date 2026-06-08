@@ -10,12 +10,14 @@ import { encryptForUser } from "@/lib/crypto";
 import { getEnv } from "@/lib/env";
 import { logAuditEventSafe } from "@/lib/audit";
 import { requireUserId } from "@/lib/session";
+import { getLocale } from "@/lib/locale";
 
 const MAX_BYTES = 10 * 1024 * 1024;
 const ALLOWED_EXT = new Set([".png", ".jpg", ".jpeg", ".webp"]);
 
 export async function createImageObservationAction(formData: FormData) {
   const userId = await requireUserId();
+  const locale = await getLocale();
   const file = formData.get("file");
   if (!(file instanceof File)) throw new Error("missing file");
   if (file.size === 0) throw new Error("empty file");
@@ -45,13 +47,17 @@ export async function createImageObservationAction(formData: FormData) {
   const dst = path.join(dstDir, `${id}${ext}.age`);
   await fs.writeFile(dst, encrypted);
 
-  await writeImageObservation(userId, {
-    observedAt: observed_at,
-    category,
-    description,
-    encryptedPath: dst,
-    tags,
-  });
+  await writeImageObservation(
+    userId,
+    {
+      observedAt: observed_at,
+      category,
+      description,
+      encryptedPath: dst,
+      tags,
+    },
+    locale,
+  );
 
   await logAuditEventSafe({
     actor: userId,

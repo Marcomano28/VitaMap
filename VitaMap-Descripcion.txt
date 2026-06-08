@@ -276,6 +276,19 @@ viable operacionalmente.
 Coste mensual total: 15 euros de servidor, dominio, y backups cifrados
 externos. Menos que una suscripción de Netflix.
 
+El piloto funciona como una infraestructura compartida. Los tres primeros
+usuarios acceden por invitación y aportan 6 euros al mes cada uno mediante
+Stripe. Los 18 euros resultantes cubren el VPS, cuyo coste actual es de
+16,65 euros al mes, además de las comisiones y pequeños costes operativos.
+La cuota paga el acceso y la infraestructura que lo hace posible; no compra
+un diagnóstico, tratamiento ni consulta médica.
+
+Cuando aumenta el número de usuarios activos de pago, la cuota puede reducirse
+por etapas. No baja automáticamente con cada alta: antes se comprueba el coste
+real, el uso del servidor y si es necesario ampliar capacidad. Al acercarse a
+12 usuarios se revisan CPU, RAM, latencia y concurrencia para decidir si el VPS
+actual puede continuar o debe subir de categoría.
+
 
 FASE 2 — ESCALA INICIAL · ~135 EUROS/MES · MESES 4-8
 ----------------------------------------------------
@@ -315,9 +328,10 @@ Aparece la capa de PostgreSQL para análisis estructurado avanzado,
 coexistiendo con el motor de búsqueda de memoria. La biblioteca
 científica escala a decenas de miles de documentos.
 
-En esta fase el producto está listo para ofrecer suscripciones a usuarios
-finales o licencia a clínicas, profesionales sanitarios y centros de
-investigación.
+En esta fase el producto está listo para ampliar su modelo de suscripción a
+más usuarios finales o explorar licencias para clínicas, profesionales
+sanitarios y centros de investigación. La cuota compartida del piloto ya
+existe desde la Fase 1.
 
 
 LO QUE DELIBERADAMENTE NO HACEMOS

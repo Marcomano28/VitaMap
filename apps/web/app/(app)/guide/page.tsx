@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { copy } from "@/lib/i18n";
 import { getLocale } from "@/lib/locale";
+import type { Metadata } from "next";
 
-export const metadata = { title: "Guía de inicio" };
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return { title: copy[locale].guide.title };
+}
 
 export default async function GuidePage() {
   const locale = await getLocale();
