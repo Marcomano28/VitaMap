@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getLocale } from "@/lib/locale";
 import { localize, type Locale } from "@/lib/i18n";
+import { requireSubscribedUserId } from "@/lib/subscription-access";
 
 const TEXT = {
   es: {
@@ -77,6 +78,7 @@ function gad7Band(score: number, locale: Locale) {
 }
 
 export default async function ResultPage({ params, searchParams }: PageProps) {
+  await requireSubscribedUserId();
   const { instrument } = await params;
   const sp = await searchParams;
   const score = Number(sp.score ?? "0");

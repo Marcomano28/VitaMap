@@ -39,6 +39,7 @@ const TEXT = {
 
 const API_ERROR_KEYS: Record<string, keyof typeof TEXT.es> = {
   unauthorized: "uploadFailed",
+  subscription_required: "uploadFailed",
   invalid_multipart: "uploadFailed",
   missing_file: "uploadFailed",
   empty_file: "uploadFailed",
@@ -77,6 +78,10 @@ export function UploadDropzone({ defaultCategory = "lab", locale }: Props) {
             { method: "POST", body: fd, credentials: "same-origin" },
           );
           if (!res.ok) {
+            if (res.status === 402) {
+              window.location.href = "/settings/billing?required=1";
+              return;
+            }
             const payload = (await res.json().catch(() => null)) as
               | { error?: string }
               | null;

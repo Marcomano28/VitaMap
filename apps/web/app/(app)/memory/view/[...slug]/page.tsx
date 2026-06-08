@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { requireUserId } from "@/lib/session";
+import { requireSubscribedUserId } from "@/lib/subscription-access";
 import { readMemoryItem } from "@/lib/memory-reader";
 import { MarkdownView } from "@/components/markdown-view";
 import { deleteMemoryItemAction } from "./actions";
@@ -39,7 +39,7 @@ interface PageProps {
 }
 
 export default async function MemoryViewPage({ params }: PageProps) {
-  const userId = await requireUserId();
+  const userId = await requireSubscribedUserId();
   const { slug } = await params;
   const relPath = slug.map(decodeURIComponent).join("/");
   const item = await readMemoryItem(userId, relPath);

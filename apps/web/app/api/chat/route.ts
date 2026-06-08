@@ -4,7 +4,11 @@ import { queryMemoryAndKB, wrapForPrompt, type RetrievedChunk } from "@/lib/qmd"
 import { chat, SOCRATIC_SYSTEM_PROMPT, type ChatMessage } from "@/lib/llm";
 import { checkResponse, rewriteSocratic } from "@/lib/guardrail";
 import { logAuditEventSafe } from "@/lib/audit";
-import { requireUserIdFromRequest, UnauthorizedError } from "@/lib/session";
+import { UnauthorizedError } from "@/lib/session";
+import {
+  requireSubscribedUserIdFromRequest,
+  SubscriptionRequiredError,
+} from "@/lib/subscription-access";
 import { LOCALES, localize } from "@/lib/i18n";
 
 export const runtime = "nodejs"; // @tobilu/qmd y better-sqlite3 son nativos
@@ -32,10 +36,16 @@ const Body = z.object({
 export async function POST(req: Request) {
   let userId: string;
   try {
-    userId = await requireUserIdFromRequest(req);
+    userId = await requireSubscribedUserIdFromRequest(req);
   } catch (err) {
     if (err instanceof UnauthorizedError) {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
+    if (err instanceof SubscriptionRequiredError) {
+      return NextResponse.json(
+        { error: "subscription_required", billingUrl: "/settings/billing" },
+        { status: 402 },
+      );
     }
     throw err;
   }

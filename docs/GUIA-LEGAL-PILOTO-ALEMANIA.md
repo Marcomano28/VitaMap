@@ -381,9 +381,9 @@ Contactar inmediatamente con abogado/DPO si:
 | Ajuste | Estado observado el 2026-06-07 | Evidencia de cierre |
 |---|---|---|
 | Invitaciones verificadas en servidor | Implementado: codigo ligado a email, hash, caducidad, un solo uso y endpoint directo bloqueado | Prueba automatizada y comando administrativo |
-| Control de suscripcion en servidor | Pendiente: existe `hasActiveSubscription`, pero no protege las funciones | Tests de acceso para active, past_due y cancelled |
+| Control de suscripcion en servidor | Implementado: paginas, acciones y APIs sensibles exigen estado `active`; billing, ajustes, exportacion y borrado permanecen accesibles | Completar prueba end-to-end en VPS para active, pending, past_due y cancelled |
 | Privacidad, Impressum, condiciones y desistimiento | Pendiente | Paginas publicadas y revision juridica fechada |
-| Cancelacion independiente del borrado | Pendiente | Flujo 312k/portal, confirmacion y webhook probado |
+| Cancelacion independiente del borrado | Customer Portal integrado; falta activarlo/configurarlo en Stripe LIVE y validar juridicamente el flujo 312k | Cancelacion al final del periodo, confirmacion y webhook probados |
 | Consentimiento con responsable y proveedores reales | Borrador actualizado en version `2026-06-08`; faltan identidad real, politica publicada, revision juridica y mecanismo de reconsentimiento | Version aprobada, reconsentimiento y registro |
 | DSFA y registro Art. 30 | Pendiente | Documentos firmados y versionados |
 | Clasificacion MDR por modulo | Pendiente | Informe profesional y matriz de funciones |

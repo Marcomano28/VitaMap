@@ -12,13 +12,18 @@ const TEXT = {
     success: 'Pago realizado correctamente. Tu acceso está activo.',
     confirming: 'Stripe está confirmando el pago. El estado se actualizará en unos instantes.',
     cancelled: 'Pago cancelado. Puedes intentarlo de nuevo cuando quieras.',
+    required: 'Necesitas una suscripción activa para acceder a las funciones de salud.',
     status: 'Estado',
     active: 'Activo',
+    pending: 'Confirmando pago',
     pastDue: 'Pago pendiente',
+    cancelledStatus: 'Cancelada',
     none: 'Sin suscripción',
     renewal: 'Próxima renovación',
     amount: 'Importe mensual',
     activate: 'Activar suscripción — 6 €/mes',
+    reactivate: 'Reactivar suscripción — 6 €/mes',
+    manage: 'Gestionar pago o cancelar en Stripe',
   },
   de: {
     title: 'Abonnement',
@@ -26,13 +31,18 @@ const TEXT = {
     success: 'Die Zahlung war erfolgreich. Dein Zugang ist aktiv.',
     confirming: 'Stripe bestätigt die Zahlung. Der Status wird in Kürze aktualisiert.',
     cancelled: 'Die Zahlung wurde abgebrochen. Du kannst es jederzeit erneut versuchen.',
+    required: 'Für die Gesundheitsfunktionen ist ein aktives Abonnement erforderlich.',
     status: 'Status',
     active: 'Aktiv',
+    pending: 'Zahlung wird bestätigt',
     pastDue: 'Zahlung ausstehend',
+    cancelledStatus: 'Gekündigt',
     none: 'Kein Abonnement',
     renewal: 'Nächste Verlängerung',
     amount: 'Monatlicher Betrag',
     activate: 'Abonnement aktivieren — 6 €/Monat',
+    reactivate: 'Abonnement reaktivieren — 6 €/Monat',
+    manage: 'Zahlung verwalten oder bei Stripe kündigen',
   },
 } as const
 
@@ -42,7 +52,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 interface PageProps {
-  searchParams: Promise<{ success?: string; cancelled?: string }>
+  searchParams: Promise<{ success?: string; cancelled?: string; required?: string }>
 }
 
 export default async function BillingPage({ searchParams }: PageProps) {
@@ -53,6 +63,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
   const t = localize(locale, TEXT)
 
   const isActive = sub?.status === 'active'
+  const canManage = Boolean(sub?.stripe_customer_id && sub.status !== 'cancelled')
   const periodEnd = sub?.current_period_end
     ? new Date(sub.current_period_end).toLocaleDateString(localeTag(locale))
     : null
@@ -84,6 +95,12 @@ export default async function BillingPage({ searchParams }: PageProps) {
         </div>
       )}
 
+      {sp.required && (
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
+          {t.required}
+        </div>
+      )}
+
       <div className="rounded-xl border border-neutral-200 p-6 space-y-4">
         <div className="flex items-center justify-between">
           <span className="font-medium">{t.status}</span>
@@ -93,7 +110,13 @@ export default async function BillingPage({ searchParams }: PageProps) {
             </span>
           ) : (
             <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-medium text-neutral-600">
-              {sub?.status === 'past_due' ? t.pastDue : t.none}
+              {sub?.status === 'past_due'
+                ? t.pastDue
+                : sub?.status === 'pending'
+                  ? t.pending
+                  : sub?.status === 'cancelled'
+                    ? t.cancelledStatus
+                    : t.none}
             </span>
           )}
         </div>
@@ -113,14 +136,24 @@ export default async function BillingPage({ searchParams }: PageProps) {
         )}
       </div>
 
-      {!isActive && (
-        <SubscribeButton locale={locale} />
+      {canManage ? (
+        <ManageSubscriptionButton locale={locale} />
+      ) : !isActive ? (
+        <SubscribeButton locale={locale} reactivate={sub?.status === 'cancelled'} />
+      ) : (
+        <ManageSubscriptionButton locale={locale} />
       )}
     </div>
   )
 }
 
-function SubscribeButton({ locale }: { locale: Locale }) {
+function SubscribeButton({
+  locale,
+  reactivate = false,
+}: {
+  locale: Locale
+  reactivate?: boolean
+}) {
   const t = localize(locale, TEXT)
   async function startCheckout() {
     'use server'
@@ -134,7 +167,8 @@ function SubscribeButton({ locale }: { locale: Locale }) {
     if (!session?.user) redirect('/login')
 
     const userId = safeUserId(session.user.id)
-    if (getSubscription(userId)?.status === 'active') {
+    const existing = getSubscription(userId)
+    if (existing?.status === 'active') {
       redirect('/settings/billing')
     }
 
@@ -142,7 +176,9 @@ function SubscribeButton({ locale }: { locale: Locale }) {
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [{ price: getStripePriceId(), quantity: 1 }],
-      customer_email: session.user.email,
+      ...(existing?.stripe_customer_id
+        ? { customer: existing.stripe_customer_id }
+        : { customer_email: session.user.email }),
       client_reference_id: userId,
       metadata: { user_id: userId },
       subscription_data: { metadata: { user_id: userId } },
@@ -159,7 +195,41 @@ function SubscribeButton({ locale }: { locale: Locale }) {
         type="submit"
         className="w-full rounded-lg bg-neutral-900 py-3 text-sm font-medium text-white hover:bg-neutral-700 transition-colors"
       >
-        {t.activate}
+        {reactivate ? t.reactivate : t.activate}
+      </button>
+    </form>
+  )
+}
+
+function ManageSubscriptionButton({ locale }: { locale: Locale }) {
+  const t = localize(locale, TEXT)
+
+  async function openPortal() {
+    'use server'
+    const { getSubscription } = await import('@/lib/billing')
+    const { requireUserId } = await import('@/lib/session')
+    const { stripe } = await import('@/lib/stripe')
+
+    const userId = await requireUserId()
+    const sub = getSubscription(userId)
+    if (!sub?.stripe_customer_id) {
+      redirect('/settings/billing')
+    }
+
+    const portal = await stripe.billingPortal.sessions.create({
+      customer: sub.stripe_customer_id,
+      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings/billing`,
+    })
+    redirect(portal.url)
+  }
+
+  return (
+    <form action={openPortal}>
+      <button
+        type="submit"
+        className="w-full rounded-lg border border-neutral-300 py-3 text-sm font-medium hover:bg-neutral-50 transition-colors"
+      >
+        {t.manage}
       </button>
     </form>
   )

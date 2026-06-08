@@ -2,6 +2,7 @@ import Link from "next/link";
 import { copy } from "@/lib/i18n";
 import { getLocale } from "@/lib/locale";
 import type { Metadata } from "next";
+import { requireSubscribedUserId } from "@/lib/subscription-access";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -9,6 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function MemoryPage() {
+  await requireSubscribedUserId();
   const locale = await getLocale();
   const t = copy[locale].memory;
 

@@ -71,12 +71,8 @@ export function getSubscription(userId: string, dbPath?: string) {
        FROM billing_subscription
        WHERE user_id = ?
        ORDER BY
-         CASE status
-           WHEN 'active' THEN 0
-           WHEN 'pending' THEN 1
-           WHEN 'past_due' THEN 2
-           ELSE 3
-         END,
+         status_event_created DESC,
+         CASE status WHEN 'active' THEN 0 ELSE 1 END,
          updated_at DESC
        LIMIT 1`
     ).get(userId) as BillingSubscription | undefined
@@ -205,8 +201,8 @@ export function markStripeEventProcessed(
   }
 }
 
-export function hasActiveSubscription(userId: string): boolean {
-  const sub = getSubscription(userId)
+export function hasActiveSubscription(userId: string, dbPath?: string): boolean {
+  const sub = getSubscription(userId, dbPath)
   return sub?.status === 'active'
 }
 

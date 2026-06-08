@@ -4,7 +4,7 @@ import { listInbox } from "@/lib/inbox";
 import { UploadDropzone } from "@/components/upload-dropzone";
 import { InboxAutoRefresh } from "@/components/inbox-auto-refresh";
 import { discardInboxItemAction, retryInboxExtractionAction } from "./actions";
-import { requireUserId } from "@/lib/session";
+import { requireSubscribedUserId } from "@/lib/subscription-access";
 import { getLocale } from "@/lib/locale";
 import { localeTag, localize } from "@/lib/i18n";
 
@@ -53,7 +53,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function UploadPage() {
-  const userId = await requireUserId();
+  const userId = await requireSubscribedUserId();
   const locale = await getLocale();
   const t = localize(locale, TEXT);
   const inbox = await listInbox(userId);

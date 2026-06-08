@@ -4,12 +4,16 @@ import { signOutAction } from "@/app/(auth)/login/actions";
 import { copy } from "@/lib/i18n";
 import { getLocale } from "@/lib/locale";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { hasActiveSubscription } from "@/lib/billing";
 
 export async function SiteHeader() {
   const locale = await getLocale();
   const t = copy[locale].nav;
   const session = await getSession();
   const authed = !!session?.user;
+  const subscribed = session?.user
+    ? hasActiveSubscription(session.user.id)
+    : false;
   const navAuthed = [
     { href: "/memory", label: t.memory },
     { href: "/upload", label: t.upload },
@@ -17,6 +21,12 @@ export async function SiteHeader() {
     { href: "/chat", label: t.chat },
     { href: "/guide", label: t.guide },
   ];
+  const visibleNav = subscribed
+    ? navAuthed
+    : [
+        { href: "/guide", label: t.guide },
+        { href: "/settings/billing", label: t.subscription },
+      ];
 
   return (
     <header className="border-b border-[var(--color-border)]">
@@ -28,7 +38,7 @@ export async function SiteHeader() {
         <nav className="flex items-center gap-3 text-sm flex-wrap justify-end">
           {authed && (
             <>
-              {navAuthed.map((n) => (
+              {visibleNav.map((n) => (
                 <Link
                   key={n.href}
                   href={n.href}

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { writeAssessment } from "@/lib/memory";
 import { logAuditEventSafe } from "@/lib/audit";
-import { requireUserId } from "@/lib/session";
+import { requireSubscribedUserId } from "@/lib/subscription-access";
 import { getLocale } from "@/lib/locale";
 
 const INSTRUMENT_LEN: Record<string, number> = {
@@ -13,7 +13,7 @@ const INSTRUMENT_LEN: Record<string, number> = {
 };
 
 export async function saveAssessmentAction(formData: FormData) {
-  const userId = await requireUserId();
+  const userId = await requireSubscribedUserId();
   const locale = await getLocale();
   const instrumentRaw = String(formData.get("instrument") ?? "");
   if (!(instrumentRaw in INSTRUMENT_LEN)) {

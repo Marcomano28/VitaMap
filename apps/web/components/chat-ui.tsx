@@ -71,6 +71,10 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
           window.location.href = "/login?next=/chat";
           return;
         }
+        if (res.status === 402) {
+          window.location.href = "/settings/billing?required=1";
+          return;
+        }
         throw new Error(t.requestFailed);
       }
       const json = (await res.json()) as {

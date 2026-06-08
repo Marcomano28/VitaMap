@@ -11,7 +11,7 @@ import { enqueueInboxExtraction } from "@/lib/inbox-queue";
 import { LabResultExtraction, type LabMarker } from "@/lib/extraction";
 import { writeLabResult } from "@/lib/memory";
 import { logAuditEventSafe } from "@/lib/audit";
-import { requireUserId } from "@/lib/session";
+import { requireSubscribedUserId } from "@/lib/subscription-access";
 import { getLocale } from "@/lib/locale";
 
 /**
@@ -50,7 +50,7 @@ function parseMarkersFromForm(fd: FormData): LabMarker[] {
 }
 
 export async function commitInboxItemAction(formData: FormData) {
-  const userId = await requireUserId();
+  const userId = await requireSubscribedUserId();
   const locale = await getLocale();
   const id = String(formData.get("id") ?? "");
   if (!id) throw new Error("missing id");
@@ -87,7 +87,7 @@ export async function commitInboxItemAction(formData: FormData) {
 }
 
 export async function discardInboxItemAction(formData: FormData) {
-  const userId = await requireUserId();
+  const userId = await requireSubscribedUserId();
   const id = String(formData.get("id") ?? "");
   if (!id) return;
   await deleteInboxItem(userId, id);
@@ -101,7 +101,7 @@ export async function discardInboxItemAction(formData: FormData) {
 }
 
 export async function retryInboxExtractionAction(formData: FormData) {
-  const userId = await requireUserId();
+  const userId = await requireSubscribedUserId();
   const id = String(formData.get("id") ?? "");
   if (!id) return;
   await enqueueInboxExtraction({ userId, id });

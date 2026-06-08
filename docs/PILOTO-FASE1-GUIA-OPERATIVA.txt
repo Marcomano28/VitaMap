@@ -92,10 +92,10 @@ ESTADO CONOCIDO A 2026-06-08
     por sí sola que el cobro real esté autorizado.
 
   [PENDIENTE — BLOQUEA EL PILOTO REAL]
-  1. Aplicar en el servidor el control de suscripción activa. Sin pago
-     confirmado, chat, memoria, documentos, observaciones y assessments
-     deben quedar bloqueados; billing, ajustes, exportación y borrado
-     deben seguir disponibles.
+  1. Verificar en el VPS el control de suscripción activa ya implementado.
+     Sin pago confirmado, chat, memoria, documentos, observaciones y
+     assessments quedan bloqueados; billing, ajustes, exportación y
+     borrado siguen disponibles.
   2. Desactivar mediante configuración los módulos todavía no aprobados,
      especialmente cuestionarios PHQ/GAD, crisis y funciones OCR o
      interpretativas que amplíen el riesgo regulatorio.
@@ -120,9 +120,9 @@ ESTADO CONOCIDO A 2026-06-08
 
 PRÓXIMO PASO TÉCNICO INMEDIATO
 
-  Implementar el control de suscripción en el servidor. Es el hueco
-  principal entre un webhook de pago que ya funciona y una aplicación
-  que realmente impide usar funciones protegidas sin haber pagado.
+  Desplegar la versión con control de suscripción, activar el Customer
+  Portal en Stripe LIVE y completar con la cuenta del administrador el
+  ciclo real: registro → Checkout → webhook → active → acceso → portal.
 
 La preparación legal completa está detallada en:
   docs/GUIA-LEGAL-PILOTO-ALEMANIA.md
@@ -252,6 +252,21 @@ Cómo obtener STRIPE_WEBHOOK_SECRET:
      Copiarlo en .env como STRIPE_WEBHOOK_SECRET.
   5. Usar claves LIVE (sk_live_..., pk_live_...) en producción.
      Las claves TEST (sk_test_...) solo sirven en local.
+
+Cómo activar el Customer Portal LIVE:
+  1. En dashboard.stripe.com, confirmar que está seleccionado el modo LIVE.
+  2. Ir a Billing → Customer portal y activar el portal.
+  3. Permitir:
+       · actualizar el método de pago;
+       · consultar y descargar facturas;
+       · cancelar la suscripción.
+  4. Configurar la cancelación al final del periodo pagado, no inmediata.
+  5. Revisar nombre comercial, email de soporte y texto público mostrado.
+  6. Guardar la configuración. VitaMap crea una sesión temporal del portal
+     cuando el usuario pulsa "Gestionar pago o cancelar en Stripe".
+
+El portal es independiente del borrado de cuenta. Cancelar detiene la
+renovación; borrar la cuenta revoca el consentimiento y purga la memoria.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 C.3  MODELO LLM — [VERIFICAR EN VPS]
@@ -452,7 +467,7 @@ D.2  CREAR TU CUENTA
   5. Pulsa "Validar invitación y crear cuenta".
 
 Si todo es correcto, quedarás registrado e iniciado sesión
-automáticamente, y aterrizarás en la pantalla de Memoria (/memory).
+automáticamente, y aterrizarás en Suscripción (/settings/billing).
 
 Errores frecuentes y soluciones:
   "La invitación no es válida para ese email"
@@ -470,12 +485,10 @@ Errores frecuentes y soluciones:
 D.3  PRIMER ACCESO: POR DÓNDE EMPEZAR
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Tras registrarte aterrizas en /memory. Hasta que Stripe confirme una
-suscripción activa, el objetivo es que solo permanezcan disponibles
-billing, ajustes, exportación y borrado. El bloqueo técnico de las
-funciones de salud todavía debe implementarse antes de abrir el piloto
-real; no debe darse por terminado por el mero hecho de que el webhook
-funcione.
+Tras registrarte aterrizas en /settings/billing. Hasta que Stripe confirme
+una suscripción activa, solo permanecen disponibles billing, ajustes,
+exportación y borrado. Las páginas, acciones y APIs de salud verifican el
+estado en el servidor; la URL de retorno de Checkout no concede acceso.
 
 Cuando la suscripción está activa, las secciones principales son:
 
@@ -540,16 +553,17 @@ Qué ocurre tras pulsar "Activar suscripción":
      cambia a "Activo". Recarga la página para verlo actualizado.
 
 Si tras 2 minutos el estado sigue mostrando "Sin suscripción":
-  - No vuelvas a pulsar el botón: puede crear un segundo cargo.
+  - No inicies otro Checkout.
+  - Si ya existe un cliente Stripe, usa "Gestionar pago o cancelar"
+    para revisar el método de pago y la suscripción.
   - Escríbele al administrador con la hora aproximada del pago.
   - El administrador verificará el estado desde el VPS (ver F.6).
 
 Regla de acceso:
   La suscripción activa es necesaria desde la Fase 1, también para
-  los tres usuarios de confianza. Cuando el control esté implementado,
-  sin pago confirmado se bloquean chat, memoria, documentos,
-  observaciones y assessments. Billing, ajustes, exportación y borrado
-  continúan disponibles.
+  los tres usuarios de confianza. Sin pago confirmado se bloquean chat,
+  memoria, documentos, observaciones y assessments. Billing, ajustes,
+  exportación y borrado continúan disponibles.
 
   Stripe es la fuente de verdad. Volver desde Checkout no concede
   acceso: el servidor espera la confirmación del webhook.

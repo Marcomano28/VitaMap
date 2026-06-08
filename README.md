@@ -125,12 +125,12 @@ docker compose --env-file .env --profile tools run --rm admin \
   create persona@example.com --days 7
 ```
 
-Antes de abrir el piloto real se aplicará el control de suscripción en servidor:
-sin pago confirmado permanecerán accesibles billing, ajustes, exportación y
-borrado de cuenta, mientras chat, memoria, documentos y assessments quedarán
-bloqueados. El webhook y el estado de billing ya están implementados; el
-control de acceso todavía figura como tarea P0. Cada acción significativa queda
-registrada en `audit_event` con hash chain en `data/auth.sqlite`.
+El control de suscripción se aplica en servidor: sin pago confirmado permanecen
+accesibles billing, ajustes, exportación y borrado de cuenta, mientras chat,
+memoria, documentos y assessments quedan bloqueados. El registro aterriza en
+billing y el Customer Portal de Stripe permite gestionar el método de pago o
+cancelar la suscripción. Cada acción significativa queda registrada en
+`audit_event` con hash chain en `data/auth.sqlite`.
 
 La apertura a datos de salud reales está condicionada por la
 [guía legal y técnica del piloto en Alemania](docs/GUIA-LEGAL-PILOTO-ALEMANIA.md).

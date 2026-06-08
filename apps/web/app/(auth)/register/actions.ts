@@ -140,7 +140,7 @@ export async function registerAction(formData: FormData) {
     throw new Error(t.missingUser);
   }
 
-  redirect("/memory");
+  redirect("/settings/billing");
 }
 
 function maskEmail(e: string): string {

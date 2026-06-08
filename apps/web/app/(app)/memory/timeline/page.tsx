@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { requireUserId } from "@/lib/session";
+import { requireSubscribedUserId } from "@/lib/subscription-access";
 import { listAllTags, listMemory, type MemoryItem } from "@/lib/memory-reader";
 import { getLocale } from "@/lib/locale";
 import { localize, type Locale } from "@/lib/i18n";
@@ -81,7 +81,7 @@ interface PageProps {
 }
 
 export default async function TimelinePage({ searchParams }: PageProps) {
-  const userId = await requireUserId();
+  const userId = await requireSubscribedUserId();
   const locale = await getLocale();
   const t = localize(locale, TEXT);
   const sp = await searchParams;

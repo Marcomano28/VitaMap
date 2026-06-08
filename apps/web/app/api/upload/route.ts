@@ -3,7 +3,11 @@ import { z } from "zod";
 import { createInboxItem, InboxCategory } from "@/lib/inbox";
 import { enqueueInboxExtraction } from "@/lib/inbox-queue";
 import { logAuditEventSafe } from "@/lib/audit";
-import { requireUserIdFromRequest, UnauthorizedError } from "@/lib/session";
+import { UnauthorizedError } from "@/lib/session";
+import {
+  requireSubscribedUserIdFromRequest,
+  SubscriptionRequiredError,
+} from "@/lib/subscription-access";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -31,10 +35,16 @@ const QueryParams = z.object({
 export async function POST(req: Request) {
   let userId: string;
   try {
-    userId = await requireUserIdFromRequest(req);
+    userId = await requireSubscribedUserIdFromRequest(req);
   } catch (err) {
     if (err instanceof UnauthorizedError) {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
+    if (err instanceof SubscriptionRequiredError) {
+      return NextResponse.json(
+        { error: "subscription_required", billingUrl: "/settings/billing" },
+        { status: 402 },
+      );
     }
     throw err;
   }

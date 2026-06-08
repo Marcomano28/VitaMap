@@ -2,6 +2,7 @@ import { createImageObservationAction } from "./actions";
 import type { Metadata } from "next";
 import { getLocale } from "@/lib/locale";
 import { localize } from "@/lib/i18n";
+import { requireSubscribedUserId } from "@/lib/subscription-access";
 
 const TEXT = {
   es: {
@@ -50,6 +51,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function NewImagePage() {
+  await requireSubscribedUserId();
   const locale = await getLocale();
   const t = localize(locale, TEXT);
   const today = new Date().toISOString().slice(0, 10);
