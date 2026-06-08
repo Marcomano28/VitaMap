@@ -52,7 +52,9 @@ export async function signInAction(formData: FormData) {
     redirect(`/login?error=${encodeURIComponent(msg)}`);
   }
 
-  redirect(next.startsWith("/") ? next : "/memory");
+  const safeNext =
+    next.startsWith("/") && !next.startsWith("//") ? next : "/memory";
+  redirect(safeNext);
 }
 
 export async function signOutAction() {

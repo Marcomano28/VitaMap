@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getStripePriceId, getStripeWebhookSecret, stripe } from '@/lib/stripe'
+import {
+  getStripeMode,
+  getStripePriceId,
+  getStripeWebhookSecret,
+  stripe,
+} from '@/lib/stripe'
 import {
   ensureBillingTable,
+  hasStripeSubscription,
   isStripeEventProcessed,
   markStripeEventProcessed,
   upsertSubscription,
@@ -57,6 +63,10 @@ export async function POST(req: NextRequest) {
   } catch {
     return new NextResponse('Invalid signature', { status: 400 })
   }
+  if (event.livemode !== (getStripeMode() === 'live')) {
+    return new NextResponse('Stripe mode mismatch', { status: 400 })
+  }
+  const livemode = event.livemode ? 1 : 0
 
   ensureBillingTable()
   if (isStripeEventProcessed(event.id)) {
@@ -82,6 +92,7 @@ export async function POST(req: NextRequest) {
           currency: session.currency ?? 'eur',
           current_period_end: null,
           event_created: event.created,
+          livemode,
         })
       }
       break
@@ -104,6 +115,7 @@ export async function POST(req: NextRequest) {
         // Se rellena con precisión desde invoice.period_end en los eventos de factura.
         current_period_end: null,
         event_created: event.created,
+        livemode,
       })
       break
     }
@@ -111,7 +123,7 @@ export async function POST(req: NextRequest) {
     case 'customer.subscription.deleted': {
       const sub = event.data.object as Stripe.Subscription
       const customerId = extractId(sub.customer)
-      if (!customerId) break
+      if (!customerId || !isExpectedSubscription(sub)) break
       upsertSubscription({
         id: randomUUID(),
         user_id: safeUserId(sub.metadata?.user_id),
@@ -122,6 +134,7 @@ export async function POST(req: NextRequest) {
         currency: sub.currency,
         current_period_end: null,
         event_created: event.created,
+        livemode,
       })
       break
     }
@@ -131,7 +144,11 @@ export async function POST(req: NextRequest) {
       const subRef = invoice.parent?.subscription_details?.subscription
       const customerId = extractId(invoice.customer)
       const subscriptionId = extractId(subRef)
-      if (!customerId || !subscriptionId) break
+      if (
+        !customerId ||
+        !subscriptionId ||
+        !hasStripeSubscription(customerId, subscriptionId, livemode)
+      ) break
       upsertSubscription({
         id: randomUUID(),
         user_id: '',
@@ -145,6 +162,7 @@ export async function POST(req: NextRequest) {
         // period_end está directamente en el objeto Invoice en la API v22.
         current_period_end: new Date(invoice.period_end * 1000).toISOString(),
         event_created: event.created,
+        livemode,
       })
       break
     }
@@ -154,7 +172,11 @@ export async function POST(req: NextRequest) {
       const subRef = invoice.parent?.subscription_details?.subscription
       const customerId = extractId(invoice.customer)
       const subscriptionId = extractId(subRef)
-      if (!customerId || !subscriptionId) break
+      if (
+        !customerId ||
+        !subscriptionId ||
+        !hasStripeSubscription(customerId, subscriptionId, livemode)
+      ) break
       upsertSubscription({
         id: randomUUID(),
         user_id: '',
@@ -165,6 +187,7 @@ export async function POST(req: NextRequest) {
         currency: invoice.currency,
         current_period_end: null,
         event_created: event.created,
+        livemode,
       })
       break
     }

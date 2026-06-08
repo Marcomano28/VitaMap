@@ -12,6 +12,8 @@ import { getEnv } from "@/lib/env";
 import { CONSENT_VERSION } from "@/lib/consent";
 import { getLocale } from "@/lib/locale";
 import { localize } from "@/lib/i18n";
+import { getSubscription } from "@/lib/billing";
+import { stripe } from "@/lib/stripe";
 
 const MESSAGES = {
   es: {
@@ -29,6 +31,8 @@ const MESSAGES = {
     prepareDeleteFailed: "No se pudo preparar el borrado de datos",
     deleteFailed: "No se pudo eliminar la cuenta",
     deleteError: "Error al eliminar la cuenta",
+    cancelFailed:
+      "No se pudo cancelar la suscripción. La cuenta no se ha eliminado",
   },
   de: {
     confirmationWord: "LÖSCHEN",
@@ -45,6 +49,8 @@ const MESSAGES = {
     prepareDeleteFailed: "Die Datenlöschung konnte nicht vorbereitet werden",
     deleteFailed: "Das Konto konnte nicht gelöscht werden",
     deleteError: "Fehler beim Löschen des Kontos",
+    cancelFailed:
+      "Das Abonnement konnte nicht gekündigt werden. Das Konto wurde nicht gelöscht",
   },
 } as const;
 
@@ -88,11 +94,12 @@ export async function changePasswordAction(formData: FormData) {
  *
  * Orden importante:
  *   1. Verificar BORRAR + contraseña antes de tocar el filesystem.
- *   2. Registrar consentimiento revocado y purga en audit_event (append-only,
+ *   2. Cancelar cualquier suscripción vigente en Stripe.
+ *   3. Registrar consentimiento revocado y purga en audit_event (append-only,
  *      sobrevive al borrado).
- *   3. Mover data/users/<id>/ a cuarentena recuperable.
- *   4. Eliminar al usuario en BetterAuth.
- *   5. Borrar la cuarentena y redirigir a /.
+ *   4. Mover data/users/<id>/ a cuarentena recuperable.
+ *   5. Eliminar al usuario en BetterAuth.
+ *   6. Borrar la cuarentena y redirigir a /.
  */
 export async function deleteAccountAction(formData: FormData) {
   const locale = await getLocale();
@@ -123,6 +130,24 @@ export async function deleteAccountAction(formData: FormData) {
     const msg =
       err instanceof APIError ? t.wrongPassword : t.validationFailed;
     redirect(`/settings?error=${encodeURIComponent(msg)}`);
+  }
+
+  // Borrar la cuenta no puede dejar una suscripcion cobrando sin servicio.
+  const subscription = getSubscription(userId);
+  if (subscription && subscription.status !== "cancelled") {
+    if (!subscription.stripe_subscription_id) {
+      redirect(`/settings?error=${encodeURIComponent(t.cancelFailed)}`);
+    }
+    try {
+      const stripeSubscription = await stripe.subscriptions.retrieve(
+        subscription.stripe_subscription_id,
+      );
+      if (stripeSubscription.status !== "canceled") {
+        await stripe.subscriptions.cancel(subscription.stripe_subscription_id);
+      }
+    } catch {
+      redirect(`/settings?error=${encodeURIComponent(t.cancelFailed)}`);
+    }
   }
 
   // Auditoría crítica: si falla, no se ejecuta la purga.

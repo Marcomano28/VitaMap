@@ -569,6 +569,8 @@ Regla de acceso:
   acceso: el servidor espera la confirmación del webhook.
 
 Protecciones del webhook:
+  - los datos TEST y LIVE se separan en billing_subscription.livemode;
+  - una suscripción TEST nunca concede acceso cuando el VPS usa claves LIVE;
   - checkout.session.completed ancla user_id, customer y subscription;
   - los ocho estados de Stripe se traducen al estado local;
   - invoice.payment_succeeded confirma renovaciones y su period_end;
@@ -578,6 +580,8 @@ Protecciones del webhook:
   - una actualización de suscripción no borra la fecha de renovación;
   - el importe mensual procede del Price, no del total variable
     de una factura con impuestos, créditos o prorrateos.
+  - las facturas solo actualizan una suscripción VitaMap previamente
+    reconocida por customer, subscription y modo.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 D.5  TUS DERECHOS SOBRE LOS DATOS
@@ -597,8 +601,9 @@ En cualquier momento puedes:
     opción de borrado permanente.
   - Revocar tu consentimiento y borrar todo: /settings → eliminar
     cuenta. Debes escribir BORRAR y confirmar tu contraseña. El sistema
-    registra la revocación, pone los datos en cuarentena durante la
-    operación, elimina la cuenta y purga el directorio personal.
+    cancela primero cualquier suscripción vigente, registra la revocación,
+    pone los datos en cuarentena durante la operación, elimina la cuenta
+    y purga el directorio personal.
 
 ════════════════════════════════════════════════════════════════════════
 

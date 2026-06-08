@@ -1,5 +1,6 @@
 import Database from 'better-sqlite3'
 import path from 'path'
+import { getStripeMode, type StripeMode } from './stripe'
 
 function getDbPath() {
   return process.env.AUTH_DB_PATH ?? path.join(process.env.DATA_ROOT ?? './data', 'auth.sqlite')
@@ -23,6 +24,7 @@ const CREATE_TABLE_SQL = `
     current_period_end      TEXT,
     status_event_created    INTEGER NOT NULL DEFAULT 0,
     period_event_created    INTEGER NOT NULL DEFAULT 0,
+    livemode                INTEGER NOT NULL DEFAULT 0,
     created_at              TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at              TEXT NOT NULL DEFAULT (datetime('now'))
   );
@@ -51,6 +53,12 @@ function ensureBillingSchema(db: Database.Database) {
       'ALTER TABLE billing_subscription ADD COLUMN period_event_created INTEGER NOT NULL DEFAULT 0',
     )
   }
+  if (!columns.some((column) => column.name === 'livemode')) {
+    // Las filas anteriores a esta migracion proceden del piloto TEST.
+    db.exec(
+      'ALTER TABLE billing_subscription ADD COLUMN livemode INTEGER NOT NULL DEFAULT 0',
+    )
+  }
 }
 
 export function ensureBillingTable(dbPath?: string) {
@@ -62,20 +70,47 @@ export function ensureBillingTable(dbPath?: string) {
   }
 }
 
-export function getSubscription(userId: string, dbPath?: string) {
+export function getSubscription(
+  userId: string,
+  dbPath?: string,
+  mode: StripeMode = getStripeMode(),
+) {
   const db = getDb(dbPath)
   try {
     ensureBillingSchema(db)
     return db.prepare(
       `SELECT *
        FROM billing_subscription
-       WHERE user_id = ?
+       WHERE user_id = ? AND livemode = ?
        ORDER BY
          status_event_created DESC,
          CASE status WHEN 'active' THEN 0 ELSE 1 END,
          updated_at DESC
        LIMIT 1`
-    ).get(userId) as BillingSubscription | undefined
+    ).get(userId, mode === 'live' ? 1 : 0) as BillingSubscription | undefined
+  } finally {
+    db.close()
+  }
+}
+
+export function hasStripeSubscription(
+  customerId: string,
+  subscriptionId: string,
+  livemode: 0 | 1,
+  dbPath?: string,
+): boolean {
+  const db = getDb(dbPath)
+  try {
+    ensureBillingSchema(db)
+    return Boolean(
+      db.prepare(
+        `SELECT 1
+         FROM billing_subscription
+         WHERE stripe_customer_id = ?
+           AND stripe_subscription_id = ?
+           AND livemode = ?`,
+      ).get(customerId, subscriptionId, livemode),
+    )
   } finally {
     db.close()
   }
@@ -100,6 +135,7 @@ export function upsertSubscription(
         current_period_end,
         status_event_created,
         period_event_created,
+        livemode,
         updated_at
       )
       VALUES (
@@ -113,6 +149,7 @@ export function upsertSubscription(
         @current_period_end,
         @event_created,
         CASE WHEN @current_period_end IS NULL THEN 0 ELSE @event_created END,
+        @livemode,
         datetime('now')
       )
       ON CONFLICT(stripe_customer_id) DO UPDATE SET
@@ -121,6 +158,9 @@ export function upsertSubscription(
           billing_subscription.stripe_subscription_id
         ),
         status = CASE
+          WHEN billing_subscription.status = 'cancelled'
+            AND excluded.stripe_subscription_id = billing_subscription.stripe_subscription_id
+            THEN billing_subscription.status
           WHEN excluded.status = 'pending'
             AND billing_subscription.status != 'pending'
             THEN billing_subscription.status
@@ -129,6 +169,9 @@ export function upsertSubscription(
           ELSE excluded.status
         END,
         status_event_created = CASE
+          WHEN billing_subscription.status = 'cancelled'
+            AND excluded.stripe_subscription_id = billing_subscription.stripe_subscription_id
+            THEN billing_subscription.status_event_created
           WHEN excluded.status = 'pending'
             AND billing_subscription.status != 'pending'
             THEN billing_subscription.status_event_created
@@ -163,7 +206,9 @@ export function upsertSubscription(
             THEN excluded.user_id
           ELSE billing_subscription.user_id
         END,
+        livemode = excluded.livemode,
         updated_at = datetime('now')
+      WHERE billing_subscription.livemode = excluded.livemode
     `).run(data)
   } finally {
     db.close()
@@ -201,8 +246,12 @@ export function markStripeEventProcessed(
   }
 }
 
-export function hasActiveSubscription(userId: string, dbPath?: string): boolean {
-  const sub = getSubscription(userId, dbPath)
+export function hasActiveSubscription(
+  userId: string,
+  dbPath?: string,
+  mode: StripeMode = getStripeMode(),
+): boolean {
+  const sub = getSubscription(userId, dbPath, mode)
   return sub?.status === 'active'
 }
 
@@ -217,6 +266,7 @@ export interface BillingSubscription {
   current_period_end: string | null
   status_event_created: number
   period_event_created: number
+  livemode: 0 | 1
   created_at: string
   updated_at: string
 }
@@ -231,4 +281,5 @@ export interface BillingSubscriptionUpdate {
   currency: string
   current_period_end: string | null
   event_created: number
+  livemode: 0 | 1
 }

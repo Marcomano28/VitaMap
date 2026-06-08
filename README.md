@@ -132,6 +132,11 @@ billing y el Customer Portal de Stripe permite gestionar el método de pago o
 cancelar la suscripción. Cada acción significativa queda registrada en
 `audit_event` con hash chain en `data/auth.sqlite`.
 
+Los estados TEST y LIVE quedan separados en la base local. Al pasar a claves
+LIVE, una suscripción activa creada durante las pruebas no concede acceso. El
+borrado de cuenta cancela primero cualquier suscripción vigente para evitar
+cobros posteriores sin servicio.
+
 La apertura a datos de salud reales está condicionada por la
 [guía legal y técnica del piloto en Alemania](docs/GUIA-LEGAL-PILOTO-ALEMANIA.md).
 La guía separa las funciones educativas de las que requieren revisión de
