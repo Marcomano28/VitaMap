@@ -38,11 +38,14 @@ export interface OcrResult {
 }
 
 export async function ocrPdf(buffer: Uint8Array): Promise<OcrResult> {
-  // 1) intento nativo con pdfjs-dist
-  const native = await extractPdfTextNative(buffer);
-  if (isGoodText(native.text)) return { ...native, source: "pdf-native" };
+  // Un fallo del extractor nativo no debe impedir el fallback OCR.
+  try {
+    const native = await extractPdfTextNative(buffer);
+    if (isGoodText(native.text)) return { ...native, source: "pdf-native" };
+  } catch {
+    // pdftoppm puede procesar PDFs que pdftotext no consigue interpretar.
+  }
 
-  // 2) fallback a OCR (pdftoppm + tesseract)
   const ocr = await ocrPdfWithTesseract(buffer);
   return { ...ocr, source: "pdf-ocr" };
 }
@@ -66,19 +69,29 @@ export async function ocrImage(buffer: Uint8Array, ext: string): Promise<OcrResu
 // =====================================================================
 
 async function extractPdfTextNative(buffer: Uint8Array): Promise<{ text: string; pages: number }> {
-  // pdfjs-dist legacy build funciona en Node sin worker.
+  // En Node pdfjs usa un worker simulado. Registrar el módulo incluido evita
+  // que intente resolver pdf.worker.mjs junto al bundle standalone de Next.
+  const pdfjsWorker = await import("pdfjs-dist/legacy/build/pdf.worker.mjs");
+  (
+    globalThis as typeof globalThis & {
+      pdfjsWorker?: typeof pdfjsWorker;
+    }
+  ).pdfjsWorker = pdfjsWorker;
+
   const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  // Desactivar worker para Node-only.
-  (pdfjs as unknown as { GlobalWorkerOptions: { workerSrc: string } }).GlobalWorkerOptions.workerSrc = "";
   const doc = await pdfjs.getDocument({ data: buffer, isEvalSupported: false }).promise;
-  let text = "";
-  for (let i = 1; i <= doc.numPages; i++) {
-    const page = await doc.getPage(i);
-    const tc = await page.getTextContent();
-    const items = tc.items as Array<{ str?: string }>;
-    text += items.map((it) => it.str ?? "").join(" ") + "\n\n";
+  try {
+    let text = "";
+    for (let i = 1; i <= doc.numPages; i++) {
+      const page = await doc.getPage(i);
+      const tc = await page.getTextContent();
+      const items = tc.items as Array<{ str?: string }>;
+      text += items.map((it) => it.str ?? "").join(" ") + "\n\n";
+    }
+    return { text: text.trim(), pages: doc.numPages };
+  } finally {
+    await doc.destroy();
   }
-  return { text: text.trim(), pages: doc.numPages };
 }
 
 async function ocrPdfWithTesseract(buffer: Uint8Array): Promise<{ text: string; pages: number }> {
