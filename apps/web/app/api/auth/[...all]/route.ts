@@ -3,7 +3,21 @@ import { getAuth } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
-const handlers = toNextJsHandler(getAuth());
+type AuthHandlers = ReturnType<typeof toNextJsHandler>;
 
-export const GET = handlers.GET;
-export const POST = handlers.POST;
+let handlers: AuthHandlers | null = null;
+
+function getHandlers(): AuthHandlers {
+  if (!handlers) {
+    handlers = toNextJsHandler(getAuth());
+  }
+  return handlers;
+}
+
+export async function GET(request: Request) {
+  return getHandlers().GET(request);
+}
+
+export async function POST(request: Request) {
+  return getHandlers().POST(request);
+}
