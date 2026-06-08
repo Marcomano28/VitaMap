@@ -5,6 +5,9 @@ import { Disclaimer } from "@/components/disclaimer";
 import { getLocale } from "@/lib/locale";
 import { localize } from "@/lib/i18n";
 
+// El encabezado consulta la sesión y la suscripción en cada petición.
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   return {
