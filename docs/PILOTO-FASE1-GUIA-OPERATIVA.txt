@@ -1,6 +1,6 @@
 VITAMAP — GUÍA OPERATIVA DEL PILOTO FASE 1
 La semilla de trigo sarraceno: la primera triada de usuarios
-Versión 0.5 · 2026-06-08
+Versión 0.6 · 2026-06-09
 
 ════════════════════════════════════════════════════════════════════════
 
@@ -62,67 +62,93 @@ Esta guía utiliza cuatro estados:
     Instrucción que se usará después de abrir el piloto; no es una tarea
     que haya que repetir ahora.
 
-ESTADO CONOCIDO A 2026-06-08
+ESTADO CONOCIDO A 2026-06-09
 
   [COMPLETADO]
   - VPS contratado y disponible: 4 vCPU, 8 GB RAM, 160 GB de disco,
     20 TB de tráfico saliente y 16,65 €/mes.
+  - Repositorio Git clonado desde main en /opt/vitamap-next. La
+    instalación anterior /opt/vitamap se conserva temporalmente como
+    referencia de rollback y no se actualiza con git.
+  - Versión actual desplegada mediante Docker Compose. Los servicios
+    web, Caddy, LLM y backup arrancaron correctamente; web y LLM
+    informaron estado healthy.
+  - HTTPS y endpoint público comprobados:
+      https://vitamap.marcomano.org/api/health
+    respondió status=ok, service=vitamap-web, phase=0.
   - Registro restringido por invitación implementado y probado
     localmente. El alta directa de BetterAuth queda bloqueada.
-  - Flujo de pago comprobado en modo de prueba:
+  - Flujo de pago comprobado primero en TEST y después en LIVE:
       Checkout de Stripe → pago → webhook → base de datos →
       estado "Activo" en billing.
+  - Primera suscripción LIVE del administrador completada por 6 €/mes.
+    VitaMap mostró "Pago realizado correctamente. Tu acceso está
+    activo" y habilitó "Gestionar pago o cancelar en Stripe".
+  - Customer Portal LIVE activado para facturas, información de
+    facturación, método de pago y cancelación.
   - Webhook reforzado para asociar el usuario, reconocer los estados de
     Stripe, registrar renovaciones y tolerar eventos repetidos o
     recibidos fuera de orden.
+  - Estados Stripe TEST y LIVE separados. Una suscripción de prueba no
+    puede conceder acceso en producción.
   - Prueba automatizada del flujo de billing y compilación de producción
     superadas.
+  - Documento de laboratorio completamente ficticio preparado en:
+      test-data/analitica-sintetica-01.pdf
+    Está marcado como sintético y no contiene datos de una persona real.
   - Exportación y eliminación de cuenta existen en la aplicación.
 
   [VERIFICAR EN VPS]
-  - Que el servidor ejecuta la versión actual del repositorio.
-  - Dominio, DNS, HTTPS, firewall y acceso SSH restringido.
+  - Firewall, acceso SSH restringido y política de actualización del
+    sistema operativo.
   - Cifrado del disco y custodia de las claves.
-  - Contenedores web, Caddy, LLM y backup en estado saludable.
   - Backups cifrados en región UE y restauración real comprobada.
   - Separación entre usuarios, logs de auditoría y borrado de cuenta
     comprobados de extremo a extremo en producción.
-  - Estado final de la verificación de la cuenta Stripe y configuración
-    del webhook con claves LIVE. La prueba ya realizada no demuestra
-    por sí sola que el cobro real esté autorizado.
+  - Sustituir las credenciales personales de GitHub CLI guardadas en
+    root por un mecanismo de despliegue de solo lectura, o cerrar esa
+    sesión cuando ya no sea necesaria.
+  - Confirmar en Stripe la fecha e importe neto de la primera
+    transferencia al IBAN de Revolut. El pago ya está en Stripe, pero
+    eso no demuestra todavía que el banco haya recibido el payout.
+  - Completar el reintento del PDF sintético después de desplegar la
+    corrección del worker de pdfjs-dist (main bb0d6b3).
 
   [PENDIENTE — BLOQUEA EL PILOTO REAL]
-  1. Verificar en el VPS el control de suscripción activa ya implementado.
-     Sin pago confirmado, chat, memoria, documentos, observaciones y
-     assessments quedan bloqueados; billing, ajustes, exportación y
-     borrado siguen disponibles.
-  2. Desactivar mediante configuración los módulos todavía no aprobados,
+  1. Desactivar mediante configuración los módulos todavía no aprobados,
      especialmente cuestionarios PHQ/GAD, crisis y funciones OCR o
      interpretativas que amplíen el riesgo regulatorio.
-  3. Completar autenticación reforzada, recuperación segura de cuenta y
+  2. Completar autenticación reforzada, recuperación segura de cuenta y
      verificación de correo. Para el administrador, MFA es obligatoria.
-  4. Publicar privacidad, Impressum, condiciones del servicio,
+  3. Publicar privacidad, Impressum, condiciones del servicio,
      información de desistimiento y una cancelación de suscripción
      separada de la eliminación de datos.
-  5. Corregir el consentimiento para identificar al responsable y a los
+  4. Corregir el consentimiento para identificar al responsable y a los
      destinatarios/proveedores reales. No puede afirmar "ninguno" si
      intervienen Stripe, hosting, correo o backups.
-  6. Completar DPIA/DSFA, Registro del Art. 30, contratos con encargados,
+  5. Completar DPIA/DSFA, Registro del Art. 30, contratos con encargados,
      política de conservación y revisión MDR de cada módulo.
-  7. Ejecutar pruebas de aislamiento, acceso, logs, backup/restauración,
+  6. Ejecutar pruebas de aislamiento, acceso, logs, backup/restauración,
      borrado e incidente usando únicamente datos sintéticos.
-  8. Desplegar la versión actual y repetir el pago completo en LIVE con
-     la cuenta del administrador, cuando Stripe termine la revisión.
-  9. Mantener 48 horas de observación técnica con datos sintéticos.
- 10. Solo entonces generar las invitaciones de los voluntarios 2 y 3,
+  7. Mantener 48 horas de observación técnica con datos sintéticos
+     después de completar sin errores el recorrido de prueba.
+  8. Solo entonces generar las invitaciones de los voluntarios 2 y 3,
      que participarán en el piloto con sus propios datos y un
      consentimiento informado válido.
 
 PRÓXIMO PASO TÉCNICO INMEDIATO
 
-  Desplegar la versión con control de suscripción, activar el Customer
-  Portal en Stripe LIVE y completar con la cuenta del administrador el
-  ciclo real: registro → Checkout → webhook → active → acceso → portal.
+  Completar con el administrador el recorrido sintético:
+    reintentar PDF → revisar extracción → confirmar en memoria →
+    consultar en chat → exportar → comprobar auditoría → borrar.
+
+  La primera subida detectó un error de inicialización del worker de
+  pdfjs-dist. El documento quedó cifrado en el buzón; no se perdió ni
+  necesita subirse de nuevo. La corrección está fusionada en main
+  (bb0d6b3) y añade una prueba automática con ese mismo PDF.
+
+  Después deben verificarse backup y restauración y comenzar las
+  48 horas de observación. No se invita todavía a los voluntarios 2 y 3.
 
 La preparación legal completa está detallada en:
   docs/GUIA-LEGAL-PILOTO-ALEMANIA.md
@@ -170,7 +196,7 @@ Pasos de referencia en el panel de Hetzner:
   3. Asignar IP flotante (opcional pero recomendado: la IP no cambia si
      reinicias o migras).
   4. Configurar DNS en Cloudflare: A record apuntando al IP del VPS.
-     Ejemplo: vitamap.tudominio.de → <IP del VPS>
+     Ejemplo actual: vitamap.marcomano.org → <IP del VPS>
 
 Acceder al servidor:
   ssh root@<IP del VPS>
@@ -183,17 +209,28 @@ Instalar dependencias:
   systemctl start docker
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-C.2  REPOSITORIO Y ENTORNO — [VERIFICAR EN VPS]
+C.2  REPOSITORIO Y ENTORNO — [COMPLETADO PARA EL DESPLIEGUE ACTUAL]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Comprobar primero si /opt/vitamap ya existe. Si existe, verificar la
-versión desplegada y actualizarla de forma controlada; no volver a
-clonar encima del directorio.
+Estado actual:
+  - /opt/vitamap-next es el clon Git activo de main.
+  - /opt/vitamap-next/infra/.env contiene la configuración de producción
+    y tiene permisos restringidos.
+  - /opt/vitamap conserva la copia anterior sin metadatos Git. No debe
+    recibir `git pull`.
+  - Los secretos no entran en el contexto de build gracias a
+    .dockerignore.
 
-Para una instalación nueva en el VPS:
+Para actualizar la instalación actual:
+  cd /opt/vitamap-next
+  git pull origin main
+  cd infra
+  docker compose --env-file .env up -d --build
+
+Para una instalación nueva o una reconstrucción futura:
   cd /opt
-  git clone <URL de tu repositorio> vitamap
-  cd vitamap
+  git clone --branch main --single-branch <URL del repositorio> vitamap-next
+  cd vitamap-next
 
 Crear el fichero de variables de entorno que usa Docker Compose:
   cp infra/.env.example infra/.env
@@ -201,16 +238,16 @@ Crear el fichero de variables de entorno que usa Docker Compose:
 
 Variables obligatorias que debes rellenar en infra/.env:
 
-  PUBLIC_DOMAIN=vitamap.tudominio.de
-  PUBLIC_URL=https://vitamap.tudominio.de
-  NEXT_PUBLIC_APP_URL=https://vitamap.tudominio.de
+  PUBLIC_DOMAIN=vitamap.marcomano.org
+  PUBLIC_URL=https://vitamap.marcomano.org
+  NEXT_PUBLIC_APP_URL=https://vitamap.marcomano.org
 
   # Genera con: openssl rand -hex 32
   MASTER_KEY=<64 caracteres hexadecimales>
 
   # Genera con: openssl rand -hex 32
   BETTER_AUTH_SECRET=<mínimo 32 caracteres aleatorios>
-  BETTER_AUTH_URL=https://vitamap.tudominio.de
+  BETTER_AUTH_URL=https://vitamap.marcomano.org
 
   LLM_BASE_URL=http://llm:8080/v1
   LLM_MODEL=qwen3-4b-instruct
@@ -240,7 +277,7 @@ Cómo generar MASTER_KEY y BETTER_AUTH_SECRET de forma segura:
 Cómo obtener STRIPE_WEBHOOK_SECRET:
   1. En dashboard.stripe.com → Developers → Webhooks → Add endpoint.
   2. URL del endpoint:
-       https://vitamap.tudominio.de/api/billing/webhook
+       https://vitamap.marcomano.org/api/billing/webhook
   3. Seleccionar estos seis eventos:
        · checkout.session.completed
        · customer.subscription.created
@@ -269,13 +306,18 @@ El portal es independiente del borrado de cuenta. Cancelar detiene la
 renovación; borrar la cuenta revoca el consentimiento y purga la memoria.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-C.3  MODELO LLM — [VERIFICAR EN VPS]
+C.3  MODELO LLM — [ARRANQUE Y HEALTHCHECK COMPLETADOS]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-El modelo debe estar en disco antes de levantar los contenedores.
+El volumen vitamap_llm_models existente se reutilizó y el servicio
+vitamap-llm-1 informó healthy. Falta verificar una conversación completa
+con el documento sintético antes de considerar validada la inferencia.
+
+En una instalación nueva, el modelo debe estar en disco antes de
+levantar los contenedores.
 El script infra/scripts/download-model.sh lo descarga en el volumen.
 
-  cd /opt/vitamap/infra
+  cd /opt/vitamap-next/infra
   bash scripts/download-model.sh
 
 Esto descarga Qwen3-4B-Instruct Q4_K_M (~2.5 GB) desde HuggingFace
@@ -283,10 +325,10 @@ al volumen Docker llm_models. La descarga puede tardar 5-15 minutos
 según la conexión del VPS. No interrumpir.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-C.4  STACK DE SERVICIOS — [VERIFICAR EN VPS]
+C.4  STACK DE SERVICIOS — [COMPLETADO EN FASE 0]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  cd /opt/vitamap/infra
+  cd /opt/vitamap-next/infra
   docker compose --env-file .env up -d --build
 
 Esto levanta cuatro servicios:
@@ -301,9 +343,14 @@ Verificar que todo funciona:
   docker compose --env-file .env logs llm --tail=20
 
 El endpoint de salud responde en:
-  curl https://vitamap.tudominio.de/api/health
+  curl https://vitamap.marcomano.org/api/health
 
-Respuesta esperada: {"status":"ok"}
+Respuesta comprobada: status=ok, service=vitamap-web, phase=0.
+
+El aviso de que vitamap_llm_models ya existía y no fue creado por el
+Compose actual no bloqueó el despliegue: el volumen fue reutilizado y el
+LLM quedó healthy. Debe documentarse como volumen externo antes de una
+reconstrucción más amplia de la infraestructura.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 C.5  BACKUPS (BACKBLAZE B2) — [VERIFICAR Y PROBAR RESTAURACIÓN]
@@ -330,8 +377,12 @@ Verificar que el primer backup funciona:
   docker compose --env-file .env exec backup restic snapshots
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-C.6  PRIMER USUARIO — [DESPUÉS DE RESOLVER LOS BLOQUEOS]
+C.6  PRIMER USUARIO — [PAGO COMPLETADO; PRUEBA SINTÉTICA EN CURSO]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+El administrador ya está registrado, ha completado la primera
+suscripción LIVE de 6 €/mes y tiene acceso activo. Customer Portal
+también está accesible desde VitaMap.
 
 No ejecutar esta sección con datos reales hasta completar la sección B.
 El administrador también necesita una invitación para registrarse.
@@ -341,7 +392,7 @@ rechaza todo alta sin el código interno, incluso desde línea de comandos.
 Paso 1 — Generar la invitación para el administrador desde el
 contenedor administrativo, que comparte la base de producción:
 
-  cd /opt/vitamap/infra
+  cd /opt/vitamap-next/infra
   docker compose --env-file .env --profile tools run --rm admin \
     create admin@tudominio.de --days 7
 
@@ -358,7 +409,7 @@ IMPORTANTE: el código solo se muestra una vez. Copiarlo en un gestor
 de contraseñas antes de cerrar la terminal.
 
 Paso 2 — Abrir el navegador y registrarse como cualquier voluntario:
-  Ir a https://vitamap.tudominio.de/register
+  Ir a https://vitamap.marcomano.org/register
   Rellenar: código, email (admin@tudominio.de), contraseña, checkboxes.
   Pulsar "Validar invitación y crear cuenta".
 
@@ -366,6 +417,21 @@ El administrador queda registrado como usuario normal. La plataforma
 no tiene actualmente un rol de administrador separado en la UI: las
 operaciones administrativas (crear invitaciones, revocar, listar) se
 hacen siempre por SSH en el VPS.
+
+Prueba sintética actual:
+  1. Archivo:
+       test-data/analitica-sintetica-01.pdf
+  2. La primera subida confirmó almacenamiento cifrado, pero la
+     extracción falló por una ruta de worker vacía en pdfjs-dist.
+  3. La corrección registra el worker incluido en el bundle standalone
+     y conserva el fallback pdftoppm + Tesseract.
+  4. Tras desplegar main bb0d6b3, pulsar "Reintentar" sobre el mismo
+     elemento. No volver a subirlo.
+  5. Comprobar los 11 marcadores esperados. Glucosa, colesterol total y
+     LDL deben quedar altos; vitamina D baja; los demás, normales.
+  6. Corregir manualmente cualquier error antes de confirmar.
+  7. Confirmar en memoria, consultar desde chat, exportar y finalmente
+     borrar el dato de prueba.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 C.7  INVITAR A LOS DOS VOLUNTARIOS — [PROCEDIMIENTO POSTERIOR]
@@ -429,7 +495,7 @@ D.1  LO QUE RECIBES ANTES DE EMPEZAR
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 El administrador te enviará, por canal privado:
-  - La URL de la plataforma (ej: https://vitamap.tudominio.de)
+  - La URL de la plataforma: https://vitamap.marcomano.org
   - Tu código de invitación personal (una cadena de letras y números)
   - La dirección de correo a la que está vinculado el código
   - La fecha en que caduca el código (normalmente 7 días)
@@ -442,7 +508,7 @@ D.2  CREAR TU CUENTA
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   1. Abre el navegador y ve a:
-       https://vitamap.tudominio.de/register
+       https://vitamap.marcomano.org/register
 
   2. Lee el texto de consentimiento que aparece en pantalla.
      Es el documento completo que describe qué datos se procesan,
@@ -546,11 +612,11 @@ Lo que NO cubre:
 Qué ocurre tras pulsar "Activar suscripción":
   1. Stripe abre su página de pago seguro (dominio stripe.com).
   2. Introduces tu tarjeta y confirmas.
-  3. Stripe te redirige de vuelta a VitaMap con el mensaje
-     "Stripe está confirmando el pago. El estado se actualizará
-     en unos instantes."
-  4. En segundos llega el webhook de Stripe al servidor y el estado
-     cambia a "Activo". Recarga la página para verlo actualizado.
+  3. Stripe te redirige de vuelta a VitaMap.
+  4. Si el webhook ya llegó, VitaMap muestra:
+       "Pago realizado correctamente. Tu acceso está activo."
+     Si todavía está en tránsito, muestra que Stripe está confirmando
+     el pago y el estado cambia a "Activo" al recibir el webhook.
 
 Si tras 2 minutos el estado sigue mostrando "Sin suscripción":
   - No inicies otro Checkout.
@@ -656,14 +722,15 @@ F.1  ACTUALIZAR EL CÓDIGO
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ssh root@<IP del VPS>
-  cd /opt/vitamap
-  git pull
+  cd /opt/vitamap-next
+  git pull origin main
   cd infra
-  docker compose --env-file .env build web
-  docker compose --env-file .env up -d web
+  docker compose --env-file .env up -d --build
 
-El servicio web se reinicia. Los servicios llm, caddy y backup no
-se ven afectados por cambios de código normales.
+Compose reconstruye las imágenes necesarias y conserva los volúmenes
+persistentes. Confirmar después:
+  docker compose --env-file .env ps
+  curl -fsS https://vitamap.marcomano.org/api/health
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 F.2  VER LOGS EN TIEMPO REAL
@@ -682,7 +749,7 @@ F.2  VER LOGS EN TIEMPO REAL
 F.3  RESTAURAR UN BACKUP
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  cd /opt/vitamap/infra
+  cd /opt/vitamap-next/infra
   docker compose --env-file .env down
   docker compose --env-file .env run --rm backup \
     /usr/local/bin/restore.sh /restore
@@ -727,7 +794,7 @@ F.5  MONITORIZACIÓN BÁSICA
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Verificar que la plataforma responde:
-  curl https://vitamap.tudominio.de/api/health
+  curl https://vitamap.marcomano.org/api/health
 
 Estado de los contenedores:
   docker compose --env-file .env ps
@@ -811,7 +878,7 @@ G. GLOSARIO DE COMANDOS DE REFERENCIA RÁPIDA
 ──────────────────────────────────────────────
 
 Todos los comandos de gestión de invitaciones se ejecutan desde:
-  /opt/vitamap/infra   (en el VPS)
+  /opt/vitamap-next/infra   (en el VPS)
 
 ─────────────────────────────────────────────────────────────────────
 INVITACIONES
@@ -837,7 +904,7 @@ STACK DE CONTENEDORES
 ─────────────────────────────────────────────────────────────────────
 
 Levantar el stack completo:
-  cd /opt/vitamap/infra
+  cd /opt/vitamap-next/infra
   docker compose --env-file .env up -d
 
 Detener el stack:
@@ -889,7 +956,7 @@ SALUD DEL SISTEMA
 ─────────────────────────────────────────────────────────────────────
 
 Verificar que la API responde:
-  curl https://vitamap.tudominio.de/api/health
+  curl https://vitamap.marcomano.org/api/health
 
 Ver uso de disco:
   df -h /
