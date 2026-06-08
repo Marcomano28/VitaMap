@@ -14,6 +14,9 @@ services:
       - "80:80"
       - "443:443"
       - "443:443/udp"
+    environment:
+      PUBLIC_DOMAIN: ${PUBLIC_DOMAIN:?PUBLIC_DOMAIN required}
+      CADDY_EMAIL: ${CADDY_EMAIL:-admin@vitamap.local}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
@@ -44,8 +47,11 @@ services:
       BETTER_AUTH_URL: ${PUBLIC_URL:?PUBLIC_URL required}
       NEXT_PUBLIC_APP_URL: ${PUBLIC_URL}
       NODE_ENV: production
-      # QMD descarga modelos GGUF aquí en primer arranque.
       XDG_CACHE_HOME: /data/.cache
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+      STRIPE_PRICE_ID: ${STRIPE_PRICE_ID}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
     volumes:
       - vitamap_data:/data
     networks:
@@ -102,6 +108,31 @@ services:
       RETENTION_KEEP_MONTHLY: "6"
     volumes:
       - vitamap_data:/data:ro
+    networks:
+      - vitamap
+
+  admin:
+    profiles: ["tools"]
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.web
+      target: admin
+    image: vitamap/admin:latest
+    environment:
+      LLM_BASE_URL: http://llm:8080/v1
+      LLM_MODEL: ${LLM_MODEL:-qwen3-4b-instruct}
+      LLM_API_KEY: ${LLM_API_KEY:-not-needed-for-local}
+      QMD_EMBED_MODEL: ${QMD_EMBED_MODEL:-hf:Qwen/Qwen3-Embedding-0.6B-GGUF/Qwen3-Embedding-0.6B-Q8_0.gguf}
+      DATA_ROOT: /data
+      KB_INDEX_PATH: /data/kb-index.sqlite
+      AUTH_DB_PATH: /data/auth.sqlite
+      MASTER_KEY: ${MASTER_KEY:?MASTER_KEY required}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET required}
+      BETTER_AUTH_URL: ${PUBLIC_URL:?PUBLIC_URL required}
+      NEXT_PUBLIC_APP_URL: ${PUBLIC_URL}
+      NODE_ENV: production
+    volumes:
+      - vitamap_data:/data
     networks:
       - vitamap
 

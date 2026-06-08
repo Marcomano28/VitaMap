@@ -1,0 +1,229 @@
+VITAWENDE — ESTRATEGIA Y FUNDAMENTO LEGAL
+Documento de trabajo · Versión 0.1 · Junio 2026
+
+NOTA DE USO: Este es un documento interno para quienes construyen
+el proyecto. No es material de comunicación pública. Desde el punto
+de vista del usuario, VitaWende es ante todo un contexto y una
+experiencia — el sentido político y el mecanismo cívico son capas
+que se descubren desde adentro, no la puerta de entrada.
+
+────────────────────────────────────────────────
+
+I. LA INVERSIÓN DELIBERADA
+Por qué empezamos por la herramienta y no por la institución
+
+El camino convencional para cambiar una política pública es este:
+se forma una organización, se redacta una propuesta, se buscan aliados
+institucionales, se espera a que el momento político sea favorable,
+y eventualmente — si todo sale bien — la institución nace y las personas
+la usan. El proceso dura décadas y depende de factores que nadie controla.
+
+VitaWende invierte ese orden. La herramienta existe antes que la institución.
+Las personas la usan antes de que el derecho que la herramienta encarna
+exista en la ley. Y eso no es una limitación del proyecto — es su estrategia
+central.
+
+Esta inversión tiene precedentes que funcionaron:
+
+La Energiewende alemana no empezó en el Bundestag. Empezó con comunidades
+que instalaron paneles solares y pequeños aerogeneradores en los años ochenta,
+mucho antes de que hubiera marco legal para ello. La tecnología en funcionamiento
+demostró que era posible. La demostración creó demanda. La demanda creó
+presión política. La presión creó la ley. Alemania exportó el concepto al mundo.
+
+Wikipedia no pidió permiso a ninguna institución cultural para construir
+una enciclopedia libre. La construyó. Cuando ya existía y millones de personas
+la usaban, la pregunta de si el conocimiento libre debía ser un derecho dejó
+de ser abstracta — había una respuesta viviente a esa pregunta, disponible
+en cualquier navegador.
+
+Signal no convenció a los reguladores de que la privacidad en comunicaciones
+era deseable antes de construir la herramienta. La construyó. Cuando los
+gobiernos empezaron a exigir cifrado en las comunicaciones, Signal ya
+era el estándar de referencia.
+
+En todos estos casos el patrón es el mismo: la herramienta demuestra
+que la idea funciona antes de que la política la reconozca. La demostración
+es el argumento más poderoso que existe, porque no es abstracto — es real,
+es usable, es verificable por cualquiera.
+
+VitaWende aplica ese patrón al derecho a la salud preventiva.
+
+────────────────────────────────────────────────
+
+II. EL ARGUMENTO DE LA DEMOSTRACIÓN
+Por qué esta petición es distinta a cualquier otra
+
+La mayoría de las iniciativas ciudadanas piden algo que no existe.
+Describen un futuro deseable y recogen firmas de personas que lo
+imaginan como posible. Es un acto de fe política — legítimo, pero débil
+ante quienes argumentan que la idea es impráctica, demasiado cara
+o simplemente irrealizable.
+
+VitaWende pide algo diferente.
+
+Pide que lo que ya existe para quienes usan VitaMap — acceso ordenado
+al propio historial de salud, herramientas para entenderlo, capacidad
+de llegar a una consulta con preguntas mejor formuladas — exista como
+derecho para todos, respaldado por infraestructura pública.
+
+La diferencia no es retórica. Es política.
+
+Quien firma la petición de VitaWende no imagina algo que podría funcionar.
+Ha usado algo que ya funciona. Ha vivido la diferencia entre tener acceso
+a sus propios datos de salud y no tenerlo. Firma desde la experiencia,
+no desde la esperanza.
+
+Esto transforma el argumento ante cualquier institución:
+no "creemos que esto sería bueno", sino "esto ya existe, lo usamos,
+y queremos que sea un derecho para todos".
+
+Una petición convencional puede ser refutada con un estudio.
+Esta no puede serlo — tiene detrás a personas que son ellas mismas
+la evidencia de que el modelo funciona.
+
+El número de usuarios de VitaMap es, por tanto, un argumento político
+antes de ser un dato técnico. Cada persona que usa la herramienta
+añade una unidad de demostración al movimiento, independientemente
+de que firme o no. Y la probabilidad de que firme es alta precisamente
+porque entiende desde adentro qué está pidiendo.
+
+────────────────────────────────────────────────
+
+III. EL MARCO LEGAL CONCRETO
+Qué mecanismos existen y en qué orden usarlos
+
+NIVEL FEDERAL — Petición al Bundestag
+
+Base legal: Artículo 17 de la Ley Fundamental (Grundgesetz).
+Todo ciudadano tiene derecho a dirigir peticiones escritas a las
+autoridades competentes. El Petitionsausschuss del Bundestag está
+obligado a tramitar cualquier petición que supere las 50.000 firmas
+verificadas en el plazo de cuatro semanas, y a celebrar una audiencia
+pública con los firmantes.
+
+El resultado no es vinculante — el parlamento no está obligado a
+legislar. Pero la audiencia pública genera cobertura mediática,
+obliga a los parlamentarios a posicionarse, y crea registro oficial
+de que un número significativo de ciudadanos exige una respuesta.
+Es el umbral más bajo y el más rápido de alcanzar. Es el primer hito.
+
+NIVEL ESTATAL — Volksbegehren / Volksinitiative
+
+Cada Bundesland tiene su propio mecanismo de democracia directa,
+con umbrales y efectos distintos:
+
+— Baviera tiene el sistema más desarrollado. Con el 10% del padrón
+  electoral (aprox. 950.000 firmas) se puede forzar un referéndum
+  vinculante. Con un umbral menor se activa una Volksinitiative
+  que obliga al Landtag a debatir la propuesta.
+
+— Berlín, Hamburgo y Bremen tienen mecanismos similares con umbrales
+  más bajos por el tamaño reducido del padrón.
+
+— NRW, el Land más poblado (18 millones de habitantes), requiere
+  el 8% del padrón para un Volksbegehren — aproximadamente
+  1,1 millones de firmas.
+
+La estrategia recomendada es comenzar en un Land con umbral bajo
+y alta concentración de usuarios de VitaMap, ganar visibilidad,
+y usar esa victoria como palanca para el nivel federal.
+
+NIVEL EUROPEO — Iniciativa Ciudadana Europea (ICE)
+
+Base legal: Artículo 11.4 del Tratado de la Unión Europea y
+Reglamento (UE) 2019/788.
+
+Con un millón de firmas recogidas en al menos siete Estados miembros,
+con mínimos por país (para Alemania: 72.000 firmas; para España: 40.500),
+la Comisión Europea está obligada a examinar la iniciativa y a responder
+formalmente, pudiendo proponer legislación o explicar por qué no lo hace.
+
+Este es el horizonte del proyecto a medio plazo. Una propuesta de
+directiva europea que establezca el derecho a una revisión integral
+de salud periódica como parte de los sistemas nacionales de salud
+tendría un alcance transformador que ningún mecanismo nacional puede igualar.
+
+ORDEN ESTRATÉGICO RECOMENDADO
+
+1. Bundestagspetition (50.000 firmas) — primer hito visible,
+   bajo umbral, genera cobertura, establece el precedente formal.
+
+2. Volksbegehren en un Land seleccionado — primer resultado
+   con consecuencias legislativas reales, aunque sea a escala regional.
+
+3. Iniciativa Ciudadana Europea — objetivo a largo plazo,
+   activa cuando la base de usuarios y firmantes sea suficiente
+   para cumplir los mínimos por país en al menos siete Estados miembros.
+
+────────────────────────────────────────────────
+
+IV. LA ARQUITECTURA DE ENTIDADES
+Consideración para cuando el proyecto active su dimensión cívica
+
+NOTA: Esta sección no describe el estado actual del proyecto ni su
+identidad pública. VitaWende existe hoy como marco conceptual y portal
+de entrada a VitaMap — no como organización registrada. La separación
+legal descrita aquí solo se vuelve necesaria si y cuando un número
+suficiente de usuarios decide activar la dimensión cívica del proyecto
+y se requiere una estructura formal para gestionar la iniciativa
+ciudadana. Hasta ese momento, es una previsión, no una realidad.
+
+VitaMap es una herramienta educativa. Su encuadre legal deliberado
+la mantiene fuera de la regulación de dispositivo médico (MDR europeo)
+y de la legislación de software sanitario profesional. Ese encuadre
+es frágil — cualquier ambigüedad en su propósito puede comprometerse
+si se mezcla con una organización que hace campaña política.
+
+La iniciativa VitaWende es una organización cívica. En Alemania
+la forma natural sería un Verein (asociación sin ánimo de lucro)
+registrado, con estatutos, junta directiva y responsabilidad legal
+propia. Esa forma jurídica es culturalmente familiar para los alemanes
+— los Vereine son la columna vertebral de la vida asociativa del país —
+y ofrece transparencia financiera que genera confianza.
+
+La separación protege a ambas estructuras:
+
+— VitaMap no se contamina políticamente. Quien quiera usar la herramienta
+  sin sumarse al movimiento puede hacerlo sin fricción.
+
+— VitaWende no arrastra la responsabilidad regulatoria de VitaMap.
+  El movimiento puede crecer, cambiar de posición o disolverse sin
+  afectar a la herramienta ni a los datos de sus usuarios.
+
+— Los datos de salud de los usuarios de VitaMap nunca tocan los sistemas
+  de VitaWende. Son entidades distintas, con bases de datos distintas,
+  con responsables de tratamiento distintos. Esto no es solo buena práctica
+  GDPR — es la única forma de mantener la confianza de usuarios que
+  comparten datos médicos personales.
+
+El vínculo entre las dos estructuras es filosófico y comunicativo,
+no técnico ni jurídico. VitaMap es la herramienta de quien comparte
+la visión. VitaWende es la organización que trabaja para que esa visión
+sea ley. Cada una refuerza a la otra sin depender de ella.
+
+────────────────────────────────────────────────
+
+V. EL PRIMER HITO
+
+50.000 firmas verificadas en el sistema de peticiones del Bundestag.
+
+No es el objetivo final. Es la primera prueba de que el movimiento
+tiene masa crítica suficiente para ser tomado en serio. La audiencia
+pública que genera es una plataforma: medios, parlamentarios,
+expertos sanitarios y ciudadanos firmantes en la misma sala,
+discutiendo un derecho que todavía no existe.
+
+Para llegar a ese número con usuarios que firman desde la experiencia
+y no desde la abstracción, VitaMap necesita entre 15.000 y 30.000
+usuarios activos — personas que han subido al menos un documento,
+han usado el chat, y entienden desde adentro qué están pidiendo.
+
+Ese es el número que conecta el desarrollo de la herramienta
+con el inicio de la acción política. Antes de él, VitaWende
+construye. Después de él, VitaWende actúa.
+
+────────────────────────────────────────────────
+
+VitaWende · Documento de trabajo · Junio 2026
+Sujeto a revisión y conversación.

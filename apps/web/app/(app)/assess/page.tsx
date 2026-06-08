@@ -1,33 +1,66 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import { getLocale } from "@/lib/locale";
+import { localize } from "@/lib/i18n";
+import { requireSubscribedUserId } from "@/lib/subscription-access";
 
-export const metadata = { title: "Escalas validadas" };
-
-const INSTRUMENTS = [
-  {
-    slug: "phq-9",
-    title: "PHQ-9",
-    description: "Cuestionario de salud del paciente — depresión. 9 ítems, 5 min.",
+const TEXT = {
+  es: {
+    title: "Escalas validadas",
+    intro:
+      "Cuestionarios estandarizados que producen una puntuación comparable en el tiempo. Las respuestas se guardan en tu memoria.",
+    instruments: [
+      {
+        slug: "phq-9",
+        title: "PHQ-9",
+        description: "Cuestionario de salud del paciente — depresión. 9 ítems, 5 min.",
+      },
+      {
+        slug: "gad-7",
+        title: "GAD-7",
+        description: "Cuestionario de ansiedad generalizada. 7 ítems, 4 min.",
+      },
+    ],
   },
-  {
-    slug: "gad-7",
-    title: "GAD-7",
-    description: "Cuestionario de ansiedad generalizada. 7 ítems, 4 min.",
+  de: {
+    title: "Standardisierte Fragebögen",
+    intro:
+      "Standardisierte Fragebögen liefern Werte, die im Zeitverlauf vergleichbar sind. Deine Antworten werden in deinem Speicher abgelegt.",
+    instruments: [
+      {
+        slug: "phq-9",
+        title: "PHQ-9",
+        description: "Gesundheitsfragebogen zu depressiven Beschwerden. 9 Fragen, etwa 5 Minuten.",
+      },
+      {
+        slug: "gad-7",
+        title: "GAD-7",
+        description: "Fragebogen zu generalisierter Angst. 7 Fragen, etwa 4 Minuten.",
+      },
+    ],
   },
-];
+} as const;
 
-export default function AssessLandingPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return { title: localize(locale, TEXT).title };
+}
+
+export default async function AssessLandingPage() {
+  await requireSubscribedUserId();
+  const locale = await getLocale();
+  const t = localize(locale, TEXT);
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="text-2xl font-semibold">Escalas validadas</h1>
+        <h1 className="text-2xl font-semibold">{t.title}</h1>
         <p className="text-sm text-[var(--color-muted)]">
-          Cuestionarios estandarizados que producen una puntuación
-          comparable en el tiempo. Las respuestas se guardan en tu memoria.
+          {t.intro}
         </p>
       </div>
 
       <ul className="grid sm:grid-cols-2 gap-3">
-        {INSTRUMENTS.map((i) => (
+        {t.instruments.map((i) => (
           <li key={i.slug}>
             <Link
               href={`/assess/${i.slug}`}

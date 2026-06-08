@@ -5,6 +5,93 @@ decisión; nunca se borran, solo se marcan como *superseded* si cambian.
 
 ---
 
+## ADR-012 · Registro cerrado mediante invitaciones nominativas
+**Estado:** aceptada · 2026-06-07
+
+**Contexto.** El piloto se limita inicialmente a tres personas. Ocultar o no
+publicar `/register` no impide que alguien use el formulario o llame
+directamente al endpoint de alta de BetterAuth.
+
+**Decisión.** Cada alta requiere un código administrativo:
+
+- ligado a un email normalizado;
+- generado con 192 bits aleatorios;
+- almacenado únicamente como hash SHA-256;
+- con caducidad de 1 a 90 días;
+- revocable y válido para una sola cuenta;
+- reservado durante el registro para impedir consumo concurrente.
+
+La invitación se consume antes de crear la cuenta. Si BetterAuth rechaza el
+alta, el mismo proceso puede reabrirla; si el proceso se interrumpe, queda
+cerrada antes que permitir una cuenta no autorizada.
+
+El endpoint `/api/auth/sign-up/email` exige además una cabecera interna firmada
+con `BETTER_AUTH_SECRET`. Solo la Server Action que validó la invitación añade
+esa autorización, por lo que llamar directamente a BetterAuth no evita el
+control.
+
+**Operación.** `npm run invite -w @vitamap/web -- create <email>` en local, o
+el servicio Docker de perfil `tools` en el VPS. El código se muestra una sola
+vez y se comparte por un canal privado, nunca dentro de una URL.
+
+**Consecuencias.**
+- La tabla `registration_invitation` comparte `auth.sqlite`.
+- Crear una invitación no crea todavía una cuenta ni concede acceso.
+- El alta continúa necesitando consentimiento y, después, pago confirmado.
+- Las pruebas cubren código incorrecto, email distinto, caducidad, revocación,
+  concurrencia, reintento, uso único y bypass directo de BetterAuth.
+
+---
+
+## ADR-011 · Cuota compartida de infraestructura con acceso por suscripción
+**Estado:** aceptada · 2026-06-07
+
+**Contexto.** VitaMap necesita un VPS europeo para mantener los datos y el
+modelo de IA dentro de la infraestructura controlada. En el piloto inicial,
+el VPS de 4 vCPU, 8 GB de RAM y 160 GB de disco cuesta 16,65 €/mes, antes de
+comisiones de pago y otros costes operativos menores. El proyecto comienza
+con tres usuarios reales y no busca obtener margen vendiendo diagnósticos o
+consejo médico.
+
+**Decisión.** El acceso al piloto es por invitación y requiere una
+suscripción activa de **6 €/mes por usuario**:
+
+```text
+3 usuarios x 6 €/mes = 18 €/mes
+```
+
+La cuota financia la infraestructura compartida que hace posible VitaMap.
+Stripe procesa la suscripción y transfiere los fondos a la cuenta operativa
+del proyecto. VitaMap sigue siendo una herramienta educativa: el pago no
+compra un diagnóstico, tratamiento, consulta médica ni una respuesta clínica
+determinada.
+
+**Evolución de la cuota.** A medida que aumente el número de usuarios activos
+de pago, la cuota podrá reducirse por etapas. El cambio no será automático:
+antes se revisarán el coste real del VPS, las comisiones, los backups, el uso
+de CPU y RAM y la necesidad de ampliar infraestructura. Cada cambio de precio
+se comunicará con antelación y se aplicará de forma transparente.
+
+**Umbral de revisión.** El VPS actual se considera adecuado para un piloto de
+hasta aproximadamente 12 usuarios con uso moderado y poca concurrencia. Al
+acercarse a ese número se revisarán las métricas reales. Llegar a 12 usuarios
+no obliga por sí solo a cambiar de servidor ni garantiza una bajada de cuota:
+la decisión depende de capacidad, latencia y coste de la siguiente categoría.
+
+**Consecuencias.**
+- Registro permitido solo mediante invitación válida.
+- Tras registrarse, el usuario debe completar Checkout y esperar la
+  confirmación del webhook de Stripe.
+- Sin suscripción activa no se habilitan chat, memoria, subida de documentos
+  ni assessments; billing, ajustes, exportación y borrado de cuenta siguen
+  disponibles.
+- Stripe es la fuente de verdad del estado de pago. La URL de retorno de
+  Checkout no activa por sí sola el acceso.
+- La página de suscripción debe explicar precio, periodicidad, renovación,
+  cancelación y finalidad de la cuota.
+
+---
+
 ## ADR-001 · QMD como motor RAG central
 **Estado:** aceptada · 2026-06-01
 
@@ -140,8 +227,8 @@ cifrado por usuario llega en Fase 2 cuando montemos análisis longitudinal.
 
 ---
 
-## ADR-009 · BetterAuth con email + contraseña sobre SQLite; MFA TOTP en Fase 2
-**Estado:** aceptada · 2026-06-01
+## ADR-009 · BetterAuth sobre SQLite; MFA antes del piloto real
+**Estado:** actualizada · 2026-06-08
 
 **Contexto.** Login obligatorio por requisito GDPR (aislamiento por
 usuario, audit log significativo, trazabilidad del consentimiento Art.
@@ -152,11 +239,16 @@ usuario, audit log significativo, trazabilidad del consentimiento Art.
 `data/auth.sqlite` (la misma BD que aloja `audit_event`). Email +
 contraseña, sesión por cookie httpOnly de 14 días con refresh
 diario, auto-signin tras registro. Mínimo de 10 caracteres en
-contraseña. Sin verificación de email para Fase 1 (alta invite-only y
-relación de confianza con los voluntarios). MFA TOTP queda como
-seguimiento de Fase 2 — BetterAuth lo soporta por plugin pero
-añade fricción de onboarding poco justificada para 3 personas en
-piloto cerrado.
+contraseña. Durante el desarrollo privado, el alta sigue siendo
+invite-only y puede probarse sin verificación de email.
+
+Antes de admitir datos de salud de terceros, la decisión cambia: se debe
+incorporar MFA (TOTP o passkey) con códigos de recuperación, revocación y
+procedimiento de pérdida de dispositivo probados. La cuenta operadora y las
+cuentas del piloto deben completar ese segundo factor. También debe existir
+verificación de correo y recuperación segura que no revele si una cuenta
+existe. La relación de confianza y el reducido número de usuarios no sustituyen
+estas medidas.
 
 **Alternativas descartadas.**
 - *Lucia Auth*: el mantenedor lo marcó como legacy en 2024 a favor de
@@ -164,9 +256,9 @@ piloto cerrado.
   que necesitamos para un piloto.
 - *Magic links sin contraseña*: requiere SMTP en el VPS (otro
   contenedor + DKIM/SPF + reputación). Sobredimensionado para 3 usuarios.
-- *Passkey / WebAuthn*: máxima seguridad pero curva de aprendizaje
-  alta y recuperación traumática si el voluntario pierde el dispositivo.
-  Buen candidato para Fase 2 como opción adicional.
+- *Passkey / WebAuthn como único método*: máxima seguridad pero recuperación
+  compleja si el voluntario pierde el dispositivo. Sigue siendo candidato como
+  segundo factor si se acompaña de recuperación probada.
 - *Servicios gestionados (Clerk, Auth0, Supabase Auth)*: implementación
   más rápida pero envía identidades de pacientes a un tercero, añade
   DPAs y complica el encuadre "nada sale del VPS".
@@ -175,8 +267,9 @@ piloto cerrado.
 dos checkboxes obligatorios (reconocimiento educacional + consentimiento
 Art. 9.2.a). El audit log captura `auth.register` +
 `auth.consent.granted` con la versión del documento (`CONSENT_VERSION`
-en `lib/consent.ts`). Cambios al documento incrementan la versión y
-fuerzan re-consentimiento.
+en `lib/consent.ts`). Los cambios incrementan la versión. El registro ya
+guarda qué versión aceptó cada usuario; el bloqueo de acceso hasta aceptar
+una versión posterior sigue siendo P0 antes del piloto real.
 
 **Borrado de cuenta.** Type-to-confirm `"BORRAR"` + contraseña. Orden:
 audit log (`consent.revoked` + `user.purge:start`) → `rm -rf

@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { localize, type Locale } from "@/lib/i18n";
 
 type FileStatus =
   | { state: "queued"; name: string }
@@ -12,10 +13,45 @@ type FileStatus =
 interface Props {
   /** Categoría por defecto del inbox. */
   defaultCategory?: "lab" | "document" | "image";
+  locale: Locale;
 }
 
-export function UploadDropzone({ defaultCategory = "lab" }: Props) {
+const TEXT = {
+  es: {
+    drop: "Arrastra aquí PDFs o imágenes",
+    select: "o haz clic para seleccionar archivos (máx. 10 MB)",
+    queued: "En cola",
+    uploading: "Subiendo...",
+    ready: "En cola para OCR",
+    error: "Error",
+    uploadFailed: "No se pudo subir el archivo",
+  },
+  de: {
+    drop: "PDFs oder Bilder hierher ziehen",
+    select: "oder klicken, um Dateien auszuwählen (max. 10 MB)",
+    queued: "In Warteschlange",
+    uploading: "Wird hochgeladen...",
+    ready: "Für OCR eingeplant",
+    error: "Fehler",
+    uploadFailed: "Die Datei konnte nicht hochgeladen werden",
+  },
+} as const;
+
+const API_ERROR_KEYS: Record<string, keyof typeof TEXT.es> = {
+  unauthorized: "uploadFailed",
+  subscription_required: "uploadFailed",
+  invalid_multipart: "uploadFailed",
+  missing_file: "uploadFailed",
+  empty_file: "uploadFailed",
+  file_too_large: "uploadFailed",
+  invalid_category: "uploadFailed",
+  store_failed: "uploadFailed",
+  queue_failed: "uploadFailed",
+};
+
+export function UploadDropzone({ defaultCategory = "lab", locale }: Props) {
   const router = useRouter();
+  const t = localize(locale, TEXT);
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
   const [items, setItems] = useState<FileStatus[]>([]);
@@ -42,8 +78,15 @@ export function UploadDropzone({ defaultCategory = "lab" }: Props) {
             { method: "POST", body: fd, credentials: "same-origin" },
           );
           if (!res.ok) {
-            const txt = await res.text().catch(() => "");
-            throw new Error(txt || `HTTP ${res.status}`);
+            if (res.status === 402) {
+              window.location.href = "/settings/billing?required=1";
+              return;
+            }
+            const payload = (await res.json().catch(() => null)) as
+              | { error?: string }
+              | null;
+            const key = payload?.error ? API_ERROR_KEYS[payload.error] : undefined;
+            throw new Error(key ? t[key] : `${t.uploadFailed} (HTTP ${res.status})`);
           }
           const json = (await res.json()) as { id: string };
           setItems((prev) =>
@@ -66,7 +109,7 @@ export function UploadDropzone({ defaultCategory = "lab" }: Props) {
 
       router.refresh();
     },
-    [defaultCategory, router],
+    [defaultCategory, router, t],
   );
 
   return (
@@ -89,9 +132,9 @@ export function UploadDropzone({ defaultCategory = "lab" }: Props) {
             : "border-[var(--color-border)] hover:border-[var(--color-accent)]"
         }`}
       >
-        <p className="font-medium">Arrastra aquí PDFs o imágenes</p>
+        <p className="font-medium">{t.drop}</p>
         <p className="text-sm text-[var(--color-muted)] mt-1">
-          o haz click para seleccionar archivos (máx. 10 MB)
+          {t.select}
         </p>
         <input
           ref={inputRef}
@@ -120,10 +163,10 @@ export function UploadDropzone({ defaultCategory = "lab" }: Props) {
                       : "text-[var(--color-muted)]"
                 }
               >
-                {it.state === "queued" && "En cola"}
-                {it.state === "uploading" && "Procesando…"}
-                {it.state === "ok" && "Listo para revisar"}
-                {it.state === "error" && `Error: ${it.message}`}
+                {it.state === "queued" && t.queued}
+                {it.state === "uploading" && t.uploading}
+                {it.state === "ok" && t.ready}
+                {it.state === "error" && `${t.error}: ${it.message}`}
               </span>
             </li>
           ))}

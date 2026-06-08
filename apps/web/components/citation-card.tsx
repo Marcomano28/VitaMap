@@ -6,6 +6,7 @@
  */
 
 import Link from "next/link";
+import type { Locale } from "@/lib/i18n";
 
 interface Citation {
   source: "personal" | "evidence";
@@ -17,16 +18,29 @@ interface Citation {
   observedAt?: string;
 }
 
-const LEVEL_LABEL: Record<string, string> = {
-  "cochrane-a": "Cochrane A",
-  "cochrane-b": "Cochrane B",
-  "grade-a": "GRADE A",
-  "grade-b": "GRADE B",
-  "grade-c": "GRADE C",
-  "grade-d": "GRADE D",
-  guideline: "Guía clínica",
-  tradition: "Tradición",
-  unrated: "Sin nivel",
+const LEVEL_LABEL: Record<Locale, Record<string, string>> = {
+  es: {
+    "cochrane-a": "Cochrane A",
+    "cochrane-b": "Cochrane B",
+    "grade-a": "GRADE A",
+    "grade-b": "GRADE B",
+    "grade-c": "GRADE C",
+    "grade-d": "GRADE D",
+    guideline: "Guía clínica",
+    tradition: "Tradición",
+    unrated: "Sin nivel",
+  },
+  de: {
+    "cochrane-a": "Cochrane A",
+    "cochrane-b": "Cochrane B",
+    "grade-a": "GRADE A",
+    "grade-b": "GRADE B",
+    "grade-c": "GRADE C",
+    "grade-d": "GRADE D",
+    guideline: "Leitlinie",
+    tradition: "Tradition",
+    unrated: "Ohne Einstufung",
+  },
 };
 
 const LEVEL_COLOR: Record<string, string> = {
@@ -41,7 +55,7 @@ const LEVEL_COLOR: Record<string, string> = {
   unrated: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
 };
 
-export function CitationCard({ c }: { c: Citation }) {
+export function CitationCard({ c, locale }: { c: Citation; locale: Locale }) {
   if (c.source === "personal") {
     return (
       <Link
@@ -51,7 +65,7 @@ export function CitationCard({ c }: { c: Citation }) {
         <div className="flex items-center justify-between gap-2">
           <span className="font-medium truncate">{c.title}</span>
           <span className="rounded bg-[var(--color-background)] px-2 py-0.5 text-[10px] uppercase tracking-wide text-[var(--color-muted)]">
-            tu memoria
+            {locale === "de" ? "dein Speicher" : "tu memoria"}
           </span>
         </div>
         {c.observedAt && (
@@ -67,7 +81,7 @@ export function CitationCard({ c }: { c: Citation }) {
       <div className="flex items-center justify-between gap-2">
         <span className="font-medium truncate">{c.title}</span>
         <span className={`rounded px-2 py-0.5 text-[10px] uppercase tracking-wide ${LEVEL_COLOR[level] ?? LEVEL_COLOR.unrated}`}>
-          {LEVEL_LABEL[level] ?? level}
+          {LEVEL_LABEL[locale][level] ?? level}
         </span>
       </div>
       <p className="text-[var(--color-muted)] mt-0.5 truncate">{c.path}</p>

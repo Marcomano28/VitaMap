@@ -13,6 +13,7 @@ import matter from "gray-matter";
 import { z } from "zod";
 import { reindexUser, userMemoryDir } from "./qmd";
 import { LabResultExtraction } from "./extraction";
+import { DEFAULT_LOCALE, localize, type Locale } from "./i18n";
 
 // =====================================================================
 // Schemas de entrada
@@ -109,23 +110,36 @@ export async function writeObservation(
 export async function writeAssessment(
   userId: string,
   input: AssessmentInput,
+  locale: Locale = DEFAULT_LOCALE,
 ): Promise<{ path: string }> {
   const parsed = AssessmentInput.parse(input);
   const filename = `${dateOnly(parsed.observedAt)}-${parsed.instrument.toLowerCase()}.md`;
   const abs = path.join(userMemoryDir(userId), "assessments", filename);
 
+  const t = localize(locale, {
+    es: {
+      total: "Puntuación total",
+      subscores: "Subpuntuaciones",
+      notes: "Notas",
+    },
+    de: {
+      total: "Gesamtpunktzahl",
+      subscores: "Teilwerte",
+      notes: "Notizen",
+    },
+  });
   const body = [
     `# ${parsed.instrument} — ${dateOnly(parsed.observedAt)}`,
     "",
-    `Puntuación total: **${parsed.score}**`,
+    `${t.total}: **${parsed.score}**`,
     "",
     Object.keys(parsed.subscores).length > 0
-      ? "## Subpuntuaciones\n\n" +
+      ? `## ${t.subscores}\n\n` +
         Object.entries(parsed.subscores)
           .map(([k, v]) => `- ${k}: ${v}`)
           .join("\n")
       : "",
-    parsed.notes ? `\n## Notas\n\n${parsed.notes}` : "",
+    parsed.notes ? `\n## ${t.notes}\n\n${parsed.notes}` : "",
   ]
     .filter(Boolean)
     .join("\n");
@@ -151,13 +165,40 @@ export async function writeLabResult(
   userId: string,
   data: LabResultExtraction,
   encryptedPdfPath: string,
+  locale: Locale = DEFAULT_LOCALE,
 ): Promise<{ path: string }> {
   const parsed = LabResultExtraction.parse(data);
   const labSlug = parsed.lab_name ? slugify(parsed.lab_name) : "lab";
   const filename = `${dateOnly(parsed.observed_at)}-${labSlug}.md`;
   const abs = path.join(userMemoryDir(userId), "labs", filename);
 
-  const tableHeader = "| Marcador | Valor | Unidad | Rango | Flag |\n|---|---|---|---|---|";
+  const t = localize(locale, {
+    es: {
+      marker: "Marcador",
+      value: "Valor",
+      unit: "Unidad",
+      range: "Rango",
+      flag: "Indicador",
+      lab: "Analítica",
+      date: "Fecha",
+      markers: "Marcadores",
+      notes: "Notas",
+      original: "Documento original cifrado",
+    },
+    de: {
+      marker: "Messwert",
+      value: "Wert",
+      unit: "Einheit",
+      range: "Referenzbereich",
+      flag: "Bewertung",
+      lab: "Laborbefund",
+      date: "Datum",
+      markers: "Messwerte",
+      notes: "Notizen",
+      original: "Verschlüsseltes Originaldokument",
+    },
+  });
+  const tableHeader = `| ${t.marker} | ${t.value} | ${t.unit} | ${t.range} | ${t.flag} |\n|---|---|---|---|---|`;
   const tableRows = parsed.markers
     .map(
       (m) =>
@@ -166,13 +207,13 @@ export async function writeLabResult(
     .join("\n");
 
   const body = [
-    `# Analítica${parsed.lab_name ? ` — ${parsed.lab_name}` : ""}`,
+    `# ${t.lab}${parsed.lab_name ? ` — ${parsed.lab_name}` : ""}`,
     "",
-    `Fecha: ${dateOnly(parsed.observed_at)}`,
+    `${t.date}: ${dateOnly(parsed.observed_at)}`,
     "",
-    parsed.markers.length > 0 ? `## Marcadores\n\n${tableHeader}\n${tableRows}` : "",
-    parsed.notes ? `\n## Notas\n\n${parsed.notes}` : "",
-    `\n---\n_Documento original cifrado: \`${path.basename(encryptedPdfPath)}\`_`,
+    parsed.markers.length > 0 ? `## ${t.markers}\n\n${tableHeader}\n${tableRows}` : "",
+    parsed.notes ? `\n## ${t.notes}\n\n${parsed.notes}` : "",
+    `\n---\n_${t.original}: \`${path.basename(encryptedPdfPath)}\`_`,
   ]
     .filter(Boolean)
     .join("\n");
@@ -197,16 +238,21 @@ export async function writeLabResult(
 export async function writeImageObservation(
   userId: string,
   input: ImageObservationInput,
+  locale: Locale = DEFAULT_LOCALE,
 ): Promise<{ path: string }> {
   const parsed = ImageObservationInput.parse(input);
   const filename = `${dateOnly(parsed.observedAt)}-${parsed.category}.md`;
   const abs = path.join(userMemoryDir(userId), "images", filename);
 
+  const t = localize(locale, {
+    es: { image: "Imagen", encrypted: "Imagen cifrada" },
+    de: { image: "Bild", encrypted: "Verschlüsseltes Bild" },
+  });
   const body = [
-    `# Imagen — ${parsed.category} — ${dateOnly(parsed.observedAt)}`,
+    `# ${t.image} — ${parsed.category} — ${dateOnly(parsed.observedAt)}`,
     "",
     parsed.description,
-    `\n---\n_Imagen cifrada: \`${path.basename(parsed.encryptedPath)}\`_`,
+    `\n---\n_${t.encrypted}: \`${path.basename(parsed.encryptedPath)}\`_`,
   ].join("\n");
 
   await writeMarkdown(
