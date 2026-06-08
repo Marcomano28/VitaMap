@@ -1,0 +1,25 @@
+VITAMAP - DOCUMENTO SINTETICO DE PRUEBA
+FICTICIO - NO CORRESPONDE A UNA PERSONA REAL
+NO USAR PARA DECISIONES MEDICAS
+
+Laboratorio: Laboratorio Ficticio VitaMap
+Fecha de muestra: 2026-06-01
+
+ANALITICA GENERAL
+
+Parametro                 Resultado       Unidad       Rango de referencia
+Hemoglobina               14.2            g/dL         12.0 - 16.0
+Leucocitos                6.4             10^9/L       4.0 - 10.0
+Plaquetas                 248             10^9/L       150 - 400
+Glucosa en ayunas         112             mg/dL        70 - 99
+Creatinina                0.88            mg/dL        0.60 - 1.10
+Colesterol total          218             mg/dL        0 - 200
+HDL                       62              mg/dL        40 - 100
+LDL                       139             mg/dL        0 - 130
+Trigliceridos             86              mg/dL        0 - 150
+TSH                       2.10            mIU/L        0.40 - 4.00
+Vitamina D                18              ng/mL        30 - 100
+
+Observacion:
+Documento creado exclusivamente para verificar el flujo tecnico de VitaMap.
+Todos los datos, fechas, valores y nombres de laboratorio son ficticios.
