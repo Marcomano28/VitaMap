@@ -1,6 +1,6 @@
 VITAMAP — GUÍA OPERATIVA DEL PILOTO FASE 1
 La semilla de trigo sarraceno: la primera triada de usuarios
-Versión 0.4 · 2026-06-08
+Versión 0.5 · 2026-06-08
 
 ════════════════════════════════════════════════════════════════════════
 
@@ -689,12 +689,19 @@ cuarentena y registra la finalización. Si BetterAuth falla, intenta
 restaurar el directorio. No se deben ejecutar DELETE ni rm manuales
 como procedimiento habitual, porque saltarían esas garantías.
 
-NOTA: los backups en B2 conservan los snapshots anteriores al borrado.
-Los snapshots más viejos de 30 días se eliminan automáticamente por
-la política de retención de restic. Si el usuario pide borrado
-completo incluyendo backups, ejecutar:
-  docker compose --env-file .env exec backup \
-    restic forget --prune <snapshot-id>
+NOTA: los backups en B2 conservan snapshots anteriores al borrado. La
+configuración actual mantiene 7 copias diarias, 4 semanales y 6 mensuales,
+por lo que un dato eliminado del almacenamiento activo puede permanecer
+en copias cifradas durante varios meses. No debe afirmarse que desaparece
+en 30 días.
+
+Restic elimina snapshots completos, no solamente los archivos de una persona.
+No ejecutar `restic forget --prune <snapshot-id>` como respuesta ordinaria a
+una solicitud individual: podría borrar puntos de restauración de todos los
+usuarios. Antes del piloto real debe aprobarse y probarse una política que
+combine un plazo proporcionado, aislamiento de backups, prohibición de
+restaurar datos ya suprimidos salvo recuperación de desastre y un procedimiento
+documentado para volver a aplicar las eliminaciones después de restaurar.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 F.5  MONITORIZACIÓN BÁSICA
@@ -876,6 +883,6 @@ Ver carga de CPU:
 
 ════════════════════════════════════════════════════════════════════════
 
-VitaMap · Guía Operativa Piloto Fase 1 · Versión 0.4
+VitaMap · Guía Operativa Piloto Fase 1 · Versión 0.5
 Para la guía legal completa consultar: docs/GUIA-LEGAL-PILOTO-ALEMANIA.md
 Para el roadmap técnico completo consultar: docs/ROADMAP.md

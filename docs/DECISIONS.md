@@ -227,8 +227,8 @@ cifrado por usuario llega en Fase 2 cuando montemos análisis longitudinal.
 
 ---
 
-## ADR-009 · BetterAuth con email + contraseña sobre SQLite; MFA TOTP en Fase 2
-**Estado:** aceptada · 2026-06-01
+## ADR-009 · BetterAuth sobre SQLite; MFA antes del piloto real
+**Estado:** actualizada · 2026-06-08
 
 **Contexto.** Login obligatorio por requisito GDPR (aislamiento por
 usuario, audit log significativo, trazabilidad del consentimiento Art.
@@ -239,11 +239,16 @@ usuario, audit log significativo, trazabilidad del consentimiento Art.
 `data/auth.sqlite` (la misma BD que aloja `audit_event`). Email +
 contraseña, sesión por cookie httpOnly de 14 días con refresh
 diario, auto-signin tras registro. Mínimo de 10 caracteres en
-contraseña. Sin verificación de email para Fase 1 (alta invite-only y
-relación de confianza con los voluntarios). MFA TOTP queda como
-seguimiento de Fase 2 — BetterAuth lo soporta por plugin pero
-añade fricción de onboarding poco justificada para 3 personas en
-piloto cerrado.
+contraseña. Durante el desarrollo privado, el alta sigue siendo
+invite-only y puede probarse sin verificación de email.
+
+Antes de admitir datos de salud de terceros, la decisión cambia: se debe
+incorporar MFA (TOTP o passkey) con códigos de recuperación, revocación y
+procedimiento de pérdida de dispositivo probados. La cuenta operadora y las
+cuentas del piloto deben completar ese segundo factor. También debe existir
+verificación de correo y recuperación segura que no revele si una cuenta
+existe. La relación de confianza y el reducido número de usuarios no sustituyen
+estas medidas.
 
 **Alternativas descartadas.**
 - *Lucia Auth*: el mantenedor lo marcó como legacy en 2024 a favor de
@@ -251,9 +256,9 @@ piloto cerrado.
   que necesitamos para un piloto.
 - *Magic links sin contraseña*: requiere SMTP en el VPS (otro
   contenedor + DKIM/SPF + reputación). Sobredimensionado para 3 usuarios.
-- *Passkey / WebAuthn*: máxima seguridad pero curva de aprendizaje
-  alta y recuperación traumática si el voluntario pierde el dispositivo.
-  Buen candidato para Fase 2 como opción adicional.
+- *Passkey / WebAuthn como único método*: máxima seguridad pero recuperación
+  compleja si el voluntario pierde el dispositivo. Sigue siendo candidato como
+  segundo factor si se acompaña de recuperación probada.
 - *Servicios gestionados (Clerk, Auth0, Supabase Auth)*: implementación
   más rápida pero envía identidades de pacientes a un tercero, añade
   DPAs y complica el encuadre "nada sale del VPS".
@@ -262,8 +267,9 @@ piloto cerrado.
 dos checkboxes obligatorios (reconocimiento educacional + consentimiento
 Art. 9.2.a). El audit log captura `auth.register` +
 `auth.consent.granted` con la versión del documento (`CONSENT_VERSION`
-en `lib/consent.ts`). Cambios al documento incrementan la versión y
-fuerzan re-consentimiento.
+en `lib/consent.ts`). Los cambios incrementan la versión. El registro ya
+guarda qué versión aceptó cada usuario; el bloqueo de acceso hasta aceptar
+una versión posterior sigue siendo P0 antes del piloto real.
 
 **Borrado de cuenta.** Type-to-confirm `"BORRAR"` + contraseña. Orden:
 audit log (`consent.revoked` + `user.purge:start`) → `rm -rf

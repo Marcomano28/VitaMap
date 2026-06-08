@@ -54,7 +54,8 @@ function buildAuth() {
       // Iniciar sesión automáticamente tras registrarse (UX más limpia
       // dado que el alta es invite-only y ya hay confianza).
       autoSignIn: true,
-      // Mínimos razonables para un piloto. Endurecer en Fase 2.
+      // Configuración temporal de desarrollo. MFA, verificación de correo y
+      // recuperación segura son P0 antes de admitir datos reales de terceros.
       minPasswordLength: 10,
       maxPasswordLength: 256,
     },

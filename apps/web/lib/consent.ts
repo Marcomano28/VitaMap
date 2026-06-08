@@ -6,7 +6,7 @@
  * seguir usando la herramienta.
  */
 
-export const CONSENT_VERSION = "2026-06-01";
+export const CONSENT_VERSION = "2026-06-08";
 
 export const CONSENT_TEXT_ES = `
 Información sobre el tratamiento de tus datos de salud
@@ -24,20 +24,33 @@ observaciones que tú decidas registrar, resultados de analíticas,
 respuestas a cuestionarios validados, imágenes que tú subas y, en
 general, datos de salud bajo el Art. 9 del RGPD.
 
-Base legal: consentimiento explícito (Art. 9.2.a RGPD). Puedes retirar
-tu consentimiento en cualquier momento desde la sección Ajustes, lo que
-provoca el borrado inmediato de toda tu memoria.
+Bases legales propuestas: la cuenta y el servicio se gestionan conforme al
+Art. 6.1.b RGPD; las obligaciones contables y fiscales conforme al Art.
+6.1.c; y la seguridad del sistema conforme al Art. 6.1.f, tras la
+ponderación correspondiente. El tratamiento de datos de salud se basa en
+tu consentimiento explícito conforme a los Arts. 6.1.a y 9.2.a RGPD.
+Puedes retirarlo en cualquier momento desde Ajustes. La retirada detiene
+el tratamiento de salud y activa el borrado de tu memoria, sin eliminar
+los registros contables que deban conservarse por obligación legal.
 
-Destinatarios: ninguno. Esta plataforma es auto-alojada en infraestructura
-europea controlada por el operador. Tus datos no se ceden a terceros, ni
-se utilizan para entrenar modelos. El asistente de IA se ejecuta dentro
-del mismo servidor.
+Encargados y destinatarios: Hetzner aloja el VPS europeo; Stripe procesa
+los datos de cuenta y pago necesarios para la suscripción; las entidades
+bancarias reciben los datos financieros necesarios para liquidación y
+contabilidad. Si se habilitan backups externos, Backblaze B2 almacena
+copias cifradas. Los proveedores de DNS, correo o soporte pueden tratar
+datos de contacto, IP y metadatos técnicos según se detalle en la política
+de privacidad. Stripe y los proveedores financieros no reciben documentos,
+observaciones ni otros datos de salud. El asistente de IA se ejecuta en el
+VPS y los datos no se utilizan para entrenar modelos externos.
 
-Plazo de conservación: mientras dure tu cuenta y tu consentimiento. Al
-revocar consentimiento o eliminar tu cuenta, tu memoria se borra de
-forma irreversible (los eventos de auditoría asociados al borrado se
-conservan únicamente con identificadores pseudonimizados para acreditar
-el cumplimiento del derecho al olvido).
+Plazo de conservación: la memoria activa se conserva mientras dure tu
+cuenta y tu consentimiento. Al revocarlo o eliminar la cuenta, se borra
+del almacenamiento activo. Las copias cifradas quedan aisladas, no se
+utilizan para ningún otro fin y expiran conforme a la política de
+retención de backups publicada y probada. Los eventos de auditoría
+asociados al borrado se conservan solo con identificadores
+pseudonimizados; los registros fiscales y de pago se conservan durante
+los plazos exigidos por la ley.
 
 Tus derechos: acceso, rectificación, supresión, oposición, limitación y
 portabilidad. Puedes ejercerlos directamente desde la aplicación
@@ -66,20 +79,36 @@ Beobachtungen, die du selbst einträgst, Laborergebnisse, Antworten auf
 validierte Fragebögen, von dir hochgeladene Bilder und allgemein
 Gesundheitsdaten im Sinne von Art. 9 DSGVO.
 
-Rechtsgrundlage: ausdrückliche Einwilligung (Art. 9 Abs. 2 lit. a DSGVO).
-Du kannst deine Einwilligung jederzeit im Bereich Einstellungen
-widerrufen. Dadurch wird dein gesamter persönlicher Speicher gelöscht.
+Vorgesehene Rechtsgrundlagen: Konto und Leistungserbringung beruhen auf
+Art. 6 Abs. 1 lit. b DSGVO, gesetzlich erforderliche Buchhaltung auf Art.
+6 Abs. 1 lit. c und Systemsicherheit auf Art. 6 Abs. 1 lit. f nach der
+erforderlichen Interessenabwägung. Gesundheitsdaten werden auf Grundlage
+deiner ausdrücklichen Einwilligung nach Art. 6 Abs. 1 lit. a und Art. 9
+Abs. 2 lit. a DSGVO verarbeitet. Du kannst sie jederzeit unter
+Einstellungen widerrufen. Der Widerruf beendet die Verarbeitung deiner
+Gesundheitsdaten und löst die Löschung deines persönlichen Speichers aus;
+gesetzlich aufzubewahrende Buchungsunterlagen bleiben davon getrennt.
 
-Empfänger: keine. Diese Plattform wird auf europäischer Infrastruktur
-betrieben, die vom Betreiber kontrolliert wird. Deine Daten werden nicht
-an Dritte weitergegeben und nicht zum Trainieren von Modellen verwendet.
-Der KI-Assistent läuft auf demselben Server.
+Auftragsverarbeiter und Empfänger: Hetzner hostet den europäischen VPS;
+Stripe verarbeitet die für Abonnement und Zahlung erforderlichen Konto-
+und Zahlungsdaten. Banken erhalten die für Abrechnung und Buchhaltung
+erforderlichen Finanzdaten. Falls externe Backups aktiviert werden,
+speichert Backblaze B2 verschlüsselte Kopien. Anbieter für DNS, E-Mail
+oder Support können Kontakt-, IP- und technische Metadaten verarbeiten,
+wie in der Datenschutzerklärung beschrieben. Stripe und Finanzdienstleister
+erhalten keine Dokumente, Beobachtungen oder sonstigen Gesundheitsdaten.
+Der KI-Assistent läuft auf dem VPS; die Daten werden nicht zum Training
+externer Modelle verwendet.
 
-Speicherdauer: solange dein Konto und deine Einwilligung bestehen. Beim
-Widerruf der Einwilligung oder beim Löschen deines Kontos wird dein
-persönlicher Speicher unwiderruflich gelöscht. Mit der Löschung
-verbundene Audit-Ereignisse werden ausschließlich mit pseudonymisierten
-Kennungen aufbewahrt, um die Erfüllung des Löschanspruchs nachzuweisen.
+Speicherdauer: Der aktive persönliche Speicher bleibt bestehen, solange
+dein Konto und deine Einwilligung bestehen. Nach Widerruf oder Löschung
+des Kontos wird er aus dem aktiven Speicher entfernt. Verschlüsselte
+Sicherungskopien bleiben isoliert, werden für keinen anderen Zweck
+verwendet und verfallen nach der veröffentlichten und geprüften
+Aufbewahrungsregel für Backups. Audit-Ereignisse zur Löschung werden nur
+mit pseudonymisierten Kennungen aufbewahrt; steuerlich und handelsrechtlich
+erforderliche Zahlungsunterlagen bleiben für die gesetzlichen Fristen
+erhalten.
 
 Deine Rechte: Auskunft, Berichtigung, Löschung, Widerspruch,
 Einschränkung der Verarbeitung und Datenübertragbarkeit. Du kannst diese

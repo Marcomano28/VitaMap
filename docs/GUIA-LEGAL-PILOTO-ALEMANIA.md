@@ -1,13 +1,15 @@
 # Guia legal y tecnica del piloto VitaMap en Alemania
 
-**Estado:** guia operativa interna
-**Ultima revision:** 2026-06-07
+**Estado:** borrador operativo interno para revision profesional
+**Ultima revision:** 2026-06-08
 **Ambito:** piloto cerrado en Alemania, inicialmente 3 usuarios de pago
 
-> Esta guia organiza riesgos y tareas, pero no sustituye asesoramiento
-> juridico. En especial, la calificacion como producto sanitario y la
-> evaluacion de impacto de proteccion de datos deben ser revisadas por
-> profesionales competentes antes de admitir datos de salud reales.
+> Esta guia organiza riesgos y tareas. No es un dictamen juridico, una
+> autorizacion para abrir el piloto, una politica de privacidad ni un texto
+> contractual destinado a clientes. La calificacion como producto sanitario,
+> la evaluacion de impacto, la documentacion de consumidores y las bases
+> juridicas deben ser revisadas por profesionales competentes antes de admitir
+> datos de salud reales o cobrar la primera suscripcion.
 
 ---
 
@@ -382,10 +384,10 @@ Contactar inmediatamente con abogado/DPO si:
 | Control de suscripcion en servidor | Pendiente: existe `hasActiveSubscription`, pero no protege las funciones | Tests de acceso para active, past_due y cancelled |
 | Privacidad, Impressum, condiciones y desistimiento | Pendiente | Paginas publicadas y revision juridica fechada |
 | Cancelacion independiente del borrado | Pendiente | Flujo 312k/portal, confirmacion y webhook probado |
-| Consentimiento con responsable y proveedores reales | Incompleto | Version nueva, reconsentimiento y registro |
+| Consentimiento con responsable y proveedores reales | Borrador actualizado en version `2026-06-08`; faltan identidad real, politica publicada, revision juridica y mecanismo de reconsentimiento | Version aprobada, reconsentimiento y registro |
 | DSFA y registro Art. 30 | Pendiente | Documentos firmados y versionados |
 | Clasificacion MDR por modulo | Pendiente | Informe profesional y matriz de funciones |
-| MFA para operador y usuarios | Stripe tiene 2FA; VitaMap no | Prueba de alta, recuperacion y revocacion |
+| MFA para operador y usuarios | Pendiente en VitaMap; la ADR exige completarlo antes del piloto real | Prueba de alta, recuperacion, dispositivo perdido y revocacion |
 | Verificacion de email y recuperacion segura | Pendiente | Tests sin revelar existencia de cuentas |
 | Cifrado del VPS verificado | Documentado, no probado en este repo | Acta de despliegue y prueba de reinicio |
 | Restauracion y borrado en backups | Backup existe; falta prueba y politica de supresion | Simulacro y plazo de expiracion documentado |
@@ -406,9 +408,10 @@ Contactar inmediatamente con abogado/DPO si:
 - Inventario de ficheros derivados: markdown, QMD, temporales OCR y caches.
 - Comprobacion de que logs y errores no contienen salud, prompts o documentos.
 - Eliminacion segura de temporales de OCR y extraccion.
-- Pruebas del webhook con eventos repetidos, desordenados y sin `user_id`.
-- Estados Stripe completos: `trialing`, `active`, `past_due`, `unpaid`,
-  `paused`, `cancelled` y reembolsos.
+- Reconciliacion documentada entre Stripe y la base local ante eventos
+  rechazados, filas heredadas o fallos parciales.
+- Reembolsos, disputas, final de periodo tras cancelacion y fin efectivo del
+  acceso.
 - Confirmacion de facturas, desistimiento, cambio de precio y fin de acceso.
 
 ### Observaciones sobre la arquitectura actual
@@ -426,8 +429,11 @@ Contactar inmediatamente con abogado/DPO si:
    conservan separados segun su obligacion legal.
 5. El LLM local reduce transferencias a terceros, pero no elimina el riesgo de
    respuestas incorrectas ni la obligacion de evaluar el tratamiento.
-6. El endpoint de webhook valida la firma, pero necesita idempotencia,
-   rechazo de suscripciones sin usuario valido y estados mas precisos.
+6. El webhook valida la firma, comprueba el Price esperado, registra
+   `event.id` para idempotencia, conserva la asociacion con el usuario y evita
+   que eventos antiguos degraden estados o fechas mas recientes. Los ocho
+   estados de suscripcion de Stripe se mapean a los estados locales. Todavia
+   faltan reconciliacion operativa, reembolsos/disputas y pruebas en LIVE.
 7. Los accesos a exportacion, cancelacion y borrado deben seguir disponibles
    aunque falle el pago; chat, memoria y subida deben quedar bloqueados.
 
@@ -493,7 +499,7 @@ La funcion solo almacena, organiza o busca informacion del usuario?
 
 ## 11. Fuentes oficiales principales
 
-Consultadas el 2026-06-07:
+Consultadas o revisadas el 2026-06-08:
 
 - [RGPD, Reglamento (UE) 2016/679](https://eur-lex.europa.eu/eli/reg/2016/679/oj)
 - [Consentimiento, BfDI](https://www.bfdi.bund.de/DE/Buerger/Inhalte/Allgemein/Datenschutz/Einwilligung.html)
@@ -502,7 +508,7 @@ Consultadas el 2026-06-07:
 - [Orientacion BfArM sobre aplicaciones medicas](https://www.bfarm.de/DE/Medizinprodukte/Aufgaben/Festellung-rechtlicher-Status-und-Klassifizierung/_artikel.html)
 - [MDR, Reglamento (UE) 2017/745](https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:32017R0745)
 - [Heilpraktikergesetz](https://www.gesetze-im-internet.de/heilprg/)
-- [Reglamento europeo de IA: calendario](https://digital-strategy.ec.europa.eu/en/faqs/navigating-ai-act)
+- [Reglamento europeo de IA, Art. 4: alfabetizacion en IA](https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng)
 - [Apartado 5 DDG, informacion del proveedor](https://www.gesetze-im-internet.de/ddg/__5.html)
 - [Apartado 312j BGB, obligacion de pago](https://www.gesetze-im-internet.de/bgb/__312j.html)
 - [Apartado 312k BGB, boton de cancelacion](https://www.gesetze-im-internet.de/bgb/__312k.html)
