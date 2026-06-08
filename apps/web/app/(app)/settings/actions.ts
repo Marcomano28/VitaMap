@@ -10,18 +10,63 @@ import { getSession, requireUserId } from "@/lib/session";
 import { logAuditEvent, logAuditEventSafe } from "@/lib/audit";
 import { getEnv } from "@/lib/env";
 import { CONSENT_VERSION } from "@/lib/consent";
+import { getLocale } from "@/lib/locale";
+import { localize } from "@/lib/i18n";
+import { getSubscription } from "@/lib/billing";
+import { stripe } from "@/lib/stripe";
+
+const MESSAGES = {
+  es: {
+    confirmationWord: "BORRAR",
+    shortPassword: "La contraseña nueva debe tener al menos 10 caracteres",
+    mismatch: "Las contraseñas nuevas no coinciden",
+    wrongCurrent: "Contraseña actual incorrecta",
+    changeFailed: "Error al cambiar contraseña",
+    changed: "Contraseña actualizada",
+    confirmDelete: "Debes escribir BORRAR para confirmar",
+    passwordRequired: "Debes introducir tu contraseña",
+    invalidSession: "Sesión inválida. Vuelve a iniciar sesión",
+    wrongPassword: "Contraseña incorrecta",
+    validationFailed: "No se pudo validar la contraseña",
+    prepareDeleteFailed: "No se pudo preparar el borrado de datos",
+    deleteFailed: "No se pudo eliminar la cuenta",
+    deleteError: "Error al eliminar la cuenta",
+    cancelFailed:
+      "No se pudo cancelar la suscripción. La cuenta no se ha eliminado",
+  },
+  de: {
+    confirmationWord: "LÖSCHEN",
+    shortPassword: "Das neue Passwort muss mindestens 10 Zeichen lang sein",
+    mismatch: "Die neuen Passwörter stimmen nicht überein",
+    wrongCurrent: "Das aktuelle Passwort ist falsch",
+    changeFailed: "Das Passwort konnte nicht geändert werden",
+    changed: "Passwort aktualisiert",
+    confirmDelete: "Gib zum Bestätigen LÖSCHEN ein",
+    passwordRequired: "Du musst dein Passwort eingeben",
+    invalidSession: "Ungültige Sitzung. Bitte melde dich erneut an",
+    wrongPassword: "Das Passwort ist falsch",
+    validationFailed: "Das Passwort konnte nicht geprüft werden",
+    prepareDeleteFailed: "Die Datenlöschung konnte nicht vorbereitet werden",
+    deleteFailed: "Das Konto konnte nicht gelöscht werden",
+    deleteError: "Fehler beim Löschen des Kontos",
+    cancelFailed:
+      "Das Abonnement konnte nicht gekündigt werden. Das Konto wurde nicht gelöscht",
+  },
+} as const;
 
 export async function changePasswordAction(formData: FormData) {
+  const locale = await getLocale();
+  const t = localize(locale, MESSAGES);
   const userId = await requireUserId();
   const currentPassword = String(formData.get("current_password") ?? "");
   const newPassword = String(formData.get("new_password") ?? "");
   const newPasswordRepeat = String(formData.get("new_password_repeat") ?? "");
 
   if (newPassword.length < 10) {
-    redirect(`/settings?error=${encodeURIComponent("La contraseña nueva debe tener al menos 10 caracteres")}`);
+    redirect(`/settings?error=${encodeURIComponent(t.shortPassword)}`);
   }
   if (newPassword !== newPasswordRepeat) {
-    redirect(`/settings?error=${encodeURIComponent("Las contraseñas nuevas no coinciden")}`);
+    redirect(`/settings?error=${encodeURIComponent(t.mismatch)}`);
   }
 
   try {
@@ -30,7 +75,7 @@ export async function changePasswordAction(formData: FormData) {
       headers: await headers(),
     });
   } catch (err) {
-    const msg = err instanceof APIError ? "Contraseña actual incorrecta" : "Error al cambiar contraseña";
+    const msg = err instanceof APIError ? t.wrongCurrent : t.changeFailed;
     redirect(`/settings?error=${encodeURIComponent(msg)}`);
   }
 
@@ -41,7 +86,7 @@ export async function changePasswordAction(formData: FormData) {
     payloadSum: "password_changed",
   });
 
-  redirect(`/settings?success=${encodeURIComponent("Contraseña actualizada")}`);
+  redirect(`/settings?success=${encodeURIComponent(t.changed)}`);
 }
 
 /**
@@ -49,26 +94,29 @@ export async function changePasswordAction(formData: FormData) {
  *
  * Orden importante:
  *   1. Verificar BORRAR + contraseña antes de tocar el filesystem.
- *   2. Registrar consentimiento revocado y purga en audit_event (append-only,
+ *   2. Cancelar cualquier suscripción vigente en Stripe.
+ *   3. Registrar consentimiento revocado y purga en audit_event (append-only,
  *      sobrevive al borrado).
- *   3. Mover data/users/<id>/ a cuarentena recuperable.
- *   4. Eliminar al usuario en BetterAuth.
- *   5. Borrar la cuarentena y redirigir a /.
+ *   4. Mover data/users/<id>/ a cuarentena recuperable.
+ *   5. Eliminar al usuario en BetterAuth.
+ *   6. Borrar la cuarentena y redirigir a /.
  */
 export async function deleteAccountAction(formData: FormData) {
+  const locale = await getLocale();
+  const t = localize(locale, MESSAGES);
   const userId = await requireUserId();
   const session = await getSession();
   const confirm = String(formData.get("confirm") ?? "").trim();
   const password = String(formData.get("password") ?? "");
 
-  if (confirm !== "BORRAR") {
-    redirect(`/settings?error=${encodeURIComponent("Debes escribir BORRAR para confirmar")}`);
+  if (confirm !== t.confirmationWord) {
+    redirect(`/settings?error=${encodeURIComponent(t.confirmDelete)}`);
   }
   if (!password) {
-    redirect(`/settings?error=${encodeURIComponent("Debes introducir tu contraseña")}`);
+    redirect(`/settings?error=${encodeURIComponent(t.passwordRequired)}`);
   }
   if (!session?.user?.email) {
-    redirect(`/settings?error=${encodeURIComponent("Sesión inválida. Vuelve a iniciar sesión")}`);
+    redirect(`/settings?error=${encodeURIComponent(t.invalidSession)}`);
   }
 
   // Validar contraseña antes de cualquier operación destructiva.
@@ -80,8 +128,26 @@ export async function deleteAccountAction(formData: FormData) {
     });
   } catch (err) {
     const msg =
-      err instanceof APIError ? "Contraseña incorrecta" : "No se pudo validar la contraseña";
+      err instanceof APIError ? t.wrongPassword : t.validationFailed;
     redirect(`/settings?error=${encodeURIComponent(msg)}`);
+  }
+
+  // Borrar la cuenta no puede dejar una suscripcion cobrando sin servicio.
+  const subscription = getSubscription(userId);
+  if (subscription && subscription.status !== "cancelled") {
+    if (!subscription.stripe_subscription_id) {
+      redirect(`/settings?error=${encodeURIComponent(t.cancelFailed)}`);
+    }
+    try {
+      const stripeSubscription = await stripe.subscriptions.retrieve(
+        subscription.stripe_subscription_id,
+      );
+      if (stripeSubscription.status !== "canceled") {
+        await stripe.subscriptions.cancel(subscription.stripe_subscription_id);
+      }
+    } catch {
+      redirect(`/settings?error=${encodeURIComponent(t.cancelFailed)}`);
+    }
   }
 
   // Auditoría crítica: si falla, no se ejecuta la purga.
@@ -120,7 +186,7 @@ export async function deleteAccountAction(formData: FormData) {
         subjectId: userId,
         payloadSum: "filesystem_quarantine_failed",
       });
-      redirect(`/settings?error=${encodeURIComponent("No se pudo preparar el borrado de datos")}`);
+      redirect(`/settings?error=${encodeURIComponent(t.prepareDeleteFailed)}`);
     }
   }
 
@@ -147,7 +213,7 @@ export async function deleteAccountAction(formData: FormData) {
       payloadSum: "auth_delete_failed",
     });
     const msg =
-      err instanceof APIError ? "No se pudo eliminar la cuenta" : "Error al eliminar la cuenta";
+      err instanceof APIError ? t.deleteFailed : t.deleteError;
     redirect(`/settings?error=${encodeURIComponent(msg)}`);
   }
 

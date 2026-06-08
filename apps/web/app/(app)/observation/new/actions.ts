@@ -4,10 +4,10 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { writeObservation } from "@/lib/memory";
 import { logAuditEventSafe } from "@/lib/audit";
-import { requireUserId } from "@/lib/session";
+import { requireSubscribedUserId } from "@/lib/subscription-access";
 
 export async function createObservationAction(formData: FormData) {
-  const userId = await requireUserId();
+  const userId = await requireSubscribedUserId();
   const title = String(formData.get("title") ?? "").trim();
   const body = String(formData.get("body") ?? "").trim();
   const observed_at = String(formData.get("observed_at") ?? "").trim();

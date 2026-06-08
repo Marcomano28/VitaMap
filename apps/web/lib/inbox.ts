@@ -3,6 +3,7 @@
  *
  * Etapas:
  *   pending   — subido, cifrado en disco, esperando OCR + extracción.
+ *   extracting — worker procesando OCR + extracción.
  *   extracted — OCR + extracción completados, esperando revisión humana.
  *   failed    — algo falló en el pipeline (ver `error`).
  *   committed — promocionado a la memoria (en este punto se borra del inbox).
@@ -31,7 +32,7 @@ import { getEnv } from "./env";
 export const InboxCategory = z.enum(["lab", "document", "image"]);
 export type InboxCategory = z.infer<typeof InboxCategory>;
 
-export const InboxStatus = z.enum(["pending", "extracted", "failed"]);
+export const InboxStatus = z.enum(["pending", "extracting", "extracted", "failed"]);
 export type InboxStatus = z.infer<typeof InboxStatus>;
 
 export const InboxMeta = z.object({
@@ -169,7 +170,7 @@ export async function createInboxItem(input: CreateInboxInput): Promise<InboxMet
 }
 
 // =====================================================================
-// Pipeline de extracción (sync dentro del request — OK para 3 usuarios)
+// Pipeline de extracción
 // =====================================================================
 
 const PDF_MIME = new Set(["application/pdf"]);
@@ -178,6 +179,16 @@ const IMAGE_MIME = new Set(["image/png", "image/jpeg", "image/jpg", "image/webp"
 export async function runExtraction(userId: string, id: string): Promise<InboxMeta> {
   const meta = await readMeta(userId, id);
   if (!meta) throw new Error("inbox item not found");
+
+  const started: InboxMeta = {
+    ...meta,
+    status: "extracting",
+    extractedAt: undefined,
+    error: undefined,
+  };
+  await writeMeta(userId, started);
+  await fs.rm(path.join(itemDir(userId, id), "raw-text.txt"), { force: true });
+  await fs.rm(path.join(itemDir(userId, id), "extracted.json"), { force: true });
 
   try {
     // 1. Desencriptar a memoria.
@@ -209,7 +220,7 @@ export async function runExtraction(userId: string, id: string): Promise<InboxMe
     }
 
     const updated: InboxMeta = {
-      ...meta,
+      ...started,
       status: "extracted",
       extractedAt: new Date().toISOString(),
       error: undefined,
@@ -218,13 +229,30 @@ export async function runExtraction(userId: string, id: string): Promise<InboxMe
     return updated;
   } catch (err) {
     const failed: InboxMeta = {
-      ...meta,
+      ...started,
       status: "failed",
       error: String(err).slice(0, 500),
     };
     await writeMeta(userId, failed);
     return failed;
   }
+}
+
+export async function markInboxExtractionPending(
+  userId: string,
+  id: string,
+): Promise<InboxMeta> {
+  const meta = await readMeta(userId, id);
+  if (!meta) throw new Error("inbox item not found");
+  if (meta.status === "extracted") return meta;
+  const updated: InboxMeta = {
+    ...meta,
+    status: "pending",
+    extractedAt: undefined,
+    error: undefined,
+  };
+  await writeMeta(userId, updated);
+  return updated;
 }
 
 // =====================================================================

@@ -1,22 +1,62 @@
 import { createObservationAction } from "./actions";
+import type { Metadata } from "next";
+import { getLocale } from "@/lib/locale";
+import { localize } from "@/lib/i18n";
+import { requireSubscribedUserId } from "@/lib/subscription-access";
 
-export const metadata = { title: "Nueva observación" };
+const TEXT = {
+  es: {
+    title: "Nueva observación",
+    intro:
+      "Síntomas, sueño, energía, una sesión de acupuntura o notas libres. Se guarda como markdown en tu memoria.",
+    date: "Fecha",
+    entryTitle: "Título",
+    titlePlaceholder: "Ej. Dolor de cabeza al despertar",
+    content: "Contenido",
+    contentPlaceholder:
+      "Describe lo que has observado: intensidad, duración, contexto, lo que estabas haciendo...",
+    tags: "Etiquetas (separadas por comas)",
+    tagsPlaceholder: "dolor, sueño, mañana",
+    save: "Guardar",
+  },
+  de: {
+    title: "Neue Beobachtung",
+    intro:
+      "Symptome, Schlaf, Energie, eine Akupunktursitzung oder freie Notizen. Der Eintrag wird als Markdown in deinem Speicher abgelegt.",
+    date: "Datum",
+    entryTitle: "Titel",
+    titlePlaceholder: "Z. B. Kopfschmerzen nach dem Aufwachen",
+    content: "Inhalt",
+    contentPlaceholder:
+      "Beschreibe deine Beobachtung: Intensität, Dauer, Zusammenhang und was du gerade getan hast...",
+    tags: "Schlagwörter (durch Kommas getrennt)",
+    tagsPlaceholder: "Schmerz, Schlaf, Morgen",
+    save: "Speichern",
+  },
+} as const;
 
-export default function NewObservationPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return { title: localize(locale, TEXT).title };
+}
+
+export default async function NewObservationPage() {
+  await requireSubscribedUserId();
+  const locale = await getLocale();
+  const t = localize(locale, TEXT);
   const today = new Date().toISOString().slice(0, 10);
 
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <h1 className="text-2xl font-semibold">Nueva observación</h1>
+        <h1 className="text-2xl font-semibold">{t.title}</h1>
         <p className="text-sm text-[var(--color-muted)]">
-          Síntomas, sueño, energía, una sesión de acupuntura, notas
-          libres. Se guarda como markdown en tu memoria.
+          {t.intro}
         </p>
       </header>
 
       <form action={createObservationAction} className="space-y-4">
-        <Field label="Fecha">
+        <Field label={t.date}>
           <input
             type="date"
             name="observed_at"
@@ -26,32 +66,32 @@ export default function NewObservationPage() {
           />
         </Field>
 
-        <Field label="Título">
+        <Field label={t.entryTitle}>
           <input
             type="text"
             name="title"
             required
             maxLength={200}
-            placeholder="Ej. Dolor de cabeza al despertar"
+            placeholder={t.titlePlaceholder}
             className={inputCls}
           />
         </Field>
 
-        <Field label="Contenido">
+        <Field label={t.content}>
           <textarea
             name="body"
             rows={8}
             required
-            placeholder="Describe lo que has observado: intensidad, duración, contexto, lo que estabas haciendo..."
+            placeholder={t.contentPlaceholder}
             className={inputCls}
           />
         </Field>
 
-        <Field label="Etiquetas (separadas por comas)">
+        <Field label={t.tags}>
           <input
             type="text"
             name="tags"
-            placeholder="dolor, sueño, mañana"
+            placeholder={t.tagsPlaceholder}
             className={inputCls}
           />
         </Field>
@@ -60,7 +100,7 @@ export default function NewObservationPage() {
           type="submit"
           className="rounded-md bg-[var(--color-foreground)] text-[var(--color-background)] px-4 py-2 text-sm font-medium hover:opacity-90"
         >
-          Guardar
+          {t.save}
         </button>
       </form>
     </div>

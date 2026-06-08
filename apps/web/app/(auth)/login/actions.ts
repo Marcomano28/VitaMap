@@ -5,14 +5,31 @@ import { redirect } from "next/navigation";
 import { APIError } from "better-auth/api";
 import { getAuth } from "@/lib/auth";
 import { logAuditEventSafe } from "@/lib/audit";
+import { getLocale } from "@/lib/locale";
+import { localize } from "@/lib/i18n";
+
+const ERRORS = {
+  es: {
+    required: "Email y contraseña obligatorios",
+    invalid: "Credenciales incorrectas",
+    failed: "Error al iniciar sesión",
+  },
+  de: {
+    required: "E-Mail-Adresse und Passwort sind erforderlich",
+    invalid: "E-Mail-Adresse oder Passwort ist falsch",
+    failed: "Anmeldung fehlgeschlagen",
+  },
+} as const;
 
 export async function signInAction(formData: FormData) {
+  const locale = await getLocale();
+  const t = localize(locale, ERRORS);
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
   const next = String(formData.get("next") ?? "/memory");
 
   if (!email || !password) {
-    redirect(`/login?error=${encodeURIComponent("Email y contraseña obligatorios")}`);
+    redirect(`/login?error=${encodeURIComponent(t.required)}`);
   }
 
   try {
@@ -31,11 +48,13 @@ export async function signInAction(formData: FormData) {
     }
   } catch (err) {
     const msg =
-      err instanceof APIError ? "Credenciales incorrectas" : "Error al iniciar sesión";
+      err instanceof APIError ? t.invalid : t.failed;
     redirect(`/login?error=${encodeURIComponent(msg)}`);
   }
 
-  redirect(next.startsWith("/") ? next : "/memory");
+  const safeNext =
+    next.startsWith("/") && !next.startsWith("//") ? next : "/memory";
+  redirect(safeNext);
 }
 
 export async function signOutAction() {

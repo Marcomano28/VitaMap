@@ -1,17 +1,25 @@
 import Link from "next/link";
 import { copy } from "@/lib/i18n";
 import { getLocale } from "@/lib/locale";
+import type { Metadata } from "next";
+import { requireSubscribedUserId } from "@/lib/subscription-access";
 
-export const metadata = { title: "Mi memoria" };
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return { title: copy[locale].memory.title };
+}
 
 export default async function MemoryPage() {
+  await requireSubscribedUserId();
   const locale = await getLocale();
   const t = copy[locale].memory;
 
   return (
     <div className="space-y-8">
       <header className="space-y-2">
-        <h1 className="text-2xl font-semibold">{t.title}</h1>
+        <h1 className="text-4xl sm:text-5xl font-semibold vital-reveal-text leading-tight">
+          {t.title}
+        </h1>
         <p className="text-sm text-[var(--color-muted)]">
           {t.body}
         </p>

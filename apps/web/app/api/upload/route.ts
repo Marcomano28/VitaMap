@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createInboxItem, runExtraction, InboxCategory } from "@/lib/inbox";
+import { createInboxItem, InboxCategory } from "@/lib/inbox";
+import { enqueueInboxExtraction } from "@/lib/inbox-queue";
 import { logAuditEventSafe } from "@/lib/audit";
-import { requireUserIdFromRequest, UnauthorizedError } from "@/lib/session";
+import { UnauthorizedError } from "@/lib/session";
+import {
+  requireSubscribedUserIdFromRequest,
+  SubscriptionRequiredError,
+} from "@/lib/subscription-access";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,17 +28,23 @@ const QueryParams = z.object({
  * Flujo:
  *   1. validar tamaño y mime
  *   2. createInboxItem → cifra y guarda original, meta=pending
- *   3. runExtraction (sync) → OCR + (si lab) extracción estructurada
- *   4. audit log "document.upload" + "document.extract"
- *   5. devolver inbox meta para que el cliente redirija a /inbox/<id>
+ *   3. enqueueInboxExtraction → OCR + extracción en worker ligero
+ *   4. audit log "document.upload"
+ *   5. devolver rápido para que el cliente muestre el estado del inbox
  */
 export async function POST(req: Request) {
   let userId: string;
   try {
-    userId = await requireUserIdFromRequest(req);
+    userId = await requireSubscribedUserIdFromRequest(req);
   } catch (err) {
     if (err instanceof UnauthorizedError) {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
+    if (err instanceof SubscriptionRequiredError) {
+      return NextResponse.json(
+        { error: "subscription_required", billingUrl: "/settings/billing" },
+        { status: 402 },
+      );
     }
     throw err;
   }
@@ -90,21 +101,14 @@ export async function POST(req: Request) {
     payloadSum: `id=${meta.id} cat=${meta.category} size=${meta.size} sha=${meta.sha256.slice(0, 12)}`,
   });
 
-  // Extracción sync. Para 3 usuarios y PDFs de 1-3 páginas, latencia
-  // típica 15-60s. Si se vuelve molesto, mover a cola en Fase 2.
-  let finalMeta;
   try {
-    finalMeta = await runExtraction(userId, meta.id);
+    meta = await enqueueInboxExtraction({ userId, id: meta.id });
   } catch (err) {
-    finalMeta = { ...meta, status: "failed" as const, error: String(err) };
+    return NextResponse.json(
+      { error: "queue_failed", id: meta.id, detail: String(err) },
+      { status: 500 },
+    );
   }
 
-  await logAuditEventSafe({
-    actor: userId,
-    action: "document.extract",
-    subjectId: userId,
-    payloadSum: `id=${meta.id} status=${finalMeta.status}`,
-  });
-
-  return NextResponse.json({ id: meta.id, meta: finalMeta });
+  return NextResponse.json({ id: meta.id, meta }, { status: 202 });
 }

@@ -1,11 +1,11 @@
-import { copy, type Locale } from "@/lib/i18n";
+import { copy, DEFAULT_LOCALE, type Locale } from "@/lib/i18n";
 
 /**
  * Aviso legal obligatorio. Se inyecta en TODA respuesta del modelo y en el
  * pie de página global. NUNCA se confía al LLM su inclusión: aquí lo mete
  * el código.
  */
-export function Disclaimer({ locale = "es" }: { locale?: Locale }) {
+export function Disclaimer({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
   const t = copy[locale].disclaimer;
 
   return (
@@ -25,7 +25,7 @@ export function Disclaimer({ locale = "es" }: { locale?: Locale }) {
  * desde el código de renderizado de mensajes del modelo, nunca delegar
  * en el prompt.
  */
-export function InlineDisclaimer({ locale = "es" }: { locale?: Locale }) {
+export function InlineDisclaimer({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
   const t = copy[locale].disclaimer;
 
   return (
