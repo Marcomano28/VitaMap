@@ -267,10 +267,10 @@ export async function deleteInboxItem(userId: string, id: string): Promise<void>
 }
 
 /**
- * Mueve el archivo cifrado del inbox a documents/ (ubicación definitiva)
- * y borra el resto del inbox para este item.
+ * Copia el archivo cifrado a documents/ sin tocar el inbox. El llamador
+ * elimina el inbox solo cuando la escritura e indexación han terminado.
  */
-export async function promoteInboxOriginalToDocuments(
+export async function copyInboxOriginalToDocuments(
   userId: string,
   id: string,
 ): Promise<string> {
@@ -280,7 +280,6 @@ export async function promoteInboxOriginalToDocuments(
   const dstDir = path.join(getEnv().DATA_ROOT, "users", userId, "documents");
   await fs.mkdir(dstDir, { recursive: true });
   const dst = path.join(dstDir, `${id}${meta.storedExt}.age`);
-  await fs.rename(src, dst);
-  await fs.rm(itemDir(userId, id), { recursive: true, force: true });
+  await fs.copyFile(src, dst);
   return dst;
 }
