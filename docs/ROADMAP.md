@@ -2,6 +2,10 @@
 
 Documento de ruta para iniciar el piloto sin romper la arquitectura objetivo (self-hosted, GDPR, RAG dual personal+científico, guardrails anti-diagnóstico). Esta revisión integra **`tobi/qmd`** como motor RAG central, lo cual elimina Postgres del MVP y simplifica drásticamente el piloto inicial. Cada fase usa el mismo código y el mismo modelo de datos en disco; solo cambian el tamaño del modelo LLM, el hosting y la presencia o no de capas estructuradas adicionales.
 
+> La configuración operativa y la evolución vigente de QMD se definen en
+> `docs/QMD-EVOLUCION-VITAMAP.md`. Ese documento prevalece sobre los ejemplos
+> históricos de este roadmap cuando exista una diferencia.
+
 ---
 
 ## Principio rector — qué NO cambia entre fases
