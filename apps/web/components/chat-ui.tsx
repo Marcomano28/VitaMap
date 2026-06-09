@@ -53,6 +53,8 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
     setInput("");
     setLoading(true);
     setError(null);
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 165_000);
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -65,6 +67,7 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
             .map((m) => ({ role: m.role, content: m.content })),
         }),
         credentials: "same-origin",
+        signal: controller.signal,
       });
       if (!res.ok) {
         if (res.status === 401) {
@@ -92,8 +95,15 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
         },
       ]);
     } catch (err) {
-      setError(err instanceof Error && err.message === t.requestFailed ? err.message : t.requestFailed);
+      setError(
+        err instanceof DOMException && err.name === "AbortError"
+          ? t.requestTimedOut
+          : err instanceof Error && err.message === t.requestFailed
+            ? err.message
+            : t.requestFailed,
+      );
     } finally {
+      window.clearTimeout(timeoutId);
       setLoading(false);
     }
   }
