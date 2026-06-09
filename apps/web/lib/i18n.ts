@@ -102,7 +102,7 @@ export const copy = {
         "Asistente reflexivo. Lee tu memoria personal y la base de evidencia. Cada afirmación va con su fuente.",
       empty:
         "Escribe una pregunta sobre tu propia salud. El asistente leerá fragmentos relevantes de tu memoria y de la base de evidencia, y responderá citando cada fuente. Nunca diagnostica.",
-      loading: "Pensando... (puede tardar 15-30s sin GPU)",
+      loading: "Consultando memoria y preparando una respuesta...",
       placeholder:
         "Pregunta lo que quieras explorar. Enter envía, Shift+Enter salto de línea.",
       send: "Enviar",
@@ -111,6 +111,8 @@ export const copy = {
       sources: "Fuentes consultadas",
       requestFailed:
         "No se pudo obtener una respuesta. Inténtalo de nuevo en unos segundos.",
+      requestTimedOut:
+        "La respuesta tardó demasiado y se canceló. Inténtalo de nuevo con una pregunta más concreta.",
     },
     disclaimer: {
       label: "Aviso:",
@@ -264,7 +266,7 @@ export const copy = {
         "Reflektierender Assistent. Er liest deine persönliche Erinnerung und die Evidenzbasis. Jede Aussage wird mit Quelle angezeigt.",
       empty:
         "Stelle eine Frage zu deiner eigenen Gesundheit. Der Assistent liest relevante Ausschnitte aus deiner Erinnerung und der Evidenzbasis und antwortet mit Quellen. Er stellt keine Diagnosen.",
-      loading: "Denkt nach... (kann ohne GPU 15-30s dauern)",
+      loading: "Durchsucht den Speicher und bereitet eine Antwort vor...",
       placeholder:
         "Frage, was du erkunden möchtest. Enter sendet, Shift+Enter fügt einen Zeilenumbruch ein.",
       send: "Senden",
@@ -273,6 +275,8 @@ export const copy = {
       sources: "Genutzte Quellen",
       requestFailed:
         "Es konnte keine Antwort geladen werden. Bitte versuche es in einigen Sekunden erneut.",
+      requestTimedOut:
+        "Die Antwort hat zu lange gedauert und wurde abgebrochen. Versuche es erneut mit einer konkreteren Frage.",
     },
     disclaimer: {
       label: "Hinweis:",

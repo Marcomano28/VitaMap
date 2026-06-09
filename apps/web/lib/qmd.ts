@@ -90,7 +90,13 @@ async function ensureUserScaffold(userId: string) {
 // =====================================================================
 
 interface OpenedStore {
-  search(opts: { query: string; limit?: number; minScore?: number }): Promise<Array<{
+  search(opts: {
+    queries: Array<{ type: "lex" | "vec"; query: string }>;
+    rerank: false;
+    limit?: number;
+    minScore?: number;
+    candidateLimit?: number;
+  }): Promise<Array<{
     title?: string;
     displayPath?: string;
     path?: string;
@@ -197,9 +203,28 @@ export async function queryMemoryAndKB(
   ]);
 
   try {
+    // Evitar expansión y reranking locales, demasiado costosos en el VPS
+    // CPU-only, manteniendo recuperación híbrida BM25 + vector.
+    const normalizedQuery = query.replace(/\s+/g, " ").trim();
+    const searches = [
+      { type: "lex" as const, query: normalizedQuery },
+      { type: "vec" as const, query: normalizedQuery },
+    ];
     const [personalHits, evidenceHits] = await Promise.all([
-      userStore.search({ query, limit, minScore }),
-      kbStore.search({ query, limit, minScore }),
+      userStore.search({
+        queries: searches,
+        rerank: false,
+        limit,
+        minScore,
+        candidateLimit: 10,
+      }),
+      kbStore.search({
+        queries: searches,
+        rerank: false,
+        limit,
+        minScore,
+        candidateLimit: 10,
+      }),
     ]);
 
     const [personal, evidence] = await Promise.all([
