@@ -131,6 +131,7 @@ services:
       BETTER_AUTH_URL: ${PUBLIC_URL:?PUBLIC_URL required}
       NEXT_PUBLIC_APP_URL: ${PUBLIC_URL}
       NODE_ENV: production
+      XDG_CACHE_HOME: /data/.cache
     volumes:
       - vitamap_data:/data
     networks:
