@@ -14,6 +14,7 @@
     "test:invitations": "tsx scripts/test-invitations.ts",
     "test:billing": "tsx scripts/test-billing.ts",
     "test:ocr": "node --import tsx scripts/test-ocr.ts",
+    "test:assistant-text": "node --import tsx scripts/test-assistant-text.ts",
     "memory:reindex": "node scripts/reindex-users.mjs"
   },
   "dependencies": {

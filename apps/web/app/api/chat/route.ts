@@ -10,6 +10,10 @@ import {
   SubscriptionRequiredError,
 } from "@/lib/subscription-access";
 import { LOCALES, localize } from "@/lib/i18n";
+import {
+  hasVisibleAssistantText,
+  prepareAssistantText,
+} from "@/lib/assistant-text";
 
 export const runtime = "nodejs"; // @tobilu/qmd y better-sqlite3 son nativos
 
@@ -167,6 +171,16 @@ export async function POST(req: Request) {
     totalDurationMs: Date.now() - startedAt,
     verdict,
   });
+
+  finalText = prepareAssistantText(finalText);
+  if (!hasVisibleAssistantText(finalText)) {
+    verdict = "block";
+    flags = [...new Set([...flags, "missing_evidence_tag"])];
+    finalText = localize(body.locale, {
+      es: "La respuesta generada no contenía texto visible. No mostramos una respuesta incompleta; inténtalo de nuevo.",
+      de: "Die erzeugte Antwort enthielt keinen sichtbaren Text. Eine unvollständige Antwort wird nicht angezeigt; bitte versuche es erneut.",
+    });
+  }
 
   // -- Citas devueltas al cliente ----------------------------------------
   const citations = [...personal, ...evidence].map((c) => ({
