@@ -1,8 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { createStore } from "@tobilu/qmd";
 
 const SAFE_USER_ID = /^[a-zA-Z0-9_-]{8,64}$/;
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const workspaceRoot = path.resolve(scriptDir, "..", "..", "..");
 
 async function reindexUser(dataRoot, userId) {
   const memoryDir = path.join(dataRoot, "users", userId, "memory");
@@ -25,8 +28,11 @@ async function reindexUser(dataRoot, userId) {
 }
 
 async function main() {
-  const dataRoot = process.env.DATA_ROOT;
-  if (!dataRoot) throw new Error("DATA_ROOT is not set");
+  const configuredDataRoot = process.env.DATA_ROOT;
+  if (!configuredDataRoot) throw new Error("DATA_ROOT is not set");
+  const dataRoot = path.isAbsolute(configuredDataRoot)
+    ? configuredDataRoot
+    : path.resolve(workspaceRoot, configuredDataRoot);
   const usersRoot = path.join(dataRoot, "users");
   const entries = await fs.readdir(usersRoot, { withFileTypes: true }).catch(
     (err) => {

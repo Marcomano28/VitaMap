@@ -212,7 +212,8 @@ export async function POST(req: Request) {
     title: c.title,
     path: c.path,
     score: c.score,
-    evidenceLevel: c.evidenceLevel,
+    sourceKind: c.sourceKind,
+    sourceDocumentType: c.sourceDocumentType,
     sourceUrl: c.sourceUrl,
     observedAt: c.observedAt,
   }));

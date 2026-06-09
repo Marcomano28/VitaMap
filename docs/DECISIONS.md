@@ -5,6 +5,51 @@ decisión; nunca se borran, solo se marcan como *superseded* si cambian.
 
 ---
 
+## ADR-013 · Prioridad científica y procedencia del corpus compartido
+**Estado:** aceptada · 2026-06-09
+
+**Contexto.** La base compartida puede reunir guías clínicas, estudios,
+documentos educativos y fuentes de tradiciones como Ayurveda o medicina
+tradicional china. El campo actual `evidence_level` mezcla fuerza empírica,
+tipo documental y pertenencia a una tradición, lo que puede producir
+equivalencias engañosas.
+
+**Decisión.** La memoria personal es el centro de VitaMap. Cuando una respuesta
+requiere conocimiento general, el asistente usa prioritariamente evidencia
+clínica y educación institucional verificable, expresadas en lenguaje
+accesible.
+
+Las fuentes tradicionales:
+
+- pueden señalar coincidencias, complementar contexto o aportar otro marco;
+- se atribuyen siempre como tradición y no como evidencia clínica;
+- no confirman científicamente una afirmación;
+- ocupan el primer plano cuando el usuario solicita específicamente esa
+  perspectiva.
+
+Para el piloto, cada documento compartido usa una clasificación mínima de
+procedencia (`clinical-evidence`, `institutional-education` o
+`tradition-context`), tipo documental, fuente, fecha, estado de revisión y
+limitaciones. La relevancia calculada por QMD no es un nivel de evidencia.
+
+**Consecuencias.**
+- `tradition` deja de ser un valor de la misma escala que GRADE.
+- El system prompt debe conservar esta prioridad y mostrar discrepancias sin
+  fabricar consenso.
+- Las citas visibles deben corresponder a fuentes realmente utilizadas.
+- La interfaz administrativa `/admin/corpus`, restringida por `ADMIN_EMAILS`,
+  crea borradores fuera del índice y permite revisar, aprobar, publicar, probar
+  y retirar.
+- Una URL registra procedencia; el chat no navega páginas web en vivo.
+- Ningún conector o comprobación periódica publica contenido sin aprobación
+  humana.
+- No se exige para el piloto clasificación multidimensional, un panel
+  editorial completo ni índices externos separados.
+- Esas medidas pueden introducirse después si el volumen, varios curadores o
+  riesgos observados de mezcla justifican su coste.
+
+---
+
 ## ADR-012 · Registro cerrado mediante invitaciones nominativas
 **Estado:** aceptada · 2026-06-07
 

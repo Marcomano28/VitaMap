@@ -28,6 +28,7 @@ const PROTECTED_PREFIXES = [
   "/image",
   "/chat",
   "/settings",
+  "/admin",
 ];
 
 export function middleware(req: NextRequest) {

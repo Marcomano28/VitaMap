@@ -84,23 +84,28 @@ ahorra años de desarrollo y nos da una pieza ya validada por miles de
 usuarios en otros contextos.
 
 
-3. LA BASE DE CONOCIMIENTO CIENTÍFICA
--------------------------------------
+3. EL CORPUS DE CONOCIMIENTO CURADO
+-----------------------------------
 
 Es una biblioteca curada que vive en el servidor y se comparte entre todos
-los usuarios. Contiene guías clínicas de instituciones como NICE
-(Reino Unido) o ESC (Sociedad Europea de Cardiología), abstracts indexados
-desde PubMed sobre temas relevantes, y ontologías estructuradas de
-medicinas tradicionales (Medicina Tradicional China, Ayurveda).
+los usuarios. Se construye a partir de fuentes verificables: guías clínicas,
+información institucional y literatura biomédica. NICE, ESC y PubMed son
+ejemplos de procedencias posibles, pero su contenido solo se incorpora cuando
+la licencia o autorización aplicable lo permite.
 
-Cada fragmento de esta biblioteca lleva una etiqueta de nivel de evidencia,
-desde "Cochrane A" (evidencia fuerte) hasta marcadores claros para
-información de carácter tradicional o no validada por estudios clínicos.
-Esta etiqueta es la pieza central de nuestra honestidad intelectual: el
-asistente siempre dice de dónde viene cada afirmación y qué peso tiene.
+Cada documento conserva su enlace original, fecha, tipo, estado de revisión y
+limitaciones. Las fuentes de medicinas tradicionales se atribuyen como tales:
+pueden aportar coincidencias, contexto o una perspectiva solicitada, pero no
+se presentan como confirmación científica.
 
-Esta biblioteca se actualiza automáticamente cada mes mediante un proceso
-programado que consulta las fuentes oficiales.
+En la fase inmediata, el administrador selecciona y revisa cada incorporación
+desde una interfaz protegida. Una URL sirve como procedencia; el asistente no
+navega Internet durante la conversación. Solo consulta documentos locales que
+ya fueron aprobados e indexados.
+
+Más adelante, conectores oficiales podrán completar metadatos, detectar nuevas
+versiones y preparar borradores. Ninguna actualización entra automáticamente
+en la biblioteca: siempre requiere revisión y aprobación humana.
 
 
 4. EL ASISTENTE DE IA REFLEXIVA
@@ -112,19 +117,22 @@ hace una pregunta, ocurre lo siguiente en cuestión de segundos:
 Primero, el motor de búsqueda extrae los fragmentos más relevantes de la
 memoria personal del usuario.
 
-Segundo, el mismo motor extrae los fragmentos más relevantes de la
-biblioteca científica compartida.
+Segundo, cuando la pregunta necesita conocimiento general, el mismo motor
+extrae los fragmentos más relevantes del corpus compartido. La respuesta
+prioriza evidencia clínica e información institucional verificable.
 
 Tercero, ambos conjuntos se entregan al modelo de lenguaje claramente
 etiquetados: "esto viene de tu memoria personal, registrado el X de Y",
-"esto viene de una guía clínica con nivel de evidencia A". El modelo nunca
-los confunde porque arquitectónicamente vienen marcados.
+"esto viene de una guía clínica", "esto es información institucional" o
+"esto describe una perspectiva tradicional". Cada fuente conserva su
+procedencia y sus límites.
 
 Cuarto, el modelo responde siguiendo un estilo conversacional inspirado en
 el método socrático: hace preguntas que ayudan al usuario a pensar,
 contrasta lo personal con la evidencia, y nunca emite un diagnóstico ni
-recomienda un tratamiento. Cada afirmación va etiquetada con su nivel de
-evidencia.
+recomienda un tratamiento. Las perspectivas tradicionales se presentan como
+complemento atribuido o cuando el usuario las solicita, no como confirmación
+científica.
 
 Crucialmente, este modelo corre dentro del servidor de VitaMap. Los datos
 del usuario no salen jamás del entorno controlado. No se envían a OpenAI,

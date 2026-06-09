@@ -98,6 +98,13 @@ ESTADO CONOCIDO A 2026-06-09
     Está marcado como sintético y no contiene datos de una persona real.
   - Exportación y eliminación de cuenta existen en la aplicación.
 
+  [IMPLEMENTADO Y VALIDADO LOCALMENTE — PENDIENTE DE DESPLIEGUE]
+  - La administración del corpus existe en la rama de trabajo bajo
+    /admin/corpus, pero todavía no está en main ni en el VPS.
+  - Antes de usarla en https://vitamap.marcomano.org falta fusionar el
+    cambio en main, configurar ADMIN_EMAILS en el infra/.env de producción
+    y reconstruir los contenedores.
+
   [VERIFICAR EN VPS]
   - Firewall, acceso SSH restringido y política de actualización del
     sistema operativo.
@@ -413,10 +420,16 @@ Paso 2 — Abrir el navegador y registrarse como cualquier voluntario:
   Rellenar: código, email (admin@tudominio.de), contraseña, checkboxes.
   Pulsar "Validar invitación y crear cuenta".
 
-El administrador queda registrado como usuario normal. La plataforma
-no tiene actualmente un rol de administrador separado en la UI: las
-operaciones administrativas (crear invitaciones, revocar, listar) se
-hacen siempre por SSH en el VPS.
+El administrador queda registrado también como usuario normal. La cuenta ya
+existente no necesita registrarse de nuevo. Cuando la función de corpus haya
+sido fusionada y desplegada, su mismo correo de BetterAuth deberá figurar en
+ADMIN_EMAILS dentro de /opt/vitamap-next/infra/.env. Entonces podrá abrir:
+
+  https://vitamap.marcomano.org/admin/corpus
+
+Hasta ese despliegue la ruta devuelve 404, aunque el código exista en una copia
+local. Las operaciones de invitaciones (crear, revocar, listar) continúan
+haciéndose por SSH en el VPS y no se conceden por conocer la URL del panel.
 
 Prueba sintética actual:
   1. Archivo:
@@ -432,6 +445,11 @@ Prueba sintética actual:
   6. Corregir manualmente cualquier error antes de confirmar.
   7. Confirmar en memoria, consultar desde chat, exportar y finalmente
      borrar el dato de prueba.
+
+Nota sobre rutas:
+  En el VPS, web y tareas administrativas comparten rutas absolutas bajo
+  /data mediante el mismo volumen Docker. La normalización de rutas relativas
+  del entorno local no cambia este comportamiento de producción.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 C.7  INVITAR A LOS DOS VOLUNTARIOS — [PROCEDIMIENTO POSTERIOR]
@@ -731,6 +749,15 @@ Compose reconstruye las imágenes necesarias y conserva los volúmenes
 persistentes. Confirmar después:
   docker compose --env-file .env ps
   curl -fsS https://vitamap.marcomano.org/api/health
+
+Para la primera activación de /admin/corpus:
+  1. Confirmar que el cambio está fusionado en main.
+  2. Editar /opt/vitamap-next/infra/.env y añadir:
+       ADMIN_EMAILS=<correo exacto de la cuenta BetterAuth del administrador>
+  3. Ejecutar la reconstrucción indicada arriba.
+  4. Entrar con la cuenta habitual en:
+       https://vitamap.marcomano.org/admin/corpus
+  5. Un usuario autenticado cuyo correo no esté en ADMIN_EMAILS recibe 404.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 F.2  VER LOGS EN TIEMPO REAL

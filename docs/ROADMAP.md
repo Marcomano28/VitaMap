@@ -175,7 +175,19 @@ Objetivo: arquitectura completa funcionando end-to-end en tu portátil con QMD c
 
 **Auth + audit**: BetterAuth con adapter `better-sqlite3` apuntando a `./data/auth.sqlite`. Tabla `audit_event` en la misma BD con `prev_hash`, `event_hash`, `actor`, `action`, `subject_id`, `payload_summary`, `ts`.
 
-**KB científica**: arranca con 30-50 documentos markdown curados a mano en `/data/kb/` (guidelines NICE/ESC clave, abstracts PubMed que ya conozcas, ontologías TCM básicas). Cada documento con frontmatter YAML incluyendo `evidence_level` (GRADE A/B/C/D o Cochrane equivalente) y `source_url`. Tras añadir documentos: `qmd embed` para indexar.
+**Corpus compartido**: comienza con un conjunto pequeño y curado de documentos
+relevantes para las pruebas del piloto. La respuesta general se apoya
+prioritariamente en evidencia clínica y educación institucional verificable,
+expresadas en lenguaje accesible. Las fuentes tradicionales se usan como
+coincidencia, complemento o marco atribuido, o en primer plano cuando el
+usuario solicita específicamente esa perspectiva. Cada documento declara una
+clase mínima de procedencia, tipo, fuente, fecha, revisión y limitaciones.
+La fase inmediata añade una interfaz administrativa mínima para preparar
+borradores fuera del índice, revisar, aprobar, publicar, probar y retirar
+fuentes. Una URL se trata como procedencia: el chat no navega Internet en vivo.
+La taxonomía multidimensional, los conectores automáticos y la gobernanza
+editorial completa quedan para una fase posterior si el volumen o los riesgos
+observados las justifican.
 
 **OCR**: **desactivado**. El voluntario introduce valores de analíticas en un formulario que genera markdown estructurado. La fricción manual valida si OCR es realmente necesario antes de invertir en pipeline.
 
@@ -185,7 +197,12 @@ fase: que la persona sea de confianza o que el sitio no sea publico no elimina
 las obligaciones del piloto real.
 
 **Lo que validas en esta fase**:
-- Que el RAG dual de QMD cita correctamente cada fuente con su `evidence_level`.
+- Que el RAG distingue memoria personal y conocimiento externo.
+- Que las explicaciones generales se apoyan prioritariamente en fuentes
+  clínicas o institucionales verificables y usan lenguaje accesible.
+- Que una tradición aparece como complemento atribuido o por petición expresa,
+  nunca como confirmación científica.
+- Que las citas corresponden a fuentes realmente utilizadas.
 - Que los guardrails bloquean lenguaje diagnóstico fiable.
 - Que el formato Socrático no se siente condescendiente.
 - Que Qwen3-4B basta para razonamiento clínico básico o necesitas saltar antes a 14B.
@@ -315,7 +332,11 @@ Disparador: tienes >10 voluntarios activos, o el modelo Qwen3-4B/7B de Fase 1 se
 
 **QMD**: idéntico, ahora con más RAM disponible para mantener los modelos auxiliares cargados sin contención.
 
-**KB**: amplía a ~5.000 chunks markdown. Activa los conectores de NICE/ESC si están disponibles. Cron mensual de PubMed con queries específicas.
+**Corpus externo**: puede ampliarse hacia ~5.000 chunks aprobados si el uso lo
+justifica. Los conectores de NICE, ESC, PubMed o PMC solo se activan cuando
+existe una API adecuada y el uso previsto está permitido. Las comprobaciones
+periódicas detectan cambios y crean borradores o tareas de revisión; nunca
+publican directamente en el índice.
 
 **OCR**: activado por defecto. Pipeline asíncrono con cola simple (`SQLite LISTEN/NOTIFY` no existe, así que cola en tabla SQLite con polling cada 5s, o BullMQ con Redis si quieres ir formal).
 
@@ -407,7 +428,7 @@ Disparador: 20+ voluntarios activos semanalmente, latencia es la fricción princ
 | Auth | BetterAuth + SQLite | BetterAuth + SQLite | BetterAuth + SQLite | BetterAuth + SQLite o Postgres |
 | Datos estructurados | — | — | SQLite opcional | Postgres opcional |
 | OCR | desactivado | bajo demanda | activado | activado rápido |
-| KB chunks | 30-50 | 200-500 | ~5.000 | 50.000+ |
+| Corpus compartido | pequeño y curado | cobertura del piloto | ~5.000 chunks validados | 50.000+ chunks gobernados |
 | Backups | local | B2 ~1 € | B2 ~2 € | B2 ~5 € |
 | Email transaccional | mailtrap free | Resend free | Resend 20 €/mes | Resend 20 €/mes |
 | Monitorización | logs locales | Uptime Kuma self-hosted | + Grafana self-hosted | + alertas |
@@ -446,21 +467,22 @@ usuarios o la categoría del servidor.
 
 ## Checklist de Fase 0 — primeras dos semanas
 
-1. Crear el monorepo: `apps/web` (Next.js 15 + TS + Drizzle + BetterAuth + `@tobilu/qmd`), `infra/docker-compose.yml` (Caddy + llama.cpp server), `data/kb/` con 30-50 documentos seed markdown.
+1. Crear el monorepo: `apps/web` (Next.js 15 + TS + Drizzle + BetterAuth + `@tobilu/qmd`), `infra/docker-compose.yml` (Caddy + llama.cpp server) y `data/kb/` con un corpus externo pequeño y revisado.
 2. Levantar `llama.cpp server` con Qwen3-4B-Instruct Q4_K_M. Verificar endpoint `POST /v1/chat/completions` desde curl.
 3. Instalar QMD: `npm install @tobilu/qmd`. Exportar `QMD_EMBED_MODEL` a Qwen3-Embedding-0.6B.
 4. Implementar `lib/qmd.ts` con `createStore()` por usuario y store compartido de KB. Wrapper `queryMemoryAndKB(userId, query)`.
-5. Indexar KB seed: script Node que llama a `store.update()` y `store.embed()` sobre `/data/kb-index.sqlite`.
-6. Implementar el RAG dual en `/api/chat`: dos retrievals paralelos, wrapper `<source type>`, system prompt Socrático con obligación de citar `evidence_level`.
-7. Implementar el guardrail de segunda pasada (clasificador binario diagnóstico/no diagnóstico) como llamada al mismo LLM con prompt minimalista.
-8. Implementar `audit_event` append-only con hash chain en SQLite. Helper `logAuditEvent(actor, action, subjectId, payloadSummary)`.
-9. UI mínima: registro/login (BetterAuth), captura de observación libre que
+5. **Validado localmente; pendiente de despliegue:** acceso por allowlist `ADMIN_EMAILS` e interfaz `/admin/corpus` para crear borradores fuera de `/data/kb`, revisar, aprobar, publicar, retirar y ejecutar una consulta de prueba.
+6. **Validado localmente; pendiente de despliegue:** indexación exclusiva del corpus aprobado mediante `store.update()` y `store.embed()` sobre `/data/kb-index.sqlite`, con retirada y auditoría.
+7. Implementar el RAG dual en `/api/chat`: dos retrievals paralelos, wrapper `<source type>` y prompt socrático que priorice evidencia clínica accesible, conserve procedencia y trate tradición como complemento atribuido o perspectiva solicitada.
+8. Implementar el guardrail de segunda pasada (clasificador binario diagnóstico/no diagnóstico) como llamada al mismo LLM con prompt minimalista.
+9. Implementar `audit_event` append-only con hash chain en SQLite. Helper `logAuditEvent(actor, action, subjectId, payloadSummary)`.
+10. UI mínima: registro/login (BetterAuth), captura de observación libre que
    genera markdown con frontmatter y respuestas IA con citas y disclaimer fijo.
    PHQ-9, GAD-7, crisis e interpretacion personalizada quedan detras de feature
    flags desactivados hasta cerrar su evaluacion RGPD y MDR.
-10. Tras cada escritura de markdown, llamar a `store.update()` para reindexar el corpus del usuario afectado.
-11. Probar end-to-end con tus propios datos durante una semana antes de pasar a Fase 1.
-12. Decidir si Fase 1 arranca ya o si Fase 0 necesita iterar más (latencia, calidad de respuestas, ergonomía del flujo).
+11. Tras cada escritura de markdown, llamar a `store.update()` para reindexar el corpus del usuario afectado.
+12. Probar end-to-end con tus propios datos durante una semana antes de pasar a Fase 1.
+13. Decidir si Fase 1 arranca ya o si Fase 0 necesita iterar más (latencia, calidad de respuestas, ergonomía del flujo).
 
 ---
 
