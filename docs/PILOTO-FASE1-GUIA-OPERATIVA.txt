@@ -972,3 +972,5 @@ Ver carga de CPU:
 VitaMap · Guía Operativa Piloto Fase 1 · Versión 0.5
 Para la guía legal completa consultar: docs/GUIA-LEGAL-PILOTO-ALEMANIA.md
 Para el roadmap técnico completo consultar: docs/ROADMAP.md
+Para la evolución y operación de QMD consultar:
+docs/QMD-EVOLUCION-VITAMAP.md
