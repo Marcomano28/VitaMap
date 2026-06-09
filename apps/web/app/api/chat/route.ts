@@ -42,7 +42,7 @@ export async function POST(req: Request) {
   const startedAt = Date.now();
   const deadline = AbortSignal.any([
     req.signal,
-    AbortSignal.timeout(150_000),
+    AbortSignal.timeout(300_000),
   ]);
   let userId: string;
   try {
@@ -78,8 +78,8 @@ export async function POST(req: Request) {
   console.info("[chat] retrieval started");
   try {
     const result = await queryMemoryAndKB(userId, body.message, {
-      limit: 5,
-      minScore: 0.3,
+      limit: 3,
+      minScore: 0.35,
     });
     personal = result.personal;
     evidence = result.evidence;
