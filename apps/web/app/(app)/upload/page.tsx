@@ -27,6 +27,8 @@ const TEXT = {
     review: "Revisar",
     retry: "Reintentar",
     discard: "Descartar",
+    extractingHint:
+      "OCR y extracción en curso. Puede tardar varios minutos; la página se actualiza automáticamente.",
   },
   de: {
     title: "Dokumente hochladen",
@@ -44,6 +46,8 @@ const TEXT = {
     review: "Prüfen",
     retry: "Erneut versuchen",
     discard: "Verwerfen",
+    extractingHint:
+      "OCR und Extraktion laufen. Dies kann mehrere Minuten dauern; die Seite wird automatisch aktualisiert.",
   },
 } as const;
 
@@ -57,11 +61,21 @@ export default async function UploadPage() {
   const locale = await getLocale();
   const t = localize(locale, TEXT);
   const inbox = await listInbox(userId);
-  const hasActiveJobs = inbox.some((it) => it.status === "pending" || it.status === "extracting");
+  const activeJobs = inbox.filter(
+    (it) => it.status === "pending" || it.status === "extracting",
+  );
+  const hasActiveJobs = activeJobs.length > 0;
+  const activeSince = activeJobs
+    .map((it) => it.processingStartedAt ?? it.uploadedAt)
+    .sort()[0];
 
   return (
     <div className="space-y-8">
-      <InboxAutoRefresh enabled={hasActiveJobs} />
+      <InboxAutoRefresh
+        enabled={hasActiveJobs}
+        locale={locale}
+        startedAt={activeSince}
+      />
       <header className="space-y-2">
         <h1 className="text-2xl font-semibold">{t.title}</h1>
         <p className="text-sm text-[var(--color-muted)]">
@@ -97,6 +111,7 @@ export default async function UploadPage() {
                   </p>
                 </div>
                 <span
+                  title={it.status === "extracting" ? t.extractingHint : undefined}
                   className={`text-xs px-2 py-1 rounded ${
                     it.status === "extracted"
                       ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200"
@@ -107,6 +122,12 @@ export default async function UploadPage() {
                           : "bg-[var(--color-card)] text-[var(--color-muted)]"
                   }`}
                 >
+                  {it.status === "extracting" && (
+                    <span
+                      className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-current animate-pulse"
+                      aria-hidden="true"
+                    />
+                  )}
                   {t.statuses[it.status as keyof typeof t.statuses] ?? it.status}
                 </span>
                 {it.status === "extracted" && (
