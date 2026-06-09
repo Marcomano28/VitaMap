@@ -11,6 +11,7 @@ import {
 import { getLocale } from "@/lib/locale";
 import { localeTag, localize } from "@/lib/i18n";
 import { queryKB, type RetrievedChunk } from "@/lib/qmd";
+import { SubmitButton } from "./submit-button";
 import {
   deleteCorpusDraftAction,
   publishCorpusDraftAction,
@@ -48,6 +49,8 @@ const TEXT = {
     bodyHint:
       "Pega únicamente contenido cuya incorporación al corpus esté permitida. Resume cuando no debas reproducir el original.",
     save: "Guardar borrador",
+    processing: "Procesando…",
+    clearForm: "Limpiar",
     cancelEdit: "Cancelar edición",
     drafts: "Borradores",
     published: "Publicados",
@@ -98,6 +101,8 @@ const TEXT = {
     bodyHint:
       "Nur Inhalte einfügen, deren Aufnahme zulässig ist. Zusammenfassen, wenn der Originaltext nicht übernommen werden darf.",
     save: "Entwurf speichern",
+    processing: "Wird verarbeitet…",
+    clearForm: "Zurücksetzen",
     cancelEdit: "Bearbeitung abbrechen",
     drafts: "Entwürfe",
     published: "Veröffentlicht",
@@ -308,9 +313,14 @@ export default async function CorpusAdminPage({ searchParams }: PageProps) {
               {t.bodyHint}
             </span>
           </Field>
-          <button type="submit" className={primaryButtonCls}>
-            {t.save}
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <SubmitButton className={primaryButtonCls} pendingLabel={t.processing}>
+              {t.save}
+            </SubmitButton>
+            <button type="reset" className={secondaryButtonCls}>
+              {t.clearForm}
+            </button>
+          </div>
         </form>
       </section>
 
@@ -330,22 +340,22 @@ export default async function CorpusAdminPage({ searchParams }: PageProps) {
                 </Link>
                 <form action={publishCorpusDraftAction}>
                   <input type="hidden" name="id" value={document.id} />
-                  <button
-                    type="submit"
+                  <SubmitButton
                     className={primaryButtonCls}
+                    pendingLabel={t.processing}
                     disabled={
                       document.rightsStatus !== "permitted" &&
                       document.rightsStatus !== "licensed"
                     }
                   >
                     {t.publish}
-                  </button>
+                  </SubmitButton>
                 </form>
                 <form action={deleteCorpusDraftAction}>
                   <input type="hidden" name="id" value={document.id} />
-                  <button type="submit" className={dangerButtonCls}>
+                  <SubmitButton className={dangerButtonCls} pendingLabel={t.processing}>
                     {t.delete}
-                  </button>
+                  </SubmitButton>
                 </form>
                 {document.rightsStatus !== "permitted" &&
                   document.rightsStatus !== "licensed" && (
@@ -379,9 +389,9 @@ export default async function CorpusAdminPage({ searchParams }: PageProps) {
                     name="relative_path"
                     value={document.relativePath}
                   />
-                  <button type="submit" className={dangerButtonCls}>
+                  <SubmitButton className={dangerButtonCls} pendingLabel={t.processing}>
                     {t.retire}
-                  </button>
+                  </SubmitButton>
                 </form>
               </DocumentCard>
             ))}
