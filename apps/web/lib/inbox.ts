@@ -45,6 +45,7 @@ export const InboxMeta = z.object({
   sha256: z.string(),
   mimeType: z.string(),
   uploadedAt: z.string(),
+  processingStartedAt: z.string().optional(),
   extractedAt: z.string().optional(),
   error: z.string().optional(),
 });
@@ -183,6 +184,7 @@ export async function runExtraction(userId: string, id: string): Promise<InboxMe
   const started: InboxMeta = {
     ...meta,
     status: "extracting",
+    processingStartedAt: new Date().toISOString(),
     extractedAt: undefined,
     error: undefined,
   };
@@ -248,6 +250,7 @@ export async function markInboxExtractionPending(
   const updated: InboxMeta = {
     ...meta,
     status: "pending",
+    processingStartedAt: undefined,
     extractedAt: undefined,
     error: undefined,
   };
