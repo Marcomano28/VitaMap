@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Comprueba el estado de la KB científica y ejecuta una búsqueda real.
+ * Comprueba el estado de la KB científica y ejecuta una búsqueda QMD real.
  *
  * Uso:
  *   npm run kb:check -- "vitamina D valores bajos"
@@ -9,13 +9,40 @@
 import { createStore } from "@tobilu/qmd";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { getEnv } from "../lib/env";
-import { kbDir } from "../lib/qmd";
-import { qmdHitSnippet, qmdRelativePath } from "../lib/qmd-hit";
+import { fileURLToPath } from "node:url";
+import { config as loadEnv } from "dotenv";
 
 const query =
   process.argv.slice(2).join(" ").trim() ||
   "vitamina D valores bajos";
+
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const workspaceRoot = path.resolve(scriptDir, "..", "..", "..");
+loadEnv({ path: path.join(workspaceRoot, ".env") });
+
+function requiredEnv(name: "DATA_ROOT" | "KB_INDEX_PATH"): string {
+  const value = process.env[name]?.trim();
+  if (!value) throw new Error(`Falta la variable ${name}`);
+  return value;
+}
+
+function relativePath(hit: {
+  displayPath?: string;
+  path?: string;
+}): string {
+  const raw = (hit.displayPath ?? hit.path ?? "")
+    .replace(/^qmd:\/\//, "")
+    .replace(/^\/+/, "");
+  return raw.startsWith("kb/") ? raw.slice(3) : raw;
+}
+
+function hitSnippet(hit: {
+  bestChunk?: string;
+  snippet?: string;
+  body?: string;
+}): string {
+  return (hit.bestChunk ?? hit.snippet ?? hit.body ?? "").trim();
+}
 
 async function listMarkdownFiles(dir: string): Promise<string[]> {
   const files: string[] = [];
@@ -32,8 +59,9 @@ async function listMarkdownFiles(dir: string): Promise<string[]> {
 }
 
 async function main() {
-  const env = getEnv();
-  const kbPath = kbDir();
+  const dataRoot = requiredEnv("DATA_ROOT");
+  const indexPath = requiredEnv("KB_INDEX_PATH");
+  const kbPath = path.join(dataRoot, "kb");
   await fs.mkdir(kbPath, { recursive: true });
   const markdownFiles = await listMarkdownFiles(kbPath);
   const realDocuments = markdownFiles.filter(
@@ -47,10 +75,11 @@ async function main() {
       "[kb:check] NO APTA: la KB no contiene documentos científicos reales",
     );
     process.exitCode = 3;
+    return;
   }
 
   const store = await createStore({
-    dbPath: env.KB_INDEX_PATH,
+    dbPath: indexPath,
     config: {
       collections: {
         kb: { path: kbPath, pattern: "**/*.md" },
@@ -65,7 +94,7 @@ async function main() {
     ]);
 
     console.log("[kb:check] directorio:", kbPath);
-    console.log("[kb:check] índice:", env.KB_INDEX_PATH);
+    console.log("[kb:check] índice:", indexPath);
     console.log("[kb:check] estado:", JSON.stringify(status, null, 2));
     console.log("[kb:check] salud:", JSON.stringify(health, null, 2));
     console.log("[kb:check] consulta:", query);
@@ -89,11 +118,11 @@ async function main() {
     console.log(`[kb:check] resultados: ${hits.length}`);
     for (const [index, hit] of hits.entries()) {
       console.log(`\n${index + 1}. ${hit.title ?? "(sin título)"}`);
-      console.log("   ruta:", qmdRelativePath(hit, "kb"));
+      console.log("   ruta:", relativePath(hit));
       console.log("   score:", hit.score);
       console.log(
         "   fragmento:",
-        qmdHitSnippet(hit).replace(/\s+/g, " ").slice(0, 300),
+        hitSnippet(hit).replace(/\s+/g, " ").slice(0, 300),
       );
     }
   } finally {
