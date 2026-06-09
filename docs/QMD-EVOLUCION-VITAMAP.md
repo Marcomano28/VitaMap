@@ -1,6 +1,6 @@
 # Evolución del uso de QMD en VitaMap
 
-Versión 0.1 · 2026-06-09
+Versión 0.3 · 2026-06-09
 Estado: documento técnico activo
 
 ## 1. Propósito
@@ -22,6 +22,33 @@ función es más concreta:
 
 Cuando este documento contradiga ejemplos antiguos de `docs/ROADMAP.md`,
 prevalece este documento para la operación de QMD.
+
+## 1.1 Principio rector
+
+> **La memoria es el producto. El RAG es la lente. Las clasificaciones son
+> señales de procedencia, no la arquitectura central.**
+
+Esta jerarquía gobierna las decisiones de recuperación:
+
+1. VitaMap existe para que una persona conserve y comprenda la continuidad de
+   su propio historial.
+2. QMD ayuda a encontrar fragmentos relevantes de esa memoria; no define qué
+   significa la experiencia de la persona.
+3. Cuando una respuesta requiere conocimiento general, el asistente ofrece
+   información basada prioritariamente en evidencia clínica y educación
+   institucional, expresada en lenguaje accesible.
+4. Las fuentes tradicionales pueden señalar coincidencias, complementar el
+   contexto o aportar otro marco interpretativo, siempre con atribución y
+   límites explícitos. No confirman científicamente una afirmación.
+5. Ayurveda, medicina tradicional china, acupuntura u otra tradición ocupan el
+   primer plano cuando el usuario solicita específicamente esa perspectiva.
+6. Las clasificaciones ayudan a atribuir una fuente con honestidad, pero no
+   convierten relevancia en verdad ni deben dominar la experiencia.
+
+Este principio debe conservarse tanto en el ADR que gobierna el RAG como en el
+system prompt del asistente. Una ampliación técnica del corpus no puede cambiar
+silenciosamente el centro del producto desde "comprender mi historial" hacia
+"administrar una biblioteca universal".
 
 ## 2. Decisión vigente
 
@@ -77,6 +104,8 @@ QMD no es responsable de:
 - aplicar consentimiento;
 - extraer texto desde PDF o imágenes;
 - interpretar clínicamente una analítica;
+- decidir qué sistema de conocimiento tiene autoridad para la persona;
+- determinar por sí solo qué fuentes fueron realmente usadas en una respuesta;
 - garantizar que una respuesta del LLM sea segura;
 - registrar auditoría;
 - realizar backups.
@@ -103,16 +132,36 @@ La función de sesión valida `user_id` antes de usarlo en una ruta. El índice
 personal se abre usando exclusivamente el identificador de la sesión, nunca
 un identificador recibido desde el navegador.
 
-La base de conocimiento científica es compartida:
+El corpus externo compartido vive actualmente en:
 
 ```text
 /data/kb/
 /data/kb-index.sqlite
 ```
 
+En desarrollo local, los valores relativos de `.env` se resuelven respecto a
+la carpeta que contiene ese archivo. Así `DATA_ROOT=./data` apunta siempre al
+`data/` de la raíz del proyecto, aunque npm ejecute Next desde `apps/web`.
+Los scripts de indexación aplican la misma regla. En Docker no interviene esta
+normalización porque `DATA_ROOT`, `KB_INDEX_PATH` y `AUTH_DB_PATH` ya son rutas
+absolutas bajo `/data`.
+
+Dentro de ese store, los metadatos distinguen evidencia clínica, educación
+institucional y tradición. Para el piloto no se requiere multiplicar índices:
+la separación conceptual se aplica mediante clasificación mínima, recuperación
+selectiva y atribución visible.
+
+Separar físicamente el corpus clínico y el tradicional puede evaluarse en una
+fase posterior si las pruebas demuestran que los filtros, el prompt y las
+citas no bastan para evitar mezclas, o si cada carril necesita políticas de
+acceso, actualización o rendimiento diferentes. Un índice separado reduce
+ciertos errores de recuperación, pero no garantiza por sí solo que el LLM use
+correctamente las fuentes.
+
 La separación por bases SQLite distintas es una defensa importante. Reduce
-el impacto de un error de filtrado y evita depender de una condición SQL para
-separar datos médicos de usuarios distintos.
+el impacto de un error de filtrado entre usuarios y evita depender de una
+condición SQL para separar datos médicos personales. Esta propiedad se refiere
+al índice personal de cada usuario frente al corpus externo compartido.
 
 ### 4.2 Versión
 
@@ -229,7 +278,7 @@ prompt. La capa:
 
 Este adaptador forma parte del contrato de integración y debe tener pruebas.
 
-### 4.7 Estado del corpus científico
+### 4.7 Estado del corpus compartido
 
 La tubería para consultar evidencia está implementada, pero el repositorio
 solo contiene `data/kb/guidelines/example-seed.md`. El propio documento se
@@ -239,18 +288,264 @@ Por tanto:
 
 - el RAG dual existe técnicamente;
 - la memoria personal ya puede recuperarse;
-- la KB científica todavía no puede considerarse operativa;
+- el corpus compartido todavía no puede considerarse operativo;
 - una respuesta que solo cite la analítica personal no demuestra consulta de
   evidencia.
 
 Antes del piloto deben incorporarse documentos curados con procedencia,
-fecha, nivel de evidencia y URL verificables, copiarlos al volumen
-persistente `/data/kb`, indexarlos y probar preguntas diseñadas para requerir
-evidencia externa.
+fecha y URL verificables para las preguntas del piloto que realmente requieran
+conocimiento externo. La ausencia de un corpus amplio no invalida la función
+principal de VitaMap: consultar y comprender la memoria personal.
 
-## 5. Lecciones de la primera prueba integral
+## 5. El corpus compartido al servicio de la memoria
 
-### 5.1 Dependencias nativas dinámicas
+### 5.1 Función y límites
+
+El corpus compartido no es una segunda memoria del usuario ni el centro del
+producto. Es una biblioteca auxiliar que permite:
+
+- contrastar un dato personal con información externa;
+- explicar conceptos que no están contenidos en el historial;
+- indicar límites, incertidumbre y cuestiones de seguridad;
+- señalar coincidencias o aportes complementarios de fuentes tradicionales;
+- presentar una perspectiva tradicional en primer plano cuando el usuario la
+  solicite expresamente.
+
+La recuperación debe entenderse como tres carriles distintos:
+
+1. **Memoria personal**: observaciones, analíticas, cuestionarios y documentos
+   aprobados por el usuario. Es el carril principal y no recibe una
+   clasificación de evidencia.
+2. **Evidencia y educación clínica**: guías, revisiones y documentos
+   institucionales que aportan contraste externo.
+3. **Tradiciones y contexto**: textos o síntesis de Ayurveda, medicina
+   tradicional china y otros marcos, atribuidos como tales y sin presentarlos
+   como evidencia clínica por el hecho de estar indexados.
+
+La implementación actual consulta el índice personal y el corpus externo en
+paralelo para todas las preguntas. Es un compromiso operativo del prototipo,
+no el comportamiento conceptual definitivo. La evolución deseable es consultar
+cada carril según la intención de la pregunta y conservar suficiente contexto
+conversacional para resolver preguntas de seguimiento.
+
+### 5.2 Clasificación mínima para el piloto
+
+El piloto no necesita una taxonomía universal. Necesita metadatos suficientes
+para que una persona entienda qué clase de fuente está leyendo y cuáles son
+sus límites.
+
+Cada Markdown compartido debe declarar como mínimo:
+
+```yaml
+---
+title: "Título verificable"
+source_url: "https://fuente-oficial.example/documento"
+publication_date: "2025-01-15"
+source_kind: clinical-evidence
+source_type: guideline
+review_status: approved
+reviewed_at: "2026-06-09T12:00:00Z"
+limitations:
+  - "No sustituye evaluación clínica individual"
+---
+```
+
+`source_kind` debe pertenecer inicialmente a una lista corta:
+
+```text
+clinical-evidence
+institutional-education
+tradition-context
+```
+
+`tradition-context` describe la función y procedencia del documento, pero no
+obliga a asignarle `evidence_level: tradition`. Por ejemplo, una revisión
+institucional de NCCIH sobre Ayurveda puede clasificarse como
+`source_kind: tradition-context` y `evidence_level: unrated`: trata una
+tradición, pero no es por ello una fuente tradicional primaria ni recibe un
+grado clínico.
+
+Cuando la propia fuente publique una calificación formal, puede conservarse
+literalmente en un campo opcional como `published_grade: "GRADE: moderate
+certainty"`. VitaMap no inventa equivalencias entre GRADE, tipo documental y
+tradición. El campo actual `evidence_level` puede mantenerse por compatibilidad
+durante la transición, pero `guideline`, `tradition` y GRADE no deben seguir
+tratándose como valores de una sola escala.
+
+### 5.3 Contrato del asistente y del system prompt
+
+El asistente debe aplicar explícitamente estas reglas:
+
+1. Empezar por la pregunta y la memoria de la persona, no por demostrar la
+   amplitud del corpus.
+2. Atribuir como memoria personal todo patrón obtenido del historial y
+   formularlo como observación, nunca como evidencia clínica general.
+3. Explicar el conocimiento general con lenguaje accesible y apoyarlo
+   prioritariamente en evidencia clínica o educación institucional verificable.
+4. Incorporar tradición como coincidencia, complemento o marco interpretativo
+   claramente atribuido; nunca presentarla como confirmación científica.
+5. Dar protagonismo a una perspectiva ayurvédica, de medicina tradicional
+   china, acupuntura u otra tradición cuando el usuario la solicite
+   explícitamente.
+6. Señalar las discrepancias entre evidencia clínica y tradición sin fabricar
+   consenso ni ocultar la diferencia.
+7. No mostrar una fuente como respaldo de la respuesta solo porque QMD la
+   recuperó. La cita visible debe corresponder a contenido realmente utilizado.
+8. Reconocer con claridad cuándo la memoria o el corpus no contienen
+   información suficiente.
+
+La formulación breve que debe conservar el system prompt es:
+
+> La memoria es el producto. El RAG es la lente. Las clasificaciones son
+> señales de procedencia, no la arquitectura central.
+
+### 5.4 Fase inmediata: administración mínima del corpus
+
+Para el piloto basta con un corpus pequeño, verificable y relacionado con las
+preguntas que se van a probar. Cada documento debe:
+
+- proceder de una fuente identificable;
+- enlazar al original o incluir una referencia verificable;
+- representar fielmente el contenido fuente;
+- indicar su clase y sus limitaciones;
+- haber sido revisado por una persona antes de entrar en `/data/kb`;
+- poder retirarse del índice si queda obsoleto o se detecta un problema.
+
+La implementación inicial está desarrollada y validada localmente en la rama
+de trabajo, donde expone `/admin/corpus`. No estará disponible en
+`vitamap.marcomano.org` hasta que los cambios se fusionen en `main` y se
+reconstruya el despliegue del VPS. No pretende ser un gestor bibliográfico
+completo. Su función es hacer explícita y reproducible la selección que antes
+realizaba manualmente el administrador.
+
+El acceso se limita en servidor a usuarios autenticados cuyo correo figure en
+la variable `ADMIN_EMAILS`. La comprobación se repite en la página y en cada
+acción editorial. El acceso por suscripción o el hecho de conocer la URL no
+concede permisos editoriales.
+
+El flujo inmediato será:
+
+```text
+administrador propone fuente
+  -> registra URL, DOI o PMID y metadatos conocidos
+  -> incorpora contenido permitido o una síntesis revisable
+  -> guarda borrador fuera de /data/kb
+  -> revisa procedencia, clase, fecha, licencia y limitaciones
+  -> aprueba
+  -> publica Markdown en /data/kb
+  -> ejecuta update() y embed()
+  -> prueba una consulta y su cita
+  -> mantiene o retira la fuente
+```
+
+La interfaz inicial permite:
+
+- listar borradores y documentos publicados;
+- crear una entrada pegando texto o subiendo un Markdown cuyo frontmatter se
+  importa como propuesta de metadatos;
+- registrar `source_url`, DOI o PMID sin descargar necesariamente su contenido;
+- editar título, fecha, `source_kind`, `source_type` y limitaciones;
+- registrar el estado de derechos: `unknown`, `metadata-only`, `permitted` o
+  `licensed`;
+- aprobar y publicar;
+- retirar una entrada y actualizar el índice;
+- ejecutar una consulta de prueba y abrir la cita resultante;
+- registrar en auditoría quién aprobó o retiró la fuente.
+
+Los estados `unknown` y `metadata-only` pueden conservarse como borrador, pero
+no permiten publicar texto en el RAG. La publicación exige `permitted` o
+`licensed`. Esta restricción evita que registrar una referencia se confunda con
+tener derecho a incorporar su contenido.
+
+Los borradores no deben vivir en `/data/kb`, porque QMD indexa todo Markdown de
+ese árbol. Pueden almacenarse inicialmente en `/data/kb-inbox/` o en una tabla
+administrativa. Solo la acción explícita de aprobar crea o mueve el documento
+publicado a `/data/kb`.
+
+Para esta fase no se requiere una taxonomía multidimensional, conectores
+automáticos ni un sistema editorial complejo. Sí se requiere que el estado de
+la fuente sea visible y que nada llegue al RAG por el simple hecho de haber
+introducido una URL.
+
+Antes de invitar a terceros debe comprobarse:
+
+- que la memoria personal se recupera de extremo a extremo;
+- que ninguna memoria cruza entre usuarios;
+- que las citas visibles corresponden a fuentes realmente usadas;
+- que las preguntas sin respaldo reciben una respuesta de insuficiencia;
+- que el pequeño corpus externo cubre las consultas de contraste incluidas en
+  las pruebas del piloto;
+- que una fuente puede retirarse y desaparecer del índice.
+
+### 5.5 Tratamiento de URLs y fuentes externas
+
+`source_url` es procedencia, no contenido. El chat no visita esa URL durante
+una conversación. Solo consulta Markdown local previamente revisado y
+publicado.
+
+Esto mantiene las respuestas:
+
+- reproducibles aunque una página cambie o desaparezca;
+- protegidas frente a contenido remoto malicioso o instrucciones incrustadas;
+- independientes de fallos de red;
+- limitadas a material cuya incorporación fue aprobada;
+- auditables mediante la versión local utilizada.
+
+En la fase inmediata, introducir una URL puede limitarse a guardar el enlace y
+los metadatos que el administrador verifique. El contenido se pega o se carga
+manualmente. Una descarga desde el servidor solo debe añadirse cuando exista un
+conector específico que controle formato, tamaño, redirecciones, SSRF,
+licencia y procedencia.
+
+Las fuentes citadas en la visión de producto requieren tratamientos distintos:
+
+- **NICE**: dispone de mecanismos de sindicación, pero su contenido no debe
+  incorporarse para uso internacional o con IA sin revisar y obtener la
+  licencia o autorización aplicable. Hasta entonces, VitaMap puede conservar
+  metadatos y enlace, no una copia sustancial en el RAG.
+- **ESC**: sus guías no deben reproducirse ni traducirse sin el permiso
+  correspondiente. Sin permiso, se conserva la referencia y el enlace; no se
+  indexa el texto de la guía como contenido propio.
+- **PubMed**: NCBI E-utilities permite consultar metadatos por PMID y realizar
+  búsquedas. Eso no convierte automáticamente el abstract o el artículo en
+  contenido reutilizable.
+- **PMC Open Access Subset**: puede proporcionar texto completo mediante APIs
+  oficiales, pero debe verificarse la licencia concreta de cada artículo y si
+  permite el tipo de uso de VitaMap.
+
+Una síntesis generada con ayuda de IA no se convierte por ello en una fuente.
+Debe revisarse contra el original, atribuirse como síntesis editorial de
+VitaMap y conservar la referencia utilizada.
+
+### 5.6 Evolución posterior
+
+Cuando el flujo manual esté probado, la interfaz puede evolucionar por etapas:
+
+1. **Metadatos asistidos**: resolver DOI o PMID mediante APIs oficiales y
+   completar título, autores, fecha, publicación y enlace.
+2. **Importadores autorizados**: obtener contenido solo desde APIs o formatos
+   permitidos, registrar licencia y generar un borrador fuera del índice.
+3. **Versionado**: checksum, relación entre versiones, fecha de revisión y
+   retirada trazable.
+4. **Seguimiento de fuentes**: comprobar periódicamente cambios, nuevas
+   versiones o enlaces rotos y crear una tarea de revisión.
+5. **Curación colaborativa**: varios curadores, doble revisión para fuentes de
+   alto impacto y permisos administrativos diferenciados.
+6. **Gobernanza ampliada**: clasificación multidimensional y panel editorial
+   completo cuando el volumen lo justifique.
+
+Los procesos automáticos pueden descubrir cambios y preparar borradores, pero
+nunca publican directamente en `/data/kb`. La aprobación humana continúa
+siendo la frontera entre Internet y el RAG.
+
+> **Comentario de evolución futura.** Esta evolución no debe convertir ahora
+> el proyecto en la administración de un corpus universal. Sus disparadores
+> deben ser necesidades observadas de escala, seguridad o trazabilidad, no
+> anticipación arquitectónica.
+
+## 6. Lecciones de la primera prueba integral
+
+### 6.1 Dependencias nativas dinámicas
 
 `sqlite-vec` selecciona el paquete nativo según la plataforma. Next.js no
 detectó automáticamente el import dinámico y omitió
@@ -268,7 +563,7 @@ durante el build que puede resolverse.
 Lección: un build de Next exitoso no prueba por sí solo que las extensiones
 nativas dinámicas estén en el runtime.
 
-### 5.2 Una escritura y su índice no forman una transacción única
+### 6.2 Una escritura y su índice no forman una transacción única
 
 El markdown y el índice QMD viven en sistemas diferentes. Es posible escribir
 el documento y fallar después durante la indexación.
@@ -279,7 +574,7 @@ falla, y el inbox se conserva hasta completar todo el proceso.
 Lección: toda operación de memoria necesita una estrategia explícita de
 reintento, rollback o reconstrucción.
 
-### 5.3 El contrato SDK debe probarse, no suponerse
+### 6.3 El contrato SDK debe probarse, no suponerse
 
 VitaMap declaró inicialmente una interfaz manual con un campo `snippet`.
 TypeScript la aceptó porque el resultado real se convirtió a ese tipo de forma
@@ -289,7 +584,7 @@ fuente vacía.
 Lección: no se deben duplicar manualmente los tipos públicos de QMD. Deben
 usarse `QMDStore`, `HybridQueryResult` y los demás tipos exportados.
 
-### 5.4 Encontrar una fuente no garantiza que el LLM la use
+### 6.4 Encontrar una fuente no garantiza que el LLM la use
 
 La interfaz mostró una tarjeta de fuente mientras el modelo afirmaba no tener
 los valores. La tarjeta probaba que hubo recuperación, pero no que el fragmento
@@ -308,7 +603,7 @@ markdown
   -> cita abrible
 ```
 
-### 5.5 Rendimiento del store
+### 6.5 Rendimiento del store
 
 QMD crea una instancia local de `LlamaCpp` por store. VitaMap abre actualmente
 un store personal y otro de KB para cada pregunta, y los cierra al terminar.
@@ -321,7 +616,7 @@ quiere conservar los modelos cargados entre consultas.
 Lección: el ciclo de vida del store es una decisión de rendimiento, no un
 detalle de implementación.
 
-## 6. Riesgos actuales
+## 7. Riesgos actuales
 
 ### P0. Prueba integral insuficiente
 
@@ -437,7 +732,7 @@ Cada actualización requiere:
 - forzar `embed()` si cambia el modelo o su fingerprint;
 - probar rollback.
 
-## 7. Evolución por etapas
+## 8. Evolución por etapas
 
 ### Etapa Q0. Prueba sintética inicial
 
@@ -570,7 +865,7 @@ Se reevaluará:
 El reranking no se activará porque esté disponible, sino porque mejore métricas
 de recuperación en el corpus de VitaMap.
 
-## 8. Evaluación de calidad
+## 9. Evaluación de calidad
 
 Debe existir un conjunto versionado de preguntas sintéticas, sin datos reales.
 
@@ -626,7 +921,7 @@ Métricas:
 QMD incluye herramientas de benchmark, pero VitaMap necesita además una prueba
 de extremo a extremo que incluya la construcción del prompt y la cita visible.
 
-## 9. Salud y mantenimiento
+## 10. Salud y mantenimiento
 
 ### Comprobación periódica
 
@@ -670,7 +965,7 @@ Los elementos irremplazables son:
 - base de autenticación, consentimiento, billing y auditoría;
 - configuración y claves custodiadas por separado.
 
-## 10. Privacidad y seguridad
+## 11. Privacidad y seguridad
 
 QMD funciona localmente, pero sus índices contienen representaciones derivadas
 de datos médicos.
@@ -688,7 +983,7 @@ Por ello:
 Los modelos GGUF de la caché no contienen datos personales. Los índices, las
 cachés de resultados y cualquier fichero temporal sí pueden contenerlos.
 
-## 11. Criterios para sustituir QMD
+## 12. Criterios para sustituir QMD
 
 QMD no debe mantenerse por inercia. Se evaluará otra tecnología si ocurre
 alguno de estos casos:
@@ -704,9 +999,16 @@ alguno de estos casos:
 La sustitución del índice no debe exigir migrar la fuente de verdad. Markdown
 permanece como formato portable.
 
-## 12. Próximo orden de trabajo
+## 13. Próximo orden de trabajo
 
-Orden recomendado:
+Implementado y validado localmente, pendiente de despliegue:
+
+- control de acceso administrativo mediante `ADMIN_EMAILS`;
+- borradores en `/data/kb-inbox`, fuera del índice;
+- creación, edición, publicación, retirada y auditoría;
+- consulta de prueba limitada al corpus compartido.
+
+Orden recomendado para lo pendiente:
 
 1. desplegar y confirmar la corrección de `bestChunk`;
 2. crear la prueba integral QMD real;
@@ -716,15 +1018,26 @@ Orden recomendado:
 6. fijar `@tobilu/qmd` a versión exacta;
 7. medir latencia y memoria con stores efímeros;
 8. decidir si implementar una caché LRU de stores;
-9. poblar y validar la KB científica real;
-10. repetir la prueba durante varios días con datos sintéticos;
-11. solo entonces invitar a los otros dos participantes.
+9. comprobar preguntas de seguimiento y definir cómo incorporar contexto
+   conversacional a la recuperación;
+10. preparar y validar un corpus externo pequeño para las consultas concretas
+    del piloto;
+11. mostrar en las citas la clase mínima de procedencia y solo las fuentes
+    realmente utilizadas;
+12. evaluar recuperación selectiva por intención en lugar de consultar siempre
+    todos los carriles;
+13. repetir la prueba durante varios días con datos sintéticos;
+14. solo entonces invitar a los otros dos participantes.
 
-## 13. Referencias
+## 14. Referencias
 
 - Repositorio QMD: https://github.com/tobi/qmd
 - SDK QMD: https://github.com/tobi/qmd#sdk--library-usage
 - Changelog QMD: https://github.com/tobi/qmd/blob/main/CHANGELOG.md
+- Reutilización de contenido NICE: https://www.nice.org.uk/re-using-our-content
+- Copyright de guías ESC: https://www.escardio.org/guidelines/clinical-practice-guidelines/ESC-Guidelines-Copyright/
+- APIs oficiales NCBI: https://www.ncbi.nlm.nih.gov/home/develop/api/
+- PMC Open Access Subset: https://pmc.ncbi.nlm.nih.gov/tools/openftlist
 - Decisiones VitaMap: `docs/DECISIONS.md`
 - Roadmap VitaMap: `docs/ROADMAP.md`
 - Guía operativa: `docs/PILOTO-FASE1-GUIA-OPERATIVA.txt`

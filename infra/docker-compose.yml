@@ -45,6 +45,7 @@ services:
       MASTER_KEY: ${MASTER_KEY:?MASTER_KEY required}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET required}
       BETTER_AUTH_URL: ${PUBLIC_URL:?PUBLIC_URL required}
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
       NEXT_PUBLIC_APP_URL: ${PUBLIC_URL}
       NODE_ENV: production
       XDG_CACHE_HOME: /data/.cache
@@ -131,6 +132,7 @@ services:
       MASTER_KEY: ${MASTER_KEY:?MASTER_KEY required}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET required}
       BETTER_AUTH_URL: ${PUBLIC_URL:?PUBLIC_URL required}
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
       NEXT_PUBLIC_APP_URL: ${PUBLIC_URL}
       NODE_ENV: production
       XDG_CACHE_HOME: /data/.cache

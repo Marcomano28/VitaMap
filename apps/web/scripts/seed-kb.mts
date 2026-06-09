@@ -21,15 +21,15 @@ loadEnv({ path: path.join(workspaceRoot, ".env") });
 
 const force = process.argv.includes("--force");
 
-function requiredEnv(name: "DATA_ROOT" | "KB_INDEX_PATH"): string {
+function requiredPathEnv(name: "DATA_ROOT" | "KB_INDEX_PATH"): string {
   const value = process.env[name]?.trim();
   if (!value) throw new Error(`Falta la variable ${name}`);
-  return value;
+  return path.isAbsolute(value) ? value : path.resolve(workspaceRoot, value);
 }
 
 async function main() {
-  const dataRoot = requiredEnv("DATA_ROOT");
-  const indexPath = requiredEnv("KB_INDEX_PATH");
+  const dataRoot = requiredPathEnv("DATA_ROOT");
+  const indexPath = requiredPathEnv("KB_INDEX_PATH");
   const kbPath = path.join(dataRoot, "kb");
 
   console.log("[seed-kb] indexando data/kb/ ...");

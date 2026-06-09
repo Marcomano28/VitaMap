@@ -152,6 +152,22 @@ docker compose --env-file .env --profile tools run --rm admin \
 El código solo aparece al crearlo. Se envía por un canal privado y no se añade
 a URLs, tickets ni logs.
 
+### Administrar el corpus
+
+La cuenta administrativa es una cuenta normal de BetterAuth cuyo correo aparece
+en `ADMIN_EMAILS` dentro de `infra/.env`. No requiere un segundo registro ni una
+contraseña distinta.
+
+Después de desplegar una versión que incluya la interfaz:
+
+```text
+https://vitamap.marcomano.org/admin/corpus
+```
+
+La interfaz guarda borradores en `/data/kb-inbox`, publica únicamente contenido
+aprobado en `/data/kb` y actualiza el índice compartido. Las invitaciones siguen
+gestionándose con los comandos anteriores y no desde esta página.
+
 ## Notas operativas
 
 El servicio `llm` corre llama.cpp en CPU con Qwen3-4B Q4_K_M. En una VPS
