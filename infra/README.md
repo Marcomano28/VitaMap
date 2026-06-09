@@ -86,14 +86,14 @@ Con el stack en marcha, indexar desde la imagen administrativa:
 
 ```bash
 docker compose --env-file .env --profile tools run --rm \
-  --entrypoint npx admin tsx scripts/seed-kb.ts
+  --entrypoint node admin --import tsx scripts/seed-kb.mts
 ```
 
 Comprobar el estado del índice y ejecutar una búsqueda real:
 
 ```bash
 docker compose --env-file .env --profile tools run --rm \
-  --entrypoint npx admin tsx scripts/check-kb.ts \
+  --entrypoint node admin --import tsx scripts/check-kb.mts \
   "vitamina D valores bajos"
 ```
 
@@ -126,11 +126,11 @@ docker compose --env-file .env exec backup restic check
 
 # Forzar reindexado de la KB
 docker compose --env-file .env --profile tools run --rm \
-  --entrypoint npx admin tsx scripts/seed-kb.ts --force
+  --entrypoint node admin --import tsx scripts/seed-kb.mts --force
 
 # Inspeccionar la KB y probar una recuperación
 docker compose --env-file .env --profile tools run --rm \
-  --entrypoint npx admin tsx scripts/check-kb.ts \
+  --entrypoint node admin --import tsx scripts/check-kb.mts \
   "vitamina D valores bajos"
 ```
 
