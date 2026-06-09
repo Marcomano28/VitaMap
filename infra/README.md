@@ -78,12 +78,23 @@ hasta que `web` queda healthy.
 
 ### 5. Indexar la KB seed
 
-Con el stack en marcha:
+Los documentos científicos deben existir primero en el volumen persistente
+`/data/kb`. El repositorio solo incluye un placeholder técnico y no constituye
+una base científica apta para el piloto.
+
+Con el stack en marcha, indexar desde la imagen administrativa:
 
 ```bash
-docker compose --env-file .env exec web node -e "require('./apps/web/scripts/seed-kb.js')"
-# o, si se prefiere ejecutar el TS directamente:
-# docker compose --env-file .env exec web npx tsx apps/web/scripts/seed-kb.ts
+docker compose --env-file .env --profile tools run --rm \
+  --entrypoint npx admin tsx scripts/seed-kb.ts
+```
+
+Comprobar el estado del índice y ejecutar una búsqueda real:
+
+```bash
+docker compose --env-file .env --profile tools run --rm \
+  --entrypoint npx admin tsx scripts/check-kb.ts \
+  "vitamina D valores bajos"
 ```
 
 ### 6. Probar el endpoint de salud
@@ -114,7 +125,13 @@ docker compose --env-file .env exec backup restic snapshots
 docker compose --env-file .env exec backup restic check
 
 # Forzar reindexado de la KB
-docker compose --env-file .env exec web npx tsx apps/web/scripts/seed-kb.ts -- --force
+docker compose --env-file .env --profile tools run --rm \
+  --entrypoint npx admin tsx scripts/seed-kb.ts --force
+
+# Inspeccionar la KB y probar una recuperación
+docker compose --env-file .env --profile tools run --rm \
+  --entrypoint npx admin tsx scripts/check-kb.ts \
+  "vitamina D valores bajos"
 ```
 
 ### Gestionar invitaciones
