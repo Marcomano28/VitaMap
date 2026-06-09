@@ -1,11 +1,12 @@
 "use server";
 
+import fs from "node:fs/promises";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import {
+  copyInboxOriginalToDocuments,
   deleteInboxItem,
   getInboxItem,
-  promoteInboxOriginalToDocuments,
 } from "@/lib/inbox";
 import { enqueueInboxExtraction } from "@/lib/inbox-queue";
 import { LabResultExtraction, type LabMarker } from "@/lib/extraction";
@@ -69,10 +70,23 @@ export async function commitInboxItemAction(formData: FormData) {
     notes,
   });
 
-  // 1. Mover el cifrado a documents/.
-  const finalPath = await promoteInboxOriginalToDocuments(userId, id);
-  // 2. Escribir markdown estructurado en memory/labs/.
-  await writeLabResult(userId, data, finalPath, locale);
+  let finalPath: string | null = null;
+  try {
+    // El original permanece en el inbox hasta terminar todo el commit.
+    finalPath = await copyInboxOriginalToDocuments(userId, id);
+    await writeLabResult(userId, data, finalPath, locale);
+  } catch (err) {
+    if (finalPath) {
+      await fs.rm(finalPath, { force: true }).catch(() => undefined);
+    }
+    console.error("[inbox] commit failed", { userId, id }, err);
+    redirect(`/inbox/${id}?error=commit_failed`);
+  }
+
+  // La memoria ya está escrita e indexada; ahora sí se puede vaciar el inbox.
+  await deleteInboxItem(userId, id).catch((err) => {
+    console.error("[inbox] committed but inbox cleanup failed", { userId, id }, err);
+  });
 
   await logAuditEventSafe({
     actor: userId,
