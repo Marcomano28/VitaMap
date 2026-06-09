@@ -15,3 +15,16 @@ export function prepareAssistantText(text: string): string {
 export function hasVisibleAssistantText(text: string): boolean {
   return /[\p{L}\p{N}]/u.test(text);
 }
+
+export function canRecoverMissingCitation(
+  flags: readonly string[],
+  reliable: boolean,
+  hasCitations: boolean,
+): boolean {
+  return (
+    reliable &&
+    hasCitations &&
+    flags.length > 0 &&
+    flags.every((flag) => flag === "missing_evidence_tag")
+  );
+}

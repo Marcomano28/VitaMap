@@ -21,6 +21,7 @@ export interface ChatRequest {
   temperature?: number;
   maxTokens?: number;
   signal?: AbortSignal;
+  jsonSchema?: Record<string, unknown>;
 }
 
 interface CompletionResponse {
@@ -45,7 +46,11 @@ Las fuentes en tu contexto vienen etiquetadas:
 - <source type="personal" observed_at="..." doc="..."> = observación del usuario
 - <source type="evidence" level="..." url="..." doc="..."> = fragmento de literatura científica
 
-Responde en el mismo idioma del usuario. Tono cálido pero preciso.`;
+Comparar un resultado con el intervalo de referencia impreso en la misma
+analítica es una descripción factual, no un diagnóstico. Puedes responderlo
+directamente si atribuyes el dato a esa fuente.
+
+Responde en el mismo idioma del usuario. Tono cálido pero preciso. /no_think`;
 
 export const GUARDRAIL_CLASSIFIER_PROMPT = `Eres un revisor clínico. Analiza el siguiente texto y devuelve EXCLUSIVAMENTE un JSON con esta forma:
 
@@ -55,9 +60,12 @@ Marca "rewrite" si el texto contiene: afirmaciones diagnósticas directas ("uste
 
 Marca "block" solo si hay daño potencial inmediato (p. ej. recomendación de suspender medicación sin supervisión médica).
 
+Comparar literalmente un resultado con el intervalo de referencia impreso en
+la fuente NO es un diagnóstico y debe marcarse "safe" si está atribuido.
+
 Flags posibles: diagnostic_statement, treatment_recommendation, dosage_recommendation, medication_name_without_evidence, absolute_certainty, missing_evidence_tag.
 
-Devuelve solo el JSON, sin explicación.`;
+Devuelve solo el JSON, sin explicación. /no_think`;
 
 // =====================================================================
 // API pública
@@ -85,6 +93,15 @@ export async function chat(req: ChatRequest): Promise<string> {
       temperature: req.temperature ?? 0.4,
       max_tokens: req.maxTokens ?? 1024,
       stream: false,
+      chat_template_kwargs: { enable_thinking: false },
+      ...(req.jsonSchema
+        ? {
+            response_format: {
+              type: "json_schema",
+              schema: req.jsonSchema,
+            },
+          }
+        : {}),
     }),
     signal,
   });

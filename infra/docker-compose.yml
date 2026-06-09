@@ -78,6 +78,8 @@ services:
       - "${LLM_THREADS:-2}"
       - "--n-gpu-layers"
       - "0"
+      - "--reasoning"
+      - "off"
       - "--alias"
       - "${LLM_MODEL:-qwen3-4b-instruct}"
     volumes:

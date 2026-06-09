@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import {
+  canRecoverMissingCitation,
   hasVisibleAssistantText,
   prepareAssistantText,
 } from "../lib/assistant-text";
@@ -21,5 +22,29 @@ assert.equal(
 );
 assert.equal(hasVisibleAssistantText(prepareAssistantText("<source></source>")), false);
 assert.equal(hasVisibleAssistantText("**Dato:** 112"), true);
+assert.equal(
+  canRecoverMissingCitation(["missing_evidence_tag"], true, true),
+  true,
+);
+assert.equal(
+  canRecoverMissingCitation(["diagnostic_statement"], true, true),
+  false,
+);
+assert.equal(
+  canRecoverMissingCitation(
+    ["missing_evidence_tag", "treatment_recommendation"],
+    true,
+    true,
+  ),
+  false,
+);
+assert.equal(
+  canRecoverMissingCitation(["missing_evidence_tag"], false, true),
+  false,
+);
+assert.equal(
+  canRecoverMissingCitation(["missing_evidence_tag"], true, false),
+  false,
+);
 
 console.log("Assistant text: todas las pruebas pasaron.");
