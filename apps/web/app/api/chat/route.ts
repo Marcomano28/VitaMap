@@ -128,7 +128,7 @@ export async function POST(req: Request) {
     draft = await chat({
       messages,
       temperature: 0.4,
-      maxTokens: 512,
+      maxTokens: 350,
       signal: deadline,
     });
     console.info("[chat] generation complete", {
