@@ -113,6 +113,9 @@ chunks lo decide QMD (900 tokens, 15% overlap). Si más adelante hace
 falta análisis estructurado longitudinal, se añadirá Postgres como
 capa derivada, manteniendo QMD para RAG.
 
+La evolución operativa, los riesgos conocidos y las puertas para el piloto
+se mantienen en `docs/QMD-EVOLUCION-VITAMAP.md`.
+
 ---
 
 ## ADR-002 · Embedding multilingüe Qwen3-Embedding-0.6B desde Fase 0
