@@ -69,6 +69,10 @@ Devuelve solo el JSON, sin explicación.`;
  */
 export async function chat(req: ChatRequest): Promise<string> {
   const env = getEnv();
+  const timeout = AbortSignal.timeout(120_000);
+  const signal = req.signal
+    ? AbortSignal.any([req.signal, timeout])
+    : timeout;
   const res = await fetch(`${env.LLM_BASE_URL}/chat/completions`, {
     method: "POST",
     headers: {
@@ -82,7 +86,7 @@ export async function chat(req: ChatRequest): Promise<string> {
       max_tokens: req.maxTokens ?? 1024,
       stream: false,
     }),
-    signal: req.signal,
+    signal,
   });
 
   if (!res.ok) {
