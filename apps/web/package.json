@@ -13,7 +13,8 @@
     "invite": "tsx scripts/manage-invitations.ts",
     "test:invitations": "tsx scripts/test-invitations.ts",
     "test:billing": "tsx scripts/test-billing.ts",
-    "test:ocr": "node --import tsx scripts/test-ocr.ts"
+    "test:ocr": "node --import tsx scripts/test-ocr.ts",
+    "memory:reindex": "node scripts/reindex-users.mjs"
   },
   "dependencies": {
     "@tobilu/qmd": "^2.0.1",
