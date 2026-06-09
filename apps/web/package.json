@@ -9,14 +9,14 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "seed-kb": "tsx scripts/seed-kb.ts",
+    "seed-kb": "node --import tsx scripts/seed-kb.mts",
     "invite": "tsx scripts/manage-invitations.ts",
     "test:invitations": "tsx scripts/test-invitations.ts",
     "test:billing": "tsx scripts/test-billing.ts",
     "test:ocr": "node --import tsx scripts/test-ocr.ts",
     "test:assistant-text": "node --import tsx scripts/test-assistant-text.ts",
     "test:qmd-hit": "node --import tsx scripts/test-qmd-hit.ts",
-    "kb:check": "tsx scripts/check-kb.ts",
+    "kb:check": "node --import tsx scripts/check-kb.mts",
     "memory:reindex": "node scripts/reindex-users.mjs"
   },
   "dependencies": {
