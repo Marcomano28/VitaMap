@@ -231,7 +231,14 @@ export async function writeLabResult(
     body,
   );
 
-  await reindexUser(userId);
+  try {
+    await reindexUser(userId);
+  } catch (err) {
+    // La confirmación del inbox debe poder reintentarse sin dejar una
+    // entrada de memoria parcialmente escrita.
+    await fs.rm(abs, { force: true });
+    throw err;
+  }
   return { path: abs };
 }
 

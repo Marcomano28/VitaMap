@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getInboxItem } from "@/lib/inbox";
 import { InboxAutoRefresh } from "@/components/inbox-auto-refresh";
+import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
 import {
   commitInboxItemAction,
   discardInboxItemAction,
@@ -24,6 +25,8 @@ const TEXT = {
     extracting:
       "El documento se está procesando. Puede tardar varios minutos y esta página se actualizará automáticamente.",
     extractionFailed: "No se pudo completar el OCR o la extracción.",
+    commitFailed:
+      "No se pudo añadir el documento a la memoria. El original sigue protegido en el buzón y puedes volver a intentarlo.",
     retry: "Reintentar extracción",
     wrongCategory:
       'La revisión estructurada solo se aplica a analíticas (categoría "lab"). Para otros documentos, descarta y vuelve a subir eligiendo la categoría correcta.',
@@ -57,6 +60,8 @@ const TEXT = {
     extracting:
       "Das Dokument wird verarbeitet. Dies kann mehrere Minuten dauern; die Seite wird automatisch aktualisiert.",
     extractionFailed: "OCR oder Extraktion konnten nicht abgeschlossen werden.",
+    commitFailed:
+      "Das Dokument konnte nicht zum Speicher hinzugefügt werden. Das Original bleibt geschützt im Eingang und du kannst es erneut versuchen.",
     retry: "Extraktion erneut versuchen",
     wrongCategory:
       'Die strukturierte Prüfung ist nur für Laborbefunde der Kategorie "lab" verfügbar. Verwirf andere Dokumente und lade sie mit der richtigen Kategorie erneut hoch.',
@@ -89,11 +94,13 @@ export async function generateMetadata(): Promise<Metadata> {
 
 interface PageProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string }>;
 }
 
-export default async function InboxItemPage({ params }: PageProps) {
+export default async function InboxItemPage({ params, searchParams }: PageProps) {
   const userId = await requireSubscribedUserId();
   const { id } = await params;
+  const { error } = await searchParams;
   const item = await getInboxItem(userId, id);
   if (!item) notFound();
   const locale = await getLocale();
@@ -119,6 +126,11 @@ export default async function InboxItemPage({ params }: PageProps) {
         {item.meta.error && (
           <p className="text-sm text-red-700 dark:text-red-400">
             {t.error}: {item.meta.error}
+          </p>
+        )}
+        {error === "commit_failed" && (
+          <p className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
+            {t.commitFailed}
           </p>
         )}
       </header>
@@ -251,12 +263,7 @@ export default async function InboxItemPage({ params }: PageProps) {
           </Field>
 
           <div className="flex items-center justify-between gap-3">
-            <button
-              type="submit"
-              className="rounded-md bg-[var(--color-foreground)] text-[var(--color-background)] px-4 py-2 text-sm font-medium hover:opacity-90"
-            >
-              {t.confirm}
-            </button>
+            <ConfirmSubmitButton locale={locale} />
           </div>
         </form>
       ) : (
