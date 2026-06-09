@@ -24,17 +24,10 @@ import { qmdHitSnippet, qmdRelativePath } from "./qmd-hit";
 // =====================================================================
 
 export type SourceType = "personal" | "evidence";
-
-export type EvidenceLevel =
-  | "cochrane-a"
-  | "cochrane-b"
-  | "grade-a"
-  | "grade-b"
-  | "grade-c"
-  | "grade-d"
-  | "guideline"
-  | "tradition"
-  | "unrated";
+export type EvidenceSourceKind =
+  | "clinical-evidence"
+  | "institutional-education"
+  | "tradition-context";
 
 export interface RetrievedChunk {
   source: SourceType;
@@ -44,7 +37,9 @@ export interface RetrievedChunk {
   context: string;
   snippet: string;
   score: number;
-  evidenceLevel?: EvidenceLevel;
+  sourceKind?: EvidenceSourceKind;
+  sourceDocumentType?: string;
+  limitations?: string[];
   sourceUrl?: string;
   observedAt?: string;
 }
@@ -153,7 +148,15 @@ async function mapEvidenceHit(hit: RawHit): Promise<RetrievedChunk> {
     context: hit.context ?? "",
     snippet: qmdHitSnippet(hit),
     score: hit.score,
-    evidenceLevel: fm.evidence_level ?? "unrated",
+    sourceKind:
+      fm.source_kind === "clinical-evidence" ||
+      fm.source_kind === "institutional-education" ||
+      fm.source_kind === "tradition-context"
+        ? fm.source_kind
+        : undefined,
+    sourceDocumentType:
+      typeof fm.source_type === "string" ? fm.source_type : undefined,
+    limitations: Array.isArray(fm.limitations) ? fm.limitations : undefined,
     sourceUrl: typeof fm.source_url === "string" ? fm.source_url : undefined,
   };
 }
@@ -165,6 +168,36 @@ async function mapEvidenceHit(hit: RawHit): Promise<RetrievedChunk> {
 export interface QueryOptions {
   limit?: number;
   minScore?: number;
+}
+
+function normalizedSearchQueries(query: string) {
+  const normalizedQuery = query.replace(/\s+/g, " ").trim();
+  return [
+    { type: "lex" as const, query: normalizedQuery },
+    { type: "vec" as const, query: normalizedQuery },
+  ];
+}
+
+export async function queryKB(
+  query: string,
+  opts: QueryOptions = {},
+): Promise<RetrievedChunk[]> {
+  const limit = opts.limit ?? 5;
+  const minScore = opts.minScore ?? 0.3;
+  const kbStore = await openKbStore();
+
+  try {
+    const hits = await kbStore.search({
+      queries: normalizedSearchQueries(query),
+      rerank: false,
+      limit,
+      minScore,
+      candidateLimit: 10,
+    });
+    return Promise.all(hits.map(mapEvidenceHit));
+  } finally {
+    await kbStore.close();
+  }
 }
 
 export async function queryMemoryAndKB(
@@ -183,11 +216,7 @@ export async function queryMemoryAndKB(
   try {
     // Evitar expansión y reranking locales, demasiado costosos en el VPS
     // CPU-only, manteniendo recuperación híbrida BM25 + vector.
-    const normalizedQuery = query.replace(/\s+/g, " ").trim();
-    const searches = [
-      { type: "lex" as const, query: normalizedQuery },
-      { type: "vec" as const, query: normalizedQuery },
-    ];
+    const searches = normalizedSearchQueries(query);
     const [personalHits, evidenceHits] = await Promise.all([
       userStore.search({
         queries: searches,
@@ -240,13 +269,24 @@ export async function reindexKB(force = false): Promise<void> {
 // Helper para envolver los chunks en el formato que ve el LLM
 // =====================================================================
 
+function promptAttribute(value: string | undefined, fallback = ""): string {
+  return (value ?? fallback)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
 export function wrapForPrompt(chunks: RetrievedChunk[]): string {
   return chunks
     .map((c) => {
       if (c.source === "personal") {
-        return `<source type="personal" observed_at="${c.observedAt ?? "unknown"}" doc="${c.path}">\n${c.snippet}\n</source>`;
+        return `<source type="personal" observed_at="${promptAttribute(c.observedAt, "unknown")}" doc="${promptAttribute(c.path)}">\n${c.snippet}\n</source>`;
       }
-      return `<source type="evidence" level="${c.evidenceLevel ?? "unrated"}" url="${c.sourceUrl ?? ""}" doc="${c.path}">\n${c.snippet}\n</source>`;
+      const limitations = c.limitations?.length
+        ? `Limitaciones declaradas: ${c.limitations.join("; ")}\n`
+        : "";
+      return `<source type="evidence" kind="${promptAttribute(c.sourceKind, "unknown")}" document_type="${promptAttribute(c.sourceDocumentType, "unknown")}" url="${promptAttribute(c.sourceUrl)}" doc="${promptAttribute(c.path)}">\n${limitations}${c.snippet}\n</source>`;
     })
     .join("\n\n");
 }

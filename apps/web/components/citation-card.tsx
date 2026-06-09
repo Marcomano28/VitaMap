@@ -13,46 +13,29 @@ interface Citation {
   title: string;
   path: string;
   score: number;
-  evidenceLevel?: string;
+  sourceKind?: string;
+  sourceDocumentType?: string;
   sourceUrl?: string | null;
   observedAt?: string;
 }
 
-const LEVEL_LABEL: Record<Locale, Record<string, string>> = {
-  es: {
-    "cochrane-a": "Cochrane A",
-    "cochrane-b": "Cochrane B",
-    "grade-a": "GRADE A",
-    "grade-b": "GRADE B",
-    "grade-c": "GRADE C",
-    "grade-d": "GRADE D",
-    guideline: "Guía clínica",
-    tradition: "Tradición",
-    unrated: "Sin nivel",
-  },
-  de: {
-    "cochrane-a": "Cochrane A",
-    "cochrane-b": "Cochrane B",
-    "grade-a": "GRADE A",
-    "grade-b": "GRADE B",
-    "grade-c": "GRADE C",
-    "grade-d": "GRADE D",
-    guideline: "Leitlinie",
-    tradition: "Tradition",
-    unrated: "Ohne Einstufung",
-  },
+const KIND_COLOR: Record<string, string> = {
+  "clinical-evidence": "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200",
+  "institutional-education": "bg-teal-100 text-teal-800 dark:bg-teal-900/40 dark:text-teal-200",
+  "tradition-context": "bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-200",
 };
 
-const LEVEL_COLOR: Record<string, string> = {
-  "cochrane-a": "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200",
-  "cochrane-b": "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200",
-  "grade-a": "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200",
-  "grade-b": "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200",
-  "grade-c": "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200",
-  "grade-d": "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200",
-  guideline: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200",
-  tradition: "bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-200",
-  unrated: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
+const KIND_LABEL: Record<Locale, Record<string, string>> = {
+  es: {
+    "clinical-evidence": "Evidencia clínica",
+    "institutional-education": "Educación institucional",
+    "tradition-context": "Tradición y contexto",
+  },
+  de: {
+    "clinical-evidence": "Klinische Evidenz",
+    "institutional-education": "Institutionelle Information",
+    "tradition-context": "Tradition und Kontext",
+  },
 };
 
 export function CitationCard({ c, locale }: { c: Citation; locale: Locale }) {
@@ -75,16 +58,22 @@ export function CitationCard({ c, locale }: { c: Citation; locale: Locale }) {
     );
   }
 
-  const level = c.evidenceLevel ?? "unrated";
+  const kindColor = KIND_COLOR[c.sourceKind ?? ""] ?? "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200";
+  const kindLabel = c.sourceKind ? (KIND_LABEL[locale][c.sourceKind] ?? c.sourceKind) : undefined;
   const inner = (
     <div className="block rounded border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-xs hover:border-[var(--color-accent)]">
       <div className="flex items-center justify-between gap-2">
         <span className="font-medium truncate">{c.title}</span>
-        <span className={`rounded px-2 py-0.5 text-[10px] uppercase tracking-wide ${LEVEL_COLOR[level] ?? LEVEL_COLOR.unrated}`}>
-          {LEVEL_LABEL[locale][level] ?? level}
-        </span>
+        {kindLabel && (
+          <span className={`rounded px-2 py-0.5 text-[10px] uppercase tracking-wide ${kindColor}`}>
+            {kindLabel}
+          </span>
+        )}
       </div>
-      <p className="text-[var(--color-muted)] mt-0.5 truncate">{c.path}</p>
+      <p className="text-[var(--color-muted)] mt-0.5 truncate">
+        {c.sourceDocumentType ? `${c.sourceDocumentType} · ` : ""}
+        {c.path}
+      </p>
     </div>
   );
   return c.sourceUrl ? (

@@ -35,6 +35,11 @@ export type AuditAction =
   | "chat.response"
   | "guardrail.block"
   | "guardrail.rewrite"
+  | "kb.draft.create"
+  | "kb.draft.update"
+  | "kb.draft.delete"
+  | "kb.publish"
+  | "kb.retire"
   | "kb.reindex"
   | "user.purge";
 
