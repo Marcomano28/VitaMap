@@ -11,6 +11,7 @@ import {
 } from "@/lib/subscription-access";
 import { LOCALES, localize } from "@/lib/i18n";
 import {
+  canRecoverMissingCitation,
   hasVisibleAssistantText,
   prepareAssistantText,
 } from "@/lib/assistant-text";
@@ -151,7 +152,29 @@ export async function POST(req: Request) {
     verdict = decision.verdict;
     flags = decision.flags;
     if (decision.verdict === "rewrite") {
-      finalText = await rewriteSocratic(draft, body.locale, deadline);
+      const rewritten = prepareAssistantText(
+        await rewriteSocratic(draft, body.locale, deadline),
+      );
+      if (hasVisibleAssistantText(rewritten)) {
+        finalText = rewritten;
+      } else if (
+        canRecoverMissingCitation(
+          decision.flags,
+          decision.reliable,
+          personal.length + evidence.length > 0,
+        )
+      ) {
+        finalText = localize(body.locale, {
+          es: `Según la fuente consultada:\n\n${prepareAssistantText(draft)}`,
+          de: `Laut der herangezogenen Quelle:\n\n${prepareAssistantText(draft)}`,
+        });
+      } else {
+        verdict = "block";
+        finalText = localize(body.locale, {
+          es: "La revisión de seguridad no pudo producir una respuesta completa. No mostramos el borrador sin revisar.",
+          de: "Die Sicherheitsprüfung konnte keine vollständige Antwort erzeugen. Der ungeprüfte Entwurf wird nicht angezeigt.",
+        });
+      }
     } else if (decision.verdict === "block") {
       finalText = localize(body.locale, {
         es: "No puedo ofrecer una respuesta segura para esta consulta. Te sugiero hablarlo con un profesional sanitario.",
@@ -170,6 +193,7 @@ export async function POST(req: Request) {
     durationMs: Date.now() - guardrailStartedAt,
     totalDurationMs: Date.now() - startedAt,
     verdict,
+    flags,
   });
 
   finalText = prepareAssistantText(finalText);

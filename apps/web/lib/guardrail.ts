@@ -14,8 +14,8 @@ export type GuardrailVerdict = "safe" | "rewrite" | "block";
 
 export interface GuardrailDecision {
   verdict: GuardrailVerdict;
-  text?: string;
   flags: GuardrailFlag[];
+  reliable: boolean;
 }
 
 export type GuardrailFlag =
@@ -62,13 +62,29 @@ export async function checkResponse(
     temperature: 0,
     maxTokens: 200,
     signal,
+    jsonSchema: {
+      type: "object",
+      additionalProperties: false,
+      required: ["verdict", "flags"],
+      properties: {
+        verdict: { type: "string", enum: ["safe", "rewrite", "block"] },
+        flags: {
+          type: "array",
+          items: { type: "string", enum: ALL_FLAGS },
+        },
+      },
+    },
   });
 
   const parsed = extractJson(raw);
   if (!parsed) {
     // Si el clasificador falla, fail-closed: tratar como "rewrite" para
     // forzar revisión humana.
-    return { verdict: "rewrite", flags: ["missing_evidence_tag"] };
+    return {
+      verdict: "rewrite",
+      flags: ["missing_evidence_tag"],
+      reliable: false,
+    };
   }
 
   const verdict: GuardrailVerdict =
@@ -80,7 +96,7 @@ export async function checkResponse(
     (ALL_FLAGS as string[]).includes(f),
   );
 
-  return { verdict, flags };
+  return { verdict, flags, reliable: true };
 }
 
 const REWRITE_PROMPT: Record<Locale, string> = {
