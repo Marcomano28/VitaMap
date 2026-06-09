@@ -11,7 +11,6 @@ interface Citation {
   title: string;
   path: string;
   score: number;
-  evidenceLevel?: string;
   sourceKind?: string;
   sourceDocumentType?: string;
   sourceUrl?: string | null;
@@ -194,9 +193,10 @@ function AssistantBubble({
   const t = copy[locale].chat;
   const blocked = m.guardrail.verdict === "block";
   const rewritten = m.guardrail.verdict === "rewrite";
+  const [showCitations, setShowCitations] = useState(false);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       <div className="max-w-[90%] rounded-2xl rounded-bl-sm bg-[var(--color-card)] border border-[var(--color-border)] px-4 py-3">
         {(blocked || rewritten) && (
           <p className="text-[10px] uppercase tracking-wide text-[var(--color-muted)] mb-2">
@@ -208,15 +208,27 @@ function AssistantBubble({
       </div>
 
       {m.citations.length > 0 && (
-        <div className="space-y-2">
-          <p className="text-[10px] uppercase tracking-wide text-[var(--color-muted)]">
+        <div className="max-w-[90%]">
+          <button
+            onClick={() => setShowCitations((v) => !v)}
+            className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-[var(--color-muted)] hover:text-[var(--color-foreground)] transition-colors"
+          >
+            <span
+              className="inline-block transition-transform duration-200"
+              style={{ transform: showCitations ? "rotate(90deg)" : "rotate(0deg)" }}
+            >
+              ▶
+            </span>
             {t.sources} ({m.citations.length})
-          </p>
-          <div className="grid sm:grid-cols-2 gap-2">
-            {m.citations.map((c, i) => (
-              <CitationCard key={i} c={c} locale={locale} />
-            ))}
-          </div>
+          </button>
+
+          {showCitations && (
+            <div className="mt-2 grid sm:grid-cols-2 gap-2">
+              {m.citations.map((c, i) => (
+                <CitationCard key={i} c={c} locale={locale} />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
