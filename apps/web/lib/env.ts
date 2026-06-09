@@ -30,6 +30,7 @@ const EnvSchema = z.object({
   BETTER_AUTH_URL: z.string().url(),
 
   // App
+  ADMIN_EMAILS: z.string().default(""),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   NEXT_PUBLIC_APP_URL: z.string().url(),
 });
@@ -37,6 +38,7 @@ const EnvSchema = z.object({
 export type Env = z.infer<typeof EnvSchema>;
 
 let cached: Env | null = null;
+const envValueBaseDirs = new Map<string, string>();
 
 export function getEnv(): Env {
   loadDotenvIfPresent();
@@ -46,7 +48,15 @@ export function getEnv(): Env {
     console.error("Variables de entorno inválidas:", parsed.error.flatten().fieldErrors);
     throw new Error("Configuración inválida — revisa .env contra .env.example");
   }
-  cached = parsed.data;
+  cached = {
+    ...parsed.data,
+    DATA_ROOT: resolveConfiguredPath("DATA_ROOT", parsed.data.DATA_ROOT),
+    KB_INDEX_PATH: resolveConfiguredPath(
+      "KB_INDEX_PATH",
+      parsed.data.KB_INDEX_PATH,
+    ),
+    AUTH_DB_PATH: resolveConfiguredPath("AUTH_DB_PATH", parsed.data.AUTH_DB_PATH),
+  };
   return cached;
 }
 
@@ -66,6 +76,7 @@ function loadDotenvIfPresent() {
 
 function loadDotenvFile(file: string) {
   if (!fs.existsSync(file)) return;
+  const baseDir = path.dirname(path.resolve(file));
   const raw = fs.readFileSync(file, "utf8");
   for (const line of raw.split(/\r?\n/)) {
     const trimmed = line.trim();
@@ -76,6 +87,12 @@ function loadDotenvFile(file: string) {
     const value = trimmed.slice(eq + 1).trim().replace(/^['"]|['"]$/g, "");
     if (process.env[key] === undefined) {
       process.env[key] = value;
+      envValueBaseDirs.set(key, baseDir);
     }
   }
+}
+
+function resolveConfiguredPath(key: string, value: string): string {
+  if (path.isAbsolute(value)) return path.normalize(value);
+  return path.resolve(envValueBaseDirs.get(key) ?? process.cwd(), value);
 }

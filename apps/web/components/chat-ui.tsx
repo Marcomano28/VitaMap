@@ -12,6 +12,8 @@ interface Citation {
   path: string;
   score: number;
   evidenceLevel?: string;
+  sourceKind?: string;
+  sourceDocumentType?: string;
   sourceUrl?: string | null;
   observedAt?: string;
 }

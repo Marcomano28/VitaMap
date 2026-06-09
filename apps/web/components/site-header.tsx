@@ -5,12 +5,14 @@ import { copy } from "@/lib/i18n";
 import { getLocale } from "@/lib/locale";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { hasActiveSubscription } from "@/lib/billing";
+import { isAdminEmail } from "@/lib/admin";
 
 export async function SiteHeader() {
   const locale = await getLocale();
   const t = copy[locale].nav;
   const session = await getSession();
   const authed = !!session?.user;
+  const admin = isAdminEmail(session?.user.email);
   const subscribed = session?.user
     ? hasActiveSubscription(session.user.id)
     : false;
@@ -47,6 +49,14 @@ export async function SiteHeader() {
                   {n.label}
                 </Link>
               ))}
+              {admin && (
+                <Link
+                  href="/admin/corpus"
+                  className="text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
+                >
+                  {t.admin}
+                </Link>
+              )}
               <Link
                 href="/settings"
                 className="text-[var(--color-muted)] hover:text-[var(--color-foreground)]"

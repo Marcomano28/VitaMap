@@ -9,7 +9,6 @@
 
 import fs from "node:fs/promises";
 import matter from "gray-matter";
-import type { EvidenceLevel } from "./qmd";
 
 export interface PersonalFrontmatter {
   type?: string;
@@ -23,7 +22,9 @@ export interface PersonalFrontmatter {
 export interface EvidenceFrontmatter {
   title?: string;
   source_url?: string;
-  evidence_level?: EvidenceLevel;
+  source_kind?: string;
+  source_type?: string;
+  limitations?: string[];
   category?: string;
   indexed_at?: string;
   [key: string]: unknown;
