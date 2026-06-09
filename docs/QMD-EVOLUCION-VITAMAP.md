@@ -229,6 +229,25 @@ prompt. La capa:
 
 Este adaptador forma parte del contrato de integración y debe tener pruebas.
 
+### 4.7 Estado del corpus científico
+
+La tubería para consultar evidencia está implementada, pero el repositorio
+solo contiene `data/kb/guidelines/example-seed.md`. El propio documento se
+declara placeholder, usa `example.org` y no aporta evidencia clínica.
+
+Por tanto:
+
+- el RAG dual existe técnicamente;
+- la memoria personal ya puede recuperarse;
+- la KB científica todavía no puede considerarse operativa;
+- una respuesta que solo cite la analítica personal no demuestra consulta de
+  evidencia.
+
+Antes del piloto deben incorporarse documentos curados con procedencia,
+fecha, nivel de evidencia y URL verificables, copiarlos al volumen
+persistente `/data/kb`, indexarlos y probar preguntas diseñadas para requerir
+evidencia externa.
+
 ## 5. Lecciones de la primera prueba integral
 
 ### 5.1 Dependencias nativas dinámicas
@@ -697,8 +716,9 @@ Orden recomendado:
 6. fijar `@tobilu/qmd` a versión exacta;
 7. medir latencia y memoria con stores efímeros;
 8. decidir si implementar una caché LRU de stores;
-9. repetir la prueba durante varios días con datos sintéticos;
-10. solo entonces invitar a los otros dos participantes.
+9. poblar y validar la KB científica real;
+10. repetir la prueba durante varios días con datos sintéticos;
+11. solo entonces invitar a los otros dos participantes.
 
 ## 13. Referencias
 
