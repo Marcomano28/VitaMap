@@ -50,7 +50,10 @@ function extractJson(raw: string): { verdict: string; flags: string[] } | null {
   }
 }
 
-export async function checkResponse(text: string): Promise<GuardrailDecision> {
+export async function checkResponse(
+  text: string,
+  signal?: AbortSignal,
+): Promise<GuardrailDecision> {
   const raw = await chat({
     messages: [
       { role: "system", content: GUARDRAIL_CLASSIFIER_PROMPT },
@@ -58,6 +61,7 @@ export async function checkResponse(text: string): Promise<GuardrailDecision> {
     ],
     temperature: 0,
     maxTokens: 200,
+    signal,
   });
 
   const parsed = extractJson(raw);
@@ -84,13 +88,18 @@ const REWRITE_PROMPT: Record<Locale, string> = {
   de: `Formuliere den folgenden Text auf Deutsch in einem sokratischen, beobachtenden Stil neu. Stelle keine Diagnosen und empfehle keine Behandlungen. Verwandle direkte klinische Aussagen in Fragen oder Beobachtungen mit dem angegebenen Evidenzniveau. Behalte vorhandene <source>...</source>-Tags bei. Antworte ausschließlich mit dem neu formulierten Text.`,
 };
 
-export async function rewriteSocratic(text: string, locale: Locale): Promise<string> {
+export async function rewriteSocratic(
+  text: string,
+  locale: Locale,
+  signal?: AbortSignal,
+): Promise<string> {
   return chat({
     messages: [
       { role: "system", content: REWRITE_PROMPT[locale] },
       { role: "user", content: text },
     ],
     temperature: 0.3,
-    maxTokens: 1024,
+    maxTokens: 512,
+    signal,
   });
 }

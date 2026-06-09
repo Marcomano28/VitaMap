@@ -34,6 +34,11 @@ const Body = z.object({
  * sesión, no de query string.
  */
 export async function POST(req: Request) {
+  const startedAt = Date.now();
+  const deadline = AbortSignal.any([
+    req.signal,
+    AbortSignal.timeout(150_000),
+  ]);
   let userId: string;
   try {
     userId = await requireSubscribedUserIdFromRequest(req);
@@ -64,6 +69,8 @@ export async function POST(req: Request) {
   // -- Retrieval dual -----------------------------------------------------
   let personal: RetrievedChunk[] = [];
   let evidence: RetrievedChunk[] = [];
+  const retrievalStartedAt = Date.now();
+  console.info("[chat] retrieval started");
   try {
     const result = await queryMemoryAndKB(userId, body.message, {
       limit: 5,
@@ -71,6 +78,11 @@ export async function POST(req: Request) {
     });
     personal = result.personal;
     evidence = result.evidence;
+    console.info("[chat] retrieval complete", {
+      durationMs: Date.now() - retrievalStartedAt,
+      personalCount: personal.length,
+      evidenceCount: evidence.length,
+    });
   } catch (err) {
     return NextResponse.json(
       { error: "retrieval_failed", detail: String(err) },
@@ -105,8 +117,18 @@ export async function POST(req: Request) {
 
   // -- Llamada al LLM principal ------------------------------------------
   let draft: string;
+  const generationStartedAt = Date.now();
+  console.info("[chat] generation started");
   try {
-    draft = await chat({ messages, temperature: 0.4, maxTokens: 1024 });
+    draft = await chat({
+      messages,
+      temperature: 0.4,
+      maxTokens: 512,
+      signal: deadline,
+    });
+    console.info("[chat] generation complete", {
+      durationMs: Date.now() - generationStartedAt,
+    });
   } catch (err) {
     return NextResponse.json(
       { error: "llm_failed", detail: String(err) },
@@ -118,12 +140,14 @@ export async function POST(req: Request) {
   let finalText = draft;
   let verdict: "safe" | "rewrite" | "block" = "safe";
   let flags: string[] = [];
+  const guardrailStartedAt = Date.now();
+  console.info("[chat] guardrail started");
   try {
-    const decision = await checkResponse(draft);
+    const decision = await checkResponse(draft, deadline);
     verdict = decision.verdict;
     flags = decision.flags;
     if (decision.verdict === "rewrite") {
-      finalText = await rewriteSocratic(draft, body.locale);
+      finalText = await rewriteSocratic(draft, body.locale, deadline);
     } else if (decision.verdict === "block") {
       finalText = localize(body.locale, {
         es: "No puedo ofrecer una respuesta segura para esta consulta. Te sugiero hablarlo con un profesional sanitario.",
@@ -138,6 +162,11 @@ export async function POST(req: Request) {
       de: "Bei der Sicherheitsprüfung der Antwort ist ein Fehler aufgetreten. Die Antwort wird deshalb nicht angezeigt. Bitte versuche es in einigen Sekunden erneut.",
     });
   }
+  console.info("[chat] guardrail complete", {
+    durationMs: Date.now() - guardrailStartedAt,
+    totalDurationMs: Date.now() - startedAt,
+    verdict,
+  });
 
   // -- Citas devueltas al cliente ----------------------------------------
   const citations = [...personal, ...evidence].map((c) => ({
