@@ -11,12 +11,13 @@
 
 import path from "node:path";
 import fs from "node:fs/promises";
-import { createStore } from "@tobilu/qmd";
+import { createStore, type QMDStore } from "@tobilu/qmd";
 import { getEnv } from "./env";
 import {
   readEvidenceFrontmatter,
   readPersonalFrontmatter,
 } from "./frontmatter";
+import { qmdHitSnippet, qmdRelativePath } from "./qmd-hit";
 
 // =====================================================================
 // Tipos
@@ -89,30 +90,7 @@ async function ensureUserScaffold(userId: string) {
 // Apertura/cierre de stores
 // =====================================================================
 
-interface OpenedStore {
-  search(opts: {
-    queries: Array<{ type: "lex" | "vec"; query: string }>;
-    rerank: false;
-    limit?: number;
-    minScore?: number;
-    candidateLimit?: number;
-  }): Promise<Array<{
-    title?: string;
-    displayPath?: string;
-    path?: string;
-    context?: string;
-    snippet?: string;
-    score: number;
-    docid?: string;
-  }>>;
-  update(opts?: { collections?: string[] }): Promise<unknown>;
-  embed(opts?: { force?: boolean }): Promise<unknown>;
-  addCollection(name: string, cfg: { path: string; pattern?: string; ignore?: string[] }): Promise<unknown>;
-  listCollections(): Promise<Array<{ name: string }>>;
-  close(): Promise<void>;
-}
-
-async function openUserStore(userId: string): Promise<OpenedStore> {
+async function openUserStore(userId: string): Promise<QMDStore> {
   await ensureUserScaffold(userId);
   const dbPath = userIndexPath(userId);
   const store = (await createStore({
@@ -122,11 +100,11 @@ async function openUserStore(userId: string): Promise<OpenedStore> {
         memory: { path: userMemoryDir(userId), pattern: "**/*.md" },
       },
     },
-  })) as unknown as OpenedStore;
+  }));
   return store;
 }
 
-async function openKbStore(): Promise<OpenedStore> {
+async function openKbStore(): Promise<QMDStore> {
   const env = getEnv();
   await ensureDir(path.dirname(env.KB_INDEX_PATH));
   await ensureDir(kbDir());
@@ -137,7 +115,7 @@ async function openKbStore(): Promise<OpenedStore> {
         kb: { path: kbDir(), pattern: "**/*.md" },
       },
     },
-  })) as unknown as OpenedStore;
+  }));
   return store;
 }
 
@@ -145,10 +123,10 @@ async function openKbStore(): Promise<OpenedStore> {
 // Mapeo a RetrievedChunk con lectura de frontmatter
 // =====================================================================
 
-type RawHit = Awaited<ReturnType<OpenedStore["search"]>>[number];
+type RawHit = Awaited<ReturnType<QMDStore["search"]>>[number];
 
 async function mapPersonalHit(userId: string, hit: RawHit): Promise<RetrievedChunk> {
-  const rel = hit.displayPath ?? hit.path ?? "";
+  const rel = qmdRelativePath(hit, "memory");
   const abs = path.join(userMemoryDir(userId), rel);
   const fm = await readPersonalFrontmatter(abs);
   return {
@@ -157,14 +135,14 @@ async function mapPersonalHit(userId: string, hit: RawHit): Promise<RetrievedChu
     path: rel,
     title: hit.title ?? rel,
     context: hit.context ?? "",
-    snippet: hit.snippet ?? "",
+    snippet: qmdHitSnippet(hit),
     score: hit.score,
     observedAt: typeof fm.observed_at === "string" ? fm.observed_at : undefined,
   };
 }
 
 async function mapEvidenceHit(hit: RawHit): Promise<RetrievedChunk> {
-  const rel = hit.displayPath ?? hit.path ?? "";
+  const rel = qmdRelativePath(hit, "kb");
   const abs = path.join(kbDir(), rel);
   const fm = await readEvidenceFrontmatter(abs);
   return {
@@ -173,7 +151,7 @@ async function mapEvidenceHit(hit: RawHit): Promise<RetrievedChunk> {
     path: rel,
     title: hit.title ?? (typeof fm.title === "string" ? fm.title : rel),
     context: hit.context ?? "",
-    snippet: hit.snippet ?? "",
+    snippet: qmdHitSnippet(hit),
     score: hit.score,
     evidenceLevel: fm.evidence_level ?? "unrated",
     sourceUrl: typeof fm.source_url === "string" ? fm.source_url : undefined,
