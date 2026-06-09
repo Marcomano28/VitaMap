@@ -22,7 +22,7 @@ const TEXT = {
     error: "Error",
     pending: "El documento está en cola para OCR y extracción.",
     extracting:
-      "El documento se está procesando. Esta página se actualizará automáticamente.",
+      "El documento se está procesando. Puede tardar varios minutos y esta página se actualizará automáticamente.",
     extractionFailed: "No se pudo completar el OCR o la extracción.",
     retry: "Reintentar extracción",
     wrongCategory:
@@ -55,7 +55,7 @@ const TEXT = {
     error: "Fehler",
     pending: "Das Dokument wartet auf OCR und Extraktion.",
     extracting:
-      "Das Dokument wird verarbeitet. Diese Seite wird automatisch aktualisiert.",
+      "Das Dokument wird verarbeitet. Dies kann mehrere Minuten dauern; die Seite wird automatisch aktualisiert.",
     extractionFailed: "OCR oder Extraktion konnten nicht abgeschlossen werden.",
     retry: "Extraktion erneut versuchen",
     wrongCategory:
@@ -105,7 +105,11 @@ export default async function InboxItemPage({ params }: PageProps) {
 
   return (
     <div className="space-y-8">
-      <InboxAutoRefresh enabled={isActive} />
+      <InboxAutoRefresh
+        enabled={isActive}
+        locale={locale}
+        startedAt={item.meta.processingStartedAt ?? item.meta.uploadedAt}
+      />
       <header className="space-y-2">
         <h1 className="text-2xl font-semibold">{t.review}: {item.meta.originalName}</h1>
         <p className="text-sm text-[var(--color-muted)]">
