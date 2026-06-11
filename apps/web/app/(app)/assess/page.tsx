@@ -26,7 +26,7 @@ const TEXT = {
         slug: "prakriti",
         title: "Constitución (Ayurveda)",
         description:
-          "Tu perfil Vāta · Pitta · Kapha según el Ayurveda. Tradición, no diagnóstico. 12 ítems, 4 min.",
+          "Explora tu perfil Vāta · Pitta · Kapha. Tradición, no diagnóstico. 20 preguntas, 6–8 min.",
       },
     ],
   },
@@ -49,7 +49,7 @@ const TEXT = {
         slug: "prakriti",
         title: "Konstitution (Ayurveda)",
         description:
-          "Dein Vāta- · Pitta- · Kapha-Profil nach dem Ayurveda. Tradition, keine Diagnose. 12 Fragen, etwa 4 Minuten.",
+          "Erkunde dein Vāta- · Pitta- · Kapha-Profil. Tradition, keine Diagnose. 20 Fragen, etwa 6–8 Minuten.",
       },
     ],
   },

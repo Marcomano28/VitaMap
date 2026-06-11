@@ -108,9 +108,9 @@ const ITEMS = {
       id: "ojos",
       prompt: "Tus ojos",
       options: [
-        { dosha: "vata" as Dosha, label: "Pequeños, secos u oscuros; parpadeo frecuente, mirada inquieta" },
-        { dosha: "pitta" as Dosha, label: "Medianos, agudos y brillantes; sensibles a la luz intensa" },
-        { dosha: "kapha" as Dosha, label: "Grandes, tranquilos y de blanco limpio; cejas y pestañas pobladas" },
+        { dosha: "vata" as Dosha, label: "Pequeños o secos; parpadeo frecuente y mirada muy móvil" },
+        { dosha: "pitta" as Dosha, label: "Medianos y brillantes; sensibles a la luz intensa" },
+        { dosha: "kapha" as Dosha, label: "Grandes, húmedos y de mirada tranquila; cejas y pestañas pobladas" },
       ],
     },
     {
@@ -164,7 +164,7 @@ const ITEMS = {
       prompt: "Cómo sueles sudar",
       options: [
         { dosha: "vata" as Dosha, label: "Sudo poco aunque haga ejercicio; sin olor fuerte" },
-        { dosha: "pitta" as Dosha, label: "Sudo mucho con poco esfuerzo; olor intenso aunque me duche" },
+        { dosha: "pitta" as Dosha, label: "Sudo con facilidad, incluso con poco esfuerzo; el olor puede ser marcado" },
         { dosha: "kapha" as Dosha, label: "Sudo moderadamente; olor suave y cuerpo fresco al tacto" },
       ],
     },
@@ -246,7 +246,7 @@ const ITEMS = {
       prompt: "Cómo tomas decisiones",
       options: [
         { dosha: "vata" as Dosha, label: "Decido rápido pero cambio de opinión con frecuencia; me cuesta mantenerme" },
-        { dosha: "pitta" as Dosha, label: "Analizo, decido y me mantengo firme; no me gusta que me cuestionen" },
+        { dosha: "pitta" as Dosha, label: "Analizo, decido y suelo mantenerme firme en mi elección" },
         { dosha: "kapha" as Dosha, label: "Necesito tiempo para decidir, pero una vez decidido raramente lo cambio" },
       ],
     },
@@ -254,18 +254,18 @@ const ITEMS = {
       id: "relaciones",
       prompt: "Tu estilo social y relaciones",
       options: [
-        { dosha: "vata" as Dosha, label: "Muchos conocidos; conexiones entusiastas pero que cambian con facilidad" },
-        { dosha: "pitta" as Dosha, label: "Pocas amistades pero elegidas con cuidado; puedo ser exigente o crítico/a" },
-        { dosha: "kapha" as Dosha, label: "Pocas relaciones pero profundas y duraderas; mi lealtad es incondicional" },
+        { dosha: "vata" as Dosha, label: "Me relaciono con facilidad y conozco a mucha gente; mis vínculos cambian con el tiempo" },
+        { dosha: "pitta" as Dosha, label: "Elijo mis amistades con cuidado y suelo ser directo/a y exigente" },
+        { dosha: "kapha" as Dosha, label: "Mantengo pocas relaciones, pero suelen ser profundas y duraderas" },
       ],
     },
     {
       id: "temperamento",
       prompt: "Tu temperamento habitual",
       options: [
-        { dosha: "vata" as Dosha, label: "Entusiasta, imaginativo/a, curioso/a y siempre cambiando de intereses" },
-        { dosha: "pitta" as Dosha, label: "Decidido/a, organizado/a, perfeccionista y orientado/a a resultados" },
-        { dosha: "kapha" as Dosha, label: "Calmado/a, paciente, constante y muy afectuoso/a con los que quiero" },
+        { dosha: "vata" as Dosha, label: "Entusiasta, imaginativo/a y curioso/a; cambio de intereses con facilidad" },
+        { dosha: "pitta" as Dosha, label: "Decidido/a, organizado/a y orientado/a a resultados; tiendo a exigirme" },
+        { dosha: "kapha" as Dosha, label: "Calmado/a, paciente y constante; valoro la cercanía y la estabilidad" },
       ],
     },
   ],
@@ -293,9 +293,9 @@ const ITEMS = {
       id: "ojos",
       prompt: "Deine Augen",
       options: [
-        { dosha: "vata" as Dosha, label: "Klein, trocken oder dunkel; häufiges Blinzeln, unruhiger Blick" },
-        { dosha: "pitta" as Dosha, label: "Mittelgroß, scharf und leuchtend; empfindlich bei starkem Licht" },
-        { dosha: "kapha" as Dosha, label: "Groß, ruhig und mit weißem Augenweiß; dichte Brauen und Wimpern" },
+        { dosha: "vata" as Dosha, label: "Klein oder trocken; häufiges Blinzeln und ein sehr beweglicher Blick" },
+        { dosha: "pitta" as Dosha, label: "Mittelgroß und leuchtend; empfindlich bei starkem Licht" },
+        { dosha: "kapha" as Dosha, label: "Groß, feucht und mit ruhigem Blick; dichte Brauen und Wimpern" },
       ],
     },
     {
@@ -349,7 +349,7 @@ const ITEMS = {
       prompt: "Wie du schwitzt",
       options: [
         { dosha: "vata" as Dosha, label: "Ich schwitze wenig, auch beim Sport; kein starker Geruch" },
-        { dosha: "pitta" as Dosha, label: "Ich schwitze viel bei wenig Anstrengung; intensiver Geruch trotz Dusche" },
+        { dosha: "pitta" as Dosha, label: "Ich schwitze leicht, auch bei wenig Anstrengung; der Geruch kann ausgeprägt sein" },
         { dosha: "kapha" as Dosha, label: "Ich schwitze mäßig; leichter Geruch, Haut fühlt sich kühl an" },
       ],
     },
@@ -431,7 +431,7 @@ const ITEMS = {
       prompt: "Wie du Entscheidungen triffst",
       options: [
         { dosha: "vata" as Dosha, label: "Ich entscheide schnell, ändere aber oft meine Meinung; es fällt mir schwer, dabei zu bleiben" },
-        { dosha: "pitta" as Dosha, label: "Ich analysiere, entscheide und bleibe dabei; ich mag es nicht, in Frage gestellt zu werden" },
+        { dosha: "pitta" as Dosha, label: "Ich analysiere, entscheide und bleibe meist bei meiner Wahl" },
         { dosha: "kapha" as Dosha, label: "Ich brauche Zeit zum Entscheiden, ändere es danach aber kaum" },
       ],
     },
@@ -439,18 +439,18 @@ const ITEMS = {
       id: "relaciones",
       prompt: "Dein sozialer Stil und deine Beziehungen",
       options: [
-        { dosha: "vata" as Dosha, label: "Viele Bekanntschaften; enthusiastische Verbindungen die sich leicht verändern" },
-        { dosha: "pitta" as Dosha, label: "Wenige, sorgfältig gewählte Freundschaften; ich kann anspruchsvoll oder kritisch sein" },
-        { dosha: "kapha" as Dosha, label: "Wenige, aber tiefe und dauerhafte Beziehungen; meine Loyalität ist bedingungslos" },
+        { dosha: "vata" as Dosha, label: "Ich komme leicht mit Menschen in Kontakt und kenne viele; meine Verbindungen verändern sich mit der Zeit" },
+        { dosha: "pitta" as Dosha, label: "Ich wähle Freundschaften sorgfältig und bin meist direkt und anspruchsvoll" },
+        { dosha: "kapha" as Dosha, label: "Ich pflege wenige Beziehungen, die meist tief und beständig sind" },
       ],
     },
     {
       id: "temperamento",
       prompt: "Dein gewohntes Temperament",
       options: [
-        { dosha: "vata" as Dosha, label: "Begeistert, einfallsreich, neugierig und immer mit wechselnden Interessen" },
-        { dosha: "pitta" as Dosha, label: "Entschlossen, organisiert, perfektionistisch und ergebnisorientiert" },
-        { dosha: "kapha" as Dosha, label: "Ruhig, geduldig, beständig und sehr liebevoll zu den Menschen, die mir wichtig sind" },
+        { dosha: "vata" as Dosha, label: "Begeistert, einfallsreich und neugierig; meine Interessen wechseln leicht" },
+        { dosha: "pitta" as Dosha, label: "Entschlossen, organisiert und ergebnisorientiert; ich stelle hohe Ansprüche an mich" },
+        { dosha: "kapha" as Dosha, label: "Ruhig, geduldig und beständig; Nähe und Stabilität sind mir wichtig" },
       ],
     },
   ],
