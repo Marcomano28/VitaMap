@@ -1,41 +1,55 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getLocale } from "@/lib/locale";
 import { localize } from "@/lib/i18n";
 import { requireSubscribedUserId } from "@/lib/subscription-access";
+import { assessmentsEnabled } from "@/lib/flags";
 
 const TEXT = {
   es: {
-    title: "Escalas validadas",
+    title: "Cuestionarios",
     intro:
-      "Cuestionarios estandarizados que producen una puntuación comparable en el tiempo. Las respuestas se guardan en tu memoria.",
+      "Responde un cuestionario y guarda el resultado en tu memoria para seguir su evolución. PHQ-9 y GAD-7 son escalas clínicas validadas; el de constitución es un retrato tradicional del Ayurveda, no un diagnóstico.",
     instruments: [
       {
         slug: "phq-9",
         title: "PHQ-9",
-        description: "Cuestionario de salud del paciente — depresión. 9 ítems, 5 min.",
+        description: "Escala clínica validada — depresión. 9 ítems, 5 min.",
       },
       {
         slug: "gad-7",
         title: "GAD-7",
-        description: "Cuestionario de ansiedad generalizada. 7 ítems, 4 min.",
+        description: "Escala clínica validada — ansiedad generalizada. 7 ítems, 4 min.",
+      },
+      {
+        slug: "prakriti",
+        title: "Constitución (Ayurveda)",
+        description:
+          "Tu perfil Vāta · Pitta · Kapha según el Ayurveda. Tradición, no diagnóstico. 12 ítems, 4 min.",
       },
     ],
   },
   de: {
-    title: "Standardisierte Fragebögen",
+    title: "Fragebögen",
     intro:
-      "Standardisierte Fragebögen liefern Werte, die im Zeitverlauf vergleichbar sind. Deine Antworten werden in deinem Speicher abgelegt.",
+      "Beantworte einen Fragebogen und lege das Ergebnis in deinem Speicher ab, um den Verlauf zu verfolgen. PHQ-9 und GAD-7 sind validierte klinische Skalen; der Konstitutionsfragebogen ist ein traditionelles Selbstbild des Ayurveda, keine Diagnose.",
     instruments: [
       {
         slug: "phq-9",
         title: "PHQ-9",
-        description: "Gesundheitsfragebogen zu depressiven Beschwerden. 9 Fragen, etwa 5 Minuten.",
+        description: "Validierte klinische Skala — Depression. 9 Fragen, etwa 5 Minuten.",
       },
       {
         slug: "gad-7",
         title: "GAD-7",
-        description: "Fragebogen zu generalisierter Angst. 7 Fragen, etwa 4 Minuten.",
+        description: "Validierte klinische Skala — generalisierte Angst. 7 Fragen, etwa 4 Minuten.",
+      },
+      {
+        slug: "prakriti",
+        title: "Konstitution (Ayurveda)",
+        description:
+          "Dein Vāta- · Pitta- · Kapha-Profil nach dem Ayurveda. Tradition, keine Diagnose. 12 Fragen, etwa 4 Minuten.",
       },
     ],
   },
@@ -47,6 +61,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AssessLandingPage() {
+  if (!assessmentsEnabled()) notFound();
   await requireSubscribedUserId();
   const locale = await getLocale();
   const t = localize(locale, TEXT);
