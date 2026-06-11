@@ -1,0 +1,742 @@
+# Arquitectura del corpus temático y evolución de la recuperación
+
+Versión 0.1 · 2026-06-10  
+Estado: documento editorial y técnico activo
+
+## 1. Propósito
+
+Este documento resume las decisiones tomadas durante la preparación del primer
+corpus real de VitaMap:
+
+- cómo organizar el conocimiento alrededor de un tema concreto;
+- qué ángulos deben vivir en documentos separados;
+- cómo distinguir conocimiento biomédico, curiosidad científica y tradición;
+- cómo investigar, verificar, revisar y publicar cada tarjeta;
+- cómo funciona actualmente la recuperación con QMD;
+- qué limitaciones tiene el sistema presente;
+- qué mejoras conviene introducir a medida que crezcan el corpus y el número de
+  usuarios.
+
+No sustituye a:
+
+- `docs/QMD-EVOLUCION-VITAMAP.md`, que gobierna la integración técnica de QMD;
+- `docs/DECISIONS.md`, que registra las decisiones arquitectónicas;
+- los briefs de `corpus-preparation/`, que sirven para producir las tarjetas.
+
+Su función es conectar esas piezas en un modelo editorial común.
+
+## 2. Decisión central
+
+> Un tema no se representa mediante un documento enciclopédico ni mediante
+> cientos de respuestas prefabricadas. Se representa como un dossier lógico de
+> tarjetas independientes, cada una centrada en una intención recuperable.
+
+Por ejemplo, "colesterol LDL" no es una única unidad informativa. Una persona
+puede estar preguntando:
+
+- qué significa su resultado;
+- qué factores de alimentación y estilo de vida se relacionan con él;
+- por qué el organismo utiliza lipoproteínas;
+- qué dice una fuente clásica ayurvédica sobre un concepto temáticamente
+  cercano;
+- qué ha investigado la ciencia moderna sobre una práctica tradicional;
+- cuáles son los límites de cualquier comparación.
+
+Estas preguntas necesitan fuentes, lenguaje y cautelas diferentes. Mezclarlas
+en un único documento reduce la precisión de la recuperación y aumenta el riesgo
+de que una fuente hable con una autoridad que no le corresponde.
+
+## 3. Dossier lógico por tema
+
+### 3.1 La unidad física sigue siendo el Markdown
+
+Cada tarjeta es un archivo `.md` con:
+
+1. frontmatter YAML para procedencia, clasificación y revisión;
+2. un cuerpo Markdown centrado en una intención principal;
+3. una o varias formulaciones de la pregunta que pretende responder;
+4. límites explícitos sobre lo que la fuente no permite concluir.
+
+El dossier es una agrupación conceptual. No requiere que todos los archivos
+vivan en una carpeta especial ni que el usuario vea una jerarquía de carpetas.
+QMD indexa el contenido; la relación entre tarjetas se conserva mediante
+títulos coherentes y, más adelante, metadatos temáticos.
+
+### 3.2 Ángulos biomédicos básicos
+
+Para un marcador, condición o concepto clínico pueden existir hasta tres
+tarjetas principales:
+
+| Tarjeta | Intención | Ejemplo para LDL | `source_type` |
+|---|---|---|---|
+| **A · Interpretación** | Qué mide y cómo se interpreta de forma general | "¿Qué significa mi LDL?" | `lab-interpretation-summary` |
+| **B · Alimentación y estilo de vida** | Factores modificables y contexto cotidiano | "¿Qué hábitos se relacionan con el LDL?" | `nutrition-lifestyle-summary` |
+| **C · Curiosidad científica** | Mecanismo o idea memorable que amplía comprensión | "¿Por qué LDL y HDL transportan colesterol?" | `science-curiosity-summary` |
+
+No es obligatorio producir las tres. Una tarjeta solo existe si:
+
+- responde una intención diferente;
+- tiene una fuente adecuada;
+- aporta algo que no está ya cubierto;
+- puede redactarse sin exagerar ni convertir educación general en consejo
+  individual.
+
+### 3.3 Capas tradicionales
+
+Cuando existe una relación históricamente defendible pueden añadirse:
+
+| Tarjeta | Intención | `source_type` |
+|---|---|---|
+| **T1 · Fuente clásica** | Qué dice un texto clásico identificable | `traditional-primary-source-summary` |
+| **T2 · Contexto histórico o filológico** | Cómo se interpreta, traduce o transforma el concepto | `traditional-scholarly-context-summary` |
+| **T3 · Evaluación científica moderna** | Qué se ha investigado sobre una práctica o afirmación tradicional | `traditional-evidence-review-summary` |
+
+Las tres capas no forman una escala de menor a mayor verdad. Responden preguntas
+distintas:
+
+- T1 aporta autoridad textual dentro de una tradición;
+- T2 aporta contexto académico sobre esa tradición;
+- T3 evalúa una práctica mediante métodos científicos modernos.
+
+Una T3 no habla en nombre del texto clásico. Una T1 no demuestra eficacia
+clínica. Una similitud entre T1 y biomedicina no constituye validación mutua.
+
+### 3.4 Acupuntura
+
+La acupuntura necesita un dossier especializado:
+
+| Tarjeta | Intención | `source_type` |
+|---|---|---|
+| **AC1 · Fuente clásica** | Pasaje histórico y significado contextual | `acupuncture-primary-source-summary` |
+| **AC2 · Nomenclatura** | Nombre, caracteres, evolución y código moderno | `acupuncture-terminology-summary` |
+| **AC3 · Evidencia por indicación** | Investigación sobre una sola condición | `acupuncture-evidence-review-summary` |
+| **AC4 · Seguridad** | Riesgos y límites generales | `acupuncture-safety-summary` |
+
+No se genera una tarjeta de acupuntura para cada biomarcador. "Punto para bajar
+el LDL" no es una intención admisible si la relación procede de una
+reinterpretación comercial o no puede documentarse.
+
+### 3.5 Figura y fondo
+
+Las capas de un dossier no tienen el mismo peso ni cumplen la misma función.
+Conviene pensarlas como una composición de figura y fondo.
+
+Las tarjetas biomédicas —interpretación, alimentación y estilo de vida,
+curiosidad científica, evidencia moderna— son la figura. Ocupan el primer
+plano: aportan el contorno nítido, lo que puede medirse y lo que una fuente
+institucional sostiene con autoridad.
+
+Las tarjetas tradicionales —fuente clásica, contexto histórico o filológico,
+evaluación científica de una práctica— son el fondo. No compiten con la figura
+ni la sustituyen: la rodean, le dan profundidad histórica y cultural, y muestran
+cómo otras formas de conocimiento han nombrado un territorio cercano.
+
+Como en un dibujo, algunos trazos del contorno son cortantes y otros se
+difuminan. Hay puntos donde figura y fondo coinciden —un concepto tradicional
+que roza lo que hoy llamamos metabolismo lipídico— y zonas donde el límite se
+vuelve incierto y debe dejarse incierto. La relación entre ambos planos es una
+danza, no una jerarquía de verdad ni una disputa: la ciencia no necesita negar
+la tradición para conservar su primer plano, y la tradición no necesita
+disfrazarse de ciencia para conservar su valor.
+
+Este es el esquema que gobierna la construcción del corpus. Cada tarjeta sabe si
+es figura o fondo, con qué autoridad habla y dónde están sus fronteras de
+incertidumbre. La recuperación traduce esa misma composición en modos (ver §10,
+etapa E1): por defecto la figura ocupa el primer plano (Ciencia prioritaria),
+pero una pregunta puede pedir que el fondo se acerque (Perspectiva tradicional)
+o que ambos planos se observen lado a lado (Comparación), sin que ninguno borre
+al otro.
+
+### 3.6 Ejemplo: dossier LDL
+
+Un dossier razonable puede contener:
+
+```text
+colesterol-ldl-interpretacion-medlineplus.md
+colesterol-ldl-alimentacion-factores-cdc.md
+colesterol-curiosidad-ldl-hdl-transportadores-nhlbi.md
+colesterol-ldl-ayurveda-fuente-clasica-susrutasamhita.md
+```
+
+Podrían añadirse una T2 o T3 si aparece una pregunta distinta y una fuente
+adecuada. No se crean para completar una cuota.
+
+## 4. Qué significa "una intención recuperable"
+
+No significa escribir una respuesta distinta para cada posible pregunta.
+
+Significa que el documento tiene una función dominante suficientemente clara
+para que:
+
+- su título coincida con la intención;
+- BM25 encuentre sus términos principales;
+- la búsqueda vectorial reconozca paráfrasis;
+- el fragmento recuperado no mezcle respuestas incompatibles;
+- el LLM sepa qué autoridad y qué límites tiene la fuente.
+
+Una tarjeta puede responder muchas formulaciones próximas:
+
+```text
+¿Qué es el LDL?
+¿Qué significa tener el LDL alto?
+¿Cómo se interpreta este valor?
+¿Es lo mismo LDL que colesterol total?
+```
+
+No necesita cuatro documentos. Necesita una tarjeta A bien redactada.
+
+### 4.1 Cuándo separar
+
+Conviene separar cuando cambie uno de estos elementos:
+
+- la intención de la persona;
+- la fuente principal;
+- la clase de autoridad;
+- el nivel de seguridad requerido;
+- el sistema de conocimiento;
+- la condición clínica estudiada;
+- la conclusión que puede sostenerse.
+
+### 4.2 Cuándo no separar
+
+No conviene crear otro archivo cuando solo cambie:
+
+- una pequeña variante de redacción;
+- un sinónimo;
+- el orden de la misma explicación;
+- una pregunta que el documento existente ya responde claramente;
+- un detalle que cabe como subsección breve sin cambiar la intención.
+
+La meta no es maximizar el número de documentos. Es maximizar la precisión y la
+reutilización de cada unidad.
+
+## 5. Dimensiones de los datos
+
+Cada tarjeta combina varias dimensiones que no deben confundirse:
+
+| Dimensión | Pregunta que responde | Ejemplo |
+|---|---|---|
+| **Tema** | ¿De qué trata? | colesterol LDL |
+| **Intención** | ¿Qué quiere comprender la persona? | interpretación |
+| **Procedencia** | ¿Qué clase de fuente es? | educación institucional |
+| **Tipo documental** | ¿Qué función editorial cumple? | resumen de analítica |
+| **Sistema de conocimiento** | ¿Biomedicina, Ayurveda, MTC...? | Ayurveda |
+| **Estado editorial** | ¿Está revisado y publicado? | aprobado |
+| **Derechos** | ¿Puede incorporarse al RAG? | licensed |
+| **Limitaciones** | ¿Qué no permite concluir? | no fija objetivos individuales |
+
+En el piloto, VitaMap implementa de forma obligatoria:
+
+```yaml
+title:
+source_url:
+publication_date:
+source_kind:
+source_type:
+rights_status:
+limitations:
+```
+
+Durante la publicación administrativa añade estado, revisión, versión y fechas
+de auditoría.
+
+### 5.1 Metadatos futuros posibles
+
+Cuando el volumen lo justifique pueden añadirse:
+
+```yaml
+topic_id: cholesterol-ldl
+intent: interpretation
+tradition: ayurveda
+language: es
+aliases:
+  - LDL cholesterol
+  - colesterol malo
+questions_answered:
+  - "¿Qué significa mi LDL?"
+source_version: "6.1"
+source_checksum: "sha256:..."
+supersedes: "document-id-anterior"
+next_review_at: "2027-06-01"
+```
+
+No son necesarios para publicar el primer corpus. Su utilidad futura sería:
+
+- filtrar por intención o tradición;
+- mejorar la recuperación multilingüe;
+- detectar duplicados;
+- relacionar versiones;
+- programar revisiones;
+- construir dossiers visibles en administración.
+
+`questions_answered` debe contener unas pocas formulaciones representativas,
+no cientos de preguntas prefabricadas.
+
+## 6. Método editorial actual
+
+### 6.1 Selección del brief
+
+El flujo usa tres briefs:
+
+```text
+PROMPT-INVESTIGACION-RAG.md
+  -> tarjetas A y B
+
+PROMPT-INVESTIGACION-RAG-ENRIQUECIMIENTO.md
+  -> tarjeta C y capas T1, T2, T3
+
+PROMPT-INVESTIGACION-RAG-ACUPUNTURA.md
+  -> capas AC1, AC2, AC3, AC4
+```
+
+### 6.2 Investigación
+
+La investigación sigue esta secuencia:
+
+1. definir tema e intención;
+2. elegir la clase de fuente adecuada;
+3. usar repositorios y consultas iniciales recomendados por el brief;
+4. abrir la página, archivo o edición concreta;
+5. comprobar pasaje, versión, fecha y licencia;
+6. distinguir texto base, comentario, traducción y aparato crítico;
+7. redactar una síntesis, no copiar extensamente la fuente;
+8. expresar incertidumbres y límites.
+
+Para fuentes clásicas no basta encontrar una obra citada en un catálogo. Debe
+abrirse el objeto que contiene el pasaje.
+
+### 6.3 Preparación local
+
+Los documentos pasan por:
+
+```text
+source-material/
+  -> investigación o material todavía no aprobado
+
+approved-current-structure/<tema>/
+  -> dossier temático aprobado con la estructura vigente
+
+previously-uploaded/
+  -> copia histórica de documentos subidos antes del modelo por dossiers
+```
+
+Estas carpetas no son la KB y QMD no las indexa.
+
+La carpeta aprobada reúne en un mismo dossier las tarjetas biomédicas,
+científicas y tradicionales del tema. La separación entre perspectivas se
+expresa mediante la intención y los metadatos de cada tarjeta, no mediante
+carpetas editoriales aisladas.
+
+`previously-uploaded/` permite conservar trazabilidad sin presentar los
+documentos anteriores como plantillas del formato vigente. Mover un archivo
+entre estas carpetas no altera los documentos que ya viven en `/data/kb`.
+
+### 6.4 Publicación
+
+El flujo administrativo real es:
+
+```text
+Markdown preparado
+  -> carga en /admin/corpus
+  -> borrador en /data/kb-inbox
+  -> revisión de metadatos, contenido y derechos
+  -> aprobación humana
+  -> publicación en /data/kb
+  -> QMD update()
+  -> QMD embed()
+  -> consulta de prueba
+  -> mantenimiento o retirada
+```
+
+Los documentos con `rights_status: unknown` o `metadata-only` no pueden
+publicarse. La aplicación exige `permitted` o `licensed`.
+
+## 7. Recuperación actual
+
+### 7.1 Fuentes de verdad e índices
+
+Las fuentes de verdad son los Markdown:
+
+```text
+/data/users/<user_id>/memory/**/*.md
+/data/kb/**/*.md
+```
+
+Los índices QMD son derivados y reconstruibles:
+
+```text
+/data/users/<user_id>/index.sqlite
+/data/kb-index.sqlite
+```
+
+### 7.2 Flujo de una pregunta
+
+Actualmente:
+
+```text
+pregunta actual
+  -> consulta del índice personal
+  -> consulta del índice compartido
+  -> ambas búsquedas se ejecutan en paralelo
+  -> BM25 + búsqueda vectorial
+  -> fusión de resultados por QMD
+  -> mejor fragmento de cada documento
+  -> hasta 3 resultados personales y 3 externos
+  -> fragmentos y limitaciones entran en el prompt
+  -> respuesta del LLM
+  -> guardrail de seguridad
+  -> respuesta y tarjetas de cita
+```
+
+El historial conversacional llega al LLM, pero la recuperación se formula
+actualmente solo con el último mensaje de la persona.
+
+### 7.3 Perfil QMD actual
+
+La implementación usa:
+
+```ts
+queries: [
+  { type: "lex", query },
+  { type: "vec", query },
+]
+rerank: false
+candidateLimit: 10
+```
+
+Esto conserva:
+
+- BM25 para términos literales;
+- búsqueda vectorial para significado y paráfrasis;
+- fusión híbrida de QMD;
+- selección de `bestChunk`.
+
+Por rendimiento en el VPS CPU se desactivan:
+
+- expansión local de consultas;
+- Qwen3-Reranker.
+
+La ruta de chat solicita actualmente:
+
+```text
+limit: 3
+minScore: 0.35
+```
+
+Este umbral es una limitación conocida: con puntuaciones RRF sin reranking no
+debe interpretarse como probabilidad de relevancia y necesita calibración.
+
+### 7.4 Contexto entregado al modelo
+
+Cada resultado se envuelve como:
+
+```text
+<source type="personal" ...>
+<source type="evidence" kind="..." document_type="..." ...>
+```
+
+Los fragmentos se limitan actualmente a 600 caracteres. Las limitaciones de la
+tarjeta se incluyen en el contexto para ayudar al modelo a no sobreinterpretar
+la fuente.
+
+### 7.5 Citas actuales
+
+La API devuelve actualmente como citas todos los resultados recuperados. Esto
+demuestra recuperación, pero no demuestra que el modelo haya usado cada fuente
+en una afirmación concreta.
+
+La dirección deseable es devolver solo las fuentes realmente utilizadas o
+relacionar cada afirmación con su identificador de fuente.
+
+## 8. Qué aporta esta arquitectura
+
+### 8.1 Frente a un documento largo
+
+Las tarjetas:
+
+- reducen la mezcla de intenciones;
+- producen fragmentos más coherentes;
+- permiten actualizar una parte sin reescribir todo el tema;
+- facilitan atribución y retirada;
+- permiten priorizar perspectivas diferentes.
+
+### 8.2 Frente a 500 preguntas y respuestas
+
+El enfoque evita mantener cientos de respuestas casi duplicadas:
+
+- BM25 resuelve vocabulario literal;
+- los embeddings resuelven paráfrasis;
+- unas pocas preguntas representativas pueden añadirse como señales;
+- el LLM compone la respuesta final usando la tarjeta recuperada.
+
+Las preguntas masivas son más útiles como conjunto de evaluación que como
+documentos del corpus.
+
+### 8.3 Frente a organizar únicamente con Obsidian o carpetas
+
+Obsidian puede ser una buena herramienta de autoría, revisión y navegación
+humana. Las carpetas, enlaces y mapas de contenido ayudan al equipo editorial.
+
+Sin embargo, por sí solos no mejoran necesariamente la recuperación de VitaMap.
+QMD busca el contenido Markdown mediante BM25 y vectores. Lo que más influye es:
+
+- la calidad del texto;
+- la claridad de la intención;
+- los títulos y términos recuperables;
+- los metadatos;
+- el tamaño y coherencia de la tarjeta;
+- la estrategia de consulta.
+
+Obsidian puede añadirse como interfaz editorial sin convertirse en otro motor de
+búsqueda ni duplicar la fuente de verdad.
+
+## 9. Limitaciones presentes
+
+1. Se consultan memoria y todo el KB para cada pregunta, aunque la intención no
+   requiera todos los carriles.
+2. No existe todavía un router de intención.
+3. `source_kind` y `source_type` llegan al prompt, pero no dirigen la búsqueda.
+4. La recuperación usa solo el último mensaje, lo que puede perjudicar preguntas
+   de seguimiento como "¿y desde Ayurveda?".
+5. El umbral `minScore` no está calibrado para el perfil RRF sin reranker.
+6. Los stores se abren y cierran en cada pregunta, aumentando la latencia.
+7. Las citas visibles corresponden a resultados recuperados, no necesariamente
+   a fuentes utilizadas.
+8. No existe todavía un benchmark versionado por tema.
+9. La administración no modela aún dossiers, relaciones ni obsolescencia.
+10. La calidad sigue dependiendo mucho de revisión humana y trazabilidad
+    editorial, como debe ocurrir en esta etapa.
+
+## 10. Evolución propuesta
+
+### Etapa E0 · Corpus pequeño y medible
+
+Objetivo inmediato:
+
+- completar unos pocos dossiers útiles;
+- revisar cada tarjeta manualmente;
+- probar consultas reales;
+- registrar qué documento debería recuperarse;
+- detectar duplicados y huecos antes de ampliar volumen.
+
+Para cada tema se recomienda un conjunto de evaluación de 10 a 20 preguntas:
+
+```yaml
+query: "¿Qué significa mi LDL?"
+expected:
+  - colesterol-ldl-interpretacion-medlineplus.md
+must_not_prioritize:
+  - colesterol-ldl-ayurveda-fuente-clasica-susrutasamhita.md
+```
+
+Estas preguntas no se indexan como respuestas. Sirven para medir recuperación.
+
+Mejoras inmediatas:
+
+1. calibrar o retirar temporalmente `minScore`;
+2. comprobar `recall@3` y primer resultado esperado;
+3. probar sinónimos y consultas en español y alemán;
+4. verificar que una pregunta convencional prioriza A/B y una petición
+   tradicional prioriza T1/T2/T3;
+5. revisar las citas contra la respuesta.
+
+### Etapa E1 · Router de intención
+
+La evolución debe contemplar tres modos de recuperación y respuesta:
+
+| Modo | Prioridad de recuperación | Comportamiento |
+|---|---|---|
+| **Ciencia prioritaria** | memoria personal + interpretación, estilo de vida, curiosidad científica y evidencia moderna | Es el modo predeterminado. Las fuentes biomédicas e institucionales ocupan el primer plano. Las fuentes tradicionales no se presentan como equivalentes ni desplazan la evidencia clínica. |
+| **Comparación** | carriles biomédicos y tradicionales recuperados por separado | Expone coincidencias, diferencias, lenguaje propio, tipo de autoridad y nivel de evidencia sin forzar equivalencias entre sistemas. |
+| **Perspectiva tradicional** | fuente clásica + contexto histórico o filológico; evidencia moderna y seguridad como contexto | Da protagonismo al sistema solicitado, con atribución clara. No traduce automáticamente sus conceptos a diagnósticos modernos ni oculta límites o riesgos conocidos. |
+
+Si la persona no selecciona un modo ni formula una intención explícita, se usa
+**Ciencia prioritaria**. Una petición como "desde Ayurveda", "según la medicina
+china" o "compáralos" puede cambiar el modo para esa consulta sin modificar la
+preferencia general.
+
+Los modos no crean tres copias del corpus. Actúan sobre el mismo KB y cambian:
+
+- qué carriles se consultan;
+- qué documentos reciben prioridad;
+- cómo se organiza la respuesta;
+- qué cautelas y comparaciones debe aplicar el modelo.
+
+La memoria personal continúa siendo central en los tres modos cuando contiene
+información pertinente. La elección de modo tampoco convierte una fuente en
+verdadera ni altera su clasificación editorial.
+
+Antes de buscar, la aplicación puede clasificar la consulta en uno o varios
+carriles:
+
+```text
+personal
+interpretation
+lifestyle
+science-curiosity
+traditional-primary
+traditional-context
+traditional-evidence
+comparison
+safety
+```
+
+El router no decide la verdad. Decide dónde buscar y qué priorizar.
+
+Ejemplos:
+
+- "¿Qué significa mi LDL?" -> memoria + interpretación;
+- "¿Qué puedo cambiar en mi alimentación?" -> memoria + estilo de vida;
+- "¿Qué dice Ayurveda?" -> tradición primaria + contexto;
+- "¿Está demostrado científicamente?" -> evidencia moderna;
+- "Compáralos" -> carriles biomédico y tradicional separados.
+
+La primera versión puede usar reglas y términos explícitos. Un clasificador LLM
+solo se justifica si mejora las pruebas.
+
+### Etapa E2 · Consulta enriquecida
+
+Para preguntas de seguimiento se puede construir una consulta de recuperación
+con:
+
+- último mensaje;
+- tema activo de los turnos anteriores;
+- intención detectada;
+- sinónimos controlados;
+- variantes multilingües.
+
+Ejemplo:
+
+```text
+mensaje: "¿y desde Ayurveda?"
+tema activo: colesterol LDL
+consulta de recuperación: "colesterol LDL Ayurveda medas fuente clásica"
+```
+
+La consulta enriquecida es interna. No cambia la pregunta original que recibe el
+LLM.
+
+### Etapa E3 · Metadatos y dossiers explícitos
+
+Cuando haya suficiente volumen:
+
+- añadir `topic_id`, `intent`, `tradition` y `language`;
+- mostrar en administración todas las tarjetas de un dossier;
+- detectar intenciones sin cubrir;
+- relacionar versiones y documentos sustituidos;
+- programar revisión de fuentes;
+- conservar checksum del material fuente o de la versión local.
+
+Los filtros pueden aplicarse:
+
+1. antes de buscar, si QMD ofrece un contrato estable adecuado;
+2. recuperando más candidatos y filtrando en la aplicación;
+3. mediante índices separados si los carriles necesitan políticas diferentes.
+
+No conviene filtrar después de recuperar solo tres candidatos: podría eliminar
+todos los resultados relevantes.
+
+### Etapa E4 · Grounding y citas
+
+La respuesta debe evolucionar hacia citas comprobables por afirmación:
+
+1. cada fuente entra al prompt con un identificador estable;
+2. el modelo marca qué identificador respalda cada afirmación;
+3. el servidor valida que el identificador existía en el contexto;
+4. la interfaz muestra solo fuentes utilizadas;
+5. una afirmación clínica sin fuente se reescribe o bloquea.
+
+También puede añadirse una comprobación posterior que compare respuesta y
+fragmentos antes de mostrarla.
+
+### Etapa E5 · Calidad y rendimiento
+
+Cuando las métricas lo justifiquen:
+
+- mantener el store de KB abierto;
+- usar una caché LRU limitada para stores personales;
+- ampliar `candidateLimit`;
+- activar expansión de consultas;
+- evaluar el reranker;
+- usar una GPU o un servicio QMD persistente;
+- medir latencia fría y caliente.
+
+El reranker debe activarse por mejora demostrada en el benchmark, no solo porque
+esté disponible.
+
+### Etapa E6 · Separación física o nueva infraestructura
+
+El KB puede continuar en un único índice mientras:
+
+- la recuperación sea precisa;
+- los carriles puedan priorizarse correctamente;
+- no existan políticas operativas distintas.
+
+Separar índices clínico, educativo y tradicional se justifica si:
+
+- aparecen mezclas frecuentes pese al router y los metadatos;
+- cada corpus necesita ciclos de actualización distintos;
+- los permisos o la gobernanza divergen;
+- el tamaño perjudica latencia o calidad;
+- se requieren modelos o estrategias de búsqueda diferentes.
+
+Postgres puede añadirse como plano de control para:
+
+- catálogo editorial;
+- relaciones entre documentos;
+- versionado;
+- tareas de revisión;
+- métricas y analítica estructurada.
+
+QMD puede seguir siendo el motor de recuperación. No es necesario sustituirlo
+solo porque aumente el número de documentos.
+
+## 11. Criterios para saber cuándo mejorar
+
+Las mejoras deben responder a métricas y problemas observados:
+
+| Señal | Mejora candidata |
+|---|---|
+| Preguntas de seguimiento recuperan otro tema | consulta enriquecida con contexto |
+| Fuentes tradicionales aparecen en preguntas convencionales | router y filtros por intención |
+| El documento correcto queda fuera del top 3 | más candidatos, aliases o reranker |
+| Muchas tarjetas casi idénticas | deduplicación y reglas de fusión |
+| Citas no respaldan la respuesta | grounding por identificador |
+| Fuentes obsoletas permanecen publicadas | versionado y fechas de revisión |
+| Latencia dominada por apertura de stores | stores persistentes o servicio QMD |
+| Varios curadores editan simultáneamente | catálogo y workflow editorial estructurado |
+| Carriles con políticas diferentes | índices físicos separados |
+
+## 12. Siguiente ciclo recomendado
+
+1. Terminar el dossier LDL con las tarjetas que aporten intenciones reales.
+2. Probar entre 10 y 20 consultas de evaluación sobre ese dossier.
+3. Registrar resultados esperados y errores de recuperación.
+4. Repetir el método con otro tema diferente, por ejemplo vitamina D o glucosa.
+5. Comparar si la estructura funciona igual en ambos temas.
+6. Corregir el prompt y la recuperación antes de producir corpus masivamente.
+7. Solo entonces ampliar a más marcadores, tradiciones o condiciones.
+
+## 13. Resumen de decisiones
+
+- Markdown continúa siendo la fuente de verdad.
+- QMD continúa siendo el motor de recuperación.
+- Un tema se modela como dossier lógico de tarjetas.
+- Una tarjeta tiene una intención principal, no una pregunta literal única.
+- A/B/C y T1/T2/T3 son funciones distintas, no cuotas.
+- Las tarjetas biomédicas son la figura y las tradicionales el fondo: conviven
+  como en un dibujo, con trazos nítidos donde coinciden y contornos difuminados
+  donde el límite es incierto, sin jerarquía de verdad.
+- La acupuntura usa un brief especializado.
+- La fuente clásica, el contexto histórico y la evidencia moderna no se
+  fusionan.
+- Las rutas de búsqueda orientan; el pasaje exacto sigue necesitando
+  verificación.
+- La revisión humana separa Internet del RAG.
+- Las preguntas masivas se usan para evaluación, no para inflar el corpus.
+- La siguiente mejora prioritaria es medir recuperación antes de aumentar
+  volumen.
+- La recuperación evolucionará hacia tres modos: Ciencia prioritaria por
+  defecto, Comparación y Perspectiva tradicional.
+- El router, los metadatos ampliados, el grounding y el reranker se incorporan
+  por etapas y con criterios observables.

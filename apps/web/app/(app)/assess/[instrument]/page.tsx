@@ -4,6 +4,7 @@ import { saveAssessmentAction } from "./actions";
 import { getLocale } from "@/lib/locale";
 import { localize, type Locale } from "@/lib/i18n";
 import { requireSubscribedUserId } from "@/lib/subscription-access";
+import { assessmentsEnabled } from "@/lib/flags";
 
 const TEXT = {
   es: {
@@ -84,6 +85,7 @@ interface PageProps {
 }
 
 export default async function AssessmentForm({ params }: PageProps) {
+  if (!assessmentsEnabled()) notFound();
   await requireSubscribedUserId();
   const { instrument: slug } = await params;
   const locale = await getLocale();
