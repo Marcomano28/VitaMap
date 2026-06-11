@@ -23,6 +23,10 @@ función es más concreta:
 Cuando este documento contradiga ejemplos antiguos de `docs/ROADMAP.md`,
 prevalece este documento para la operación de QMD.
 
+La organización editorial por tema, las tarjetas A/B/C, T1/T2/T3 y AC1-AC4,
+y su evolución hacia recuperación por intención se definen en
+`docs/ARQUITECTURA-CORPUS-TEMATICO-Y-RECUPERACION.md`.
+
 ## 1.1 Principio rector
 
 > **La memoria es el producto. El RAG es la lente. Las clasificaciones son

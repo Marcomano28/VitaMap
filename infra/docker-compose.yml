@@ -46,6 +46,8 @@ services:
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET required}
       BETTER_AUTH_URL: ${PUBLIC_URL:?PUBLIC_URL required}
       ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+      # Módulo de cuestionarios /assess (B.1). Apagado salvo "true" explícito.
+      ASSESSMENTS_ENABLED: ${ASSESSMENTS_ENABLED:-false}
       NEXT_PUBLIC_APP_URL: ${PUBLIC_URL}
       NODE_ENV: production
       XDG_CACHE_HOME: /data/.cache

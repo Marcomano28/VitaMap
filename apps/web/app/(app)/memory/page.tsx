@@ -3,6 +3,7 @@ import { copy } from "@/lib/i18n";
 import { getLocale } from "@/lib/locale";
 import type { Metadata } from "next";
 import { requireSubscribedUserId } from "@/lib/subscription-access";
+import { assessmentsEnabled } from "@/lib/flags";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -13,6 +14,9 @@ export default async function MemoryPage() {
   await requireSubscribedUserId();
   const locale = await getLocale();
   const t = copy[locale].memory;
+  const entries = assessmentsEnabled()
+    ? t.entries
+    : t.entries.filter((e) => e.href !== "/assess");
 
   return (
     <div className="space-y-8">
@@ -35,7 +39,7 @@ export default async function MemoryPage() {
           {t.addEntries}
         </h2>
         <ul className="grid sm:grid-cols-2 gap-3">
-          {t.entries.map((e) => (
+          {entries.map((e) => (
             <li key={e.href}>
               <Link
                 href={e.href}

@@ -6,6 +6,7 @@ import { getLocale } from "@/lib/locale";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { hasActiveSubscription } from "@/lib/billing";
 import { isAdminEmail } from "@/lib/admin";
+import { assessmentsEnabled } from "@/lib/flags";
 
 export async function SiteHeader() {
   const locale = await getLocale();
@@ -19,7 +20,7 @@ export async function SiteHeader() {
   const navAuthed = [
     { href: "/memory", label: t.memory },
     { href: "/upload", label: t.upload },
-    { href: "/assess", label: t.assess },
+    ...(assessmentsEnabled() ? [{ href: "/assess", label: t.assess }] : []),
     { href: "/chat", label: t.chat },
     { href: "/guide", label: t.guide },
   ];
