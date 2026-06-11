@@ -1,11 +1,12 @@
 "use server";
 
-import { redirect } from "next/navigation";
+import { redirect, notFound } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { writeAssessment } from "@/lib/memory";
 import { logAuditEventSafe } from "@/lib/audit";
 import { requireSubscribedUserId } from "@/lib/subscription-access";
 import { getLocale } from "@/lib/locale";
+import { assessmentsEnabled } from "@/lib/flags";
 
 const INSTRUMENT_LEN: Record<string, number> = {
   "PHQ-9": 9,
@@ -13,6 +14,7 @@ const INSTRUMENT_LEN: Record<string, number> = {
 };
 
 export async function saveAssessmentAction(formData: FormData) {
+  if (!assessmentsEnabled()) notFound();
   const userId = await requireSubscribedUserId();
   const locale = await getLocale();
   const instrumentRaw = String(formData.get("instrument") ?? "");

@@ -39,6 +39,23 @@ export const AssessmentInput = z.object({
 });
 export type AssessmentInput = z.infer<typeof AssessmentInput>;
 
+const DoshaCounts = z.object({
+  vata: z.number().int().nonnegative(),
+  pitta: z.number().int().nonnegative(),
+  kapha: z.number().int().nonnegative(),
+});
+
+export const ConstitutionProfileInput = z.object({
+  instrument: z.enum(["Prakriti", "Vikriti"]),
+  observedAt: z.string(),
+  counts: DoshaCounts,
+  percentages: DoshaCounts,
+  dominant: z.enum(["vata", "pitta", "kapha"]),
+  type: z.string().min(1),
+  notes: z.string().default(""),
+});
+export type ConstitutionProfileInput = z.infer<typeof ConstitutionProfileInput>;
+
 export const ImageObservationInput = z.object({
   observedAt: z.string(),
   category: z.enum(["iridology", "tongue-tcm", "skin", "wound", "other"]),
@@ -153,6 +170,74 @@ export async function writeAssessment(
       score: parsed.score,
       subscores: parsed.subscores,
       tags: ["assessment", parsed.instrument.toLowerCase()],
+    },
+    body,
+  );
+
+  await reindexUser(userId);
+  return { path: abs };
+}
+
+/**
+ * Guarda un perfil de constitución (prakriti/vikriti).
+ *
+ * A diferencia de una escala clínica, no produce un `score` de severidad sino
+ * un perfil categórico Vāta/Pitta/Kapha. Se escribe en `assessments/` con
+ * `type: assessment` para que aparezca en la línea de tiempo, pero se etiqueta
+ * como tradición (`system: ayurveda`, `clinical: false`, `tradition_context`)
+ * para que el LLM lo trate como fondo y no como dato clínico al conversar.
+ */
+export async function writeConstitutionProfile(
+  userId: string,
+  input: ConstitutionProfileInput,
+  locale: Locale = DEFAULT_LOCALE,
+): Promise<{ path: string }> {
+  const parsed = ConstitutionProfileInput.parse(input);
+  const filename = `${dateOnly(parsed.observedAt)}-${parsed.instrument.toLowerCase()}.md`;
+  const abs = path.join(userMemoryDir(userId), "assessments", filename);
+
+  const t = localize(locale, {
+    es: {
+      heading: "Constitución (Ayurveda)",
+      profile: "Perfil",
+      note: "Retrato según el Ayurveda a partir de descripciones clásicas de dominio público. No es un diagnóstico médico ni mide biomarcadores.",
+      notes: "Notas",
+    },
+    de: {
+      heading: "Konstitution (Ayurveda)",
+      profile: "Profil",
+      note: "Selbstbild nach dem Ayurveda auf Grundlage gemeinfreier klassischer Beschreibungen. Keine medizinische Diagnose und keine Messung von Biomarkern.",
+      notes: "Notizen",
+    },
+  });
+
+  const body = [
+    `# ${t.heading} — ${parsed.type} — ${dateOnly(parsed.observedAt)}`,
+    "",
+    `${t.profile}: Vāta ${parsed.percentages.vata}% · Pitta ${parsed.percentages.pitta}% · Kapha ${parsed.percentages.kapha}%`,
+    "",
+    `> ${t.note}`,
+    parsed.notes ? `\n## ${t.notes}\n\n${parsed.notes}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  await writeMarkdown(
+    abs,
+    {
+      type: "assessment",
+      instrument: parsed.instrument,
+      observed_at: parsed.observedAt,
+      title: `${t.heading}: ${parsed.type}`,
+      constitution_type: parsed.type,
+      dominant: parsed.dominant,
+      counts: parsed.counts,
+      percentages: parsed.percentages,
+      // etiquetas de fondo: el LLM las usa para no tratar esto como dato clínico
+      system: "ayurveda",
+      clinical: false,
+      tradition_context: true,
+      tags: ["assessment", parsed.instrument.toLowerCase(), "tradition-context", "ayurveda"],
     },
     body,
   );
