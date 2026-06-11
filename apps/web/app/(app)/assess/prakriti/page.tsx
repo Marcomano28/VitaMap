@@ -1,42 +1,70 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { savePrakritiAction } from "./actions";
 import { getLocale } from "@/lib/locale";
 import { localize } from "@/lib/i18n";
 import { requireSubscribedUserId } from "@/lib/subscription-access";
 import { assessmentsEnabled } from "@/lib/flags";
 import { getPrakritiItems, PROVENANCE } from "@/lib/prakriti";
+import { PrakritiQuestionnaire } from "./questionnaire";
 
 const TEXT = {
   es: {
     metadata: "Constitución (Ayurveda)",
     title: "Tu constitución según el Ayurveda",
     intro:
-      "Elige en cada pregunta la opción que mejor te describe de forma habitual, no solo cómo te sientes hoy. Si hay una segunda que también te representa, puedes indicarla. Al terminar verás tu perfil Vāta · Pitta · Kapha.",
+      "Responde pensando en cómo eres habitualmente, no solo en cómo te sientes hoy. Al terminar verás qué grupos de rasgos aparecen con más frecuencia en tus respuestas.",
     disclaimer:
       "Es un retrato tradicional para autoconocimiento, no un diagnóstico médico. No mide ni predice ningún valor de laboratorio.",
+    question: "Pregunta",
+    of: "de",
+    sections: {
+      physical: "Características físicas",
+      physiological: "Funciones corporales",
+      behavioral: "Hábitos y forma de reaccionar",
+    },
+    chooseClosest:
+      "Elige la descripción que más se acerque a ti. No es necesario que coincidan todos los detalles.",
     date: "Fecha",
     notes: "Notas (opcional)",
     notesPlaceholder: "Cualquier matiz que quieras recordar.",
-    save: "Guardar en mi memoria",
-    secondaryQ: "¿También te reconoces en alguna de estas?",
-    secondaryNone: "Solo la anterior",
-    doshas: { vata: "Vāta", pitta: "Pitta", kapha: "Kapha" },
+    save: "Guardar y ver mi resultado",
+    secondaryQ: "¿Hay otra descripción que también se parece a ti?",
+    secondaryHint: "Es opcional. Elige una segunda solo si representa una parte importante de ti.",
+    secondaryNone: "No, la primera es suficiente",
+    previous: "Anterior",
+    next: "Siguiente",
+    reviewTitle: "Ya has respondido las 20 preguntas",
+    reviewIntro:
+      "Puedes volver a la pregunta anterior para revisar tus respuestas. Cuando guardes, verás una explicación de tu perfil.",
   },
   de: {
     metadata: "Konstitution (Ayurveda)",
     title: "Deine Konstitution nach dem Ayurveda",
     intro:
-      "Wähle bei jeder Frage die Option, die dich gewöhnlich am besten beschreibt — nicht nur, wie du dich heute fühlst. Falls eine zweite auch zutrifft, kannst du sie angeben. Am Ende siehst du dein Vāta- · Pitta- · Kapha-Profil.",
+      "Antworte danach, wie du normalerweise bist, nicht nur danach, wie du dich heute fühlst. Am Ende siehst du, welche Merkmalsgruppen in deinen Antworten am häufigsten vorkommen.",
     disclaimer:
       "Ein traditionelles Selbstbild zur Selbsterkenntnis, keine medizinische Diagnose. Es misst oder prognostiziert keinen Laborwert.",
+    question: "Frage",
+    of: "von",
+    sections: {
+      physical: "Körperliche Merkmale",
+      physiological: "Körperfunktionen",
+      behavioral: "Gewohnheiten und Reaktionen",
+    },
+    chooseClosest:
+      "Wähle die Beschreibung, die dir am nächsten kommt. Nicht jedes Detail muss zutreffen.",
     date: "Datum",
     notes: "Notizen (optional)",
     notesPlaceholder: "Jede Nuance, die du festhalten möchtest.",
-    save: "In meinem Speicher ablegen",
-    secondaryQ: "Erkennst du dich auch in einer dieser Beschreibungen?",
-    secondaryNone: "Nur die obige",
-    doshas: { vata: "Vāta", pitta: "Pitta", kapha: "Kapha" },
+    save: "Speichern und Ergebnis ansehen",
+    secondaryQ: "Passt eine weitere Beschreibung ebenfalls zu dir?",
+    secondaryHint: "Optional. Wähle eine zweite nur, wenn sie einen wichtigen Teil von dir beschreibt.",
+    secondaryNone: "Nein, die erste reicht aus",
+    previous: "Zurück",
+    next: "Weiter",
+    reviewTitle: "Du hast alle 20 Fragen beantwortet",
+    reviewIntro:
+      "Du kannst zur vorherigen Frage zurückgehen und deine Antworten prüfen. Nach dem Speichern erhältst du eine Erklärung deines Profils.",
   },
 } as const;
 
@@ -64,98 +92,8 @@ export default async function PrakritiForm() {
         </p>
       </header>
 
-      <form action={savePrakritiAction} className="space-y-6">
-        <div className="space-y-1">
-          <label className="text-xs uppercase tracking-wide text-[var(--color-muted)]">
-            {t.date}
-          </label>
-          <input
-            type="date"
-            name="observed_at"
-            defaultValue={today}
-            required
-            className="rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-1 text-sm"
-          />
-        </div>
-
-        <ol className="space-y-5">
-          {items.map((item, idx) => (
-            <li
-              key={item.id}
-              className="space-y-2 border-l-2 border-[var(--color-border)] pl-4"
-            >
-              <p className="text-sm font-medium">
-                {idx + 1}. {item.prompt}
-              </p>
-
-              {/* Primary — obligatorio */}
-              <div className="grid gap-2">
-                {item.options.map((opt) => (
-                  <label
-                    key={opt.dosha}
-                    className="flex items-center gap-2 rounded border border-[var(--color-border)] px-3 py-2 text-sm cursor-pointer hover:bg-[var(--color-card)]"
-                  >
-                    <input
-                      type="radio"
-                      name={`q_${item.id}`}
-                      value={opt.dosha}
-                      required
-                    />
-                    <span>{opt.label}</span>
-                  </label>
-                ))}
-              </div>
-
-              {/* Secondary — opcional */}
-              <div className="pl-2 border-l border-dashed border-[var(--color-border)] space-y-1 pt-1">
-                <p className="text-xs text-[var(--color-muted)]">{t.secondaryQ}</p>
-                <div className="flex flex-wrap gap-x-4 gap-y-1">
-                  <label className="flex items-center gap-1 text-xs text-[var(--color-muted)] cursor-pointer">
-                    <input
-                      type="radio"
-                      name={`q_${item.id}_sec`}
-                      value="none"
-                      defaultChecked
-                    />
-                    {t.secondaryNone}
-                  </label>
-                  {(["vata", "pitta", "kapha"] as const).map((d) => (
-                    <label key={d} className="flex items-center gap-1 text-xs cursor-pointer">
-                      <input
-                        type="radio"
-                        name={`q_${item.id}_sec`}
-                        value={d}
-                      />
-                      {t.doshas[d]}
-                    </label>
-                  ))}
-                </div>
-              </div>
-            </li>
-          ))}
-        </ol>
-
-        <div className="space-y-1">
-          <label className="text-xs uppercase tracking-wide text-[var(--color-muted)]">
-            {t.notes}
-          </label>
-          <textarea
-            name="notes"
-            rows={3}
-            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-            placeholder={t.notesPlaceholder}
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="rounded-md bg-[var(--color-foreground)] text-[var(--color-background)] px-4 py-2 text-sm font-medium hover:opacity-90"
-        >
-          {t.save}
-        </button>
-
-        <p className="text-xs text-[var(--color-muted)]">{provenance}</p>
-      </form>
+      <PrakritiQuestionnaire items={items} today={today} text={t} />
+      <p className="text-xs text-[var(--color-muted)]">{provenance}</p>
     </div>
   );
 }
