@@ -81,11 +81,19 @@ COPY --from=deps /repo/node_modules/sqlite-vec-linux-x64 \
 RUN node --input-type=module -e \
       "import('sqlite-vec').then(({ getLoadablePath }) => console.log(getLoadablePath()))"
 
+# Ejecutar como usuario sin privilegios. El volumen /data se crea
+# propiedad de root la primera vez: el entrypoint lo corrige al arrancar
+# (como root) y después degrada al usuario `node` (uid 1000) con setpriv.
+RUN printf '#!/bin/sh\nset -e\nmkdir -p /data\nchown -R node:node /data\nexec setpriv --reuid=node --regid=node --init-groups "$@"\n' \
+      > /usr/local/bin/drop-privs.sh \
+    && chmod +x /usr/local/bin/drop-privs.sh \
+    && chown -R node:node /app
+
 EXPOSE 3000
 
 # Healthcheck: /api/health responde 200 cuando el servidor está listo.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
   CMD node -e "fetch('http://localhost:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
-ENTRYPOINT ["tini", "--"]
+ENTRYPOINT ["tini", "--", "/usr/local/bin/drop-privs.sh"]
 CMD ["node", "apps/web/server.js"]

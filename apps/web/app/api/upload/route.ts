@@ -8,6 +8,7 @@ import {
   requireSubscribedUserIdFromRequest,
   SubscriptionRequiredError,
 } from "@/lib/subscription-access";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -48,6 +49,16 @@ export async function POST(req: Request) {
     }
     throw err;
   }
+
+  // OCR + extracción consumen CPU del mismo host que el LLM.
+  const rate = checkRateLimit(`upload:${userId}`, 20, 10 * 60_000);
+  if (!rate.allowed) {
+    return NextResponse.json(
+      { error: "rate_limited", retryAfterSec: rate.retryAfterSec },
+      { status: 429, headers: { "Retry-After": String(rate.retryAfterSec) } },
+    );
+  }
+
   const url = new URL(req.url);
   const params = QueryParams.parse({
     category: url.searchParams.get("category") ?? undefined,
@@ -91,7 +102,8 @@ export async function POST(req: Request) {
       category: category.data,
     });
   } catch (err) {
-    return NextResponse.json({ error: "store_failed", detail: String(err) }, { status: 500 });
+    console.error("[upload] store_failed", err);
+    return NextResponse.json({ error: "store_failed" }, { status: 500 });
   }
 
   await logAuditEventSafe({
@@ -104,8 +116,9 @@ export async function POST(req: Request) {
   try {
     meta = await enqueueInboxExtraction({ userId, id: meta.id });
   } catch (err) {
+    console.error("[upload] queue_failed", err);
     return NextResponse.json(
-      { error: "queue_failed", id: meta.id, detail: String(err) },
+      { error: "queue_failed", id: meta.id },
       { status: 500 },
     );
   }

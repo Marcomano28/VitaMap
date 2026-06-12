@@ -19,6 +19,7 @@ import {
   buildRetrievalQuery,
   responseTokenBudget,
 } from "@/lib/conversation-policy";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs"; // @tobilu/qmd y better-sqlite3 son nativos
 
@@ -64,15 +65,25 @@ export async function POST(req: Request) {
     throw err;
   }
 
+  // -- Rate limit ----------------------------------------------------------
+  // Cada respuesta consume varias pasadas de LLM en CPU: limitar por
+  // usuario evita que una sesión sature el servicio para el resto.
+  const rate = checkRateLimit(`chat:${userId}`, 10, 60_000);
+  if (!rate.allowed) {
+    return NextResponse.json(
+      { error: "rate_limited", retryAfterSec: rate.retryAfterSec },
+      { status: 429, headers: { "Retry-After": String(rate.retryAfterSec) } },
+    );
+  }
+
   // -- Validación ---------------------------------------------------------
   let body: z.infer<typeof Body>;
   try {
     body = Body.parse(await req.json());
   } catch (err) {
-    return NextResponse.json(
-      { error: "invalid_body", detail: String(err) },
-      { status: 400 },
-    );
+    // No devolver el error crudo: puede contener internals. Al log sí.
+    console.error("[chat] invalid_body", err);
+    return NextResponse.json({ error: "invalid_body" }, { status: 400 });
   }
 
   // -- Retrieval dual -----------------------------------------------------
@@ -98,10 +109,10 @@ export async function POST(req: Request) {
       evidenceCount: evidence.length,
     });
   } catch (err) {
-    return NextResponse.json(
-      { error: "retrieval_failed", detail: String(err) },
-      { status: 500 },
-    );
+    // Detalle solo al log del servidor: String(err) puede exponer rutas
+    // del filesystem o internals de QMD al cliente.
+    console.error("[chat] retrieval_failed", err);
+    return NextResponse.json({ error: "retrieval_failed" }, { status: 500 });
   }
 
   // -- Construcción del prompt -------------------------------------------
@@ -144,10 +155,8 @@ export async function POST(req: Request) {
       durationMs: Date.now() - generationStartedAt,
     });
   } catch (err) {
-    return NextResponse.json(
-      { error: "llm_failed", detail: String(err) },
-      { status: 502 },
-    );
+    console.error("[chat] llm_failed", err);
+    return NextResponse.json({ error: "llm_failed" }, { status: 502 });
   }
 
   // -- Guardrail ----------------------------------------------------------
