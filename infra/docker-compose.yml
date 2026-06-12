@@ -55,6 +55,10 @@ services:
       # Diagnóstico de retrieval: vuelca query y títulos de chunks al log.
       # Contiene datos de usuario — solo "true" en sesiones de depuración.
       RETRIEVAL_DEBUG: ${RETRIEVAL_DEBUG:-false}
+      # Email transaccional (verificación + reset de contraseña) vía Brevo.
+      BREVO_API_KEY: ${BREVO_API_KEY:?BREVO_API_KEY required}
+      EMAIL_FROM: ${EMAIL_FROM:?EMAIL_FROM required}
+      EMAIL_REPLY_TO: ${EMAIL_REPLY_TO:-}
       NEXT_PUBLIC_APP_URL: ${PUBLIC_URL}
       NODE_ENV: production
       XDG_CACHE_HOME: /data/.cache

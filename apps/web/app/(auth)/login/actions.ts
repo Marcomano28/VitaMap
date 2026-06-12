@@ -47,8 +47,13 @@ export async function signInAction(formData: FormData) {
       });
     }
   } catch (err) {
-    const msg =
-      err instanceof APIError ? t.invalid : t.failed;
+    if (
+      err instanceof APIError &&
+      err.body?.code === "EMAIL_NOT_VERIFIED"
+    ) {
+      redirect("/verify-email-pending?resent=1");
+    }
+    const msg = err instanceof APIError ? t.invalid : t.failed;
     redirect(`/login?error=${encodeURIComponent(msg)}`);
   }
 
