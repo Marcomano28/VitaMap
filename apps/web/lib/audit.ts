@@ -35,6 +35,7 @@ export type AuditAction =
   | "chat.response"
   | "guardrail.block"
   | "guardrail.rewrite"
+  | "safety.crisis_detected"
   | "kb.draft.create"
   | "kb.draft.update"
   | "kb.draft.delete"
