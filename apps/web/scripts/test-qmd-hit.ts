@@ -20,5 +20,21 @@ assert.equal(
 );
 assert.equal(qmdHitSnippet({ snippet: "compatibilidad anterior" }), "compatibilidad anterior");
 assert.equal(qmdHitSnippet({ body: "respaldo completo" }), "respaldo completo");
+assert.equal(
+  qmdHitSnippet({
+    bestChunk: `---
+title: "Chaga"
+limitations:
+  - "No evalúa eficacia."
+---
+
+# Chaga
+
+Pertenece a la familia Hymenochaetaceae y se asocia principalmente con abedules.`,
+  }),
+  `# Chaga
+
+Pertenece a la familia Hymenochaetaceae y se asocia principalmente con abedules.`,
+);
 
 console.log("QMD hit: todas las pruebas pasaron.");
