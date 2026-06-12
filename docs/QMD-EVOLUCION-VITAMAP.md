@@ -278,7 +278,9 @@ prompt. La capa:
 - conserva respaldos para versiones anteriores;
 - elimina el prefijo virtual `memory/` o `kb/`;
 - devuelve rutas relativas que la aplicación puede abrir;
-- lee el frontmatter desde el markdown original.
+- lee el frontmatter desde el markdown original;
+- retira el YAML del fragmento antes de aplicar el límite de contexto, porque
+  sus metadatos relevantes ya viajan por separado.
 
 Este adaptador forma parte del contrato de integración y debe tener pruebas.
 
@@ -397,6 +399,10 @@ El asistente debe aplicar explícitamente estas reglas:
    recuperó. La cita visible debe corresponder a contenido realmente utilizado.
 8. Reconocer con claridad cuándo la memoria o el corpus no contienen
    información suficiente.
+9. Responder primero a la intención inmediata y ampliar solo cuando la persona
+   lo pida, sin convertir cada recuperación en un resumen completo del corpus.
+10. No completar fragmentos parciales con conocimiento interno cuando se trate
+    de identidad, taxonomía, hábitat, preparación, eficacia o seguridad.
 
 La formulación breve que debe conservar el system prompt es:
 
@@ -606,6 +612,11 @@ markdown
   -> respuesta
   -> cita abrible
 ```
+
+El guardrail recibe también los fragmentos recuperados para detectar
+afirmaciones factuales no respaldadas o contradictorias. Esta comprobación no
+sustituye el trabajo pendiente de relacionar cada afirmación y cita con una
+fuente realmente utilizada.
 
 ### 6.5 Rendimiento del store
 
