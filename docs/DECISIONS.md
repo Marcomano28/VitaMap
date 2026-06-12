@@ -5,6 +5,55 @@ decisión; nunca se borran, solo se marcan como *superseded* si cambian.
 
 ---
 
+## ADR-014 · Inferencia externa UE temporal durante el piloto
+**Estado:** aceptada · 2026-06-12
+
+**Contexto.** Qwen3-4B en llama.cpp sobre el CCX13 (CPU) produce
+latencias de 50-80 s por respuesta: generación non-streaming + segunda
+pasada del guardrail + tercera pasada ocasional (rewrite), cada una con
+prefill completo (~1.5k system + contexto RAG + historial). Inutilizable
+para ajustar el RAG y validar la fluidez conversacional con los 3
+usuarios piloto. La privacidad total (inferencia 100% local) es la
+bandera del producto, pero es una promesa de producción, no un requisito
+de la fase de ajuste.
+
+**Decisión.** Durante el piloto, la inferencia puede delegarse a una API
+OpenAI-compatible de un proveedor UE (Mistral La Plateforme,
+`mistral-small-latest`). Todo lo demás permanece local: índice RAG,
+auth, perfiles, audit log, backups. Solo viajan los prompts en tránsito.
+
+Condiciones obligatorias antes de activar el modo externo:
+opt-out de entrenamiento confirmado en el Admin Console del proveedor;
+Zero Data Retention si el plan lo permite; consentimiento explícito de
+cada usuario piloto en el onboarding ("durante el piloto las consultas
+se procesan vía un proveedor UE con retención cero; en producción la
+inferencia será 100% local"); no publicitar "privacidad total" mientras
+el modo externo esté activo.
+
+**Implementación.** `LLM_PROVIDER` (local|external) en `lib/env.ts`.
+`lib/llm.ts` omite los campos específicos de llama.cpp
+(`chat_template_kwargs`, `cache_prompt`) y adapta `response_format` al
+dialecto OpenAI cuando el proveedor es externo. En compose, el servicio
+`llm` queda tras el perfil `local-llm`; el modo se cambia solo con
+variables en `infra/.env` (ver `.env.example`). El system prompt, el
+guardrail y el flujo de chat no cambian.
+
+**Disparador de retorno a local (blindaje final).** Cualquiera de:
+paso a servidor GPU; fin de la fase piloto y apertura a usuarios no
+conocidos; >10 usuarios. El retorno es revertir las variables del MODO A
+en `infra/.env`.
+
+**Riesgo conocido.** Los ajustes de prompts/guardrail hechos contra
+Mistral transfieren solo parcialmente a Qwen3. Mitigación: mantener una
+suite de regresión de 30-50 preguntas/respuestas validadas durante el
+piloto y correrla contra el modelo local antes del blindaje final.
+
+**Consecuencias.** Latencia esperada 1-3 s por pasada. El CCX13 libera
+~5 GB de RAM y 3 vCPU. Coste estimado <2 $/mes con 3 usuarios. La
+promesa de privacidad total queda explícitamente diferida, no rota.
+
+---
+
 ## ADR-013 · Figura, fondo y procedencia del corpus compartido
 **Estado:** actualizada · 2026-06-12
 
