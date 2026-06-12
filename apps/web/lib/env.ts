@@ -11,6 +11,11 @@ const EnvSchema = z.object({
   LLM_BASE_URL: z.string().url(),
   LLM_MODEL: z.string().min(1),
   LLM_API_KEY: z.string().min(1),
+  // "local" = llama.cpp en el VPS (campos extra llama.cpp en las
+  // peticiones). "external" = API OpenAI-compatible estricta (Mistral,
+  // etc.) durante el piloto — ver ADR-014. Volver a "local" en el
+  // blindaje final.
+  LLM_PROVIDER: z.enum(["local", "external"]).default("local"),
 
   // QMD embeddings (multilingüe fijado desde Fase 0)
   QMD_EMBED_MODEL: z.string().min(1),

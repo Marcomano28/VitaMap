@@ -34,8 +34,12 @@ services:
     image: vitamap/web:latest
     restart: unless-stopped
     environment:
-      # Apunta al servicio LLM por nombre de servicio en la red interna.
-      LLM_BASE_URL: http://llm:8080/v1
+      # Por defecto apunta al servicio LLM local. Durante el piloto puede
+      # apuntar a una API externa UE (ADR-014): definir LLM_BASE_URL,
+      # LLM_PROVIDER=external y LLM_API_KEY en infra/.env, y desactivar
+      # el perfil local-llm (COMPOSE_PROFILES vacío).
+      LLM_BASE_URL: ${LLM_BASE_URL:-http://llm:8080/v1}
+      LLM_PROVIDER: ${LLM_PROVIDER:-local}
       LLM_MODEL: ${LLM_MODEL:-qwen3-4b-instruct}
       LLM_API_KEY: ${LLM_API_KEY:-not-needed-for-local}
       QMD_EMBED_MODEL: ${QMD_EMBED_MODEL:-hf:Qwen/Qwen3-Embedding-0.6B-GGUF/Qwen3-Embedding-0.6B-Q8_0.gguf}
@@ -59,11 +63,16 @@ services:
       - vitamap_data:/data
     networks:
       - vitamap
-    depends_on:
-      llm:
-        condition: service_healthy
+    # Sin depends_on al servicio llm: con el perfil local-llm desactivado
+    # (modo API externa, ADR-014) el servicio no existe y un depends_on
+    # duro rompería el `up`. En modo local, las primeras peticiones
+    # durante el arranque del LLM fallan con error claro y reintento.
 
   llm:
+    # Solo se levanta con COMPOSE_PROFILES=local-llm (modo por defecto
+    # recomendado, ver .env.example). En modo API externa queda apagado
+    # y libera ~5 GB de RAM y 3 vCPU del CCX13.
+    profiles: ["local-llm"]
     image: ghcr.io/ggml-org/llama.cpp:server
     restart: unless-stopped
     # El modelo se descarga con infra/scripts/download-model.sh ANTES de
@@ -135,7 +144,8 @@ services:
       target: admin
     image: vitamap/admin:latest
     environment:
-      LLM_BASE_URL: http://llm:8080/v1
+      LLM_BASE_URL: ${LLM_BASE_URL:-http://llm:8080/v1}
+      LLM_PROVIDER: ${LLM_PROVIDER:-local}
       LLM_MODEL: ${LLM_MODEL:-qwen3-4b-instruct}
       LLM_API_KEY: ${LLM_API_KEY:-not-needed-for-local}
       QMD_EMBED_MODEL: ${QMD_EMBED_MODEL:-hf:Qwen/Qwen3-Embedding-0.6B-GGUF/Qwen3-Embedding-0.6B-Q8_0.gguf}
