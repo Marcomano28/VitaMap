@@ -78,6 +78,45 @@ Flags posibles: diagnostic_statement, treatment_recommendation, dosage_recommend
 Devuelve solo el JSON, sin explicación. /no_think`;
 
 // =====================================================================
+// Compatibilidad por proveedor (ADR-014)
+// =====================================================================
+
+/**
+ * Campos específicos de llama.cpp. Las APIs externas estrictas (Mistral
+ * devuelve 422 ante campos desconocidos) no deben recibirlos.
+ * - chat_template_kwargs: desactiva el modo thinking de Qwen3.
+ * - cache_prompt: reutiliza la caché KV del prefijo común (system prompt
+ *   socrático ~1.5k tokens). Combinar con `--cache-reuse 256` en el server.
+ */
+function llamaCppExtras(provider: "local" | "external") {
+  if (provider !== "local") return {};
+  return {
+    chat_template_kwargs: { enable_thinking: false },
+    cache_prompt: true,
+  };
+}
+
+/**
+ * response_format según dialecto: llama.cpp acepta `schema` plano;
+ * el formato OpenAI/Mistral exige envoltura `json_schema: {name, schema}`.
+ */
+function jsonSchemaFormat(
+  provider: "local" | "external",
+  schema?: Record<string, unknown>,
+) {
+  if (!schema) return {};
+  if (provider === "local") {
+    return { response_format: { type: "json_schema", schema } };
+  }
+  return {
+    response_format: {
+      type: "json_schema",
+      json_schema: { name: "response", strict: true, schema },
+    },
+  };
+}
+
+// =====================================================================
 // API pública
 // =====================================================================
 
@@ -100,19 +139,8 @@ export async function chat(req: ChatRequest): Promise<string> {
       temperature: req.temperature ?? 0.4,
       max_tokens: req.maxTokens ?? 1024,
       stream: false,
-      chat_template_kwargs: { enable_thinking: false },
-      // llama.cpp: reutiliza la caché KV del prefijo común (system prompt
-      // socrático ~1.5k tokens) entre peticiones. Combinar con
-      // `--cache-reuse 256` en el server. Otros backends ignoran el campo.
-      cache_prompt: true,
-      ...(req.jsonSchema
-        ? {
-            response_format: {
-              type: "json_schema",
-              schema: req.jsonSchema,
-            },
-          }
-        : {}),
+      ...llamaCppExtras(env.LLM_PROVIDER),
+      ...jsonSchemaFormat(env.LLM_PROVIDER, req.jsonSchema),
     }),
     signal,
   });
@@ -150,8 +178,7 @@ export async function chatStream(req: ChatRequest): Promise<ReadableStream<strin
       temperature: req.temperature ?? 0.4,
       max_tokens: req.maxTokens ?? 1024,
       stream: true,
-      chat_template_kwargs: { enable_thinking: false },
-      cache_prompt: true,
+      ...llamaCppExtras(env.LLM_PROVIDER),
     }),
     signal: req.signal,
   });
