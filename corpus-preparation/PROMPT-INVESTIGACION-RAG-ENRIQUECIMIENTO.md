@@ -18,6 +18,34 @@ más sólidas, no versiones comerciales o de moda.
 > curiosidad. Una coincidencia entre marcos no constituye confirmación
 > científica ni equivalencia conceptual.
 
+**Postura editorial — figura y fondo:**
+
+> La figura no debe pelearse con el fondo. La biomedicina conserva el primer
+> plano cuando la pregunta es clínica; la tradición conserva profundidad,
+> lenguaje y contexto cuando la pregunta es histórica, filosófica o cultural.
+
+No lleves a T1 o T2 la actitud de un evaluador clínico que busca aprobar o
+rechazar cada concepto. En esas capas, el rigor consiste en verificar el texto,
+la edición, la traducción, el periodo, la escuela y las interpretaciones
+académicas. La eficacia, la exactitud diagnóstica y los parámetros clínicos se
+evalúan en T3.
+
+La conversación debe:
+
+1. permitir que el concepto tradicional se explique primero dentro de su propio
+   sistema;
+2. distinguir después texto clásico, comentario, práctica posterior,
+   reinterpretación moderna y publicidad;
+3. señalar anacronismos sin convertirlos en burla o descalificación global;
+4. presentar el debate mediante filología, historia de la medicina,
+   antropología, filosofía, estudios religiosos y tesis académicas;
+5. proponer caminos de lectura cuando la comparación sea sugerente pero no
+   concluyente.
+
+VitaMap no necesita negar la tradición para proteger la precisión clínica. La
+protege evitando equivalencias falsas y reservando las conclusiones clínicas
+para fuentes y métodos capaces de sostenerlas.
+
 ---
 
 ## 2. Lugar dentro de las tres tarjetas
@@ -36,6 +64,16 @@ parte automáticamente del trío y no deben producirse para completar una cuota.
 Su presencia en el corpus no implica que deban aparecer en todas las respuestas:
 la recuperación podrá priorizarlos cuando la persona solicite esa tradición o
 active una comparación.
+
+Cuando aparezcan, no deben funcionar como un apéndice constantemente corregido
+por la tarjeta biomédica. T1 presenta la voz textual; T2 abre su historia,
+variantes y discusión académica; T3 responde únicamente a la pregunta moderna
+que pueda evaluarse. Juntas forman una composición, no un juicio.
+
+T1 y T2 pueden recuperarse sin añadir inmediatamente T3 cuando la consulta sea
+histórica, textual o filosófica. Incorpora T3 cuando la persona pregunte por
+eficacia, seguridad, mecanismos modernos o comparación clínica, no como una
+refutación automática de cada concepto tradicional.
 
 Para acupuntura usa el brief especializado
 `PROMPT-INVESTIGACION-RAG-ACUPUNTURA.md`. La acupuntura añade nomenclatura de
@@ -59,7 +97,9 @@ puntos, procedimientos y riesgos que requieren reglas propias.
   A.D.A.M. Medical Encyclopedia de MedlinePlus (`/ency/article/`): son contenido
   licenciado y no permiten su ingestión en sistemas RAG sin autorización.
 - Si una fuente prohíbe derivados, indexación, minería, embeddings o uso en
-  sistemas de IA/RAG, descártala y busca una alternativa permitida.
+  sistemas de IA/RAG, descártala como fuente de ingestión y busca una alternativa
+  permitida. Puedes conservar sus metadatos como orientación bibliográfica si
+  las condiciones permiten citarla.
 
 ---
 
@@ -153,13 +193,19 @@ Entrega:
 ```text
 No se recomienda una tarjeta tradicional primaria para este tema.
 Motivo: el concepto moderno no aparece en las fuentes clásicas revisadas y la
-comparación disponible es una reinterpretación contemporánea.
+comparación disponible parece ser una reinterpretación contemporánea. Puede
+investigarse como historia de recepción o práctica moderna en una T2.
 ```
 
 Por ejemplo, los textos clásicos no conocían el marcador de laboratorio LDL.
 Puede ser legítimo explicar conceptos tradicionales relacionados con tejidos,
 alimentación, circulación o acumulación, pero no llamarlos "LDL ayurvédico" ni
 "colesterol según la MTC".
+
+Que no exista equivalencia directa no vuelve irrelevante la comparación. Puede
+abrir preguntas sobre cómo distintos sistemas clasificaron el cuerpo, la dieta,
+el cambio y la enfermedad. Formula esas preguntas como comparación histórica o
+conceptual, no como traducción biomédica.
 
 ### 5.2 T1 — Fuente clásica primaria
 
@@ -260,13 +306,17 @@ una traducción breve y prudente. Una traducción no debe ocultar ambigüedades.
 Explica el concepto desde la lógica interna del texto, sin traducirlo
 automáticamente a fisiología moderna.
 
-## Lo que el texto no dice
-Señala anacronismos y límites. Explica expresamente si no habla del biomarcador,
-diagnóstico o entidad moderna que motivó la consulta.
+## Matices textuales
+Ambigüedades, variantes, problemas de traducción y relación con comentarios o
+pasajes próximos.
 
 ## Relación posible con la pregunta moderna
 Describe semejanzas o diferencias como comparación editorial, nunca como
 equivalencia ni validación.
+
+## Para seguir leyendo
+Ediciones, comentarios o estudios académicos que permitan profundizar en el
+concepto y su recepción.
 
 ## Fuente primaria
 Edición o corpus, responsable, versión, referencia exacta, URL profunda al
@@ -311,6 +361,11 @@ Si traduces directamente una expresión antigua, identifícala como traducción
 editorial o tentativa de VitaMap. No presentes una traducción propia como cita
 publicada por la edición consultada.
 
+Los límites y anacronismos deben estar presentes, pero no tienen que dominar la
+tarjeta. T1 debe permitir comprender qué dice el texto y por qué el concepto
+ocupa un lugar en ese sistema antes de explicar qué comparación moderna sería
+impropia.
+
 ### 5.3 T2 — Contexto histórico o filológico
 
 Esta capa explica cómo especialistas interpretan el término o cómo cambió entre
@@ -321,7 +376,9 @@ Fuentes válidas:
 - ediciones críticas;
 - historia de la medicina publicada por universidades;
 - artículos filológicos o históricos revisados por pares;
-- catálogos y corpus académicos con procedencia editorial.
+- catálogos y corpus académicos con procedencia editorial;
+- antropología, filosofía, historia de la ciencia, estudios religiosos y tesis
+  universitarias pertinentes.
 
 No uses T2 para introducir opiniones de divulgadores actuales como si fueran la
 interpretación tradicional dominante.
@@ -340,8 +397,16 @@ Resumen de la discusión histórica o filológica.
 ## Variantes y desacuerdos
 Diferencias entre ediciones, comentarios, escuelas o traducciones.
 
-## Límite de la comparación moderna
-Qué puede compararse y qué sería anacrónico.
+## Encuentro con preguntas actuales
+Qué ilumina la comparación, dónde deja de ser útil y qué sería anacrónico.
+
+## Debate académico
+Interpretaciones relevantes, preguntas abiertas y desacuerdos entre
+especialistas.
+
+## Para profundizar
+Artículos, monografías, ediciones o tesis, indicando brevemente qué perspectiva
+aporta cada referencia.
 
 ## Fuente principal
 Cita académica y URL, DOI o referencia verificable.
@@ -353,6 +418,11 @@ Esta capa evalúa prácticas, productos o afirmaciones tradicionales mediante
 fuentes como NCCIH, revisiones sistemáticas o consensos científicos. No habla en
 nombre de la tradición y no sustituye a T1.
 
+Aquí sí corresponde la exigencia metodológica clínica: definir intervención,
+preparación, población, comparador, desenlace, magnitud, seguridad y certeza. T3
+no debe utilizarse para calificar el valor histórico, filosófico o cultural de
+T1 y T2.
+
 #### Estructura
 
 ```markdown
@@ -362,13 +432,18 @@ nombre de la tradición y no sustituye a T1.
 Define con precisión la intervención, población y resultado estudiados.
 
 ## Qué muestran los estudios
-Resultados y grado de certeza sin exageración.
+Resultados favorables, negativos, mixtos o inconclusos y grado de certeza.
 
 ## Seguridad y límites
 Riesgos, interacciones y problemas de calidad de la evidencia.
 
-## Qué no permite concluir
-Diferencia entre plausibilidad, asociación y eficacia clínica.
+## Lectura equilibrada
+Diferencia entre plausibilidad, asociación y eficacia clínica; qué permanece
+abierto y qué investigación ayudaría a aclararlo.
+
+## Estudios para profundizar
+Revisiones, ensayos, registros o tesis pertinentes, con una nota breve sobre su
+aportación y sus límites.
 
 ## Fuente principal
 Cita y URL.
@@ -376,6 +451,11 @@ Cita y URL.
 
 Usa `source_kind: tradition-context` y
 `source_type: traditional-evidence-review-summary`.
+
+Si existen resultados discrepantes, presenta los relevantes en ambas
+direcciones y explica las diferencias de método. No conviertas "evidencia
+insuficiente" en "la tradición es falsa", ni un resultado favorable en
+validación global del sistema tradicional.
 
 ---
 
@@ -408,6 +488,11 @@ transcripción o edición.
 Una página periodística o divulgativa puede ayudar a descubrir un tema, pero no
 debe ser fuente principal de T1, T2 o T3.
 
+Una publicación académica con derechos cerrados puede incluirse como referencia
+bibliográfica —título, autor, fecha, DOI y descripción breve— sin incorporar su
+texto al RAG. La tarjeta publicable debe seguir apoyándose en una edición o
+fuente principal con derechos compatibles.
+
 ---
 
 ## 7. Checklist de calidad
@@ -417,7 +502,7 @@ debe ser fuente principal de T1, T2 o T3.
 - [ ] No existe ya una tarjeta equivalente en el lote.
 - [ ] `source_kind` y `source_type` corresponden al documento real.
 - [ ] La fuente es vigente y reputada.
-- [ ] La fuente permite el uso declarado y no prohíbe RAG o embeddings.
+- [ ] La fuente principal permite el uso declarado y no prohíbe RAG o embeddings.
 - [ ] `publication_date` coincide con la fecha indicada por la fuente.
 - [ ] Cada afirmación importante está respaldada por una fuente declarada.
 - [ ] No contiene diagnósticos, tratamientos ni dosis.
@@ -431,8 +516,18 @@ debe ser fuente principal de T1, T2 o T3.
 - [ ] Se registra versión y estado editorial cuando la edición es dinámica o
       provisional.
 - [ ] En T1 se explica qué no dice el texto y se evitan equivalencias anacrónicas.
+- [ ] T1 explica primero el concepto dentro de su sistema y deja espacio a sus
+      matices antes de marcar límites modernos.
 - [ ] En T2 se distinguen interpretaciones, variantes y desacuerdos.
+- [ ] T2 presenta el encuentro ciencia-tradición como debate académico, no como
+      enfrentamiento ni equivalencia.
 - [ ] En T3 se describe la calidad y los límites de la evidencia moderna.
+- [ ] T3 incluye resultados relevantes favorables, negativos o inconclusos sin
+      emitir un juicio global sobre la tradición.
+- [ ] Se ofrecen ediciones, artículos, monografías o tesis para profundizar
+      cuando existan.
+- [ ] Las fuentes comerciales pueden estudiarse como recepción contemporánea,
+      pero nunca actúan como autoridad textual, histórica o clínica.
 - [ ] Una obra antigua no se confunde con una traducción moderna ni con sus derechos.
 - [ ] Incluye 2–4 limitaciones honestas.
 

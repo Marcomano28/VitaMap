@@ -5,8 +5,8 @@ decisión; nunca se borran, solo se marcan como *superseded* si cambian.
 
 ---
 
-## ADR-013 · Prioridad científica y procedencia del corpus compartido
-**Estado:** aceptada · 2026-06-09
+## ADR-013 · Figura, fondo y procedencia del corpus compartido
+**Estado:** actualizada · 2026-06-12
 
 **Contexto.** La base compartida puede reunir guías clínicas, estudios,
 documentos educativos y fuentes de tradiciones como Ayurveda o medicina
@@ -14,18 +14,26 @@ tradicional china. El campo actual `evidence_level` mezcla fuerza empírica,
 tipo documental y pertenencia a una tradición, lo que puede producir
 equivalencias engañosas.
 
-**Decisión.** La memoria personal es el centro de VitaMap. Cuando una respuesta
-requiere conocimiento general, el asistente usa prioritariamente evidencia
-clínica y educación institucional verificable, expresadas en lenguaje
-accesible.
+**Decisión.** La memoria personal es el centro de VitaMap. La intención de la
+pregunta decide qué carril ocupa la figura:
+
+- las afirmaciones sobre diagnóstico, eficacia, parámetros clínicos y seguridad
+  priorizan evidencia clínica y educación institucional verificable;
+- las preguntas históricas, textuales, culturales o filosóficas priorizan
+  fuentes tradicionales y estudios académicos adecuados;
+- las comparaciones recuperan ambos carriles por separado.
 
 Las fuentes tradicionales:
 
-- pueden señalar coincidencias, complementar contexto o aportar otro marco;
 - se atribuyen siempre como tradición y no como evidencia clínica;
 - no confirman científicamente una afirmación;
-- ocupan el primer plano cuando el usuario solicita específicamente esa
-  perspectiva.
+- pueden ocupar el primer plano cuando responden la intención de la persona;
+- se explican primero desde sus propios términos, contexto y debate académico;
+- no reciben una refutación clínica automática cuando la pregunta no es clínica.
+
+Figura y fondo no implican equivalencia epistemológica. Si dos fuentes hacen la
+misma afirmación clínica, se aplica el estándar clínico. Si responden preguntas
+distintas, no se las obliga a competir en una sola escala.
 
 Para el piloto, cada documento compartido usa una clasificación mínima de
 procedencia (`clinical-evidence`, `institutional-education` o
@@ -34,8 +42,12 @@ limitaciones. La relevancia calculada por QMD no es un nivel de evidencia.
 
 **Consecuencias.**
 - `tradition` deja de ser un valor de la misma escala que GRADE.
-- El system prompt debe conservar esta prioridad y mostrar discrepancias sin
-  fabricar consenso.
+- El system prompt debe seleccionar la figura según la intención, conservar el
+  contexto y mostrar discrepancias sin fabricar consenso ni antagonismo.
+- El router debe distinguir, al menos, preguntas clínicas, tradicionales y
+  comparativas.
+- Los límites clínicos y de seguridad aparecen cuando son pertinentes; no se
+  usan como cierre ritual de cada explicación tradicional.
 - Las citas visibles deben corresponder a fuentes realmente utilizadas.
 - La interfaz administrativa `/admin/corpus`, restringida por `ADMIN_EMAILS`,
   crea borradores fuera del índice y permite revisar, aprobar, publicar, probar

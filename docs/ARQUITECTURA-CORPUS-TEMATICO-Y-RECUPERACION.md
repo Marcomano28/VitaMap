@@ -1,6 +1,6 @@
 # Arquitectura del corpus temático y evolución de la recuperación
 
-Versión 0.1 · 2026-06-10  
+Versión 0.2 · 2026-06-12
 Estado: documento editorial y técnico activo
 
 ## 1. Propósito
@@ -116,7 +116,31 @@ No se genera una tarjeta de acupuntura para cada biomarcador. "Punto para bajar
 el LDL" no es una intención admisible si la relación procede de una
 reinterpretación comercial o no puede documentarse.
 
-### 3.5 Figura y fondo
+### 3.5 Especies con uso medicinal documentado
+
+Las plantas, hongos, algas, cianobacterias y otros organismos comercializados o
+descritos por su uso medicinal necesitan un dossier especializado. "Medicinal"
+describe un uso documentado o una investigación; no demuestra eficacia ni
+seguridad.
+
+| Tarjeta | Intención | `source_kind` | `source_type` |
+|---|---|---|---|
+| **M1 · Identidad** | Organismo, nombres, parte utilizada y formas de producto | `institutional-education` | `medicinal-species-identity-summary` |
+| **M2 · Uso documentado** | Uso histórico o tradicional con una fuente identificable | `tradition-context` | `traditional-medicinal-use-summary` |
+| **M3 · Evidencia moderna** | Investigación sobre una preparación y una indicación concretas | `clinical-evidence` | `natural-product-evidence-summary` |
+| **M4 · Seguridad** | Efectos adversos, interacciones, calidad y poblaciones vulnerables | `institutional-education` | `natural-product-safety-summary` |
+
+Antes de crear M2, M3 o M4 debe superarse una puerta de identidad: nombre
+científico, tipo de organismo, parte utilizada y preparación. No se extrapolan
+resultados entre especie, extracto, compuesto aislado y producto comercial.
+Tampoco se equiparan raíz y rizoma, micelio y cuerpo fructífero, macroalga y
+cianobacteria.
+
+Las cuatro capas no son obligatorias. Una especie puede necesitar solo identidad
+y seguridad; una M3 puede existir sin M2 si la investigación moderna no parte de
+una práctica tradicional verificable.
+
+### 3.6 Figura y fondo
 
 Las capas de un dossier no tienen el mismo peso ni cumplen la misma función.
 Conviene pensarlas como una composición de figura y fondo.
@@ -135,19 +159,21 @@ Como en un dibujo, algunos trazos del contorno son cortantes y otros se
 difuminan. Hay puntos donde figura y fondo coinciden —un concepto tradicional
 que roza lo que hoy llamamos metabolismo lipídico— y zonas donde el límite se
 vuelve incierto y debe dejarse incierto. La relación entre ambos planos es una
-danza, no una jerarquía de verdad ni una disputa: la ciencia no necesita negar
-la tradición para conservar su primer plano, y la tradición no necesita
-disfrazarse de ciencia para conservar su valor.
+danza, no una disputa ni una única escala aplicable a todas las preguntas: la
+ciencia no necesita negar la tradición para conservar su rigor, y la tradición
+no necesita disfrazarse de ciencia para conservar su valor. Cuando ambos planos
+formulan la misma afirmación clínica, sí se aplica el estándar de evidencia
+clínica correspondiente.
 
 Este es el esquema que gobierna la construcción del corpus. Cada tarjeta sabe si
 es figura o fondo, con qué autoridad habla y dónde están sus fronteras de
 incertidumbre. La recuperación traduce esa misma composición en modos (ver §10,
-etapa E1): por defecto la figura ocupa el primer plano (Ciencia prioritaria),
-pero una pregunta puede pedir que el fondo se acerque (Perspectiva tradicional)
-o que ambos planos se observen lado a lado (Comparación), sin que ninguno borre
-al otro.
+etapa E1): la intención decide qué ocupa el primer plano. Una pregunta clínica
+activa la Lectura clínica; una pregunta histórica o tradicional acerca ese
+fondo hasta convertirlo en figura; y una Comparación observa ambos planos lado
+a lado, sin que ninguno borre al otro.
 
-### 3.6 Ejemplo: dossier LDL
+### 3.7 Ejemplo: dossier LDL
 
 Un dossier razonable puede contener:
 
@@ -258,6 +284,14 @@ source_version: "6.1"
 source_checksum: "sha256:..."
 supersedes: "document-id-anterior"
 next_review_at: "2027-06-01"
+organism_type: plant
+scientific_name: "Curcuma longa L."
+accepted_name_source: "Kew POWO"
+part_used:
+  - rizoma
+preparation:
+  - polvo
+  - extracto
 ```
 
 No son necesarios para publicar el primer corpus. Su utilidad futura sería:
@@ -276,7 +310,7 @@ no cientos de preguntas prefabricadas.
 
 ### 6.1 Selección del brief
 
-El flujo usa tres briefs:
+El flujo usa cuatro briefs:
 
 ```text
 PROMPT-INVESTIGACION-RAG.md
@@ -287,7 +321,14 @@ PROMPT-INVESTIGACION-RAG-ENRIQUECIMIENTO.md
 
 PROMPT-INVESTIGACION-RAG-ACUPUNTURA.md
   -> capas AC1, AC2, AC3, AC4
+
+PROMPT-INVESTIGACION-RAG-ESPECIES-MEDICINALES.md
+  -> capas M1, M2, M3, M4
 ```
+
+Los metadatos taxonómicos ampliados todavía no forman parte del formulario
+administrativo. Hasta que el importador pueda preservarlos, la identidad,
+sinónimos, parte utilizada y preparación se registran en el cuerpo de M1.
 
 ### 6.2 Investigación
 
@@ -388,8 +429,11 @@ pregunta actual
   -> respuesta y tarjetas de cita
 ```
 
-El historial conversacional llega al LLM, pero la recuperación se formula
-actualmente solo con el último mensaje de la persona.
+El historial conversacional llega al LLM. Para recuperación se usa normalmente
+el último mensaje; cuando parece una continuación breve, se incorpora además el
+último mensaje de la persona para conservar el tema activo. Una regla ligera
+añade vocabulario de identidad, seguridad, evidencia o tradición cuando la
+intención es explícita.
 
 ### 7.3 Perfil QMD actual
 
@@ -435,9 +479,15 @@ Cada resultado se envuelve como:
 <source type="evidence" kind="..." document_type="..." ...>
 ```
 
-Los fragmentos se limitan actualmente a 600 caracteres. Las limitaciones de la
-tarjeta se incluyen en el contexto para ayudar al modelo a no sobreinterpretar
-la fuente.
+Los fragmentos se limitan actualmente a 600 caracteres después de retirar el
+frontmatter YAML, cuyos metadatos relevantes ya se incorporan como atributos y
+limitaciones. Así el límite conserva contenido sustantivo sin aumentar el coste
+del prompt.
+
+La respuesta usa un presupuesto progresivo: breve por defecto y más amplio
+cuando la persona pide detalle, comparación, una lista completa o una
+explicación paso a paso. El modelo debe responder a la intención inmediata, no
+resumir automáticamente todo el dossier recuperado.
 
 ### 7.5 Citas actuales
 
@@ -496,8 +546,8 @@ búsqueda ni duplicar la fuente de verdad.
    requiera todos los carriles.
 2. No existe todavía un router de intención.
 3. `source_kind` y `source_type` llegan al prompt, pero no dirigen la búsqueda.
-4. La recuperación usa solo el último mensaje, lo que puede perjudicar preguntas
-   de seguimiento como "¿y desde Ayurveda?".
+4. La continuidad conversacional usa una regla ligera y todavía no resuelve
+   referencias complejas o cambios de tema ambiguos.
 5. El umbral `minScore` no está calibrado para el perfil RRF sin reranker.
 6. Los stores se abren y cierran en cada pregunta, aumentando la latencia.
 7. Las citas visibles corresponden a resultados recuperados, no necesariamente
@@ -546,14 +596,14 @@ La evolución debe contemplar tres modos de recuperación y respuesta:
 
 | Modo | Prioridad de recuperación | Comportamiento |
 |---|---|---|
-| **Ciencia prioritaria** | memoria personal + interpretación, estilo de vida, curiosidad científica y evidencia moderna | Es el modo predeterminado. Las fuentes biomédicas e institucionales ocupan el primer plano. Las fuentes tradicionales no se presentan como equivalentes ni desplazan la evidencia clínica. |
+| **Lectura clínica** | memoria personal + interpretación, estilo de vida, curiosidad científica y evidencia moderna | Se activa ante analíticas, eficacia, diagnóstico, seguridad y otras preguntas clínicas. Las fuentes biomédicas e institucionales ocupan el primer plano sin convertir la tradición en adversario. |
 | **Comparación** | carriles biomédicos y tradicionales recuperados por separado | Expone coincidencias, diferencias, lenguaje propio, tipo de autoridad y nivel de evidencia sin forzar equivalencias entre sistemas. |
-| **Perspectiva tradicional** | fuente clásica + contexto histórico o filológico; evidencia moderna y seguridad como contexto | Da protagonismo al sistema solicitado, con atribución clara. No traduce automáticamente sus conceptos a diagnósticos modernos ni oculta límites o riesgos conocidos. |
+| **Perspectiva tradicional** | fuente clásica + contexto histórico o filológico; evidencia moderna y seguridad cuando sean pertinentes | Da protagonismo al sistema solicitado, con atribución clara. No traduce automáticamente sus conceptos a diagnósticos modernos ni añade una refutación clínica ritual. |
 
-Si la persona no selecciona un modo ni formula una intención explícita, se usa
-**Ciencia prioritaria**. Una petición como "desde Ayurveda", "según la medicina
-china" o "compáralos" puede cambiar el modo para esa consulta sin modificar la
-preferencia general.
+Si la persona no selecciona un modo, el router infiere la intención. Una
+pregunta ambigua sobre un resultado o efecto de salud usa **Lectura clínica**;
+una petición como "desde Ayurveda", "según la medicina china" o "compáralos"
+activa el modo correspondiente para esa consulta.
 
 Los modos no crean tres copias del corpus. Actúan sobre el mismo KB y cambian:
 
@@ -577,6 +627,10 @@ science-curiosity
 traditional-primary
 traditional-context
 traditional-evidence
+medicinal-species-identity
+medicinal-use
+natural-product-evidence
+natural-product-safety
 comparison
 safety
 ```
@@ -589,6 +643,8 @@ Ejemplos:
 - "¿Qué puedo cambiar en mi alimentación?" -> memoria + estilo de vida;
 - "¿Qué dice Ayurveda?" -> tradición primaria + contexto;
 - "¿Está demostrado científicamente?" -> evidencia moderna;
+- "¿Qué especie es y qué parte se usa?" -> identidad de especie medicinal;
+- "¿Tiene riesgos o interacciones?" -> seguridad de producto natural;
 - "Compáralos" -> carriles biomédico y tradicional separados.
 
 La primera versión puede usar reglas y términos explícitos. Un clasificador LLM
@@ -709,13 +765,13 @@ Las mejoras deben responder a métricas y problemas observados:
 
 ## 12. Siguiente ciclo recomendado
 
-1. Terminar el dossier LDL con las tarjetas que aporten intenciones reales.
-2. Probar entre 10 y 20 consultas de evaluación sobre ese dossier.
+1. Terminar los dossiers clínicos con las tarjetas que aporten intenciones reales.
+2. Probar entre 10 y 20 consultas de evaluación sobre esos dossiers.
 3. Registrar resultados esperados y errores de recuperación.
-4. Repetir el método con otro tema diferente, por ejemplo vitamina D o glucosa.
-5. Comparar si la estructura funciona igual en ambos temas.
-6. Corregir el prompt y la recuperación antes de producir corpus masivamente.
-7. Solo entonces ampliar a más marcadores, tradiciones o condiciones.
+4. Evaluar el piloto de cúrcuma con preguntas de identidad, evidencia y seguridad.
+5. Comprobar que M1, M3 y M4 no compiten entre sí ni contaminan consultas clínicas.
+6. Corregir prompts y recuperación antes de producir corpus masivamente.
+7. Solo entonces ampliar a más marcadores, tradiciones o especies.
 
 ## 13. Resumen de decisiones
 
@@ -724,10 +780,14 @@ Las mejoras deben responder a métricas y problemas observados:
 - Un tema se modela como dossier lógico de tarjetas.
 - Una tarjeta tiene una intención principal, no una pregunta literal única.
 - A/B/C y T1/T2/T3 son funciones distintas, no cuotas.
-- Las tarjetas biomédicas son la figura y las tradicionales el fondo: conviven
-  como en un dibujo, con trazos nítidos donde coinciden y contornos difuminados
-  donde el límite es incierto, sin jerarquía de verdad.
+- Las tarjetas biomédicas suelen ser la figura ante preguntas clínicas y las
+  tradicionales el fondo, pero la intención puede acercar el fondo hasta el
+  primer plano. Conviven sin antagonismo ni equivalencia forzada.
 - La acupuntura usa un brief especializado.
+- Las especies con uso medicinal usan un brief especializado y una puerta de
+  identidad antes de evaluar evidencia o seguridad.
+- Especie, parte, preparación, extracto, compuesto y producto comercial no son
+  unidades intercambiables.
 - La fuente clásica, el contexto histórico y la evidencia moderna no se
   fusionan.
 - Las rutas de búsqueda orientan; el pasaje exacto sigue necesitando
@@ -736,7 +796,7 @@ Las mejoras deben responder a métricas y problemas observados:
 - Las preguntas masivas se usan para evaluación, no para inflar el corpus.
 - La siguiente mejora prioritaria es medir recuperación antes de aumentar
   volumen.
-- La recuperación evolucionará hacia tres modos: Ciencia prioritaria por
-  defecto, Comparación y Perspectiva tradicional.
+- La recuperación evolucionará hacia tres modos guiados por intención: Lectura
+  clínica, Comparación y Perspectiva tradicional.
 - El router, los metadatos ampliados, el grounding y el reranker se incorporan
   por etapas y con criterios observables.

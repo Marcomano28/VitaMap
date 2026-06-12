@@ -39,6 +39,15 @@ assert.doesNotMatch(
   /chaga/i,
 );
 
+const academicComparison = buildRetrievalQuery(
+  "Compara el uso ayurvédico de ashwagandha con la evidencia científica",
+  [],
+  "es",
+);
+assert.match(academicComparison, /uso tradicional histórico fuente contexto/);
+assert.match(academicComparison, /evidencia moderna estudios eficacia clínica/);
+assert.match(academicComparison, /comparación carril clínico tradición/);
+
 assert.equal(responseTokenBudget("¿Qué es el chaga?"), 180);
 assert.equal(responseTokenBudget("Explícamelo con todos los detalles"), 350);
 

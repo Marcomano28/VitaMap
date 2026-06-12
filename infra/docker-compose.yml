@@ -78,9 +78,20 @@ services:
       - "--ctx-size"
       - "8192"
       - "--threads"
-      - "${LLM_THREADS:-2}"
+      # 3 de las 4 vCPU del CCX13 para el LLM; 1 queda para Next/Caddy.
+      - "${LLM_THREADS:-3}"
       - "--n-gpu-layers"
       - "0"
+      # Dos slots: generación y guardrail usan system prompts distintos;
+      # con un solo slot se pisarían la caché KV mutuamente. Cada slot
+      # recibe ctx-size/parallel = 4096 tokens, suficiente para el budget
+      # actual (system ~1.5k + contexto RAG + historial + <=350 de salida).
+      - "--parallel"
+      - "2"
+      # Reutiliza fragmentos de caché KV con prefijo común >=256 tokens
+      # (requiere cache_prompt:true en la petición — ver lib/llm.ts).
+      - "--cache-reuse"
+      - "256"
       - "--reasoning"
       - "off"
       - "--alias"

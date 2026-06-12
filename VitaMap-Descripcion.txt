@@ -12,8 +12,10 @@ reunir, en un único lugar cifrado y privado, todo lo que sabe sobre su propia
 salud —análisis clínicos, observaciones diarias, escalas psicológicas
 validadas, valoraciones de medicinas tradicionales, y opcionalmente datos
 genómicos— y conversar con un asistente de inteligencia artificial que la
-ayuda a entender patrones en esa información, contrastándola con la mejor
-evidencia científica disponible.
+ayuda a entender patrones en esa información. Las afirmaciones clínicas se
+contrastan con la mejor evidencia científica disponible; las perspectivas
+tradicionales se exploran desde sus fuentes, su lenguaje y su contexto
+académico.
 
 VitaMap no diagnostica. No prescribe. No sustituye a un profesional sanitario.
 Su función es exactamente la de un buen entrenador personal del conocimiento:
@@ -34,6 +36,30 @@ hipocondría, marketing de suplementos y ruido.
 
 VitaMap reconstruye una memoria coherente de la propia salud y le pone
 encima una capa de razonamiento que respeta la evidencia y al usuario.
+
+
+FIGURA Y FONDO: CÓMO CONVIVEN LOS DISTINTOS SABERES
+---------------------------------------------------
+
+VitaMap distingue entre figura y fondo. Cuando la pregunta trata de una
+analítica, una interacción, una dosis, una eficacia o un riesgo, la evidencia
+clínica ocupa la figura: aquí la precisión metodológica no es negociable.
+Cuando la pregunta trata de Ayurveda, medicina china, un texto clásico o un
+uso tradicional, ese sistema puede ocupar el primer plano de la conversación
+y explicarse desde sus propios términos, con fuentes históricas y académicas.
+
+La imagen de diseño es sencilla: no entrar en una tradición como quien entra
+en una selva con una bata de laboratorio estéril, intentando convertir cada
+símbolo en un biomarcador. Sería una mala lectura de la tradición y también
+una mala aplicación de la ciencia. La ciencia conserva toda su exigencia allí
+donde hay afirmaciones clínicas comprobables; no necesita interrumpir cada
+explicación histórica o cultural para declarar su superioridad.
+
+Figura y fondo tampoco significan que todo valga lo mismo. Si dos fuentes hacen
+la misma afirmación sobre eficacia, diagnóstico o seguridad, se evalúan con el
+estándar clínico correspondiente. Si responden preguntas distintas, VitaMap
+las mantiene distintas y permite que dialoguen sin forzar equivalencias ni
+convertir la conversación en una disputa.
 
 
 CÓMO ESTÁ HECHO: LOS CINCO COMPONENTES PRINCIPALES
@@ -89,14 +115,17 @@ usuarios en otros contextos.
 
 Es una biblioteca curada que vive en el servidor y se comparte entre todos
 los usuarios. Se construye a partir de fuentes verificables: guías clínicas,
-información institucional y literatura biomédica. NICE, ESC y PubMed son
-ejemplos de procedencias posibles, pero su contenido solo se incorpora cuando
-la licencia o autorización aplicable lo permite.
+información institucional, literatura biomédica, textos tradicionales y
+estudios académicos de historia, filología, antropología o etnobotánica. NICE,
+ESC y PubMed son ejemplos de procedencias posibles para el carril clínico;
+ediciones críticas, corpus universitarios y monografías académicas cumplen
+otras funciones. Su contenido solo se incorpora cuando la licencia o
+autorización aplicable lo permite.
 
 Cada documento conserva su enlace original, fecha, tipo, estado de revisión y
-limitaciones. Las fuentes de medicinas tradicionales se atribuyen como tales:
-pueden aportar coincidencias, contexto o una perspectiva solicitada, pero no
-se presentan como confirmación científica.
+limitaciones. Las fuentes de medicinas tradicionales se atribuyen como tales y
+se explican desde su contexto. No se presentan como confirmación científica,
+pero tampoco como material que deba ser refutado antes de poder ser comprendido.
 
 En la fase inmediata, el administrador selecciona y revisa cada incorporación
 desde una interfaz protegida. Una URL sirve como procedencia; el asistente no
@@ -118,8 +147,11 @@ Primero, el motor de búsqueda extrae los fragmentos más relevantes de la
 memoria personal del usuario.
 
 Segundo, cuando la pregunta necesita conocimiento general, el mismo motor
-extrae los fragmentos más relevantes del corpus compartido. La respuesta
-prioriza evidencia clínica e información institucional verificable.
+extrae los fragmentos más relevantes del corpus compartido. La respuesta elige
+el carril según la intención: evidencia clínica para preguntas clínicas,
+fuentes tradicionales e investigación académica contextual para preguntas
+históricas o tradicionales, y ambos carriles separados cuando se solicita una
+comparación.
 
 Tercero, ambos conjuntos se entregan al modelo de lenguaje claramente
 etiquetados: "esto viene de tu memoria personal, registrado el X de Y",
@@ -130,9 +162,10 @@ procedencia y sus límites.
 Cuarto, el modelo responde siguiendo un estilo conversacional inspirado en
 el método socrático: hace preguntas que ayudan al usuario a pensar,
 contrasta lo personal con la evidencia, y nunca emite un diagnóstico ni
-recomienda un tratamiento. Las perspectivas tradicionales se presentan como
-complemento atribuido o cuando el usuario las solicita, no como confirmación
-científica.
+recomienda un tratamiento. Las perspectivas tradicionales se presentan con
+atribución y profundidad cuando son pertinentes o cuando el usuario las
+solicita. Los límites clínicos aparecen donde aclaran una afirmación o protegen
+la seguridad, no como una corrección automática de cada concepto ancestral.
 
 Crucialmente, este modelo corre dentro del servidor de VitaMap. Los datos
 del usuario no salen jamás del entorno controlado. No se envían a OpenAI,
