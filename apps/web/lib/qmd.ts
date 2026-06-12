@@ -83,8 +83,43 @@ async function ensureUserScaffold(userId: string) {
 }
 
 // =====================================================================
-// Apertura/cierre de stores
+// Stores persistentes
+//
+// Abrir un store es caro (~varios segundos: carga del modelo de
+// embeddings en CPU). Abrir/cerrar por petición costaba 8-9 s de
+// retrieval por pregunta del chat. Los stores se cachean por proceso:
+// el de KB de forma permanente y los de usuario con expiración por
+// inactividad (libera RAM cuando un usuario deja de usar la app).
 // =====================================================================
+
+const USER_STORE_TTL_MS = 15 * 60_000;
+
+interface CachedStore {
+  promise: Promise<QMDStore>;
+  lastUsed: number;
+}
+
+const userStoreCache = new Map<string, CachedStore>();
+let kbStoreCache: Promise<QMDStore> | null = null;
+
+async function closeQuietly(promise: Promise<QMDStore>) {
+  try {
+    const store = await promise;
+    await store.close();
+  } catch (err) {
+    console.error("[qmd] error cerrando store", err);
+  }
+}
+
+function evictIdleUserStores() {
+  const now = Date.now();
+  for (const [userId, cached] of userStoreCache) {
+    if (now - cached.lastUsed > USER_STORE_TTL_MS) {
+      userStoreCache.delete(userId);
+      void closeQuietly(cached.promise);
+    }
+  }
+}
 
 async function openUserStore(userId: string): Promise<QMDStore> {
   await ensureUserScaffold(userId);
@@ -100,6 +135,22 @@ async function openUserStore(userId: string): Promise<QMDStore> {
   return store;
 }
 
+function getUserStore(userId: string): Promise<QMDStore> {
+  evictIdleUserStores();
+  const cached = userStoreCache.get(userId);
+  if (cached) {
+    cached.lastUsed = Date.now();
+    return cached.promise;
+  }
+  const promise = openUserStore(userId).catch((err) => {
+    // No cachear aperturas fallidas.
+    userStoreCache.delete(userId);
+    throw err;
+  });
+  userStoreCache.set(userId, { promise, lastUsed: Date.now() });
+  return promise;
+}
+
 async function openKbStore(): Promise<QMDStore> {
   const env = getEnv();
   await ensureDir(path.dirname(env.KB_INDEX_PATH));
@@ -113,6 +164,24 @@ async function openKbStore(): Promise<QMDStore> {
     },
   }));
   return store;
+}
+
+function getKbStore(): Promise<QMDStore> {
+  if (!kbStoreCache) {
+    kbStoreCache = openKbStore().catch((err) => {
+      kbStoreCache = null;
+      throw err;
+    });
+  }
+  return kbStoreCache;
+}
+
+/** Cierra el store cacheado de un usuario (p. ej. al purgar su cuenta). */
+export async function closeUserStore(userId: string): Promise<void> {
+  const cached = userStoreCache.get(userId);
+  if (!cached) return;
+  userStoreCache.delete(userId);
+  await closeQuietly(cached.promise);
 }
 
 // =====================================================================
@@ -185,20 +254,16 @@ export async function queryKB(
 ): Promise<RetrievedChunk[]> {
   const limit = opts.limit ?? 5;
   const minScore = opts.minScore ?? 0.3;
-  const kbStore = await openKbStore();
+  const kbStore = await getKbStore();
 
-  try {
-    const hits = await kbStore.search({
-      queries: normalizedSearchQueries(query),
-      rerank: false,
-      limit,
-      minScore,
-      candidateLimit: 10,
-    });
-    return Promise.all(hits.map(mapEvidenceHit));
-  } finally {
-    await kbStore.close();
-  }
+  const hits = await kbStore.search({
+    queries: normalizedSearchQueries(query),
+    rerank: false,
+    limit,
+    minScore,
+    candidateLimit: 10,
+  });
+  return Promise.all(hits.map(mapEvidenceHit));
 }
 
 export async function queryMemoryAndKB(
@@ -210,58 +275,46 @@ export async function queryMemoryAndKB(
   const minScore = opts.minScore ?? 0.3;
 
   const [userStore, kbStore] = await Promise.all([
-    openUserStore(userId),
-    openKbStore(),
+    getUserStore(userId),
+    getKbStore(),
   ]);
 
-  try {
-    // Evitar expansión y reranking locales, demasiado costosos en el VPS
-    // CPU-only, manteniendo recuperación híbrida BM25 + vector.
-    const searches = normalizedSearchQueries(query);
-    const [personalHits, evidenceHits] = await Promise.all([
-      userStore.search({
-        queries: searches,
-        rerank: false,
-        limit,
-        minScore,
-        candidateLimit: 10,
-      }),
-      kbStore.search({
-        queries: searches,
-        rerank: false,
-        limit,
-        minScore,
-        candidateLimit: 10,
-      }),
-    ]);
+  // Evitar expansión y reranking locales, demasiado costosos en el VPS
+  // CPU-only, manteniendo recuperación híbrida BM25 + vector.
+  const searches = normalizedSearchQueries(query);
+  const [personalHits, evidenceHits] = await Promise.all([
+    userStore.search({
+      queries: searches,
+      rerank: false,
+      limit,
+      minScore,
+      candidateLimit: 10,
+    }),
+    kbStore.search({
+      queries: searches,
+      rerank: false,
+      limit,
+      minScore,
+      candidateLimit: 10,
+    }),
+  ]);
 
-    const [personal, evidence] = await Promise.all([
-      Promise.all(personalHits.map((h) => mapPersonalHit(userId, h))),
-      Promise.all(evidenceHits.map(mapEvidenceHit)),
-    ]);
+  const [personal, evidence] = await Promise.all([
+    Promise.all(personalHits.map((h) => mapPersonalHit(userId, h))),
+    Promise.all(evidenceHits.map(mapEvidenceHit)),
+  ]);
 
-    return { personal, evidence };
-  } finally {
-    await Promise.allSettled([userStore.close(), kbStore.close()]);
-  }
+  return { personal, evidence };
 }
 
 export async function reindexUser(userId: string): Promise<void> {
-  const store = await openUserStore(userId);
-  try {
-    await store.update({ collections: ["memory"] });
-    await store.embed({ force: false });
-  } finally {
-    await store.close();
-  }
+  const store = await getUserStore(userId);
+  await store.update({ collections: ["memory"] });
+  await store.embed({ force: false });
 }
 
 export async function reindexKB(force = false): Promise<void> {
-  const store = await openKbStore();
-  try {
-    await store.update({ collections: ["kb"] });
-    await store.embed({ force });
-  } finally {
-    await store.close();
-  }
+  const store = await getKbStore();
+  await store.update({ collections: ["kb"] });
+  await store.embed({ force });
 }
