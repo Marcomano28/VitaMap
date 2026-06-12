@@ -5,7 +5,13 @@ interface HistoryMessage {
   content: string;
 }
 
-type RetrievalIntent = "identity" | "safety" | "evidence" | "tradition" | "general";
+type RetrievalIntent =
+  | "identity"
+  | "safety"
+  | "evidence"
+  | "tradition"
+  | "comparison"
+  | "general";
 
 const INTENT_PATTERNS: Array<[RetrievalIntent, RegExp]> = [
   [
@@ -13,8 +19,12 @@ const INTENT_PATTERNS: Array<[RetrievalIntent, RegExp]> = [
     /(segur(?:o|a|idad)|riesg\w*|efecto(?:s)? secundari\w*|interacci\w*|precauci\w*|embaraz\w*|lactancia|riñ[oó]n|renal|h[ií]gado|hep[aá]tic\w*|oxalato|sicher\w*|risik\w*|nebenwirkung\w*|wechselwirkung\w*|schwanger\w*|stillzeit|niere|leber)/i,
   ],
   [
+    "comparison",
+    /(compar\w*|diferencia\w*|frente a|versus|\bvs\.?\b|vergleich\w*|unterschied\w*|gegenüber)/i,
+  ],
+  [
     "tradition",
-    /(tradici\w*|hist[oó]ric\w*|ayurveda|medicina china|mtc|uso antiguo|tradition\w*|historisch\w*|chinesische medizin)/i,
+    /(tradici\w*|hist[oó]ric\w*|ayurv[eé]\w*|medicina china|mtc|uso antiguo|tradition\w*|historisch\w*|chinesische medizin)/i,
   ],
   [
     "evidence",
@@ -32,23 +42,25 @@ const INTENT_HINTS: Record<ConversationLocale, Record<Exclude<RetrievalIntent, "
     safety: "seguridad efectos adversos riesgos interacciones precauciones",
     evidence: "evidencia moderna estudios eficacia clínica limitaciones",
     tradition: "uso tradicional histórico fuente contexto preparación",
+    comparison: "comparación carril clínico tradición coincidencias diferencias fuentes académicas",
   },
   de: {
     identity: "Identität Art wissenschaftlicher Name Familie Lebensraum verwendeter Teil Produktformen",
     safety: "Sicherheit Nebenwirkungen Risiken Wechselwirkungen Vorsichtsmaßnahmen",
     evidence: "moderne Evidenz Studien klinische Wirksamkeit Einschränkungen",
     tradition: "traditionelle historische Verwendung Quelle Kontext Zubereitung",
+    comparison: "Vergleich klinischer Ansatz Tradition Gemeinsamkeiten Unterschiede akademische Quellen",
   },
 };
 
 const FOLLOW_UP_PATTERN =
   /^(?:y|e|pero|entonces|adem[aá]s|tambi[eé]n|eso|esto|lo|la|los|las|es|son|puede|podr[ií]a|funciona|sirve|segur|riesg|por qu[eé]|c[oó]mo|cu[aá]l|und|aber|also|auch|das|dies|ist|sind|kann|wirkt|sicher|warum|wie|welch)/i;
 
-function detectIntent(message: string): RetrievalIntent {
-  for (const [intent, pattern] of INTENT_PATTERNS) {
-    if (pattern.test(message)) return intent;
-  }
-  return "general";
+function detectIntents(message: string): RetrievalIntent[] {
+  const intents = INTENT_PATTERNS.flatMap(([intent, pattern]) =>
+    pattern.test(message) ? [intent] : [],
+  );
+  return intents.length > 0 ? intents : ["general"];
 }
 
 function lastUserMessage(history: readonly HistoryMessage[]): string | undefined {
@@ -72,10 +84,11 @@ export function buildRetrievalQuery(
 ): string {
   const current = message.replace(/\s+/g, " ").trim();
   const previous = isLikelyFollowUp(current) ? lastUserMessage(history) : undefined;
-  const intent = detectIntent(current);
-  const hint = intent === "general" ? "" : INTENT_HINTS[locale][intent];
+  const hints = detectIntents(current)
+    .filter((intent): intent is Exclude<RetrievalIntent, "general"> => intent !== "general")
+    .map((intent) => INTENT_HINTS[locale][intent]);
 
-  return [previous?.slice(0, 240), current, hint].filter(Boolean).join("\n");
+  return [previous?.slice(0, 240), current, ...hints].filter(Boolean).join("\n");
 }
 
 const EXPANSION_REQUEST =
