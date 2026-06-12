@@ -15,6 +15,10 @@ import {
   hasVisibleAssistantText,
   prepareAssistantText,
 } from "@/lib/assistant-text";
+import {
+  buildRetrievalQuery,
+  responseTokenBudget,
+} from "@/lib/conversation-policy";
 
 export const runtime = "nodejs"; // @tobilu/qmd y better-sqlite3 son nativos
 
@@ -77,7 +81,12 @@ export async function POST(req: Request) {
   const retrievalStartedAt = Date.now();
   console.info("[chat] retrieval started");
   try {
-    const result = await queryMemoryAndKB(userId, body.message, {
+    const retrievalQuery = buildRetrievalQuery(
+      body.message,
+      body.history,
+      body.locale,
+    );
+    const result = await queryMemoryAndKB(userId, retrievalQuery, {
       limit: 3,
       minScore: 0.35,
     });
@@ -128,7 +137,7 @@ export async function POST(req: Request) {
     draft = await chat({
       messages,
       temperature: 0.4,
-      maxTokens: 350,
+      maxTokens: responseTokenBudget(body.message),
       signal: deadline,
     });
     console.info("[chat] generation complete", {
@@ -148,12 +157,12 @@ export async function POST(req: Request) {
   const guardrailStartedAt = Date.now();
   console.info("[chat] guardrail started");
   try {
-    const decision = await checkResponse(draft, deadline);
+    const decision = await checkResponse(draft, contextBlock, deadline);
     verdict = decision.verdict;
     flags = decision.flags;
     if (decision.verdict === "rewrite") {
       const rewritten = prepareAssistantText(
-        await rewriteSocratic(draft, body.locale, deadline),
+        await rewriteSocratic(draft, body.locale, contextBlock, deadline),
       );
       if (hasVisibleAssistantText(rewritten)) {
         finalText = rewritten;

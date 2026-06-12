@@ -6,6 +6,10 @@ export interface QmdHit {
   body?: string;
 }
 
+function stripLeadingFrontmatter(text: string): string {
+  return text.replace(/^\s*---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/, "").trim();
+}
+
 export function qmdRelativePath(
   hit: QmdHit,
   collection: "memory" | "kb",
@@ -18,5 +22,7 @@ export function qmdRelativePath(
 }
 
 export function qmdHitSnippet(hit: QmdHit): string {
-  return (hit.bestChunk ?? hit.snippet ?? hit.body ?? "").trim();
+  return stripLeadingFrontmatter(
+    (hit.bestChunk ?? hit.snippet ?? hit.body ?? "").trim(),
+  );
 }

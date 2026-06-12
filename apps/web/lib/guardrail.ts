@@ -1,8 +1,9 @@
 /**
- * Guardrail anti-diagnóstico.
+ * Guardrail de seguridad y fidelidad factual.
  *
  * Segunda pasada del LLM sobre la respuesta generada. Si detecta lenguaje
- * diagnóstico o prescriptivo, la marca para reescritura o bloqueo.
+ * diagnóstico, prescriptivo o contradictorio con las fuentes, lo marca para
+ * reescritura o bloqueo.
  *
  * Implementación dependiente de lib/llm.ts (chat non-streaming).
  */
@@ -24,7 +25,8 @@ export type GuardrailFlag =
   | "dosage_recommendation"
   | "medication_name_without_evidence"
   | "absolute_certainty"
-  | "missing_evidence_tag";
+  | "missing_evidence_tag"
+  | "unsupported_factual_claim";
 
 const ALL_FLAGS: GuardrailFlag[] = [
   "diagnostic_statement",
@@ -33,6 +35,7 @@ const ALL_FLAGS: GuardrailFlag[] = [
   "medication_name_without_evidence",
   "absolute_certainty",
   "missing_evidence_tag",
+  "unsupported_factual_claim",
 ];
 
 function extractJson(raw: string): { verdict: string; flags: string[] } | null {
@@ -52,12 +55,16 @@ function extractJson(raw: string): { verdict: string; flags: string[] } | null {
 
 export async function checkResponse(
   text: string,
+  sourceContext = "",
   signal?: AbortSignal,
 ): Promise<GuardrailDecision> {
+  const reviewInput = sourceContext
+    ? `FUENTES PROPORCIONADAS:\n${sourceContext}\n\nRESPUESTA A REVISAR:\n${text}`
+    : text;
   const raw = await chat({
     messages: [
       { role: "system", content: GUARDRAIL_CLASSIFIER_PROMPT },
-      { role: "user", content: text },
+      { role: "user", content: reviewInput },
     ],
     temperature: 0,
     maxTokens: 200,
@@ -100,19 +107,23 @@ export async function checkResponse(
 }
 
 const REWRITE_PROMPT: Record<Locale, string> = {
-  es: `Reescribe el siguiente texto en español, con un estilo socrático y observacional. No emitas diagnósticos. No recomiendes tratamientos. Convierte afirmaciones clínicas directas en preguntas o en observaciones acompañadas de su nivel de evidencia citado. Mantén las etiquetas <source>...</source> que ya aparezcan. Responde solo con el texto reescrito.`,
-  de: `Formuliere den folgenden Text auf Deutsch in einem sokratischen, beobachtenden Stil neu. Stelle keine Diagnosen und empfehle keine Behandlungen. Verwandle direkte klinische Aussagen in Fragen oder Beobachtungen mit dem angegebenen Evidenzniveau. Behalte vorhandene <source>...</source>-Tags bei. Antworte ausschließlich mit dem neu formulierten Text.`,
+  es: `Reescribe el texto en español usando únicamente las fuentes proporcionadas. Elimina o corrige cualquier afirmación factual que las fuentes no respalden o contradigan, especialmente sobre identidad, taxonomía, hábitat, preparación, eficacia y seguridad. No emitas diagnósticos ni recomiendes tratamientos. Convierte afirmaciones clínicas directas en observaciones acompañadas de su nivel de evidencia citado. Mantén las etiquetas <source>...</source> que ya aparezcan. Si las fuentes no permiten confirmar algo, dilo brevemente. Responde solo con el texto reescrito.`,
+  de: `Formuliere den Text auf Deutsch neu und verwende ausschließlich die bereitgestellten Quellen. Entferne oder korrigiere Tatsachenbehauptungen, die von den Quellen nicht gestützt werden oder ihnen widersprechen, besonders zu Identität, Taxonomie, Lebensraum, Zubereitung, Wirksamkeit und Sicherheit. Stelle keine Diagnosen und empfehle keine Behandlungen. Behalte vorhandene <source>...</source>-Tags bei. Wenn die Quellen etwas nicht bestätigen, sage das kurz. Antworte ausschließlich mit dem neu formulierten Text.`,
 };
 
 export async function rewriteSocratic(
   text: string,
   locale: Locale,
+  sourceContext = "",
   signal?: AbortSignal,
 ): Promise<string> {
+  const rewriteInput = sourceContext
+    ? `FUENTES PROPORCIONADAS:\n${sourceContext}\n\nTEXTO A REESCRIBIR:\n${text}`
+    : text;
   return chat({
     messages: [
       { role: "system", content: REWRITE_PROMPT[locale] },
-      { role: "user", content: text },
+      { role: "user", content: rewriteInput },
     ],
     temperature: 0.3,
     maxTokens: 512,
