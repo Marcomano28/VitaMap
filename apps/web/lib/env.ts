@@ -2,6 +2,9 @@ import { z } from "zod";
 import fs from "node:fs";
 import path from "node:path";
 
+const optionalString = <T extends z.ZodTypeAny>(schema: T) =>
+  z.preprocess((value) => (value === "" ? undefined : value), schema.optional());
+
 /**
  * Validación de variables de entorno en arranque. Falla rápido si falta
  * algo crítico. Importar SOLO desde código de servidor.
@@ -33,6 +36,12 @@ const EnvSchema = z.object({
   // BetterAuth
   BETTER_AUTH_SECRET: z.string().min(32),
   BETTER_AUTH_URL: z.string().url(),
+
+  // Email transaccional. Opcional para herramientas administrativas que
+  // comparten este schema; lib/email.ts lo exige al intentar enviar en prod.
+  BREVO_API_KEY: optionalString(z.string().startsWith("xkeysib-")),
+  EMAIL_FROM: optionalString(z.string().min(3)),
+  EMAIL_REPLY_TO: optionalString(z.string().email()),
 
   // App
   ADMIN_EMAILS: z.string().default(""),

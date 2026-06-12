@@ -12,6 +12,8 @@ const TEXT = {
     requestAccess: "Solicita acceso al piloto",
     password: "Contraseña",
     submit: "Entrar",
+    forgot: "¿Olvidaste tu contraseña?",
+    resetDone: "Contraseña actualizada. Ya puedes acceder con la nueva.",
   },
   de: {
     title: "Anmelden",
@@ -20,6 +22,8 @@ const TEXT = {
     requestAccess: "Zugang zum Piloten anfragen",
     password: "Passwort",
     submit: "Anmelden",
+    forgot: "Passwort vergessen?",
+    resetDone: "Passwort aktualisiert. Du kannst dich jetzt damit anmelden.",
   },
 } as const;
 
@@ -29,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 interface PageProps {
-  searchParams: Promise<{ error?: string; next?: string }>;
+  searchParams: Promise<{ error?: string; next?: string; reset?: string }>;
 }
 
 export default async function LoginPage({ searchParams }: PageProps) {
@@ -53,6 +57,12 @@ export default async function LoginPage({ searchParams }: PageProps) {
       {sp.error && (
         <p className="rounded-md border border-red-300 bg-red-50 dark:bg-red-900/30 px-3 py-2 text-sm text-red-800 dark:text-red-200">
           {sp.error}
+        </p>
+      )}
+
+      {sp.reset && (
+        <p className="rounded-md border border-green-300 bg-green-50 dark:bg-green-900/30 px-3 py-2 text-sm text-green-800 dark:text-green-200">
+          {t.resetDone}
         </p>
       )}
 
@@ -86,6 +96,12 @@ export default async function LoginPage({ searchParams }: PageProps) {
         >
           {t.submit}
         </button>
+
+        <p className="text-sm text-center">
+          <Link href="/forgot-password" className="underline text-[var(--color-muted)]">
+            {t.forgot}
+          </Link>
+        </p>
       </form>
     </div>
   );

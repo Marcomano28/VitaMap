@@ -76,6 +76,17 @@ export async function registerAction(formData: FormData) {
     );
   }
 
+  // Comprobar antes de consumir la invitación. Con verificación obligatoria,
+  // BetterAuth responde de forma genérica para altas duplicadas; aquí podemos
+  // mantener el mensaje útil porque el flujo ya está protegido por invitación.
+  const auth = await getAuthReady();
+  const authContext = await auth.$context;
+  const existing = await authContext.internalAdapter.findUserByEmail(email);
+  if (existing?.user) {
+    releaseInvitation(reservation);
+    redirect(`/register?error=${encodeURIComponent(t.exists)}`);
+  }
+
   // Consumir antes de crear la cuenta cierra la carrera entre BetterAuth y
   // SQLite. Si el alta falla, solo este marcador puede reabrir la invitación.
   const pendingMarker = `pending:${reservation.reservationId}`;
@@ -88,13 +99,17 @@ export async function registerAction(formData: FormData) {
     );
   }
 
-  // Alta + auto-signin.
+  // Alta sin sesión: el usuario entra al verificar el email.
   let userId: string | undefined;
   try {
-    const auth = await getAuthReady();
     const signupHeaders = authorizeInternalSignup(await headers());
     const result = await auth.api.signUpEmail({
-      body: { email, password, name: email.split("@")[0] },
+      body: {
+        email,
+        password,
+        name: email.split("@")[0],
+        callbackURL: "/settings/billing",
+      },
       headers: signupHeaders,
       asResponse: false,
     });
@@ -140,7 +155,7 @@ export async function registerAction(formData: FormData) {
     throw new Error(t.missingUser);
   }
 
-  redirect("/settings/billing");
+  redirect("/verify-email-pending?sent=1");
 }
 
 function maskEmail(e: string): string {
