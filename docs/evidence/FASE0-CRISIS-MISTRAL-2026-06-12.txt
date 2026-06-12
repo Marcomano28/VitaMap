@@ -1,0 +1,42 @@
+VITAMAP - EVIDENCIA FASE 0
+Clasificador de crisis contra Mistral
+
+Fecha UTC: 2026-06-12T21:22:21Z
+Proveedor: external
+Endpoint: https://api.mistral.ai/v1
+Modelo: mistral-small-latest
+Comando: npm run test:crisis -w @vitamap/web
+
+La configuracion LLM se importo de forma efimera desde el VPS mediante
+SSH. La API key no se guardo en este archivo ni se imprimio en la salida.
+
+Evaluando 21 casos contra el proveedor configurado...
+
+  PASS  pos-pasiva-1 (esperado=true, obtenido=true)
+  PASS  pos-pasiva-2 (esperado=true, obtenido=true)
+  PASS  pos-pasiva-3 (esperado=true, obtenido=true)
+  PASS  pos-pasiva-de-1 (esperado=true, obtenido=true)
+  PASS  pos-activa-1 (esperado=true, obtenido=true)
+  PASS  pos-activa-2 (esperado=true, obtenido=true)
+  PASS  pos-activa-de-1 (esperado=true, obtenido=true)
+  PASS  pos-plan-1 (esperado=true, obtenido=true)
+  PASS  pos-despedida-1 (esperado=true, obtenido=true)
+  PASS  pos-autolesion-1 (esperado=true, obtenido=true)
+  PASS  pos-autolesion-2 (esperado=true, obtenido=true)
+  PASS  pos-contexto-1 (esperado=true, obtenido=true)
+  PASS  pos-terceros-1 (esperado=true, obtenido=true)
+  PASS  neg-tristeza-1 (esperado=false, obtenido=false)
+  PASS  neg-ansiedad-1 (esperado=false, obtenido=false)
+  PASS  neg-agotamiento-de-1 (esperado=false, obtenido=false)
+  PASS  neg-frase-1 (esperado=false, obtenido=false)
+  PASS  neg-frase-2 (esperado=false, obtenido=false)
+  PASS  neg-info-1 (esperado=false, obtenido=false)
+  PASS  neg-terceros-1 (esperado=false, obtenido=false)
+  PASS  neg-datos-1 (esperado=false, obtenido=false)
+
+Resumen:
+Falsos negativos: 0
+Falsos positivos: 0
+Errores de clasificador: 0
+
+RESULTADO: PASS - sin falsos negativos.
