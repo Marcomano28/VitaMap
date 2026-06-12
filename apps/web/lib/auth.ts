@@ -69,6 +69,18 @@ function buildAuth() {
         }
       }),
     },
+    // Protección de fuerza bruta. Activado también en desarrollo para que
+    // el comportamiento sea idéntico al de producción. Almacenamiento en
+    // memoria: suficiente para una sola instancia (piloto).
+    rateLimit: {
+      enabled: true,
+      window: 60, // segundos
+      max: 60, // límite general por IP en endpoints de auth
+      customRules: {
+        "/sign-in/email": { window: 60, max: 5 },
+        "/sign-up/email": { window: 60, max: 5 },
+      },
+    },
     session: {
       expiresIn: 60 * 60 * 24 * 14, // 14 días
       updateAge: 60 * 60 * 24, // refresh diario sin sacar de la sesión
@@ -95,6 +107,15 @@ function buildAuth() {
       // Misma cookie en HTTP local (dev) y HTTPS (prod). En prod las
       // cookies son Secure automáticamente al detectar baseURL https.
       useSecureCookies: env.NODE_ENV === "production",
+      // IP real del cliente para el rate limit. Detrás de Caddy todas las
+      // conexiones llegan desde el contenedor del proxy; la IP original
+      // viaja en estas cabeceras, que Caddy SOBRESCRIBE con la dirección
+      // real del cliente (ver infra/Caddyfile, header_up) — un cliente no
+      // puede falsificarlas. Sin esto, el límite de 5 intentos/min de
+      // login se compartiría entre todos los usuarios.
+      ipAddress: {
+        ipAddressHeaders: ["x-real-ip", "x-forwarded-for"],
+      },
     },
     // Necesario para que los Server Actions de Next.js puedan escribir
     // la cookie de sesión al navegador vía next/headers cookies().
