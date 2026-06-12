@@ -17,6 +17,8 @@ import { APIError, createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import Database from "better-sqlite3";
 import { getEnv } from "./env";
+import { sendResetPasswordEmail, sendVerificationEmail } from "./email";
+import { logAuditEventSafe } from "./audit";
 
 const INTERNAL_SIGNUP_HEADER = "x-vitamap-internal-signup";
 
@@ -51,13 +53,55 @@ function buildAuth() {
     baseURL: env.BETTER_AUTH_URL,
     emailAndPassword: {
       enabled: true,
-      // Iniciar sesión automáticamente tras registrarse (UX más limpia
-      // dado que el alta es invite-only y ya hay confianza).
-      autoSignIn: true,
-      // Configuración temporal de desarrollo. MFA, verificación de correo y
-      // recuperación segura son P0 antes de admitir datos reales de terceros.
+      autoSignIn: false,
+      requireEmailVerification: true,
       minPasswordLength: 10,
       maxPasswordLength: 256,
+      // Recuperación de contraseña por email (Brevo). Enlace de 1 hora.
+      resetPasswordTokenExpiresIn: 60 * 60,
+      revokeSessionsOnPasswordReset: true,
+      sendResetPassword: async ({ user, url }) => {
+        await sendResetPasswordEmail(user.email, url);
+        await logAuditEventSafe({
+          actor: user.id,
+          action: "auth.password_reset.sent",
+          subjectId: user.id,
+          payloadSum: "",
+        });
+      },
+      onPasswordReset: async ({ user }) => {
+        await logAuditEventSafe({
+          actor: user.id,
+          action: "auth.password_reset.completed",
+          subjectId: user.id,
+          payloadSum: "sessions_revoked=true",
+        });
+      },
+    },
+    // Verificación obligatoria antes del primer login. Un intento de acceso
+    // correcto pero no verificado reenvía el enlace con rate limit.
+    emailVerification: {
+      sendOnSignUp: true,
+      sendOnSignIn: true,
+      autoSignInAfterVerification: true,
+      expiresIn: 60 * 60,
+      sendVerificationEmail: async ({ user, url }) => {
+        await sendVerificationEmail(user.email, url);
+        await logAuditEventSafe({
+          actor: user.id,
+          action: "auth.email_verification.sent",
+          subjectId: user.id,
+          payloadSum: "",
+        });
+      },
+      afterEmailVerification: async (user) => {
+        await logAuditEventSafe({
+          actor: user.id,
+          action: "auth.email_verified",
+          subjectId: user.id,
+          payloadSum: "",
+        });
+      },
     },
     hooks: {
       before: createAuthMiddleware(async (ctx) => {
@@ -79,6 +123,10 @@ function buildAuth() {
       customRules: {
         "/sign-in/email": { window: 60, max: 5 },
         "/sign-up/email": { window: 60, max: 5 },
+        // Anti-abuso del envío de emails de recuperación.
+        "/request-password-reset": { window: 300, max: 3 },
+        "/reset-password": { window: 60, max: 5 },
+        "/send-verification-email": { window: 300, max: 3 },
       },
     },
     session: {
