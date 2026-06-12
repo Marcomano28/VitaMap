@@ -33,6 +33,17 @@ const EnvSchema = z.object({
   ADMIN_EMAILS: z.string().default(""),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   NEXT_PUBLIC_APP_URL: z.string().url(),
+
+  // Stripe — opcionales (el contenedor admin no las recibe), pero si
+  // están presentes se valida el formato para fallar en arranque y no
+  // en mitad de un checkout. lib/stripe.ts sigue siendo quien las exige
+  // en tiempo de uso.
+  STRIPE_SECRET_KEY: z
+    .string()
+    .regex(/^sk_(live|test)_/, "STRIPE_SECRET_KEY debe empezar por sk_live_ o sk_test_")
+    .optional(),
+  STRIPE_PRICE_ID: z.string().regex(/^price_/).optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().regex(/^whsec_/).optional(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;
@@ -57,6 +68,15 @@ export function getEnv(): Env {
     ),
     AUTH_DB_PATH: resolveConfiguredPath("AUTH_DB_PATH", parsed.data.AUTH_DB_PATH),
   };
+  if (
+    cached.NODE_ENV === "production" &&
+    (!cached.STRIPE_SECRET_KEY || !cached.STRIPE_PRICE_ID || !cached.STRIPE_WEBHOOK_SECRET)
+  ) {
+    // Aviso, no error: el contenedor admin opera sin Stripe.
+    console.warn(
+      "[env] Variables Stripe incompletas en producción — el flujo de suscripción fallará si este proceso las necesita.",
+    );
+  }
   return cached;
 }
 
