@@ -16,6 +16,7 @@
     "test:ocr": "node --import tsx scripts/test-ocr.ts",
     "test:assistant-text": "node --import tsx scripts/test-assistant-text.ts",
     "test:conversation-policy": "node --import tsx scripts/test-conversation-policy.ts",
+    "test:crisis": "node --import tsx scripts/test-crisis.ts",
     "test:corpus-admin": "node --import tsx scripts/test-corpus-admin.mts",
     "test:qmd-hit": "node --import tsx scripts/test-qmd-hit.ts",
     "test:qmd-prompt": "node --import tsx scripts/test-qmd-prompt.mts",

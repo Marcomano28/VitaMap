@@ -22,6 +22,8 @@ interface AssistantMessage {
   content: string;
   citations: Citation[];
   guardrail: { verdict: "safe" | "rewrite" | "block"; flags?: string[] };
+  /** Aviso fijo de recursos de crisis: nunca generado por el LLM. */
+  crisis?: boolean;
 }
 
 interface UserMessage {
@@ -85,6 +87,7 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
         text: string;
         citations: Citation[];
         guardrail: { verdict: "safe" | "rewrite" | "block"; flags?: string[] };
+        crisis?: boolean;
       };
       setMessages([
         ...nextHistory,
@@ -93,6 +96,7 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
           content: json.text,
           citations: json.citations,
           guardrail: json.guardrail,
+          crisis: json.crisis === true,
         },
       ]);
     } catch (err) {
@@ -194,6 +198,16 @@ function AssistantBubble({
   const blocked = m.guardrail.verdict === "block";
   const rewritten = m.guardrail.verdict === "rewrite";
   const [showCitations, setShowCitations] = useState(false);
+
+  // Aviso fijo de crisis: estilo propio, sin disclaimer educativo ni
+  // etiquetas de guardrail — es un mensaje del sistema, no del modelo.
+  if (m.crisis) {
+    return (
+      <div className="max-w-[90%] rounded-2xl rounded-bl-sm border-2 border-amber-400 bg-amber-50 dark:bg-amber-900/30 px-4 py-3 text-sm text-amber-900 dark:text-amber-100 whitespace-pre-wrap">
+        {m.content}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-2">
