@@ -17,6 +17,7 @@ import {
 } from "@/lib/assistant-text";
 import { responseTokenBudget } from "@/lib/conversation-policy";
 import { resolveRetrievalQuery } from "@/lib/query-rewrite";
+import { detectCrisis, crisisResourcesText } from "@/lib/crisis";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs"; // @tobilu/qmd y better-sqlite3 son nativos
@@ -82,6 +83,34 @@ export async function POST(req: Request) {
     // No devolver el error crudo: puede contener internals. Al log sí.
     console.error("[chat] invalid_body", err);
     return NextResponse.json({ error: "invalid_body" }, { status: 400 });
+  }
+
+  // -- Clasificador de crisis ----------------------------------------------
+  // Antes de cualquier generación (ROADMAP, criterios C-SSRS simplificados).
+  // Si detecta riesgo, no se activa el flujo normal: aviso fijo con
+  // recursos + audit log sin contenido. Fail-open ante errores de infra
+  // (ver lib/crisis.ts).
+  const crisisStartedAt = Date.now();
+  const crisisDecision = await detectCrisis(body.message, body.history);
+  console.info("[chat] crisis check complete", {
+    durationMs: Date.now() - crisisStartedAt,
+    crisis: crisisDecision.crisis,
+    classifierError: crisisDecision.classifierError,
+  });
+  if (crisisDecision.crisis) {
+    await logAuditEventSafe({
+      actor: userId,
+      action: "safety.crisis_detected",
+      subjectId: userId,
+      // Sin contenido de la conversación, por diseño (ROADMAP).
+      payloadSum: "crisis_notice_shown",
+    });
+    return NextResponse.json({
+      text: crisisResourcesText(body.locale),
+      citations: [],
+      guardrail: { verdict: "block", flags: [] },
+      crisis: true,
+    });
   }
 
   // -- Retrieval dual -----------------------------------------------------
