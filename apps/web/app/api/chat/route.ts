@@ -15,10 +15,8 @@ import {
   hasVisibleAssistantText,
   prepareAssistantText,
 } from "@/lib/assistant-text";
-import {
-  buildRetrievalQuery,
-  responseTokenBudget,
-} from "@/lib/conversation-policy";
+import { responseTokenBudget } from "@/lib/conversation-policy";
+import { resolveRetrievalQuery } from "@/lib/query-rewrite";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs"; // @tobilu/qmd y better-sqlite3 son nativos
@@ -92,11 +90,10 @@ export async function POST(req: Request) {
   const retrievalStartedAt = Date.now();
   console.info("[chat] retrieval started");
   try {
-    const retrievalQuery = buildRetrievalQuery(
-      body.message,
-      body.history,
-      body.locale,
-    );
+    // Condense question con LLM; fallback automático a la heurística de
+    // conversation-policy si la pasada falla (ver lib/query-rewrite.ts).
+    const { query: retrievalQuery, method: queryMethod } =
+      await resolveRetrievalQuery(body.message, body.history, body.locale);
     const result = await queryMemoryAndKB(userId, retrievalQuery, {
       limit: 3,
       minScore: 0.35,
@@ -105,9 +102,26 @@ export async function POST(req: Request) {
     evidence = result.evidence;
     console.info("[chat] retrieval complete", {
       durationMs: Date.now() - retrievalStartedAt,
+      queryMethod,
       personalCount: personal.length,
       evidenceCount: evidence.length,
     });
+    // Diagnóstico opcional: contenido de usuario (query) y títulos de
+    // chunks en logs SOLO con RETRIEVAL_DEBUG=true. Apagado por defecto
+    // para no verter datos de salud en los logs de docker.
+    if (process.env.RETRIEVAL_DEBUG === "true") {
+      console.info("[chat] retrieval debug", {
+        query: retrievalQuery.slice(0, 300),
+        personal: personal.map((c) => ({
+          title: c.title.slice(0, 80),
+          score: Number(c.score.toFixed(3)),
+        })),
+        evidence: evidence.map((c) => ({
+          title: c.title.slice(0, 80),
+          score: Number(c.score.toFixed(3)),
+        })),
+      });
+    }
   } catch (err) {
     // Detalle solo al log del servidor: String(err) puede exponer rutas
     // del filesystem o internals de QMD al cliente.
