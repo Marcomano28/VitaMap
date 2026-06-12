@@ -71,6 +71,46 @@ function lastUserMessage(history: readonly HistoryMessage[]): string | undefined
   return undefined;
 }
 
+function lastAssistantMessage(
+  history: readonly HistoryMessage[],
+): string | undefined {
+  for (let index = history.length - 1; index >= 0; index -= 1) {
+    const item = history[index];
+    if (item.role === "assistant" && item.content.trim()) {
+      return item.content.trim();
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Afirmaciones puras ("sí", "vale", "cuéntame más", "ja gerne") en
+ * respuesta a una oferta del asistente. No contienen señal de búsqueda:
+ * usarlas como query de retrieval devuelve ruido (p. ej. analíticas
+ * personales sin relación con el hilo). El referente real vive en el
+ * turno anterior — sobre todo en la pregunta final del asistente.
+ */
+const ACK_WORDS = new Set([
+  "si", "sí", "ya", "vale", "ok", "okay", "claro", "dale", "venga",
+  "adelante", "perfecto", "bueno", "por", "favor", "gracias", "sigue",
+  "continua", "continúa", "cuéntame", "cuentame", "dime", "más", "mas",
+  "eso", "interesa", "me",
+  "ja", "gut", "gerne", "gern", "bitte", "weiter", "mehr", "genau",
+  "erzähl", "mir", "interessiert", "mich",
+]);
+
+function isBareAcknowledgement(message: string): boolean {
+  const words = message
+    .toLowerCase()
+    .replace(/[¿?¡!.,;:…]+/g, " ")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  return (
+    words.length > 0 && words.length <= 4 && words.every((w) => ACK_WORDS.has(w))
+  );
+}
+
 function isLikelyFollowUp(message: string): boolean {
   const words = message.trim().split(/\s+/);
   const withoutLeadingPunctuation = message.trim().replace(/^[¿?¡!.,;:\s]+/, "");
@@ -83,6 +123,25 @@ export function buildRetrievalQuery(
   locale: ConversationLocale,
 ): string {
   const current = message.replace(/\s+/g, " ").trim();
+
+  // "sí" / "cuéntame más": el mensaje actual no aporta señal. La query se
+  // construye desde el turno anterior, incluida la cola de la respuesta
+  // del asistente, que suele contener la pregunta ofrecida.
+  if (isBareAcknowledgement(current)) {
+    const previousUser = lastUserMessage(history)?.slice(0, 240);
+    const assistantTail = lastAssistantMessage(history)?.slice(-240);
+    const combined = [previousUser, assistantTail].filter(Boolean).join("\n");
+    if (combined) {
+      const ackHints = detectIntents(combined)
+        .filter(
+          (intent): intent is Exclude<RetrievalIntent, "general"> =>
+            intent !== "general",
+        )
+        .map((intent) => INTENT_HINTS[locale][intent]);
+      return [combined, ...ackHints].filter(Boolean).join("\n");
+    }
+  }
+
   const previous = isLikelyFollowUp(current) ? lastUserMessage(history) : undefined;
   const hints = detectIntents(current)
     .filter((intent): intent is Exclude<RetrievalIntent, "general"> => intent !== "general")
