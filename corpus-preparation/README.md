@@ -36,6 +36,19 @@ Los briefs de trabajo son:
 - `PROMPT-INVESTIGACION-RAG-ENRIQUECIMIENTO.md`: curiosidad científica y capas
   tradicionales T1, T2 y T3.
 - `PROMPT-INVESTIGACION-RAG-ACUPUNTURA.md`: corpus especializado de acupuntura.
+- `PROMPT-INVESTIGACION-RAG-ESPECIES-MEDICINALES.md`: identidad, uso
+  documentado, evidencia y seguridad de plantas, hongos, algas y
+  cianobacterias.
+
+El dossier piloto `approved-current-structure/curcuma/` contiene:
+
+- M1: identidad de *Curcuma longa*, rizoma y formas de producto;
+- M3: evidencia moderna para artrosis de rodilla;
+- M4: seguridad, formulaciones de absorción aumentada y precauciones.
+
+No incluye M2 por obligación. Una capa de uso tradicional debe añadirse solo
+cuando exista una fuente histórica, regulatoria o académica suficientemente
+precisa.
 
 La estructura temática completa y la evolución prevista de la recuperación se
 documentan en

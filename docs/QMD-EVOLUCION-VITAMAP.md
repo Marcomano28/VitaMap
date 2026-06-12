@@ -1,6 +1,6 @@
 # Evolución del uso de QMD en VitaMap
 
-Versión 0.3 · 2026-06-09
+Versión 0.4 · 2026-06-12
 Estado: documento técnico activo
 
 ## 1. Propósito
@@ -38,21 +38,58 @@ Esta jerarquía gobierna las decisiones de recuperación:
    su propio historial.
 2. QMD ayuda a encontrar fragmentos relevantes de esa memoria; no define qué
    significa la experiencia de la persona.
-3. Cuando una respuesta requiere conocimiento general, el asistente ofrece
-   información basada prioritariamente en evidencia clínica y educación
-   institucional, expresada en lenguaje accesible.
-4. Las fuentes tradicionales pueden señalar coincidencias, complementar el
-   contexto o aportar otro marco interpretativo, siempre con atribución y
-   límites explícitos. No confirman científicamente una afirmación.
-5. Ayurveda, medicina tradicional china, acupuntura u otra tradición ocupan el
-   primer plano cuando el usuario solicita específicamente esa perspectiva.
-6. Las clasificaciones ayudan a atribuir una fuente con honestidad, pero no
+3. La intención de la pregunta decide qué conocimiento ocupa el primer plano.
+   Una pregunta clínica prioriza evidencia clínica y educación institucional;
+   una pregunta tradicional, histórica o cultural prioriza las fuentes y el
+   contexto académico adecuados a esa tradición.
+4. Las afirmaciones sobre diagnóstico, eficacia, parámetros clínicos y
+   seguridad se someten siempre al estándar clínico correspondiente, aunque
+   procedan de una tradición o producto comercial.
+5. Una fuente tradicional puede aportar significado textual, histórico,
+   cultural o filosófico sin tener que presentarse como evidencia clínica. No
+   se convierte en ciencia, pero tampoco necesita ser refutada para poder ser
+   comprendida.
+6. Cuando ciencia y tradición responden preguntas distintas, el asistente no
+   fuerza equivalencia ni enfrentamiento. Cuando hacen la misma afirmación
+   clínica, explica la diferencia de evidencia con precisión y sin desprecio.
+7. Las clasificaciones ayudan a atribuir una fuente con honestidad, pero no
    convierten relevancia en verdad ni deben dominar la experiencia.
 
 Este principio debe conservarse tanto en el ADR que gobierna el RAG como en el
 system prompt del asistente. Una ampliación técnica del corpus no puede cambiar
 silenciosamente el centro del producto desde "comprender mi historial" hacia
 "administrar una biblioteca universal".
+
+## 1.2 Figura y fondo como principio operativo
+
+VitaMap usa la relación **figura-fondo** para organizar recuperación y respuesta:
+
+- la figura es el conocimiento que responde directamente a la intención actual;
+- el fondo aporta contexto, continuidad histórica, lenguaje o una perspectiva
+  distinta sin competir por protagonismo;
+- figura y fondo pueden intercambiarse según la pregunta;
+- la memoria personal permanece en el centro de ambos planos.
+
+La ciencia no es una voz que tenga que corregir retóricamente toda fuente
+tradicional. Es el método exigible cuando se formulan afirmaciones clínicas
+comprobables. Del mismo modo, una tradición no necesita adoptar vocabulario
+biomédico para conservar interés histórico, cultural o reflexivo.
+
+Una consulta sobre un texto ayurvédico puede responderse primero desde el texto,
+su comentario y su historia. Una consulta sobre si una preparación reduce la
+HbA1c exige estudios clínicos de esa preparación. Una comparación presenta
+ambos carriles por separado y explica dónde se encuentran, dónde divergen y qué
+preguntas siguen abiertas.
+
+Este principio evita dos errores simétricos:
+
+1. usar una tradición para sustituir evidencia sobre eficacia o seguridad;
+2. entrar en todo sistema ancestral con una actitud de laboratorio que aplana
+   su lenguaje y convierte la conversación en una refutación permanente.
+
+Los límites de seguridad conocidos nunca se ocultan. La diferencia está en
+presentarlos cuando son pertinentes para la intención o el riesgo, no como un
+ritual de superioridad de una fuente sobre otra.
 
 ## 2. Decisión vigente
 
@@ -313,9 +350,10 @@ producto. Es una biblioteca auxiliar que permite:
 - contrastar un dato personal con información externa;
 - explicar conceptos que no están contenidos en el historial;
 - indicar límites, incertidumbre y cuestiones de seguridad;
-- señalar coincidencias o aportes complementarios de fuentes tradicionales;
-- presentar una perspectiva tradicional en primer plano cuando el usuario la
-  solicite expresamente.
+- explorar fuentes tradicionales desde su propio lenguaje y contexto académico;
+- señalar coincidencias, diferencias y preguntas abiertas entre sistemas;
+- presentar una perspectiva tradicional en primer plano cuando la intención de
+  la persona lo solicite, sin añadir una refutación clínica automática.
 
 La recuperación debe entenderse como tres carriles distintos:
 
@@ -323,10 +361,12 @@ La recuperación debe entenderse como tres carriles distintos:
    aprobados por el usuario. Es el carril principal y no recibe una
    clasificación de evidencia.
 2. **Evidencia y educación clínica**: guías, revisiones y documentos
-   institucionales que aportan contraste externo.
+   institucionales para interpretación, eficacia, seguridad y otros parámetros
+   clínicos comprobables.
 3. **Tradiciones y contexto**: textos o síntesis de Ayurveda, medicina
-   tradicional china y otros marcos, atribuidos como tales y sin presentarlos
-   como evidencia clínica por el hecho de estar indexados.
+   tradicional china y otros marcos, junto con historia, filología,
+   antropología y otras lecturas académicas. Se atribuyen como tales y no se
+   presentan como evidencia clínica por el hecho de estar indexados.
 
 La implementación actual consulta el índice personal y el corpus externo en
 paralelo para todas las preguntas. Es un compromiso operativo del prototipo,
@@ -386,28 +426,33 @@ El asistente debe aplicar explícitamente estas reglas:
    amplitud del corpus.
 2. Atribuir como memoria personal todo patrón obtenido del historial y
    formularlo como observación, nunca como evidencia clínica general.
-3. Explicar el conocimiento general con lenguaje accesible y apoyarlo
+3. Para afirmaciones clínicas, usar lenguaje accesible y apoyarse
    prioritariamente en evidencia clínica o educación institucional verificable.
-4. Incorporar tradición como coincidencia, complemento o marco interpretativo
-   claramente atribuido; nunca presentarla como confirmación científica.
-5. Dar protagonismo a una perspectiva ayurvédica, de medicina tradicional
-   china, acupuntura u otra tradición cuando el usuario la solicite
-   explícitamente.
-6. Señalar las discrepancias entre evidencia clínica y tradición sin fabricar
-   consenso ni ocultar la diferencia.
-7. No mostrar una fuente como respaldo de la respuesta solo porque QMD la
+4. Para preguntas tradicionales, históricas o culturales, responder primero
+   desde fuentes primarias y estudios académicos adecuados, conservando sus
+   términos y contexto.
+5. No insertar una evaluación clínica como corrección automática de cada
+   explicación tradicional. Incorporarla cuando la persona pregunte por
+   eficacia, diagnóstico, mecanismo moderno o seguridad, o cuando exista un
+   riesgo relevante que no deba omitirse.
+6. En comparaciones, mantener separados los carriles, mostrar coincidencias y
+   diferencias y orientar hacia el debate académico sin fabricar consenso.
+7. Reconocer que una experiencia o un concepto pueden ser significativos sin
+   que ello valide un mecanismo clínico.
+8. No mostrar una fuente como respaldo de la respuesta solo porque QMD la
    recuperó. La cita visible debe corresponder a contenido realmente utilizado.
-8. Reconocer con claridad cuándo la memoria o el corpus no contienen
+9. Reconocer con claridad cuándo la memoria o el corpus no contienen
    información suficiente.
-9. Responder primero a la intención inmediata y ampliar solo cuando la persona
+10. Responder primero a la intención inmediata y ampliar solo cuando la persona
    lo pida, sin convertir cada recuperación en un resumen completo del corpus.
-10. No completar fragmentos parciales con conocimiento interno cuando se trate
+11. No completar fragmentos parciales con conocimiento interno cuando se trate
     de identidad, taxonomía, hábitat, preparación, eficacia o seguridad.
 
 La formulación breve que debe conservar el system prompt es:
 
 > La memoria es el producto. El RAG es la lente. Las clasificaciones son
-> señales de procedencia, no la arquitectura central.
+> señales de procedencia, no la arquitectura central. La intención decide la
+> figura; el contexto puede respirar como fondo sin convertirse en rival.
 
 ### 5.4 Fase inmediata: administración mínima del corpus
 

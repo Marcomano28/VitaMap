@@ -1,11 +1,4 @@
 EL ARQUITECTO CUENTA EL RECORRIDO
-Voz única. Dos presencias: el arquitecto y el usuario.
-Nada más vive en este espacio todavía.
-
-Para conversión a audio / podcast.
-Lectura pausada. Sin teatralización.
-
-─────────────────────────────────────────────────────────────────
 
 
 Cuando alguien abre VitaWende por primera vez,
@@ -217,11 +210,14 @@ Luego los fragmentos recuperados, etiquetados.
 Luego la pregunta.
 
 El modelo responde.
+No vuelca todo lo encontrado. Responde primero a lo que se le ha preguntado
+y deja el resto disponible para continuar si el usuario muestra interés.
 
 La respuesta no se muestra todavía.
 Un segundo proceso la lee completa:
 ¿hay lenguaje diagnóstico? ¿hay recomendación de dosis?
 ¿hay certeza absoluta sobre algo incierto?
+¿hay alguna afirmación que contradiga los fragmentos recuperados?
 Si no hay nada de eso, la respuesta pasa.
 Si hay algo, se reescribe. Si el riesgo es mayor, se bloquea.
 

@@ -177,10 +177,10 @@ Objetivo: arquitectura completa funcionando end-to-end en tu portátil con QMD c
 
 **Corpus compartido**: comienza con un conjunto pequeño y curado de documentos
 relevantes para las pruebas del piloto. La respuesta general se apoya
-prioritariamente en evidencia clínica y educación institucional verificable,
-expresadas en lenguaje accesible. Las fuentes tradicionales se usan como
-coincidencia, complemento o marco atribuido, o en primer plano cuando el
-usuario solicita específicamente esa perspectiva. Cada documento declara una
+en el carril que corresponde a la intención. Las afirmaciones clínicas
+priorizan evidencia clínica y educación institucional verificable; las
+preguntas tradicionales priorizan fuentes y contexto académico propios, sin
+una refutación clínica automática. Cada documento declara una
 clase mínima de procedencia, tipo, fuente, fecha, revisión y limitaciones.
 La fase inmediata añade una interfaz administrativa mínima para preparar
 borradores fuera del índice, revisar, aprobar, publicar, probar y retirar
@@ -198,10 +198,10 @@ las obligaciones del piloto real.
 
 **Lo que validas en esta fase**:
 - Que el RAG distingue memoria personal y conocimiento externo.
-- Que las explicaciones generales se apoyan prioritariamente en fuentes
-  clínicas o institucionales verificables y usan lenguaje accesible.
-- Que una tradición aparece como complemento atribuido o por petición expresa,
-  nunca como confirmación científica.
+- Que las afirmaciones clínicas se apoyan prioritariamente en fuentes clínicas
+  o institucionales verificables y usan lenguaje accesible.
+- Que una tradición puede ocupar el primer plano cuando responde a la intención,
+  sin presentarse como confirmación científica ni recibir una refutación ritual.
 - Que las citas corresponden a fuentes realmente utilizadas.
 - Que los guardrails bloquean lenguaje diagnóstico fiable.
 - Que el formato Socrático no se siente condescendiente.
@@ -473,7 +473,7 @@ usuarios o la categoría del servidor.
 4. Implementar `lib/qmd.ts` con `createStore()` por usuario y store compartido de KB. Wrapper `queryMemoryAndKB(userId, query)`.
 5. **Validado localmente; pendiente de despliegue:** acceso por allowlist `ADMIN_EMAILS` e interfaz `/admin/corpus` para crear borradores fuera de `/data/kb`, revisar, aprobar, publicar, retirar y ejecutar una consulta de prueba.
 6. **Validado localmente; pendiente de despliegue:** indexación exclusiva del corpus aprobado mediante `store.update()` y `store.embed()` sobre `/data/kb-index.sqlite`, con retirada y auditoría.
-7. Implementar el RAG dual en `/api/chat`: dos retrievals paralelos, wrapper `<source type>` y prompt socrático que priorice evidencia clínica accesible, conserve procedencia y trate tradición como complemento atribuido o perspectiva solicitada.
+7. Implementar el RAG dual en `/api/chat`: dos retrievals paralelos, wrapper `<source type>` y prompt socrático que conserve procedencia, priorice evidencia para afirmaciones clínicas y permita que una perspectiva tradicional responda desde su propio marco cuando esa sea la intención.
 8. Implementar el guardrail de segunda pasada (clasificador binario diagnóstico/no diagnóstico) como llamada al mismo LLM con prompt minimalista.
 9. Implementar `audit_event` append-only con hash chain en SQLite. Helper `logAuditEvent(actor, action, subjectId, payloadSummary)`.
 10. UI mínima: registro/login (BetterAuth), captura de observación libre que

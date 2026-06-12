@@ -4,6 +4,21 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+async function markdownFiles(root: string): Promise<string[]> {
+  const files: string[] = [];
+
+  async function walk(dir: string) {
+    for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
+      const absolute = path.join(dir, entry.name);
+      if (entry.isDirectory()) await walk(absolute);
+      else if (entry.isFile() && entry.name.endsWith(".md")) files.push(absolute);
+    }
+  }
+
+  await walk(root);
+  return files.sort();
+}
+
 async function main() {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), "vitamap-corpus-admin-"));
   const scriptDir = path.dirname(fileURLToPath(import.meta.url));
@@ -43,7 +58,6 @@ async function main() {
     publicationDate: "2026-01-15",
     sourceKind: "clinical-evidence" as const,
     sourceType: "clinical-guideline",
-    evidenceLevel: "guideline" as const,
     rightsStatus: "metadata-only" as const,
     limitations: ["Example fixture"],
     body: "",
@@ -74,14 +88,12 @@ async function main() {
     const preparedDir = path.join(
       workspaceRoot,
       "corpus-preparation",
-      "ready-to-upload",
+      "approved-current-structure",
     );
-    const preparedFiles = (await fs.readdir(preparedDir))
-      .filter((name) => name.endsWith(".md"))
-      .sort();
-    assert.equal(preparedFiles.length, 3);
-    for (const name of preparedFiles) {
-      const markdown = await fs.readFile(path.join(preparedDir, name), "utf8");
+    const preparedFiles = await markdownFiles(preparedDir);
+    assert.ok(preparedFiles.length > 0);
+    for (const file of preparedFiles) {
+      const markdown = await fs.readFile(file, "utf8");
       const imported = corpusDraftInputFromForm(new FormData(), markdown);
       const validated = CorpusDraftInputSchema.parse(imported);
       assert.ok(validated.title.length > 3);
@@ -109,9 +121,8 @@ async function main() {
       ...baseInput,
       title: "Institutional overview of a traditional system",
       sourceKind: "tradition-context",
-      evidenceLevel: "unrated",
     });
-    assert.equal(traditionDraft.evidenceLevel, "unrated");
+    assert.equal(traditionDraft.sourceKind, "tradition-context");
     await deleteCorpusDraft(traditionDraft.id);
     await assert.rejects(
       retireCorpusDocument("../outside.md"),
