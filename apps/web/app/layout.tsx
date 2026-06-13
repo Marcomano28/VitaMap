@@ -32,10 +32,10 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body className="min-h-screen flex flex-col antialiased">
+      <body className="min-h-screen flex flex-col antialiased vitamap-recinto">
         <SiteHeader />
         <main className="flex-1 mx-auto w-full max-w-4xl px-4 py-8">
-          {children}
+          <div className="vitamap-lienzo">{children}</div>
         </main>
         <Disclaimer locale={locale} />
       </body>
