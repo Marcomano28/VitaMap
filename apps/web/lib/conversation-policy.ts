@@ -154,5 +154,9 @@ const EXPANSION_REQUEST =
   /\b(detall|profund|ampli|complet|todos|todas|lista|compar|paso a paso|exhaust|ausf[uü]hrlich|vertief|vollst[aä]ndig|alle|liste|vergleich|schritt f[uü]r schritt)\b/i;
 
 export function responseTokenBudget(message: string): number {
-  return EXPANSION_REQUEST.test(message) ? 350 : 180;
+  // Calibrado para Qwen3-4B era 180/350; Mistral escribe más denso y las
+  // etiquetas <source> consumen presupuesto, con lo que 180 cortaba
+  // respuestas a media frase. La brevedad la gobierna el system prompt
+  // (regla 11: 3-5 frases); este límite es solo la red de seguridad.
+  return EXPANSION_REQUEST.test(message) ? 560 : 320;
 }

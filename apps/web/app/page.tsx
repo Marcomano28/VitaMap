@@ -15,7 +15,14 @@ export default async function VitaWendeShell() {
 
   return (
     <div className="vitawende-shell">
-      <div className="vitawende-temple" aria-hidden="true" />
+      <div className="vitawende-light" aria-hidden="true" />
+      <div className="vitawende-floor" aria-hidden="true" />
+      <div className="vitawende-vignette" aria-hidden="true" />
+
+      <div className="vitawende-brand" aria-hidden="true">
+        <span className="vitawende-brand-mark" />
+        <span className="vitawende-brand-name">VitaWende</span>
+      </div>
 
       <span className="vitawende-wordmark" aria-hidden="true">
         VitaWende

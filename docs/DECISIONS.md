@@ -5,6 +5,31 @@ decisión; nunca se borran, solo se marcan como *superseded* si cambian.
 
 ---
 
+## ADR-015 · Cifrado de disco (LUKS) diferido a Fase 2
+**Estado:** aceptada · 2026-06-13
+
+**Contexto.** El análisis de brechas declara LUKS como mitigación de la
+memoria personal en claro en disco. En un VPS, LUKS implica que cada
+reinicio (kernel updates, incidencias del host) deja la máquina parada
+esperando passphrase en consola, o exige dropbear en initramfs. Con un
+solo operador y 3 usuarios piloto, ese coste operativo supera el riesgo
+que mitiga.
+
+**Decisión.** Diferir el cifrado at-rest de la memoria a Fase 2
+(coincidiendo con la re-provisión del servidor GPU, donde se evaluará
+LUKS+dropbear o cifrado a nivel de aplicación). Mitigaciones vigentes en
+Fase 1: PDFs originales cifrados con age; acceso al VPS solo por SSH con
+clave; backups restic cifrados; 3 usuarios piloto con consentimiento
+informado; aislamiento por usuario en filesystem.
+
+**Consecuencias.** Un atacante con acceso al disco del hipervisor o a un
+snapshot del proveedor leería los `.md` de memoria y los índices SQLite.
+Riesgo aceptado temporalmente y documentado; el texto de consentimiento
+no promete cifrado at-rest del almacenamiento activo. Disparador de
+revisión: paso a GPU server o >10 usuarios (mismo trigger que ADR-014).
+
+---
+
 ## ADR-014 · Inferencia externa UE temporal durante el piloto
 **Estado:** aceptada · 2026-06-12
 

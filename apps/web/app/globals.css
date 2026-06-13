@@ -67,13 +67,97 @@ body {
   }
 }
 
-/* ─── VitaWende shell ────────────────────────────────────────── */
+/* ─── Recinto persistente — la app como cuadro iluminado ──────── */
+/* El cuerpo de la app vive sobre la misma penumbra cálida de la
+   portada. El contenido se lee dentro de un lienzo iluminado; header
+   y disclaimer quedan en el recinto, como contornos. */
+
+body.vitamap-recinto {
+  background:
+    radial-gradient(ellipse 90% 55% at 25% 0%, oklch(0.62 0.09 80 / 0.07), transparent 60%),
+    oklch(0.11 0.016 75);
+}
+
+.vitamap-lienzo {
+  background: var(--color-background);
+  border-radius: 1rem;
+  border: 1px solid oklch(0.7 0.06 80 / 0.12);
+  /* Luz rasante en el borde superior-izquierdo; sombra hacia
+     abajo-derecha — la misma dirección de luz que la portada. */
+  box-shadow:
+    -1px -1px 0 oklch(0.78 0.08 80 / 0.14),
+    20px 30px 70px oklch(0.04 0.01 75 / 0.5);
+  padding: 2rem 2.25rem;
+}
+
+@media (max-width: 640px) {
+  .vitamap-lienzo {
+    padding: 1.25rem 1rem;
+    border-radius: 0.75rem;
+  }
+}
+
+/* Header en penumbra: contornos ocres que despiertan con la mirada.
+   Más opacidad base que en la portada (0.55): aquí la navegación es
+   funcional y debe poder encontrarse sin barrerla con el ratón. */
+.vitamap-header {
+  border-bottom: 1px solid oklch(0.7 0.06 80 / 0.1);
+}
+
+.vitamap-header a,
+.vitamap-header button {
+  color: oklch(0.76 0.05 80 / 0.55);
+  border-color: oklch(0.7 0.06 80 / 0.25);
+  transition: color 0.4s ease, background-color 0.4s ease;
+}
+
+.vitamap-header a:hover,
+.vitamap-header a:focus-visible,
+.vitamap-header button:hover,
+.vitamap-header button:focus-visible {
+  color: oklch(0.82 0.06 80 / 0.95);
+  background-color: transparent;
+}
+
+.vitamap-header button:hover,
+.vitamap-header button:focus-visible {
+  background-color: oklch(0.7 0.06 80 / 0.08);
+}
+
+.vitamap-header .vitamap-logo {
+  color: oklch(0.78 0.07 80 / 0.7);
+  letter-spacing: 0.08em;
+}
+
+.vitamap-header .vitamap-logo:hover,
+.vitamap-header .vitamap-logo:focus-visible {
+  color: oklch(0.84 0.07 80);
+}
+
+/* Disclaimer en el recinto — legible, pero parte de la penumbra */
+.vitamap-disclaimer {
+  border-top: 1px solid oklch(0.7 0.06 80 / 0.1);
+  background: transparent;
+}
+
+.vitamap-disclaimer p {
+  color: oklch(0.74 0.04 80 / 0.6);
+}
+
+.vitamap-disclaimer strong {
+  color: oklch(0.74 0.12 60 / 0.85);
+}
+
+/* ─── VitaWende shell — recinto en penumbra (chiaroscuro) ─────── */
+/* Negro cálido (tierras, matiz ~75), luz diagonal desde arriba a la
+   izquierda, suelo en fuga y elementos que solo muestran su contorno.
+   El cristal esmeralda es el único objeto plenamente iluminado. */
 
 .vitawende-shell {
   position: fixed;
   inset: 0;
   z-index: 50;
-  background: oklch(0.09 0.025 250);
+  background: oklch(0.1 0.018 75);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -81,16 +165,96 @@ body {
   overflow: hidden;
 }
 
-/* Temple texture — grid en penumbra */
-.vitawende-temple {
+/* Columnas del recinto — dos verticales apenas insinuadas */
+.vitawende-shell::before,
+.vitawende-shell::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 1px;
+  pointer-events: none;
+}
+
+.vitawende-shell::before {
+  left: 6%;
+  bottom: 34%;
+  background: linear-gradient(to bottom, oklch(0.7 0.06 80 / 0.14), transparent);
+}
+
+.vitawende-shell::after {
+  right: 9%;
+  bottom: 30%;
+  background: linear-gradient(to bottom, oklch(0.7 0.06 80 / 0.08), transparent);
+}
+
+/* Luz diagonal — entra desde arriba a la izquierda, como por un vano */
+.vitawende-light {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(to right, oklch(0.5 0.02 250 / 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, oklch(0.5 0.02 250 / 0.03) 1px, transparent 1px);
-  background-size: 72px 72px;
-  mask-image: radial-gradient(ellipse 75% 75% at 50% 50%, transparent 25%, black 100%);
+  background: radial-gradient(
+    ellipse 90% 70% at 28% 6%,
+    oklch(0.62 0.09 80 / 0.14),
+    oklch(0.62 0.09 80 / 0.045) 38%,
+    transparent 62%
+  );
   pointer-events: none;
+}
+
+/* Suelo en fuga — la retícula, ahora como plano en perspectiva */
+.vitawende-floor {
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  bottom: -8%;
+  height: 62%;
+  transform: perspective(560px) rotateX(58deg);
+  transform-origin: 50% 100%;
+  background-image:
+    linear-gradient(to right, oklch(0.68 0.06 80 / 0.085) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(0.68 0.06 80 / 0.085) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: linear-gradient(to top, rgb(0 0 0 / 0.9), transparent 85%);
+  mask-image: linear-gradient(to top, rgb(0 0 0 / 0.9), transparent 85%);
+  pointer-events: none;
+}
+
+/* Viñeta — la oscuridad se cierra hacia los bordes del recinto */
+.vitawende-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: radial-gradient(
+    ellipse 120% 100% at 50% 45%,
+    transparent 45%,
+    oklch(0.06 0.012 75 / 0.6) 100%
+  );
+  pointer-events: none;
+}
+
+/* Marca de la carcasa — contorno iluminado por luz rasante */
+.vitawende-brand {
+  position: absolute;
+  top: 1.5rem;
+  left: 2rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.vitawende-brand-mark {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid oklch(0.7 0.06 80 / 0.22);
+  box-shadow: inset 2px 2px 4px oklch(0.7 0.06 80 / 0.1);
+}
+
+.vitawende-brand-name {
+  font-size: 0.66rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: oklch(0.7 0.06 80 / 0.2);
 }
 
 /* VitaWende wordmark — solo se intuye */
@@ -102,13 +266,15 @@ body {
   font-size: clamp(72px, 18vw, 200px);
   font-weight: 700;
   letter-spacing: 0.18em;
-  color: oklch(0.55 0.02 250 / 0.055);
+  color: oklch(0.62 0.05 80 / 0.05);
   white-space: nowrap;
   pointer-events: none;
   user-select: none;
 }
 
-/* Cristal esmeralda */
+/* Cristal esmeralda — único objeto plenamente iluminado. La luz le
+   llega desde arriba-izquierda: el highlight interno vive en ese
+   cuadrante y la sombra cae hacia abajo-derecha. */
 .vitawende-crystal {
   position: relative;
   z-index: 10;
@@ -118,24 +284,39 @@ body {
   gap: 0.5rem;
   padding: 2rem 3.5rem;
   border-radius: 1.75rem;
-  background: radial-gradient(ellipse at 38% 32%, oklch(0.44 0.16 155), oklch(0.21 0.12 162));
-  border: 1px solid oklch(0.55 0.18 155 / 0.28);
+  background: radial-gradient(ellipse at 30% 24%, oklch(0.48 0.13 158), oklch(0.24 0.09 162) 70%);
+  border: 1px solid oklch(0.62 0.14 155 / 0.25);
   box-shadow:
-    0 0 48px oklch(0.55 0.18 155 / 0.22),
-    0 0 96px oklch(0.55 0.18 155 / 0.10),
-    inset 0 1px 0 oklch(0.72 0.14 150 / 0.22);
+    0 0 56px oklch(0.6 0.15 155 / 0.18),
+    0 0 120px oklch(0.6 0.15 155 / 0.07),
+    18px 28px 50px oklch(0.04 0.01 75 / 0.55),
+    inset 1px 1px 0 oklch(0.78 0.1 150 / 0.2);
   text-decoration: none;
   cursor: pointer;
   transition: transform 0.4s ease, box-shadow 0.4s ease;
   animation: crystal-breathe 11s ease-in-out infinite;
 }
 
+/* Reflejo del cristal sobre el suelo */
+.vitawende-crystal::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -2rem;
+  width: 78%;
+  height: 1.6rem;
+  transform: translateX(-46%) scaleY(0.45);
+  background: radial-gradient(ellipse at 50% 50%, oklch(0.6 0.14 155 / 0.1), transparent 70%);
+  pointer-events: none;
+}
+
 .vitawende-crystal:hover {
   transform: scale(1.025);
   box-shadow:
-    0 0 72px oklch(0.55 0.18 155 / 0.38),
-    0 0 140px oklch(0.55 0.18 155 / 0.18),
-    inset 0 1px 0 oklch(0.72 0.14 150 / 0.32);
+    0 0 80px oklch(0.6 0.15 155 / 0.32),
+    0 0 160px oklch(0.6 0.15 155 / 0.13),
+    18px 28px 50px oklch(0.04 0.01 75 / 0.55),
+    inset 1px 1px 0 oklch(0.78 0.1 150 / 0.3);
 }
 
 .vitawende-crystal-title {
@@ -155,19 +336,21 @@ body {
 @keyframes crystal-breathe {
   0%, 100% {
     box-shadow:
-      0 0 48px oklch(0.55 0.18 155 / 0.22),
-      0 0 96px oklch(0.55 0.18 155 / 0.10),
-      inset 0 1px 0 oklch(0.72 0.14 150 / 0.22);
+      0 0 56px oklch(0.6 0.15 155 / 0.18),
+      0 0 120px oklch(0.6 0.15 155 / 0.07),
+      18px 28px 50px oklch(0.04 0.01 75 / 0.55),
+      inset 1px 1px 0 oklch(0.78 0.1 150 / 0.2);
   }
   50% {
     box-shadow:
-      0 0 68px oklch(0.55 0.18 155 / 0.38),
-      0 0 130px oklch(0.55 0.18 155 / 0.18),
-      inset 0 1px 0 oklch(0.72 0.14 150 / 0.32);
+      0 0 76px oklch(0.6 0.15 155 / 0.3),
+      0 0 150px oklch(0.6 0.15 155 / 0.13),
+      18px 28px 50px oklch(0.04 0.01 75 / 0.55),
+      inset 1px 1px 0 oklch(0.78 0.1 150 / 0.28);
   }
 }
 
-/* Navegación en penumbra */
+/* Navegación en penumbra — contornos que despiertan con la mirada */
 .vitawende-nav {
   position: absolute;
   bottom: 2.5rem;
@@ -180,14 +363,16 @@ body {
   font-size: 0.68rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: oklch(0.72 0.02 250);
-  opacity: 0.1;
+  color: oklch(0.74 0.05 80);
+  opacity: 0.13;
   text-decoration: none;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.5s ease, text-shadow 0.5s ease;
 }
 
-.vitawende-nav a:hover {
-  opacity: 0.45;
+.vitawende-nav a:hover,
+.vitawende-nav a:focus-visible {
+  opacity: 0.5;
+  text-shadow: 0 0 12px oklch(0.74 0.06 80 / 0.25);
 }
 
 @media (prefers-reduced-motion: reduce) {
