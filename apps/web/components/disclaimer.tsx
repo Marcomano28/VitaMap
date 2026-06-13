@@ -9,11 +9,10 @@ export function Disclaimer({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
   const t = copy[locale].disclaimer;
 
   return (
-    <footer className="border-t border-[var(--color-border)] bg-[var(--color-card)]">
-      <div className="mx-auto max-w-4xl px-4 py-4 text-xs text-[var(--color-muted)] leading-relaxed">
+    <footer className="vitamap-disclaimer">
+      <div className="mx-auto max-w-4xl px-4 py-4 text-xs leading-relaxed">
         <p>
-          <strong className="text-[var(--color-warning)]">{t.label}</strong>{" "}
-          {t.text}
+          <strong>{t.label}</strong> {t.text}
         </p>
       </div>
     </footer>
