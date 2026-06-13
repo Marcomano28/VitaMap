@@ -6,7 +6,7 @@
  * seguir usando la herramienta.
  */
 
-export const CONSENT_VERSION = "2026-06-08";
+export const CONSENT_VERSION = "2026-06-13";
 
 export const CONSENT_TEXT_ES = `
 Información sobre el tratamiento de tus datos de salud
@@ -40,8 +40,16 @@ contabilidad. Si se habilitan backups externos, Backblaze B2 almacena
 copias cifradas. Los proveedores de DNS, correo o soporte pueden tratar
 datos de contacto, IP y metadatos técnicos según se detalle en la política
 de privacidad. Stripe y los proveedores financieros no reciben documentos,
-observaciones ni otros datos de salud. El asistente de IA se ejecuta en el
-VPS y los datos no se utilizan para entrenar modelos externos.
+observaciones ni otros datos de salud. Durante la fase piloto, las
+consultas que envías al asistente de IA (tu pregunta y los fragmentos de
+contexto necesarios para responderla) se procesan a través de Mistral AI,
+proveedor con sede en la Unión Europea, con el uso para entrenamiento de
+modelos desactivado. La conservación técnica por el proveedor se rige por
+la configuración y las condiciones aplicables a la cuenta del piloto.
+Tus documentos y el almacenamiento principal de tu memoria permanecen en
+el VPS. Al finalizar la fase piloto, el asistente volverá a ejecutarse
+íntegramente en el VPS. En ningún caso tus datos se utilizan para entrenar
+modelos.
 
 Plazo de conservación: la memoria activa se conserva mientras dure tu
 cuenta y tu consentimiento. Al revocarlo o eliminar la cuenta, se borra
@@ -97,8 +105,15 @@ speichert Backblaze B2 verschlüsselte Kopien. Anbieter für DNS, E-Mail
 oder Support können Kontakt-, IP- und technische Metadaten verarbeiten,
 wie in der Datenschutzerklärung beschrieben. Stripe und Finanzdienstleister
 erhalten keine Dokumente, Beobachtungen oder sonstigen Gesundheitsdaten.
-Der KI-Assistent läuft auf dem VPS; die Daten werden nicht zum Training
-externer Modelle verwendet.
+Während der Pilotphase werden die Anfragen an den KI-Assistenten (deine
+Frage und die zur Beantwortung nötigen Kontextausschnitte) über Mistral
+AI verarbeitet, einen Anbieter mit Sitz in der Europäischen Union, mit
+deaktivierter Nutzung für das Modelltraining. Die technische Speicherung durch
+den Anbieter richtet sich nach der Konfiguration und den für das
+Pilotkonto geltenden Bedingungen. Deine Dokumente und der Hauptspeicher
+deiner persönlichen Daten verbleiben auf dem VPS. Nach Ende der Pilotphase
+läuft der Assistent wieder vollständig auf dem VPS. Deine Daten werden in
+keinem Fall zum Training von Modellen verwendet.
 
 Speicherdauer: Der aktive persönliche Speicher bleibt bestehen, solange
 dein Konto und deine Einwilligung bestehen. Nach Widerruf oder Löschung

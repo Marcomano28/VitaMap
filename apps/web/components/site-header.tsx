@@ -32,9 +32,12 @@ export async function SiteHeader() {
       ];
 
   return (
-    <header className="border-b border-[var(--color-border)]">
+    <header className="vitamap-header">
       <div className="mx-auto max-w-4xl px-4 py-3 flex items-center justify-between gap-4">
-        <Link href="/" className="font-semibold tracking-tight whitespace-nowrap">
+        <Link
+          href="/"
+          className="vitamap-logo font-semibold tracking-tight whitespace-nowrap"
+        >
           VitaMap
         </Link>
 
