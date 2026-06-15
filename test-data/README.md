@@ -21,3 +21,11 @@ Valores esperados:
   trigliceridos y TSH.
 - Altos: glucosa, colesterol total y LDL.
 - Bajo: vitamina D.
+
+## Suite de regresión del chat
+
+`chat-regression-cases.json` recoge casos de comportamiento del asistente
+(intención + comportamientos esperados) sobre esta analitica sintetica. Lo
+exige ADR-014: los ajustes de prompt/guardrail se validan contra
+`mistral-small-latest` durante el piloto y deben re-validarse contra el
+Qwen3-4B local antes del blindaje final.
