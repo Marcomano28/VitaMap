@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { queryMemoryAndKB, wrapForPrompt, type RetrievedChunk } from "@/lib/qmd";
-import { chat, SOCRATIC_SYSTEM_PROMPT, type ChatMessage } from "@/lib/llm";
+import {
+  chat,
+  SOCRATIC_SYSTEM_PROMPT,
+  EDU_GUIDE_RULE,
+  type ChatMessage,
+} from "@/lib/llm";
 import { checkResponse, rewriteSocratic } from "@/lib/guardrail";
 import { logAuditEventSafe } from "@/lib/audit";
 import { UnauthorizedError } from "@/lib/session";
@@ -177,8 +182,16 @@ export async function POST(req: Request) {
       ? "Antworte auf Deutsch, auch wenn einzelne Quellen in einer anderen Sprache vorliegen."
       : "Responde en español, aunque alguna fuente esté en otro idioma.";
 
+  // Regla educativa opcional: desactivable por configuración para poder
+  // apagar esta función interpretativa antes del piloto real (GUIA-OPERATIVA B-1).
+  const eduGuide =
+    process.env.ASSISTANT_EDU_GUIDE === "true" ? EDU_GUIDE_RULE : "";
+
   const messages: ChatMessage[] = [
-    { role: "system", content: `${SOCRATIC_SYSTEM_PROMPT}\n\n${languageInstruction}` },
+    {
+      role: "system",
+      content: `${SOCRATIC_SYSTEM_PROMPT}${eduGuide}\n\n${languageInstruction}`,
+    },
     ...body.history,
     { role: "user", content: userContent },
   ];

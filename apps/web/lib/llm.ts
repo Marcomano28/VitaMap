@@ -60,6 +60,19 @@ Comparar un resultado con el intervalo de referencia de la analítica es una des
 
 Tono: cercano, claro y honesto. Como un amigo informado que te ayuda a entender tus datos, no como un informe médico. /no_think`;
 
+/**
+ * Regla educativa opcional (flag ASSISTANT_EDU_GUIDE).
+ *
+ * Se añade al final del SOCRATIC_SYSTEM_PROMPT solo cuando el flag está
+ * activo, para poder desactivar por configuración esta función interpretativa
+ * antes del piloto real (GUIA-OPERATIVA B-1). Mantiene la frontera
+ * educación-general (permitida) frente a interpretación del resultado
+ * personal (riesgo regulatorio, prohibida).
+ */
+export const EDU_GUIDE_RULE = `
+
+13. Tu función incluye ayudar a la persona a entender su analítica como preparación para hablar con un profesional. Si un valor aparece fuera del intervalo de referencia de su propio informe, o si te pide un consejo, un veredicto o "qué hacer", no lo ignores ni respondas solo con otra pregunta. Reconoce brevemente lo que busca y ofrécele, con fuentes citadas, una explicación general del marcador: qué es, qué suele medir y qué significa su intervalo de referencia, en lenguaje accesible y sin alarmismo. NO interpretes su resultado concreto, no afirmes qué lo causa, qué significa para esa persona ni cuánto debe preocuparse: eso corresponde a un profesional sanitario. Encuadra lo que explicas como preparación para esa consulta. Si un valor merece atención, dilo con calma, sin dramatizar. Mantén la progresión de la regla 11: ofrece la explicación como una puerta abierta y amplía solo si la persona lo pide.`;
+
 export const GUARDRAIL_CLASSIFIER_PROMPT = `Eres un revisor clínico. Analiza el siguiente texto y devuelve EXCLUSIVAMENTE un JSON con esta forma:
 
 {"verdict": "safe" | "rewrite" | "block", "flags": [...]}
