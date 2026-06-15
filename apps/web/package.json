@@ -16,6 +16,7 @@
     "test:ocr": "node --import tsx scripts/test-ocr.ts",
     "test:assistant-text": "node --import tsx scripts/test-assistant-text.ts",
     "test:conversation-policy": "node --import tsx scripts/test-conversation-policy.ts",
+    "test:marker-scope": "node --import tsx scripts/test-marker-scope.ts",
     "test:crisis": "node --import tsx scripts/test-crisis.ts",
     "test:auth-email": "node --import tsx scripts/test-auth-email.ts",
     "test:corpus-admin": "node --import tsx scripts/test-corpus-admin.mts",
