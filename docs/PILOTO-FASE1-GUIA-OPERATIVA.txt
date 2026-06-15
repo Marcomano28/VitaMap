@@ -124,7 +124,11 @@ ESTADO CONOCIDO A 2026-06-09
   [PENDIENTE — BLOQUEA EL PILOTO REAL]
   1. Desactivar mediante configuración los módulos todavía no aprobados,
      especialmente cuestionarios PHQ/GAD, crisis y funciones OCR o
-     interpretativas que amplíen el riesgo regulatorio.
+     interpretativas que amplíen el riesgo regulatorio. Entre ellas, la
+     guía educativa del asistente (ASSISTANT_EDU_GUIDE, ver ADR-016):
+     mantener en "false" hasta la revisión por módulo. Su variante de
+     "alimentación y factores" (Tarjetas B) no se publica en el RAG hasta
+     validar el caso de regresión correspondiente.
   2. Completar autenticación reforzada, recuperación segura de cuenta y
      verificación de correo. Para el administrador, MFA es obligatoria.
   3. Publicar privacidad, Impressum, condiciones del servicio,
