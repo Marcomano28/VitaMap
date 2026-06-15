@@ -5,6 +5,49 @@ decisión; nunca se borran, solo se marcan como *superseded* si cambian.
 
 ---
 
+## ADR-016 · Guía educativa del asistente (opcional, desactivable)
+**Estado:** aceptada · 2026-06-15
+
+**Contexto.** Ante "¿qué me recomiendas?", el asistente desviaba a una
+pregunta abierta (observación + pregunta) sin ayudar a entender el valor
+ni preparar la consulta con un profesional; se leía como evasivo. Pero el
+producto no diagnostica, no prescribe y no fija objetivos individuales
+(ADR-006, ADR-013), y las funciones interpretativas amplían el riesgo
+regulatorio que el piloto debe poder desactivar (GUIA-OPERATIVA B-1). El
+consentimiento posiciona VitaMap como herramienta educativa.
+
+**Decisión.** Regla opcional (regla 13) tras el flag `ASSISTANT_EDU_GUIDE`.
+Cuando un valor cae fuera del intervalo de referencia del propio informe, o
+la persona pide consejo/veredicto, el asistente explica el marcador EN
+GENERAL con fuentes de educación institucional citadas, como preparación
+para el especialista, SIN interpretar el resultado personal (no afirma
+causa, significado individual ni nivel de preocupación). Frontera:
+educación general (permitida) vs interpretación del resultado individual
+(riesgo regulatorio, prohibida). Agnóstica de proveedor: no rompe la
+invariante de ADR-014 (local y externo ven el mismo prompt).
+
+**Implementación.** `EDU_GUIDE_RULE` en `lib/llm.ts`, añadida de forma
+condicional al system prompt en `app/api/chat/route.ts`.
+`ASSISTANT_EDU_GUIDE` en `.env.example` e `infra/.env.example`, por defecto
+`false`. Depende de que exista corpus de educación institucional en
+`data/kb/` para esos marcadores (publicados: glucosa, colesterol total/LDL,
+vitamina D). El comportamiento se fija en una suite de regresión
+(`test-data/chat-regression-cases.json`).
+
+**Riesgo conocido (ADR-014).** El prompt ajustado contra
+`mistral-small-latest` transfiere solo parcialmente a Qwen3-4B: re-validar
+los casos de la suite contra el modelo local antes del blindaje final. Las
+Tarjetas B (`nutrition-lifestyle-summary`) quedan retenidas hasta que el
+caso de regresión confirme que el asistente las cita en descriptivo y no
+las convierte en pauta personal.
+
+**Consecuencias.** El asistente pasa de evasivo a guía-para-entender dentro
+de los límites del producto. La función educativa/interpretativa es
+explícita y conmutable por configuración. La dependencia del corpus queda
+documentada.
+
+---
+
 ## ADR-015 · Cifrado de disco (LUKS) diferido a Fase 2
 **Estado:** aceptada · 2026-06-13
 
