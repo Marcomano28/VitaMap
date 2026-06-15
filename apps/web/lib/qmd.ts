@@ -18,6 +18,7 @@ import {
   readPersonalFrontmatter,
 } from "./frontmatter";
 import { qmdHitSnippet, qmdRelativePath } from "./qmd-hit";
+import { markersIn, filterByMarkers } from "./marker-scope";
 export { wrapForPrompt } from "./qmd-prompt";
 
 // =====================================================================
@@ -282,6 +283,14 @@ export async function queryMemoryAndKB(
   // Evitar expansión y reranking locales, demasiado costosos en el VPS
   // CPU-only, manteniendo recuperación híbrida BM25 + vector.
   const searches = normalizedSearchQueries(query);
+
+  // Acotación por marcador (flag KB_MARKER_SCOPE, default off). Sin reranking
+  // el score de QMD es posicional, no de relevancia, y un documento de otro
+  // marcador puede colarse (ver lib/marker-scope.ts). Cuando está activa,
+  // pedimos más candidatos de KB para tener margen al filtrar.
+  const markerScope = process.env.KB_MARKER_SCOPE === "true";
+  const kbLimit = markerScope ? Math.max(limit * 3, 10) : limit;
+
   const [personalHits, evidenceHits] = await Promise.all([
     userStore.search({
       queries: searches,
@@ -293,7 +302,7 @@ export async function queryMemoryAndKB(
     kbStore.search({
       queries: searches,
       rerank: false,
-      limit,
+      limit: kbLimit,
       minScore,
       candidateLimit: 10,
     }),
@@ -304,7 +313,19 @@ export async function queryMemoryAndKB(
     Promise.all(evidenceHits.map(mapEvidenceHit)),
   ]);
 
-  return { personal, evidence };
+  if (!markerScope) return { personal, evidence: evidence.slice(0, limit) };
+
+  // Marcadores en juego: los de la analítica del usuario (su memoria) más los
+  // de la pregunta. Si no se detecta ninguno, filterByMarkers no filtra.
+  const contextText = [query, ...personal.map((p) => `${p.title} ${p.snippet}`)].join(" ");
+  const allowed = markersIn(contextText);
+  const scopedEvidence = filterByMarkers(evidence, allowed).slice(0, limit);
+  console.info("[chat] marker scope", {
+    before: evidence.length,
+    after: scopedEvidence.length,
+    markers: allowed.size,
+  });
+  return { personal, evidence: scopedEvidence };
 }
 
 export async function reindexUser(userId: string): Promise<void> {
