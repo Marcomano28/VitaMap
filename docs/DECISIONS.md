@@ -30,9 +30,16 @@ invariante de ADR-014 (local y externo ven el mismo prompt).
 condicional al system prompt en `app/api/chat/route.ts`.
 `ASSISTANT_EDU_GUIDE` en `.env.example` e `infra/.env.example`, por defecto
 `false`. Depende de que exista corpus de educación institucional en
-`data/kb/` para esos marcadores (publicados: glucosa, colesterol total/LDL,
-vitamina D). El comportamiento se fija en una suite de regresión
-(`test-data/chat-regression-cases.json`).
+`data/kb/` para esos marcadores. El comportamiento se fija en una suite de
+regresión (`test-data/chat-regression-cases.json`).
+
+**Nota (corrección).** El primer intento publicó esos marcadores por git en
+`data/kb/markers/`. Se revirtió: el KB del despliegue ya contenía ese corpus
+(y más completo, incluidas las "Tarjetas B" de alimentación/factores),
+gestionado vía `/admin/corpus` directamente en el volumen Docker, que no se
+versiona en git. La dependencia de corpus la satisface ese corpus del
+volumen, no el repo. Lección: el corpus vivo está en el volumen, no en
+`data/kb/` del repositorio (ver QMD-EVOLUCION §4.7).
 
 **Riesgo conocido (ADR-014).** El prompt ajustado contra
 `mistral-small-latest` transfiere solo parcialmente a Qwen3-4B: re-validar
