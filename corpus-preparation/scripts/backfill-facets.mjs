@@ -58,6 +58,12 @@ function asArray(value) {
   return [];
 }
 
+function scalarOrArray(values) {
+  const unique = uniq(values);
+  if (unique.length === 0) return undefined;
+  return unique.length === 1 ? unique[0] : unique;
+}
+
 function asPosixPath(value) {
   return value.split(path.sep).join("/");
 }
@@ -165,10 +171,32 @@ function markerAliases() {
     aliases.push({ marker, alias: marker, folded: ` ${fold(marker)} ` });
     for (const value of values ?? []) aliases.push({ marker, alias: value, folded: ` ${fold(value)} ` });
   }
+  for (const [topicId, topic] of Object.entries(taxonomy.topics ?? {})) {
+    const markers = asArray(topic?.marker);
+    for (const marker of markers) {
+      aliases.push({ marker, alias: marker, folded: ` ${fold(marker)} ` });
+      aliases.push({ marker, alias: topicId, folded: ` ${fold(topicId)} ` });
+      for (const value of asArray(topic?.alias)) {
+        aliases.push({ marker, alias: value, folded: ` ${fold(value)} ` });
+      }
+    }
+  }
   return aliases;
 }
 
 const MARKER_ALIASES = markerAliases();
+
+function topicsByMarker() {
+  const byMarker = new Map();
+  for (const topic of Object.values(taxonomy.topics ?? {})) {
+    for (const marker of asArray(topic?.marker)) {
+      if (!byMarker.has(marker)) byMarker.set(marker, topic);
+    }
+  }
+  return byMarker;
+}
+
+const TOPICS_BY_MARKER = topicsByMarker();
 
 function markersFromText(text) {
   const padded = ` ${fold(text)} `;
@@ -205,6 +233,34 @@ function inferMarkers(entry, relativePath, data, parsed) {
   return asArray(entry?.marker);
 }
 
+function inferEntryFromMarkers(markers) {
+  const entries = [];
+  const seen = new Set();
+  for (const marker of markers) {
+    const entry = TOPICS_BY_MARKER.get(marker);
+    if (!entry || seen.has(entry)) continue;
+    entries.push(entry);
+    seen.add(entry);
+  }
+  if (entries.length === 0) return undefined;
+  if (entries.length === 1) return entries[0];
+
+  return {
+    dominio: scalarOrArray(entries.map((entry) => entry.dominio)),
+    tipo: uniq(entries.flatMap((entry) => asArray(entry.tipo))),
+    marker: uniq(entries.flatMap((entry) => asArray(entry.marker))),
+    categoria: uniq(entries.flatMap((entry) => asArray(entry.categoria))),
+    muestra: uniq(entries.flatMap((entry) => asArray(entry.muestra))),
+    sistema: uniq(entries.flatMap((entry) => asArray(entry.sistema))),
+    area_de_salud: uniq(entries.flatMap((entry) => asArray(entry.area_de_salud))),
+    alias: uniq(entries.flatMap((entry) => asArray(entry.alias))),
+    relacionado_con: entries.flatMap((entry) =>
+      Array.isArray(entry.relacionado_con) ? entry.relacionado_con : [],
+    ),
+    tradicion: scalarOrArray(entries.map((entry) => entry.tradicion)),
+  };
+}
+
 function inferTradition(entry, relativePath, data) {
   if (typeof data.tradicion === "string" && data.tradicion.trim() && !FORCE) {
     return data.tradicion.trim();
@@ -239,7 +295,6 @@ function inferFacets(absPath) {
   const relativePath = path.relative(ROOT, absPath);
   const relativeKey = asPosixPath(relativePath);
   const folder = firstFolder(relativePath);
-  const entry = taxonomy.topics?.[folder];
   const override = taxonomy.document_overrides?.[relativeKey] ?? {};
   const raw = fs.readFileSync(absPath, "utf8");
   const parsed = matter(raw);
@@ -255,6 +310,10 @@ function inferFacets(absPath) {
     review.push(message);
   }
 
+  const folderEntry = taxonomy.topics?.[folder];
+  const inferredMarkers = override.marker ?? inferMarkers(folderEntry, relativePath, data, parsed);
+  const entry = folderEntry ?? inferEntryFromMarkers(asArray(inferredMarkers));
+
   if (!entry) addReview("missing-topic", `sin entrada en corpus-taxonomy.json para carpeta "${folder}"`);
   if (!sourceSection(sourceType, filename)) addReview("unmapped-source-type", `source_type no mapeado: ${sourceType || "(vacío)"}`);
 
@@ -265,7 +324,7 @@ function inferFacets(absPath) {
   setFacet(data, "tarjeta_id", slug(relativePath.replace(/\.md$/i, "")), changes);
   setFacet(data, "dominio", entry?.dominio, changes);
   setFacet(data, "tipo", entry?.tipo, changes);
-  setFacet(data, "marker", override.marker ?? inferMarkers(entry, relativePath, data, parsed), changes, {
+  setFacet(data, "marker", inferredMarkers, changes, {
     override: "marker" in override,
   });
   setFacet(data, "categoria", entry?.categoria, changes);
