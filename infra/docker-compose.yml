@@ -52,6 +52,10 @@ services:
       ADMIN_EMAILS: ${ADMIN_EMAILS:-}
       # Módulo de cuestionarios /assess (B.1). Apagado salvo "true" explícito.
       ASSESSMENTS_ENABLED: ${ASSESSMENTS_ENABLED:-false}
+      # Guía educativa y acotación de KB por marcador. Ambos quedan apagados
+      # salvo activación explícita durante validaciones controladas.
+      ASSISTANT_EDU_GUIDE: ${ASSISTANT_EDU_GUIDE:-false}
+      KB_MARKER_SCOPE: ${KB_MARKER_SCOPE:-false}
       # Diagnóstico de retrieval: vuelca query y títulos de chunks al log.
       # Contiene datos de usuario — solo "true" en sesiones de depuración.
       RETRIEVAL_DEBUG: ${RETRIEVAL_DEBUG:-false}
