@@ -25,13 +25,15 @@ Cada archivo Markdown es una **tarjeta de conocimiento**: una unidad breve que
 responde a una intención de consulta. No significa crear un archivo por cada
 frase posible. Preguntas equivalentes deben compartir tarjeta.
 
-Para un tema pueden existir hasta tres tarjetas:
+Para un tema pueden existir hasta cinco tipos de tarjeta:
 
 | Tarjeta | Pregunta principal | Estado |
 |---|---|---|
 | **A · Interpretación** | "¿Qué mide y qué significa este resultado?" | Obligatoria para cada marcador |
 | **B · Alimentación y factores modificables** | "¿Qué factores cotidianos se relacionan con este marcador?" | Solo cuando haya una fuente oficial útil |
 | **C · Curiosidad científica** | "¿Qué aspecto interesante ayuda a comprenderlo?" | Opcional; se produce con el brief de enriquecimiento |
+| **D · Lectura conjunta** | "¿Cómo se leen juntos estos marcadores?" | Solo cuando una fuente describa la relación de forma expresa |
+| **E · Seguimiento temporal** | "¿Qué significa que este valor cambie con el tiempo?" | Solo cuando una fuente permita explicar comparabilidad, variación o seguimiento |
 
 Ejemplo para colesterol LDL:
 
@@ -39,31 +41,71 @@ Ejemplo para colesterol LDL:
 colesterol-ldl-interpretacion-medlineplus.md
 colesterol-ldl-alimentacion-factores-medlineplus.md
 colesterol-curiosidad-[gancho]-[fuente].md
+perfil-lipidico-lectura-conjunta-[fuente].md
+colesterol-ldl-seguimiento-temporal-[fuente].md
 ```
 
-No generes tres tarjetas por obligación. Si la tarjeta B o C no aporta una
-respuesta distinta y bien respaldada, entrega solo la A. No mezcles las tres
-intenciones en un único documento.
+No generes cinco tarjetas por obligación. Si B, C, D o E no aportan una
+respuesta distinta y bien respaldada, entrega solo las que correspondan. No
+mezcles las intenciones en un único documento.
 
 Cada archivo tiene:
 
 1. **Frontmatter YAML** compatible con la interfaz de VitaMap.
 2. **Cuerpo Markdown** centrado en una intención.
 
+Antes de redactar, identifica si el tema ya existe en
+`corpus-preparation/corpus-taxonomy.json`. Si existe, usa sus valores
+canónicos. Si no existe, no improvises una carpeta o un vocabulario nuevo:
+propón primero la entrada de taxonomía que habría que añadir y explica qué
+hueco de cobertura resuelve.
+
 ---
 
 ## 3. Frontmatter compatible con VitaMap
 
-Copia esta estructura. Los nombres de campo no se cambian.
+Copia esta estructura. Los nombres de campo no se cambian. Los campos facetados
+deben seguir `corpus-preparation/corpus-taxonomy.json`: mismo `marker`, mismas
+categorías, mismas áreas de salud y mismas relaciones cuando ya existan.
 
 ```yaml
 ---
 title: "Colesterol LDL: interpretación general"
 source_url: "https://medlineplus.gov/cholesterollevelswhatyouneedtoknow.html"
+source_language: en
+source_jurisdiction:
+  - US
 publication_date: "2025-05-05"
 source_kind: institutional-education
 source_type: lab-interpretation-summary
 rights_status: permitted
+facets_version: 1
+tarjeta_id: colesterol-ldl-colesterol-ldl-interpretacion-medlineplus
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - colesterol-ldl
+categoria:
+  - perfil-lipidico
+muestra:
+  - suero
+  - plasma
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+area_de_salud:
+  - salud-cardiovascular
+  - longevidad
+seccion: interpretacion
+alias:
+  - ldl
+  - colesterol ldl
+relacionado_con:
+  - id: colesterol-hdl
+    relacion: mismo_panel
+  - id: trigliceridos
+    relacion: mismo_panel
 limitations:
   - "Síntesis editorial de VitaMap; no es una copia de la página original."
   - "Los valores son referencias generales, no objetivos individuales."
@@ -78,10 +120,25 @@ limitations:
 |---|---|
 | `title` | 3–240 caracteres. Debe identificar el tema y la intención. |
 | `source_url` | URL oficial de la fuente principal. Es obligatorio aportar `source_url`, `doi` o `pmid`. |
+| `source_language` | Idioma real de la fuente enlazada, no de la tarjeta. Usa código ISO breve: `de`, `en`, `es`, `zh`, etc. Para público alemán, prioriza `de` cuando exista una fuente equivalente y fiable. |
+| `source_jurisdiction` | País o marco institucional principal de la fuente: `DE`, `EU`, `US`, `GB`, `INT`, etc. Puede ser lista. |
 | `publication_date` | Fecha real de publicación o última revisión indicada por la fuente. Formato `AAAA`, `AAAA-MM` o `AAAA-MM-DD`. No la inventes. |
-| `source_kind` | Solo uno de los tres valores de la sección 7. |
-| `source_type` | Usa `lab-interpretation-summary` para A o `nutrition-lifestyle-summary` para B. |
+| `source_kind` | Solo uno de los tres valores de la sección 8. |
+| `source_type` | Usa `lab-interpretation-summary` para A, `nutrition-lifestyle-summary` para B, `lab-pattern-interpretation-summary` para D o `lab-longitudinal-interpretation-summary` para E. |
 | `rights_status` | Solo `permitted`, `licensed`, `metadata-only` o `unknown`. No presupongas que acceso gratuito equivale a permiso. |
+| `facets_version` | Versión de la taxonomía aplicada. Usa la versión vigente de `corpus-taxonomy.json`. |
+| `tarjeta_id` | Identificador estable derivado de ruta/nombre de archivo sin `.md`, en minúsculas con guiones. |
+| `dominio` | Dominio del corpus: normalmente `laboratorio` en este brief. Si el tema es transversal, usa el dominio definido en la taxonomía. |
+| `tipo` | Naturaleza de la tarjeta según taxonomía: `analito`, `panel`, `vitamina`, `mineral`, `condicion`, `intervencion`, etc. Puede ser lista. |
+| `marker` | Lista de marcadores canónicos en minúsculas-con-guiones. Si cubre varios (lectura conjunta, panel), declara todos: `[vitamina-d, calcio, fosfato, pth]`. Si es transversal, usa `[general]`. No uses alias como marker. |
+| `categoria` | Categoría de laboratorio cuando aplique: `perfil-lipidico`, `glucemia-insulina`, `hematologia`, `perfil-tiroideo`, etc. Usa la taxonomía. |
+| `muestra` | Tipo de muestra cuando aplique: `suero`, `plasma`, `sangre-total`, `orina`, `heces`, `saliva`, `cabello`. |
+| `sistema` | Sistema fisiológico relacionado. Puede ser lista. Usa la taxonomía. |
+| `area_de_salud` | Capa puente entre lenguaje del usuario y corpus: `energia-fatiga`, `salud-cardiovascular`, `control-glucemico`, etc. Puede ser lista. |
+| `seccion` | Intención recuperable del fragmento: A=`interpretacion`, B=`alimentacion-factores`, D=`lectura-conjunta`, E=`seguimiento`. |
+| `tradicion` | Solo cuando la tarjeta pertenezca claramente a una tradición identificable (`ayurveda`, `mtc`, `acupuntura`). No lo uses para prácticas complementarias modernas por defecto. |
+| `alias` | Sinónimos y formas de búsqueda que puede escribir el usuario; no sustituyen a `marker`. |
+| `relacionado_con` | Enlaces explícitos entre marcadores o intervenciones, con `id` canónico y `relacion` breve (`lectura_conjunta`, `mismo_panel`, `modifica_interpretacion`, `afecta_absorcion`, etc.). |
 | `limitations` | Lista de 3–5 advertencias honestas sobre los límites del documento. |
 
 Usa ortografía y acentos correctos también en el frontmatter. El título se
@@ -89,6 +146,41 @@ muestra al usuario en las tarjetas de cita.
 
 El modelo prepara un borrador. No declares que ha sido revisado o aprobado por
 una persona; ese estado lo registra VitaMap durante la revisión administrativa.
+
+### Reglas de facetado
+
+1. Usa `corpus-taxonomy.json` como fuente de verdad. No inventes nuevos valores
+   si ya existe un valor canónico.
+2. Si el grupo existe, copia sus facets base y ajusta solo lo que la tarjeta
+   requiera por intención o relación.
+3. Si la tarjeta es D o E y relaciona varios marcadores, `marker` debe ser una
+   lista con todos los marcadores relevantes.
+4. No confundas alias con markers. Ejemplo: `INR` apunta a `tp-inr`; no es
+   alias de `vitamina-k`.
+5. `seccion` debe reflejar la intención de recuperación, no el tema general.
+6. Si falta un grupo entero, entrega primero una propuesta de entrada para
+   `corpus-taxonomy.json` antes de escribir tarjetas.
+7. Si falta una relación importante, declárala en `relacionado_con` solo cuando
+   la fuente la sostenga de forma expresa.
+8. `area_de_salud` es el puente runtime para motivos de consulta difusos
+   ("estoy cansado", "ánimo bajo"). Usa solo valores canónicos existentes. No
+   escribas `query_groups` ni `health_area_routes` dentro de una tarjeta: esos
+   campos viven únicamente en `corpus-taxonomy.json`. Si falta una ruta de
+   motivo, propón primero la ampliación de taxonomía.
+
+### Regla de idioma de fuente
+
+VitaMap está orientado principalmente a usuarios en alemán, aunque también
+responde en español. Cuando prepares una tarjeta:
+
+1. Si existe una fuente alemana o europea equivalente, fiable y con derechos
+   compatibles, prefierela para `source_url`.
+2. No sustituyas una fuente fuerte por una alemana peor solo por idioma.
+3. Si la mejor fuente está en inglés, úsala y declara `source_language: en`.
+4. Añade términos alemanes útiles en el cuerpo cuando mejoren la recuperación,
+   pero no finjas que la fuente enlazada está en alemán.
+5. Para Alemania/UE prioriza, cuando corresponda: IQWiG/Gesundheitsinformation,
+   RKI, BfR, BfArM, G-BA, AWMF, EMA/EFSA y sociedades europeas o alemanas.
 
 ### Comprobación obligatoria de derechos
 
@@ -133,7 +225,9 @@ Edad, embarazo, método de laboratorio, medicación, contexto clínico u otros
 factores respaldados por la fuente.
 
 ## Qué no permite concluir por sí solo
-Explica los límites de un valor aislado sin diagnosticar.
+Explica los límites de un valor aislado sin diagnosticar. Distingue, cuando sea
+pertinente, entre lo que la prueba mide con solidez y lo que todavía necesita
+contexto, otras pruebas o confirmación.
 
 ## Fuente principal
 Cita completa y URL oficial.
@@ -165,6 +259,8 @@ Alimentos o circunstancias relevantes, solo cuando la fuente los describa.
 
 ## Qué se sabe y qué no
 Diferencia entre asociación, mecanismo conocido y beneficio clínico demostrado.
+Explica la frontera del conocimiento en lenguaje cotidiano, sin convertir la
+tarjeta en una discusión entre especialistas.
 
 ## Alcance
 Aclara que la información general no es una pauta personalizada.
@@ -175,6 +271,118 @@ Cita completa y URL oficial.
 
 Esta tarjeta puede explicar relaciones generales, pero no debe contestar "qué
 debo hacer yo", diseñar dietas, prescribir ejercicio ni sugerir dosis.
+
+---
+
+## 5 bis. Tarjeta D — Lectura conjunta
+
+Solo créala cuando una fuente declarada describa de forma expresa por qué varios
+marcadores se leen juntos o qué aporta su combinación. No construyas patrones,
+cocientes, umbrales ni árboles diagnósticos a partir de conocimiento de memoria.
+
+Responde a preguntas como:
+
+- "¿Por qué me han pedido estos marcadores a la vez?"
+- "¿Cómo se lee este panel como conjunto?"
+- "¿Qué añade un marcador a la interpretación de otro?"
+
+### Estructura
+
+```markdown
+# [Panel o relación]: cómo se leen juntos [marcadores]
+
+## Qué marcadores forman el grupo
+Nombra todos los marcadores que la tarjeta relaciona.
+
+## Por qué se leen juntos
+Explica qué información aporta el patrón que no aporta una cifra aislada.
+
+## Qué patrones generales ayudan a orientar
+Describe solo relaciones presentadas expresamente por las fuentes. Usa lenguaje
+de orientación, nunca de diagnóstico.
+
+## Qué no permite concluir el conjunto
+Explica qué causas, decisiones o conclusiones siguen necesitando síntomas,
+antecedentes, medicación, otras pruebas o criterio profesional.
+
+## Fuente principal
+Cita completa y URL oficial.
+```
+
+Reglas propias:
+
+1. La tarjeta es relacional y educativa; no interpreta el caso concreto de una
+   persona.
+2. Cada relación debe estar respaldada expresamente por una fuente declarada.
+3. No introduzcas cocientes ni puntos de corte salvo que la fuente los publique.
+4. Un patrón puede acotar el terreno, pero no nombrar por sí solo una enfermedad.
+5. Aborda un solo panel o relación principal por tarjeta.
+6. Longitud orientativa: 300–550 palabras.
+
+Usa `source_type: lab-pattern-interpretation-summary`. El módulo
+`BRIEF-TARJETA-D-lectura-conjunta.md` desarrolla estas reglas.
+
+---
+
+## 5 ter. Tarjeta E — Seguimiento temporal
+
+La tarjeta E explica cómo pensar una secuencia de mediciones. No calcula ni
+interpreta la tendencia concreta de una persona: aporta el conocimiento general
+necesario para distinguir un cambio potencialmente informativo de una
+comparación engañosa.
+
+Solo créala cuando una fuente declarada permita explicar uno o varios de estos
+aspectos:
+
+- variabilidad biológica dentro de una misma persona;
+- comparabilidad entre laboratorios, métodos, unidades o condiciones de toma;
+- diferencia entre una medición aislada y un cambio persistente;
+- utilidad y límites del seguimiento seriado del marcador.
+
+Responde a preguntas como:
+
+- "¿Importa más este valor o cómo ha cambiado?"
+- "¿Se pueden comparar estas dos analíticas?"
+- "¿Qué diferencia hay entre una oscilación y una tendencia?"
+- "¿Un resultado estable significa que todo está bien?"
+
+### Estructura
+
+```markdown
+# [Marcador o grupo]: cómo interpretar cambios con el tiempo
+
+## Qué puede aportar una serie temporal
+Explica qué añade disponer de varias mediciones fechadas.
+
+## Cuándo son comparables dos resultados
+Describe unidades, método, laboratorio, preparación y contexto relevantes.
+
+## Cómo distinguir cambio, variación y persistencia
+Explica los conceptos respaldados por la fuente sin inventar porcentajes de
+cambio significativo.
+
+## Qué no permite concluir una tendencia
+Aclara que estabilidad no equivale necesariamente a salud y cambio no equivale
+por sí solo a empeoramiento, mejoría o causa concreta.
+
+## Fuente principal
+Cita completa y URL oficial.
+```
+
+Reglas propias:
+
+1. No llames "tendencia" a dos cifras sin fechas y condiciones mínimamente
+   comparables.
+2. No conviertas una diferencia numérica en cambio clínicamente significativo
+   salvo que una fuente aplicable defina ese criterio.
+3. Señala cambios de unidad, método, laboratorio, ayuno, hora, enfermedad aguda,
+   embarazo o medicación cuando la fuente los considere relevantes.
+4. No extrapoles una dirección futura a partir de pocos puntos.
+5. Distingue valor estable, oscilación, cambio sostenido y dato no comparable.
+6. Longitud orientativa: 250–500 palabras.
+
+Usa `source_type: lab-longitudinal-interpretation-summary`. El módulo
+`BRIEF-TARJETA-E-seguimiento-temporal.md` desarrolla estas reglas.
 
 ---
 
@@ -202,11 +410,67 @@ debo hacer yo", diseñar dietas, prescribir ejercicio ni sugerir dosis.
 
 ---
 
-## 7. El valor de `source_kind`
+## 7. Cómo representar la frontera científica
+
+La ciencia no debe presentarse ni como una colección de verdades cerradas ni
+como una disputa permanente donde todo vale lo mismo. La persona necesita
+entender hasta dónde llega cada afirmación sin tener que seguir el debate
+académico.
+
+Cuando el tema lo requiera, organiza internamente la evidencia en tres niveles:
+
+1. **Bien establecido:** qué mide la prueba, qué mecanismo está aceptado o qué
+   asociación está respaldada de forma consistente.
+2. **Dependiente del contexto:** qué cambia según método, laboratorio,
+   población, preparación, síntomas, medicación o combinación con otros datos.
+3. **Abierto o emergente:** qué señal es plausible o está siendo investigada,
+   pero todavía no permite una conclusión clínica general.
+
+No es necesario mostrar estas tres etiquetas literalmente. Exprésalas en uno o
+dos párrafos claros. Una formulación útil puede ser:
+
+> Sabemos medir X con bastante precisión. Lo que este resultado no permite
+> saber por sí solo es Y, porque varias situaciones pueden producir el mismo
+> patrón.
+
+### Tipos de incertidumbre que no deben mezclarse
+
+- **Variabilidad biológica:** el valor cambia realmente dentro de una misma
+  persona.
+- **Variabilidad preanalítica o analítica:** influyen extracción, postura,
+  ayuno, hora, tubo, transporte, método o laboratorio.
+- **Falta de especificidad:** el marcador es real, pero varias causas producen
+  el mismo resultado.
+- **Desacuerdo entre criterios:** distintas guías usan umbrales o propósitos
+  diferentes.
+- **Evidencia emergente:** existe una señal inicial, pero faltan replicación,
+  tamaño, duración o resultados clínicos.
+
+No uses la incertidumbre para asustar ni para desacreditar la ciencia. Tampoco
+la ocultes. Su función es evitar espejismos: asociaciones convertidas en causas,
+mecanismos convertidos en tratamientos o resultados de grupo convertidos en
+promesas individuales.
+
+### Auditoría antes de redactar
+
+Antes de crear una tarjeta, busca respuesta documentada a estas preguntas:
+
+1. ¿Qué mide exactamente la prueba y qué no mide?
+2. ¿El resultado es medido directamente o calculado?
+3. ¿Qué factores fisiológicos, preanalíticos o medicamentosos pueden alterarlo?
+4. ¿Existe un artefacto conocido capaz de producir un resultado falso?
+5. ¿Qué otros marcadores suelen aportar contexto?
+6. ¿La fuente habla de cantidad, función, asociación, riesgo o desenlace
+   clínico? No los trates como equivalentes.
+7. ¿Dónde está la frontera actual y cómo puede explicarse sin jerga?
+
+---
+
+## 8. El valor de `source_kind`
 
 | Valor | Cuándo usarlo | `source_type` típico |
 |---|---|---|
-| `institutional-education` | Información de organismos públicos de salud como NIH, NIDDK, MedlinePlus, CDC, OMS o IQWiG. Será el más común. | `lab-interpretation-summary`, `nutrition-lifestyle-summary` |
+| `institutional-education` | Información de organismos públicos de salud como NIH, NIDDK, MedlinePlus, CDC, OMS o IQWiG. Será el más común. | `lab-interpretation-summary`, `nutrition-lifestyle-summary`, `lab-pattern-interpretation-summary`, `lab-longitudinal-interpretation-summary` |
 | `clinical-evidence` | Guías clínicas formales, revisiones sistemáticas o consensos científicos. | `clinical-guideline`, `systematic-review`, `scientific-consensus` |
 | `tradition-context` | Perspectivas sobre Ayurveda, MTC, acupuntura u otras tradiciones. No se usa en este brief. | `traditional-perspective-summary` |
 
@@ -215,10 +479,61 @@ sea fiable. La clasificación describe el tipo de documento.
 
 ---
 
-## 8. Cobertura priorizada
+## 9. Cobertura priorizada
 
 Para cada marcador produce primero la tarjeta A. Produce la B solo cuando
 exista una fuente apropiada y la intención sea claramente distinta.
+
+Las tarjetas D y E tampoco son cuotas. Antes de producirlas, realiza una
+auditoría de cobertura:
+
+| Dimensión | Pregunta |
+|---|---|
+| Interpretación individual | ¿Existe una tarjeta A suficiente? |
+| Relación | ¿Qué otros marcadores o paneles aportan contexto documentado? |
+| Temporalidad | ¿La fuente explica variabilidad, comparabilidad o seguimiento? |
+| Límite | ¿Qué no puede concluirse ni siquiera al combinar o seguir los datos? |
+
+### Fase previa obligatoria cuando se amplía corpus
+
+Antes de redactar material nuevo, entrega una mini-auditoría:
+
+```text
+Grupo: [topic/carpeta]
+Estado en taxonomía: existe / falta entrada
+Tarjetas existentes revisadas: A / B / C / D / E / tradición / seguridad
+Hueco que se propone cubrir: [intención concreta]
+Motivo de recuperación: [qué consulta del usuario debería encontrar esta tarjeta]
+Facets base: [marker, categoria, sistema, area_de_salud, seccion]
+Relaciones necesarias: [relacionado_con o "ninguna"]
+Fuente candidata: [URL/DOI/PMID]
+Decisión: redactar / no redactar / proponer entrada de taxonomía
+```
+
+Si el grupo falta en `corpus-taxonomy.json`, no redactes todavía como si el
+grupo existiera. Propón primero:
+
+```json
+{
+  "nuevo_topic": {
+    "dominio": "laboratorio",
+    "tipo": ["analito"],
+    "marker": ["nuevo-marker"],
+    "categoria": ["categoria-canónica-o-propuesta"],
+    "muestra": ["suero"],
+    "sistema": ["sistema"],
+    "area_de_salud": ["area"],
+    "alias": ["sinónimo frecuente"],
+    "relacionado_con": [
+      { "id": "marker-relacionado", "relacion": "lectura_conjunta" }
+    ]
+  }
+}
+```
+
+Marca explícitamente los huecos no cubiertos. No rellenes un hueco solo porque
+parezca lógico: debe haber fuente apropiada, derechos compatibles e intención
+distinta.
 
 ### Prioridad 1 — tarjeta A
 
@@ -256,9 +571,28 @@ exista una fuente apropiada y la intención sea claramente distinta.
 - Perfil lipídico: factores relacionados respaldados por una fuente institucional
 - Glucosa y HbA1c: factores generales relacionados, sin convertirlos en tratamiento
 
+### Tarjetas D prioritarias
+
+- Perfil lipídico: colesterol total, LDL, HDL, no HDL y triglicéridos
+- Panel hepático: ALT/GPT, AST/GOT, GGT, fosfatasa alcalina y bilirrubina
+- Función renal: creatinina, eGFR y, cuando la fuente lo contemple, albuminuria
+- Hemograma: hemoglobina, hematocrito, VCM y otros índices eritrocitarios
+- Leucocitos y fórmula leucocitaria
+- Glucosa en ayunas y HbA1c
+- TSH y T4 libre
+
+### Tarjetas E prioritarias
+
+- Creatinina y eGFR: valor aislado frente a evolución
+- HbA1c: ventana temporal y cambios que tardan en reflejarse
+- TSH y T4 libre: seguimiento y condiciones de comparabilidad
+- Perfil lipídico: comparación entre mediciones y condiciones de la muestra
+- Hemoglobina y hematocrito: variación, hidratación y persistencia
+- Vitamina D: comparabilidad entre métodos y laboratorios
+
 ---
 
-## 9. Fuentes preferentes
+## 10. Fuentes preferentes
 
 Prioriza fuentes oficiales, públicas y verificables.
 
@@ -270,7 +604,13 @@ Prioriza fuentes oficiales, públicas y verificables.
 | CDC | Salud general y prevención |
 | OMS / WHO | Criterios y educación sanitaria global |
 | IQWiG / Gesundheitsinformation.de | Información sanitaria en contexto alemán |
+| RKI, BfR, BfArM, G-BA, AWMF | Contexto alemán, seguridad, regulación, guías y salud pública |
+| EMA / EFSA / Comisión Europea | Contexto europeo, medicamentos, seguridad alimentaria y regulación |
 | USDA FoodData Central | Composición de alimentos |
+| IFCC, EFLM, ADLM y sociedades de medicina de laboratorio | Variabilidad biológica, métodos, interferencias y fase preanalítica |
+| Academias y sociedades profesionales nacionales | Guías, consensos y estándares dentro de su ámbito |
+| Universidades y hospitales académicos | Explicaciones especializadas cuando identifican autoría, revisión y fecha |
+| PubMed Central y revistas de acceso abierto | Revisiones y estudios para preguntas que las fuentes institucionales no resuelven |
 
 Redacta en español. Si un término alemán puede mejorar la recuperación,
 añádelo entre paréntesis en la primera sección.
@@ -279,36 +619,62 @@ En MedlinePlus prioriza páginas de temas de salud y de pruebas médicas. Excluy
 la A.D.A.M. Medical Encyclopedia (`/ency/article/`) salvo que exista una licencia
 expresa para VitaMap.
 
+Las páginas de universidades, laboratorios y sociedades no son automáticamente
+fuentes publicables: comprueba autoría, revisión editorial, fecha y derechos.
+Para una afirmación clínica importante, prioriza una guía, revisión sistemática
+o fuente institucional sobre una explicación comercial de laboratorio.
+
+Una publicación científica no debe añadirse solo porque sea reciente. Úsala
+cuando responda una pregunta concreta sobre método, interferencia, variabilidad
+o frontera del conocimiento. Comprueba si sus resultados son directamente
+aplicables al marcador, la muestra y la población de la tarjeta.
+
 ---
 
-## 10. Checklist de calidad
+## 11. Checklist de calidad
 
-- [ ] La tarjeta es A o B y responde a una intención reconocible.
+- [ ] La tarjeta es A, B, D o E y responde a una intención reconocible.
 - [ ] No existe ya otra tarjeta equivalente en el lote.
-- [ ] El frontmatter contiene solo campos compatibles con VitaMap.
+- [ ] El frontmatter contiene campos compatibles con VitaMap y facets del vocabulario canónico.
+- [ ] Si el topic falta en `corpus-taxonomy.json`, se propone entrada de taxonomía antes de redactar.
+- [ ] `marker`, `categoria`, `sistema`, `area_de_salud`, `seccion`, `alias` y `relacionado_con` son coherentes con la taxonomía.
 - [ ] `source_kind` y `source_type` corresponden al documento real.
 - [ ] `rights_status` refleja derechos comprobados.
 - [ ] La fuente no prohíbe derivados, embeddings, indexación o uso en RAG.
 - [ ] `source_url` apunta a la fuente principal real y vigente.
+- [ ] `source_language` y `source_jurisdiction` describen la fuente enlazada.
+- [ ] Para público alemán, se ha comprobado si existe una fuente DE/EU equivalente.
 - [ ] `publication_date` coincide con la fecha indicada por la fuente.
 - [ ] Cada afirmación importante puede comprobarse en una fuente declarada.
 - [ ] Los rangos aparecen solo si la fuente los publica y están atribuidos.
 - [ ] No contiene diagnósticos ni recomendaciones de tratamiento o dosis.
-- [ ] No mezcla interpretación, hábitos, curiosidad y tradición.
+- [ ] No mezcla en una tarjeta interpretación individual, hábitos, curiosidad,
+      lectura conjunta, seguimiento temporal o tradición.
+- [ ] Si es D, cada relación entre marcadores está respaldada de forma expresa.
+- [ ] Si es E, distingue cambio observado, variación y comparabilidad.
+- [ ] No interpreta un patrón o una tendencia personal dentro del corpus general.
+- [ ] Distingue cantidad, función, asociación, mecanismo y beneficio clínico.
+- [ ] Explica la incertidumbre relevante sin exagerarla ni ocultarla.
+- [ ] Ha comprobado interferencias, artefactos y factores preanalíticos pertinentes.
 - [ ] Incluye 3–5 limitaciones honestas.
 - [ ] Incluye `## Fuente principal` con cita y URL.
 
 ---
 
-## 11. Formato de entrega
+## 12. Formato de entrega
 
-Antes de cada documento indica:
+Antes de cada lote indica la auditoría de cobertura. Antes de cada documento
+indica:
 
 ```text
 Tarjeta: A · Interpretación
 Preguntas que pretende responder:
 - ¿Qué mide la glucosa en ayunas?
 - ¿Cómo se interpreta de forma general?
+Facets clave:
+- marker: [glucosa-en-ayunas]
+- seccion: interpretacion
+- area_de_salud: [control-glucemico, energia-fatiga]
 ```
 
 Después entrega un bloque de código Markdown con el archivo completo.
@@ -318,6 +684,8 @@ Nombres:
 ```text
 [tema]-interpretacion-[fuente].md
 [tema]-alimentacion-factores-[fuente].md
+[panel-o-grupo]-lectura-conjunta-[fuente].md
+[tema]-seguimiento-temporal-[fuente].md
 ```
 
 Usa minúsculas, sin tildes y con guiones en el nombre del archivo.

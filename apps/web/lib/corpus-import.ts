@@ -1,5 +1,8 @@
 import matter from "gray-matter";
-import type { CorpusDraftInput } from "./corpus-admin";
+import {
+  FACET_FRONTMATTER_FIELDS,
+  type CorpusDraftInput,
+} from "./corpus-admin";
 
 export function corpusDraftInputFromForm(
   formData: FormData,
@@ -47,6 +50,11 @@ export function corpusDraftInputFromForm(
       "rights_status",
     ) as CorpusDraftInput["rightsStatus"],
     limitations: limitations.filter(Boolean),
+    extraFrontmatter: Object.fromEntries(
+      FACET_FRONTMATTER_FIELDS
+        .filter((key) => uploadedData[key] !== undefined)
+        .map((key) => [key, uploadedData[key]]),
+    ),
     body: parsed.content,
   };
 }

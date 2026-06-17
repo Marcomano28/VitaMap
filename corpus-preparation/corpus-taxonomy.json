@@ -1,0 +1,660 @@
+{
+  "version": 1,
+  "fields": [
+    "dominio",
+    "source_language",
+    "source_jurisdiction",
+    "tipo",
+    "marker",
+    "categoria",
+    "muestra",
+    "sistema",
+    "area_de_salud",
+    "seccion",
+    "tradicion",
+    "alias",
+    "relacionado_con"
+  ],
+  "sections_by_source_type": {
+    "lab-interpretation-summary": "interpretacion",
+    "nutrition-lifestyle-summary": "alimentacion-factores",
+    "science-curiosity-summary": "curiosidad",
+    "lab-pattern-interpretation-summary": "lectura-conjunta",
+    "lab-longitudinal-interpretation-summary": "seguimiento",
+    "test-preparation-summary": "preanalitica",
+    "traditional-primary-source-summary": "tradicion",
+    "traditional-scholarly-context-summary": "tradicion",
+    "traditional-perspective-summary": "tradicion",
+    "traditional-evidence-review-summary": "evidencia",
+    "traditional-medicinal-use-summary": "uso-documentado",
+    "medicinal-species-identity-summary": "identidad",
+    "natural-product-evidence-summary": "evidencia",
+    "natural-product-safety-summary": "seguridad",
+    "acupuncture-primary-source-summary": "tradicion",
+    "acupuncture-terminology-summary": "tradicion",
+    "acupuncture-evidence-review-summary": "evidencia",
+    "acupuncture-safety-summary": "seguridad",
+    "complementary-practice-overview-summary": "identidad",
+    "complementary-practice-framework-summary": "identidad",
+    "complementary-practice-evidence-summary": "evidencia",
+    "complementary-practice-safety-summary": "seguridad",
+    "clinical-guideline": "evidencia",
+    "systematic-review": "evidencia",
+    "scientific-consensus": "evidencia"
+  },
+  "marker_aliases": {
+    "acido-folico": ["acido folico", "folato", "vitamina b9", "folsaure", "vitamin b9"],
+    "acido-urico": ["acido urico", "urato"],
+    "albuminuria": ["albuminuria", "albumina en orina"],
+    "alt": ["alt", "alanina aminotransferasa"],
+    "ast": ["ast", "aspartato aminotransferasa"],
+    "calcio": ["calcio"],
+    "colesterol-hdl": ["hdl", "colesterol hdl", "hdl cholesterol"],
+    "colesterol-ldl": ["ldl", "colesterol ldl", "ldl cholesterol"],
+    "colesterol-total": ["colesterol total"],
+    "creatinina": ["creatinina"],
+    "egfr": ["egfr", "filtrado glomerular"],
+    "eritrocitos": ["eritrocitos", "rbc", "globulos rojos"],
+    "ferritina": ["ferritina", "ferritin"],
+    "fosfatasa-alcalina": ["fosfatasa alcalina", "alp", "fa"],
+    "fosfato": ["fosfato", "fosforo"],
+    "ggt": ["ggt", "gamma glutamil"],
+    "glucosa-en-ayunas": ["glucosa", "glucemia", "glucosa en ayunas", "glucose", "blutzucker", "nuchternglukose"],
+    "hba1c": ["hba1c", "a1c", "hemoglobina glicosilada"],
+    "hematocrito": ["hematocrito"],
+    "hemoglobina": ["hemoglobina"],
+    "hierro": ["hierro", "eisen"],
+    "leucocitos": ["leucocitos", "leucocito"],
+    "magnesio": ["magnesio"],
+    "plaquetas": ["plaquetas"],
+    "potasio": ["potasio"],
+    "proteina-c-reactiva": ["proteina c reactiva", "pcr", "crp", "hscrp", "hs crp"],
+    "pth": ["pth", "parathormona"],
+    "reticulocitos": ["reticulocitos"],
+    "t4-libre": ["t4 libre", "tiroxina libre", "t4l", "freies t4"],
+    "transferrina": ["transferrina", "transferrin"],
+    "trigliceridos": ["trigliceridos", "triglicerido"],
+    "tsh": ["tsh"],
+    "tp-inr": ["tp", "inr", "pt inr", "tp inr", "tiempo de protrombina", "prothrombin time"],
+    "vsg": ["vsg", "velocidad de sedimentacion"],
+    "vitamina-a": ["vitamina a", "vitamin a", "retinol", "betacaroteno"],
+    "vitamina-b12": ["vitamina b12", "vitamin b12", "b12", "cobalamina"],
+    "vitamina-b6": ["vitamina b6", "vitamin b6", "b6", "plp", "piridoxal"],
+    "vitamina-c": ["vitamina c", "vitamin c", "acido ascorbico"],
+    "vitamina-d": ["vitamina d", "vitamin d", "25 oh", "25 hidroxivitamina", "25-oh-d", "calcidiol", "colecalciferol"],
+    "vitamina-e": ["vitamina e", "vitamin e", "alfa tocoferol", "tocoferol"],
+    "vitamina-k": ["vitamina k", "vitamin k", "filoquinona", "menaquinona"]
+  },
+  "query_groups": {
+    "anemia": {
+      "aliases": ["anemia", "hemograma rojo", "cansancio por hierro", "eisenmangel"],
+      "markers": ["eritrocitos", "hemoglobina", "hematocrito", "hierro", "ferritina", "transferrina", "vitamina-b12", "acido-folico"]
+    },
+    "glucemia-insulina": {
+      "aliases": ["azucar en sangre", "glucemia insulina", "control glucemico", "blutzucker", "zuckerstoffwechsel"],
+      "markers": ["glucosa-en-ayunas", "hba1c"]
+    },
+    "hematologia": {
+      "aliases": ["hemograma", "hemograma completo", "blutbild", "grosses blutbild"],
+      "markers": ["eritrocitos", "hemoglobina", "hematocrito", "leucocitos", "plaquetas"]
+    },
+    "inflamacion": {
+      "aliases": ["inflamacion", "marcadores inflamatorios", "entzundung", "entzundungswerte"],
+      "markers": ["proteina-c-reactiva", "vsg", "ferritina"]
+    },
+    "perfil-hepatico": {
+      "aliases": ["higado", "perfil hepatico", "pruebas hepaticas", "funcion hepatica", "transaminasas", "leber", "leberwerte"],
+      "markers": ["alt", "ast", "ggt", "fosfatasa-alcalina"]
+    },
+    "perfil-lipidico": {
+      "aliases": ["perfil lipidico", "colesterol", "grasas en sangre", "blutfette", "cholesterinwerte"],
+      "markers": ["colesterol-total", "colesterol-ldl", "colesterol-hdl", "trigliceridos"]
+    },
+    "perfil-renal": {
+      "aliases": ["funcion renal", "perfil renal", "rinon", "rinones", "nierenwerte", "nierenfunktion"],
+      "markers": ["creatinina", "egfr", "albuminuria", "acido-urico"]
+    },
+    "perfil-tiroideo": {
+      "aliases": ["tiroides", "perfil tiroideo", "funcion tiroidea", "schilddruse", "schilddrusenwerte"],
+      "markers": ["tsh", "t4-libre"]
+    }
+  },
+  "health_area_routes": {
+    "energia-fatiga": {
+      "aliases": [
+        "cansancio",
+        "cansado",
+        "cansada",
+        "fatiga",
+        "agotamiento",
+        "sin energia",
+        "energia baja",
+        "me falta energia",
+        "mude",
+        "mudigkeit",
+        "erschopfung",
+        "wenig energie",
+        "energie niedrig"
+      ],
+      "seed_markers": [
+        "ferritina",
+        "hierro",
+        "hemoglobina",
+        "hematocrito",
+        "vitamina-b12",
+        "acido-folico",
+        "vitamina-d",
+        "tsh",
+        "t4-libre",
+        "glucosa-en-ayunas",
+        "hba1c",
+        "magnesio"
+      ]
+    },
+    "estado-animo-estres": {
+      "aliases": [
+        "estres",
+        "ansiedad",
+        "nervios",
+        "estado de animo",
+        "animo bajo",
+        "estresado",
+        "estresada",
+        "stress",
+        "stimmung",
+        "angst",
+        "nervositat",
+        "innere unruhe"
+      ],
+      "seed_markers": [
+        "vitamina-b12",
+        "vitamina-b6",
+        "acupuntura",
+        "mtc",
+        "flores-de-bach",
+        "constelaciones-familiares",
+        "terapia-craneosacral"
+      ]
+    }
+  },
+  "document_overrides": {
+    "leucocitos/leucocitos-formula-leucocitaria-lectura-conjunta-medlineplus.md": {
+      "marker": ["leucocitos"],
+      "suppress_review": ["single-marker-lectura-conjunta"]
+    },
+    "vitamina-a/retinol-inflamacion-lectura-conjunta-brinda.md": {
+      "marker": ["vitamina-a", "proteina-c-reactiva"],
+      "relacionado_con": [
+        { "id": "proteina-c-reactiva", "relacion": "modifica_interpretacion" }
+      ]
+    },
+    "vitamina-b6/vitamina-b6-inflamacion-lectura-conjunta-ods.md": {
+      "marker": ["vitamina-b6", "proteina-c-reactiva"],
+      "relacionado_con": [
+        { "id": "proteina-c-reactiva", "relacion": "modifica_interpretacion" }
+      ]
+    },
+    "vitamina-e/vitamina-e-lipidos-lectura-conjunta-mcburney.md": {
+      "marker": ["vitamina-e", "colesterol-total"],
+      "relacionado_con": [
+        { "id": "colesterol-total", "relacion": "modifica_interpretacion" }
+      ]
+    },
+    "vitamina-k/vitamina-k-tp-inr-lectura-conjunta-medlineplus.md": {
+      "marker": ["vitamina-k", "tp-inr"],
+      "relacionado_con": [
+        { "id": "tp-inr", "relacion": "lectura_conjunta" }
+      ]
+    }
+  },
+  "topics": {
+    "acido-folico": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "vitamina"],
+      "marker": ["acido-folico"],
+      "categoria": ["vitaminas", "minerales-micronutrientes"],
+      "muestra": ["suero", "sangre-total"],
+      "sistema": ["hematologico", "reproductivo-hormonal"],
+      "area_de_salud": ["energia-fatiga", "fertilidad", "salud-hormonal"],
+      "alias": ["folato", "vitamina B9", "acido folico"]
+    },
+    "acido-urico": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["acido-urico"],
+      "categoria": ["perfil-renal"],
+      "muestra": ["suero", "orina"],
+      "sistema": ["renal-urinario", "osteoarticular"],
+      "area_de_salud": ["salud-renal", "antiinflamatorio"],
+      "alias": ["urato"]
+    },
+    "acupuntura-conceptos": {
+      "dominio": "tradiciones-practicas",
+      "tipo": ["intervencion"],
+      "marker": ["acupuntura"],
+      "sistema": ["neurologico-cognitivo", "digestivo"],
+      "area_de_salud": ["salud-digestiva", "estado-animo-estres"],
+      "alias": ["acupuntura", "neiguan", "pc6"],
+      "tradicion": "acupuntura"
+    },
+    "amalaki": {
+      "dominio": "sustancias-naturales",
+      "tipo": ["especie_medicinal", "suplemento"],
+      "marker": ["amalaki"],
+      "sistema": ["cardiovascular", "endocrino-metabolico", "digestivo"],
+      "area_de_salud": ["salud-cardiovascular", "control-glucemico", "antioxidante"],
+      "alias": ["amla", "amalaki", "phyllanthus emblica"]
+    },
+    "ayuno": {
+      "dominio": "metodologia-preanalitica",
+      "tipo": ["metodologia"],
+      "marker": ["general"],
+      "categoria": ["metodologia-preanalitica"],
+      "muestra": ["suero", "plasma", "sangre-total"],
+      "sistema": ["endocrino-metabolico", "digestivo"],
+      "area_de_salud": ["control-glucemico"]
+    },
+    "ayurveda": {
+      "dominio": "tradiciones-practicas",
+      "tipo": ["intervencion"],
+      "marker": ["ayurveda"],
+      "sistema": ["endocrino-metabolico", "digestivo"],
+      "area_de_salud": ["salud-digestiva", "salud-hormonal"],
+      "alias": ["ayurveda", "prakriti", "dosha"],
+      "tradicion": "ayurveda"
+    },
+    "chaga": {
+      "dominio": "sustancias-naturales",
+      "tipo": ["especie_medicinal", "suplemento"],
+      "marker": ["chaga"],
+      "sistema": ["inmunologico", "renal-urinario"],
+      "area_de_salud": ["inmunidad", "antioxidante"],
+      "alias": ["chaga", "inonotus obliquus"]
+    },
+    "colesterol-hdl": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["colesterol-hdl"],
+      "categoria": ["perfil-lipidico"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["cardiovascular", "endocrino-metabolico"],
+      "area_de_salud": ["salud-cardiovascular", "longevidad"],
+      "alias": ["hdl", "colesterol hdl"],
+      "relacionado_con": [
+        { "id": "colesterol-ldl", "relacion": "mismo_panel" },
+        { "id": "trigliceridos", "relacion": "mismo_panel" }
+      ]
+    },
+    "colesterol-ldl": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["colesterol-ldl", "colesterol-total"],
+      "categoria": ["perfil-lipidico"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["cardiovascular", "endocrino-metabolico"],
+      "area_de_salud": ["salud-cardiovascular", "longevidad"],
+      "alias": ["ldl", "colesterol ldl", "colesterol total"],
+      "relacionado_con": [
+        { "id": "colesterol-hdl", "relacion": "mismo_panel" },
+        { "id": "trigliceridos", "relacion": "mismo_panel" }
+      ]
+    },
+    "constelaciones-familiares": {
+      "dominio": "tradiciones-practicas",
+      "tipo": ["intervencion"],
+      "marker": ["constelaciones-familiares"],
+      "sistema": ["neurologico-cognitivo"],
+      "area_de_salud": ["estado-animo-estres"],
+      "alias": ["constelaciones familiares"]
+    },
+    "creatinina": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["creatinina"],
+      "categoria": ["perfil-renal"],
+      "muestra": ["suero", "orina"],
+      "sistema": ["renal-urinario"],
+      "area_de_salud": ["salud-renal", "longevidad"],
+      "relacionado_con": [
+        { "id": "egfr", "relacion": "calculo_derivado" },
+        { "id": "albuminuria", "relacion": "lectura_conjunta" }
+      ]
+    },
+    "curcuma": {
+      "dominio": "sustancias-naturales",
+      "tipo": ["especie_medicinal", "suplemento"],
+      "marker": ["curcuma"],
+      "sistema": ["osteoarticular", "digestivo"],
+      "area_de_salud": ["antiinflamatorio", "antioxidante"],
+      "alias": ["curcuma", "turmeric", "curcuma longa"]
+    },
+    "eritrocitos": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "panel"],
+      "marker": ["eritrocitos", "reticulocitos"],
+      "categoria": ["hematologia"],
+      "muestra": ["sangre-total"],
+      "sistema": ["hematologico"],
+      "area_de_salud": ["energia-fatiga", "rendimiento-deportivo"],
+      "alias": ["rbc", "globulos rojos", "indices eritrocitarios"]
+    },
+    "filtrado-glomerular-egfr": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["egfr"],
+      "categoria": ["perfil-renal"],
+      "muestra": ["suero"],
+      "sistema": ["renal-urinario"],
+      "area_de_salud": ["salud-renal", "longevidad"],
+      "alias": ["egfr", "filtrado glomerular"],
+      "relacionado_con": [
+        { "id": "creatinina", "relacion": "calculo_derivado" },
+        { "id": "albuminuria", "relacion": "lectura_conjunta" }
+      ]
+    },
+    "flores-de-bach": {
+      "dominio": "tradiciones-practicas",
+      "tipo": ["intervencion"],
+      "marker": ["flores-de-bach"],
+      "sistema": ["neurologico-cognitivo"],
+      "area_de_salud": ["estado-animo-estres"],
+      "alias": ["flores de bach"]
+    },
+    "fosfatasa-alcalina-alt-ast-ggt": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "panel"],
+      "marker": ["fosfatasa-alcalina", "alt", "ast", "ggt"],
+      "categoria": ["perfil-hepatico"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["hepatobiliar"],
+      "area_de_salud": ["salud-hepatica"],
+      "alias": ["perfil hepatico", "pruebas hepaticas", "transaminasas"]
+    },
+    "glucosa-en-ayunas": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["glucosa-en-ayunas"],
+      "categoria": ["glucemia-insulina"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["endocrino-metabolico"],
+      "area_de_salud": ["control-glucemico", "energia-fatiga"],
+      "alias": ["glucosa", "glucemia"],
+      "relacionado_con": [
+        { "id": "hba1c", "relacion": "lectura_conjunta" }
+      ]
+    },
+    "hemoglobina-glicosilada-hba1c": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["hba1c"],
+      "categoria": ["glucemia-insulina"],
+      "muestra": ["sangre-total"],
+      "sistema": ["endocrino-metabolico"],
+      "area_de_salud": ["control-glucemico", "energia-fatiga"],
+      "alias": ["hba1c", "a1c", "hemoglobina glicosilada"],
+      "relacionado_con": [
+        { "id": "glucosa-en-ayunas", "relacion": "lectura_conjunta" }
+      ]
+    },
+    "hemoglobina-hematocrito": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "panel"],
+      "marker": ["hemoglobina", "hematocrito"],
+      "categoria": ["hematologia"],
+      "muestra": ["sangre-total"],
+      "sistema": ["hematologico"],
+      "area_de_salud": ["energia-fatiga", "rendimiento-deportivo"],
+      "alias": ["hemoglobina", "hematocrito", "hemograma rojo"]
+    },
+    "hierro": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "mineral", "panel"],
+      "marker": ["hierro", "ferritina", "transferrina"],
+      "categoria": ["minerales-micronutrientes", "hematologia"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["hematologico"],
+      "area_de_salud": ["energia-fatiga", "rendimiento-deportivo"],
+      "alias": ["hierro", "ferritina", "transferrina"],
+      "relacionado_con": [
+        { "id": "vitamina-c", "relacion": "afecta_absorcion" },
+        { "id": "proteina-c-reactiva", "relacion": "modifica_interpretacion" }
+      ]
+    },
+    "interferencias-analiticas": {
+      "dominio": "metodologia-preanalitica",
+      "tipo": ["metodologia"],
+      "marker": ["general"],
+      "categoria": ["metodologia-preanalitica"],
+      "sistema": ["endocrino-metabolico"],
+      "area_de_salud": ["salud-tiroidea", "salud-hormonal"]
+    },
+    "jengibre": {
+      "dominio": "sustancias-naturales",
+      "tipo": ["especie_medicinal", "suplemento"],
+      "marker": ["jengibre"],
+      "sistema": ["digestivo", "reproductivo-hormonal"],
+      "area_de_salud": ["salud-digestiva"],
+      "alias": ["jengibre", "ginger", "zingiber officinale"]
+    },
+    "kinesiologia-aplicada": {
+      "dominio": "tradiciones-practicas",
+      "tipo": ["intervencion"],
+      "marker": ["kinesiologia-aplicada"],
+      "sistema": ["osteoarticular", "neurologico-cognitivo"],
+      "area_de_salud": ["rendimiento-deportivo"],
+      "alias": ["kinesiologia aplicada"]
+    },
+    "leucocitos": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "panel"],
+      "marker": ["leucocitos"],
+      "categoria": ["hematologia", "inmunidad"],
+      "muestra": ["sangre-total"],
+      "sistema": ["hematologico", "inmunologico"],
+      "area_de_salud": ["inmunidad", "antiinflamatorio"],
+      "alias": ["leucocitos", "formula leucocitaria"]
+    },
+    "magnesio": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "mineral"],
+      "marker": ["magnesio"],
+      "categoria": ["minerales-micronutrientes"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["endocrino-metabolico", "neurologico-cognitivo", "osteoarticular"],
+      "area_de_salud": ["energia-fatiga", "salud-osea", "salud-cognitiva", "rendimiento-deportivo"],
+      "relacionado_con": [
+        { "id": "calcio", "relacion": "lectura_conjunta" },
+        { "id": "potasio", "relacion": "lectura_conjunta" }
+      ]
+    },
+    "micronutrientes": {
+      "dominio": "metodologia-preanalitica",
+      "tipo": ["metodologia", "panel"],
+      "marker": ["general"],
+      "categoria": ["minerales-micronutrientes", "metodologia-preanalitica"],
+      "sistema": ["endocrino-metabolico"],
+      "area_de_salud": ["energia-fatiga", "salud-osea", "inmunidad"]
+    },
+    "mtc": {
+      "dominio": "tradiciones-practicas",
+      "tipo": ["intervencion"],
+      "marker": ["mtc"],
+      "sistema": ["endocrino-metabolico", "digestivo"],
+      "area_de_salud": ["salud-digestiva", "estado-animo-estres"],
+      "alias": [
+        "mtc",
+        "medicina china",
+        "medicina tradicional china",
+        "tcm",
+        "chinesische medizin",
+        "traditionelle chinesische medizin"
+      ],
+      "tradicion": "mtc"
+    },
+    "plaquetas": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["plaquetas"],
+      "categoria": ["hematologia", "coagulacion"],
+      "muestra": ["sangre-total"],
+      "sistema": ["hematologico"],
+      "area_de_salud": ["inmunidad", "antiinflamatorio"],
+      "alias": ["plaquetas"]
+    },
+    "proteina-c-reactiva": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["proteina-c-reactiva"],
+      "categoria": ["inflamacion"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["inmunologico", "cardiovascular"],
+      "area_de_salud": ["antiinflamatorio", "salud-cardiovascular", "longevidad"],
+      "alias": ["pcr", "hscrp", "proteina c reactiva"],
+      "relacionado_con": [
+        { "id": "vsg", "relacion": "lectura_conjunta" },
+        { "id": "ferritina", "relacion": "modifica_interpretacion" }
+      ]
+    },
+    "reishi": {
+      "dominio": "sustancias-naturales",
+      "tipo": ["especie_medicinal", "suplemento"],
+      "marker": ["reishi"],
+      "sistema": ["inmunologico", "hepatobiliar"],
+      "area_de_salud": ["inmunidad", "antioxidante"],
+      "alias": ["reishi", "ganoderma lucidum"]
+    },
+    "terapia-craneosacral": {
+      "dominio": "tradiciones-practicas",
+      "tipo": ["intervencion"],
+      "marker": ["terapia-craneosacral"],
+      "sistema": ["osteoarticular", "neurologico-cognitivo"],
+      "area_de_salud": ["estado-animo-estres"],
+      "alias": ["terapia craneosacral"]
+    },
+    "tiroxina libre": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["t4-libre"],
+      "categoria": ["perfil-tiroideo"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["endocrino-metabolico", "reproductivo-hormonal"],
+      "area_de_salud": ["salud-tiroidea", "energia-fatiga", "salud-hormonal"],
+      "alias": ["t4 libre", "tiroxina libre"],
+      "relacionado_con": [
+        { "id": "tsh", "relacion": "lectura_conjunta" }
+      ]
+    },
+    "trigliceridos": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["trigliceridos"],
+      "categoria": ["perfil-lipidico"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["cardiovascular", "endocrino-metabolico"],
+      "area_de_salud": ["salud-cardiovascular", "control-glucemico", "longevidad"],
+      "relacionado_con": [
+        { "id": "colesterol-ldl", "relacion": "mismo_panel" },
+        { "id": "colesterol-hdl", "relacion": "mismo_panel" }
+      ]
+    },
+    "tsh": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["tsh"],
+      "categoria": ["perfil-tiroideo"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["endocrino-metabolico", "reproductivo-hormonal"],
+      "area_de_salud": ["salud-tiroidea", "energia-fatiga", "salud-hormonal"],
+      "relacionado_con": [
+        { "id": "t4-libre", "relacion": "lectura_conjunta" }
+      ]
+    },
+    "vitamina-a": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "vitamina"],
+      "marker": ["vitamina-a"],
+      "categoria": ["vitaminas"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["dermatologico", "inmunologico", "reproductivo-hormonal"],
+      "area_de_salud": ["inmunidad", "fertilidad", "antioxidante"],
+      "alias": ["retinol", "vitamina a", "betacaroteno"]
+    },
+    "vitamina-b12": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "vitamina"],
+      "marker": ["vitamina-b12"],
+      "categoria": ["vitaminas", "hematologia"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["hematologico", "neurologico-cognitivo"],
+      "area_de_salud": ["energia-fatiga", "salud-cognitiva", "estado-animo-estres"],
+      "alias": ["b12", "cobalamina"],
+      "relacionado_con": [
+        { "id": "acido-folico", "relacion": "lectura_conjunta" }
+      ]
+    },
+    "vitamina-b6": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "vitamina"],
+      "marker": ["vitamina-b6"],
+      "categoria": ["vitaminas"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["neurologico-cognitivo", "inmunologico"],
+      "area_de_salud": ["energia-fatiga", "salud-cognitiva", "estado-animo-estres"],
+      "alias": ["b6", "plp", "piridoxal"]
+    },
+    "vitamina-c": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "vitamina"],
+      "marker": ["vitamina-c"],
+      "categoria": ["vitaminas"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["inmunologico", "dermatologico"],
+      "area_de_salud": ["inmunidad", "antioxidante"],
+      "alias": ["acido ascorbico"],
+      "relacionado_con": [
+        { "id": "hierro", "relacion": "afecta_absorcion" }
+      ]
+    },
+    "vitamina-d": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "vitamina"],
+      "marker": ["vitamina-d"],
+      "categoria": ["vitaminas", "metabolismo-oseo"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["osteoarticular", "endocrino-metabolico", "inmunologico"],
+      "area_de_salud": ["salud-osea", "inmunidad", "energia-fatiga"],
+      "alias": ["25-OH-D", "calcidiol", "colecalciferol"],
+      "relacionado_con": [
+        { "id": "calcio", "relacion": "lectura_conjunta" },
+        { "id": "fosfato", "relacion": "lectura_conjunta" },
+        { "id": "pth", "relacion": "lectura_conjunta" }
+      ]
+    },
+    "vitamina-e": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "vitamina"],
+      "marker": ["vitamina-e"],
+      "categoria": ["vitaminas"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["cardiovascular", "neurologico-cognitivo"],
+      "area_de_salud": ["antioxidante", "salud-cardiovascular", "salud-cognitiva"],
+      "alias": ["alfa tocoferol", "tocoferol"],
+      "relacionado_con": [
+        { "id": "colesterol-total", "relacion": "modifica_interpretacion" }
+      ]
+    },
+    "vitamina-k": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "vitamina"],
+      "marker": ["vitamina-k"],
+      "categoria": ["vitaminas", "coagulacion"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["hematologico", "osteoarticular"],
+      "area_de_salud": ["salud-osea"],
+      "alias": ["filoquinona", "menaquinona"],
+      "relacionado_con": [
+        { "id": "tp-inr", "relacion": "lectura_conjunta" }
+      ]
+    }
+  }
+}

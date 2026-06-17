@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { queryMemoryAndKB, wrapForPrompt, type RetrievedChunk } from "@/lib/qmd";
+import { deriveScope } from "@/lib/marker-scope";
 import {
   chat,
   SOCRATIC_SYSTEM_PROMPT,
@@ -128,9 +129,20 @@ export async function POST(req: Request) {
     // conversation-policy si la pasada falla (ver lib/query-rewrite.ts).
     const { query: retrievalQuery, method: queryMethod } =
       await resolveRetrievalQuery(body.message, body.history, body.locale);
+    // Scope por marcador: el mensaje actual manda; si no aporta tema, se mira
+    // una ventana corta de mensajes previos del USUARIO (no del asistente).
+    // La memoria personal no entra aquí (ver lib/marker-scope.ts `deriveScope`).
+    const priorUserMessages = body.history
+      .filter((m) => m.role === "user")
+      .map((m) => m.content);
+    const scope = deriveScope(body.message, priorUserMessages);
     const result = await queryMemoryAndKB(userId, retrievalQuery, {
       limit: 3,
       minScore: 0.35,
+      locale: body.locale,
+      markers: [...scope.markers],
+      lens: [...scope.lens],
+      healthAreas: [...scope.healthAreas],
     });
     personal = result.personal;
     evidence = result.evidence;
@@ -153,6 +165,8 @@ export async function POST(req: Request) {
         evidence: evidence.map((c) => ({
           title: c.title.slice(0, 80),
           score: Number(c.score.toFixed(3)),
+          sourceLanguage: c.sourceLanguage,
+          sourceJurisdiction: c.sourceJurisdiction,
         })),
       });
     }
@@ -179,7 +193,7 @@ export async function POST(req: Request) {
 
   const languageInstruction =
     body.locale === "de"
-      ? "Antworte auf Deutsch, auch wenn einzelne Quellen in einer anderen Sprache vorliegen."
+      ? "Antworte auf Deutsch, auch wenn einzelne Quellen in einer anderen Sprache vorliegen. Wenn relevante deutsche oder europäische Quellen im Kontext vorhanden sind, bevorzuge sie in der Erklärung; wenn eine wichtige Quelle auf Englisch ist, behandle das transparent."
       : "Responde en español, aunque alguna fuente esté en otro idioma.";
 
   // Regla educativa opcional: desactivable por configuración para poder
@@ -289,6 +303,8 @@ export async function POST(req: Request) {
     sourceKind: c.sourceKind,
     sourceDocumentType: c.sourceDocumentType,
     sourceUrl: c.sourceUrl,
+    sourceLanguage: c.sourceLanguage,
+    sourceJurisdiction: c.sourceJurisdiction,
     observedAt: c.observedAt,
   }));
 
