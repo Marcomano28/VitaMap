@@ -313,6 +313,30 @@ buscar activamente fuentes DE/EU —por ejemplo IQWiG/Gesundheitsinformation,
 RKI, BfR, BfArM, G-BA, AWMF, EMA/EFSA o sociedades europeas/alemanas— cuando
 sean apropiadas para la pregunta.
 
+Pendiente de diseño: separar en la interfaz la **fuente citada** de una posible
+**lectura complementaria**. `source_url` debe seguir apuntando al documento
+exacto usado para construir y citar la tarjeta, aunque exista una versión en
+otro idioma. Para no falsear la trazabilidad, las variantes lingüísticas o
+páginas equivalentes futuras deberían modelarse en un campo distinto, por
+ejemplo:
+
+```yaml
+source_alternates:
+  - language: de
+    jurisdiction:
+      - DE
+    label: Gesundheitsinformation.de
+    url: https://...
+  - language: es
+    jurisdiction:
+      - US
+    label: MedlinePlus en español
+    url: https://...
+```
+
+La UI podría mostrar esas URLs en una pestaña o bloque "Lectura complementaria",
+sin mezclarlas con las fuentes realmente usadas por el RAG en esa respuesta.
+
 ### 5.2 Taxonomía y vocabulario runtime
 
 `corpus-preparation/corpus-taxonomy.json` es la fuente de verdad para markers,
