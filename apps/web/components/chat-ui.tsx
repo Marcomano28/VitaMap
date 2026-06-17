@@ -14,6 +14,8 @@ interface Citation {
   sourceKind?: string;
   sourceDocumentType?: string;
   sourceUrl?: string | null;
+  sourceLanguage?: string;
+  sourceJurisdiction?: string[];
   observedAt?: string;
 }
 

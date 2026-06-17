@@ -64,22 +64,29 @@ títulos coherentes y, más adelante, metadatos temáticos.
 
 ### 3.2 Ángulos biomédicos básicos
 
-Para un marcador, condición o concepto clínico pueden existir hasta tres
-tarjetas principales:
+Para un marcador, panel o concepto clínico pueden existir hasta cinco tipos de
+tarjeta biomédica:
 
 | Tarjeta | Intención | Ejemplo para LDL | `source_type` |
 |---|---|---|---|
 | **A · Interpretación** | Qué mide y cómo se interpreta de forma general | "¿Qué significa mi LDL?" | `lab-interpretation-summary` |
 | **B · Alimentación y estilo de vida** | Factores modificables y contexto cotidiano | "¿Qué hábitos se relacionan con el LDL?" | `nutrition-lifestyle-summary` |
 | **C · Curiosidad científica** | Mecanismo o idea memorable que amplía comprensión | "¿Por qué LDL y HDL transportan colesterol?" | `science-curiosity-summary` |
+| **D · Lectura conjunta** | Qué aporta leer varios marcadores como panel o relación | "¿Cómo se leen juntos LDL, HDL y triglicéridos?" | `lab-pattern-interpretation-summary` |
+| **E · Seguimiento temporal** | Cómo pensar comparabilidad, variación y persistencia | "¿Qué significa que mi LDL cambie con el tiempo?" | `lab-longitudinal-interpretation-summary` |
 
-No es obligatorio producir las tres. Una tarjeta solo existe si:
+No es obligatorio producir las cinco. Una tarjeta solo existe si:
 
 - responde una intención diferente;
 - tiene una fuente adecuada;
 - aporta algo que no está ya cubierto;
 - puede redactarse sin exagerar ni convertir educación general en consejo
   individual.
+
+D y E cubren dimensiones diferentes. D explica relaciones generales entre
+marcadores. E explica principios generales para comparar mediciones. Ninguna de
+las dos interpreta por sí sola el patrón o la evolución concreta de una
+persona: esa composición necesita recuperar además su memoria personal.
 
 ### 3.3 Capas tradicionales
 
@@ -256,6 +263,8 @@ En el piloto, VitaMap implementa de forma obligatoria:
 ```yaml
 title:
 source_url:
+source_language:
+source_jurisdiction:
 publication_date:
 source_kind:
 source_type:
@@ -266,7 +275,98 @@ limitations:
 Durante la publicación administrativa añade estado, revisión, versión y fechas
 de auditoría.
 
-### 5.1 Metadatos futuros posibles
+### 5.1 Idioma y jurisdicción de la fuente
+
+VitaMap puede responder en español o alemán, pero el idioma de la respuesta no
+debe confundirse con el idioma de la fuente enlazada. Por eso el corpus modela:
+
+```yaml
+source_language: de
+source_jurisdiction:
+  - DE
+```
+
+`source_language` describe la página o documento usado como fuente principal
+(`de`, `en`, `es`, `zh`, etc.). `source_jurisdiction` describe el marco
+institucional o geográfico principal (`DE`, `EU`, `US`, `GB`, `INT`, etc.).
+
+Como el público principal previsto es alemán, el criterio editorial y técnico
+es:
+
+1. Si existe una fuente alemana o europea equivalente, fiable y reutilizable,
+   debe preferirse para una tarjeta dirigida a usuarios en alemán.
+2. Si la mejor fuente disponible está en inglés, se usa igualmente y se declara
+   `source_language: en`.
+3. No se rebaja la calidad de evidencia solo para conseguir un enlace alemán.
+4. La interfaz y el prompt deben poder mostrar que una fuente es alemana,
+   europea, estadounidense o de otro marco.
+
+La recuperación no filtra de forma dura por idioma. QMD no permite filtrar
+`search` por frontmatter; por tanto, VitaMap recupera candidatos, aplica los
+filtros de marcador/intención disponibles y después reordena suavemente para
+priorizar `de/DE` y `EU` cuando el `locale` del chat es alemán. Si el corpus no
+contiene una fuente alemana equivalente para ese tema, se conserva la mejor
+fuente disponible.
+
+Esto implica una tarea editorial concreta: los próximos lotes del corpus deben
+buscar activamente fuentes DE/EU —por ejemplo IQWiG/Gesundheitsinformation,
+RKI, BfR, BfArM, G-BA, AWMF, EMA/EFSA o sociedades europeas/alemanas— cuando
+sean apropiadas para la pregunta.
+
+### 5.2 Taxonomía y vocabulario runtime
+
+`corpus-preparation/corpus-taxonomy.json` es la fuente de verdad para markers,
+aliases, relaciones y grupos de consulta. La app no mantiene una segunda lista
+manual de markers en `marker-scope.ts`; consume
+`apps/web/lib/generated/marker-vocabulary.ts`, generado desde la taxonomía con:
+
+```bash
+npm run taxonomy:generate --workspace apps/web
+```
+
+Esto evita que una tarjeta nueva obligue a editar dos sitios y que un olvido
+produzca fallos silenciosos de recuperación.
+
+La taxonomía distingue:
+
+- **marker canónico**: valor que puede aparecer en frontmatter, por ejemplo
+  `alt`, `ast`, `ggt`, `fosfatasa-alcalina`.
+- **alias**: forma literal que puede escribir una persona, por ejemplo
+  `CRP`, `Vitamin D`, `Leberwerte`.
+- **query_group**: puente de consulta que no es marker, por ejemplo `higado`,
+  `perfil-hepatico`, `anemia`, `perfil-tiroideo`.
+- **health_area_route**: motivo de consulta difuso que reutiliza
+  `area_de_salud`, por ejemplo `energia-fatiga` cuando la persona dice
+  "estoy cansado" o "ich bin müde".
+
+Un `query_group` siempre expande a markers reales. Por eso `higado` puede
+activar `alt`, `ast`, `ggt` y `fosfatasa-alcalina`, pero no debe escribirse
+como `marker: higado` en una tarjeta.
+
+Un `health_area_route` no es filtro duro. Si la persona menciona un marcador,
+manda el marker. Si no hay marker y sí un motivo difuso, VitaMap expande la
+query de KB con semillas curadas y reordena los documentos que ya declaran esa
+`area_de_salud`. En corto:
+
+- `marker` estrecha;
+- `lens` reordena la perspectiva;
+- `area_de_salud` ensancha de forma curada.
+
+La primera activación cubre `energia-fatiga` y `estado-animo-estres`. `sueno`
+queda pendiente hasta que exista corpus etiquetado con esa área.
+
+Contrato de validación:
+
+```bash
+npm run test:marker-taxonomy --workspace apps/web
+```
+
+Ese test comprueba que el vocabulario generado está sincronizado, que los
+grupos de consulta apuntan a markers existentes, que `relacionado_con` no
+enlaza IDs desconocidos y que las tarjetas locales no usan markers fuera de la
+taxonomía.
+
+### 5.3 Metadatos futuros posibles
 
 Cuando el volumen lo justifique pueden añadirse:
 
@@ -274,12 +374,17 @@ Cuando el volumen lo justifique pueden añadirse:
 topic_id: cholesterol-ldl
 intent: interpretation
 tradition: ayurveda
-language: es
 aliases:
   - LDL cholesterol
   - colesterol malo
 questions_answered:
   - "¿Qué significa mi LDL?"
+panel_id: lipid-panel
+markers:
+  - cholesterol-total
+  - cholesterol-ldl
+  - cholesterol-hdl
+  - triglycerides
 source_version: "6.1"
 source_checksum: "sha256:..."
 supersedes: "document-id-anterior"
@@ -310,11 +415,17 @@ no cientos de preguntas prefabricadas.
 
 ### 6.1 Selección del brief
 
-El flujo usa cuatro briefs:
+El flujo usa seis briefs:
 
 ```text
 PROMPT-INVESTIGACION-RAG.md
-  -> tarjetas A y B
+  -> tarjetas A, B, D y E
+
+BRIEF-TARJETA-D-lectura-conjunta.md
+  -> módulo detallado para D
+
+BRIEF-TARJETA-E-seguimiento-temporal.md
+  -> módulo detallado para E
 
 PROMPT-INVESTIGACION-RAG-ENRIQUECIMIENTO.md
   -> tarjeta C y capas T1, T2, T3
@@ -545,7 +656,8 @@ búsqueda ni duplicar la fuente de verdad.
 1. Se consultan memoria y todo el KB para cada pregunta, aunque la intención no
    requiera todos los carriles.
 2. No existe todavía un router de intención.
-3. `source_kind` y `source_type` llegan al prompt, pero no dirigen la búsqueda.
+3. `source_kind` y `source_type` llegan al prompt, pero no dirigen la búsqueda;
+   por tanto, D y E aún no reciben prioridad específica.
 4. La continuidad conversacional usa una regla ligera y todavía no resuelve
    referencias complejas o cambios de tema ambiguos.
 5. El umbral `minScore` no está calibrado para el perfil RRF sin reranker.
@@ -624,6 +736,8 @@ personal
 interpretation
 lifestyle
 science-curiosity
+pattern-interpretation
+longitudinal-interpretation
 traditional-primary
 traditional-context
 traditional-evidence
@@ -640,6 +754,8 @@ El router no decide la verdad. Decide dónde buscar y qué priorizar.
 Ejemplos:
 
 - "¿Qué significa mi LDL?" -> memoria + interpretación;
+- "¿Cómo se leen juntos LDL y triglicéridos?" -> memoria + lectura conjunta;
+- "¿Ha cambiado mi creatinina?" -> serie personal + seguimiento temporal;
 - "¿Qué puedo cambiar en mi alimentación?" -> memoria + estilo de vida;
 - "¿Qué dice Ayurveda?" -> tradición primaria + contexto;
 - "¿Está demostrado científicamente?" -> evidencia moderna;
@@ -676,7 +792,7 @@ LLM.
 
 Cuando haya suficiente volumen:
 
-- añadir `topic_id`, `intent`, `tradition` y `language`;
+- añadir `topic_id`, `intent`, `panel_id`, `markers`, `tradition` y `language`;
 - mostrar en administración todas las tarjetas de un dossier;
 - detectar intenciones sin cubrir;
 - relacionar versiones y documentos sustituidos;
@@ -779,7 +895,7 @@ Las mejoras deben responder a métricas y problemas observados:
 - QMD continúa siendo el motor de recuperación.
 - Un tema se modela como dossier lógico de tarjetas.
 - Una tarjeta tiene una intención principal, no una pregunta literal única.
-- A/B/C y T1/T2/T3 son funciones distintas, no cuotas.
+- A/B/C/D/E y T1/T2/T3 son funciones distintas, no cuotas.
 - Las tarjetas biomédicas suelen ser la figura ante preguntas clínicas y las
   tradicionales el fondo, pero la intención puede acercar el fondo hasta el
   primer plano. Conviven sin antagonismo ni equivalencia forzada.

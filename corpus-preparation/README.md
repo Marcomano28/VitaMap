@@ -32,7 +32,12 @@ El primer dossier aprobado con la estructura vigente es
 
 Los briefs de trabajo son:
 
-- `PROMPT-INVESTIGACION-RAG.md`: interpretación y estilo de vida.
+- `PROMPT-INVESTIGACION-RAG.md`: interpretación, estilo de vida, lectura
+  conjunta y seguimiento temporal.
+- `BRIEF-TARJETA-D-lectura-conjunta.md`: módulo detallado para relaciones entre
+  marcadores y lectura de paneles.
+- `BRIEF-TARJETA-E-seguimiento-temporal.md`: módulo detallado para
+  comparabilidad, variación y cambios entre mediciones.
 - `PROMPT-INVESTIGACION-RAG-ENRIQUECIMIENTO.md`: curiosidad científica y capas
   tradicionales T1, T2 y T3.
 - `PROMPT-INVESTIGACION-RAG-ACUPUNTURA.md`: corpus especializado de acupuntura.
@@ -53,6 +58,17 @@ precisa.
 La estructura temática completa y la evolución prevista de la recuperación se
 documentan en
 `docs/ARQUITECTURA-CORPUS-TEMATICO-Y-RECUPERACION.md`.
+
+Las tarjetas biomédicas cumplen funciones distintas:
+
+- A explica un marcador individual;
+- B reúne factores cotidianos documentados;
+- C aporta una idea científica memorable;
+- D explica una relación o panel sin diagnosticar un caso;
+- E explica cómo pensar cambios temporales sin calcular una tendencia personal.
+
+D y E son opcionales. Solo se preparan cuando una fuente adecuada añade una
+intención real y diferente de la tarjeta A.
 
 ## Flujo recomendado
 

@@ -76,10 +76,32 @@ Todo documento debe incluir este frontmatter mínimo:
 ---
 title: "Título verificable"
 source_url: "https://URL-REAL-DE-LA-FUENTE"
+source_language: en
+source_jurisdiction:
+  - US
 publication_date: "AAAA-MM-DD"
 source_kind: tradition-context
 source_type: acupuncture-evidence-review-summary
 rights_status: unknown
+facets_version: 1
+tarjeta_id: acupuntura-conceptos-acupuntura-evidencia-nauseas-vomitos-nccih
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - acupuntura
+sistema:
+  - neurologico-cognitivo
+  - digestivo
+area_de_salud:
+  - salud-digestiva
+  - estado-animo-estres
+tradicion: acupuntura
+seccion: evidencia
+alias:
+  - acupuntura
+  - neiguan
+  - pc6
 limitations:
   - "Límite específico de esta fuente y de esta tarjeta."
 ---
@@ -89,6 +111,18 @@ Sustituye todos los marcadores por datos reales. No conserves URL, fechas,
 títulos ni limitaciones de ejemplo. Usa exactamente la combinación
 `source_kind`/`source_type` asignada a la capa en la tabla anterior. AC4 es la
 excepción y usa `source_kind: institutional-education`.
+
+Usa `corpus-preparation/corpus-taxonomy.json` como vocabulario canónico. Si el
+topic o marker falta, propón primero la entrada de taxonomía. Para acupuntura,
+`tradicion: acupuntura` es apropiado cuando la tarjeta pertenece al marco de
+acupuntura. Mapeo habitual:
+
+| Capa | `seccion` |
+|---|---|
+| AC1 · Fuente clásica | `tradicion` |
+| AC2 · Nomenclatura y evolución | `tradicion` |
+| AC3 · Evidencia por indicación | `evidencia` |
+| AC4 · Seguridad | `seguridad` |
 
 ---
 
@@ -209,10 +243,32 @@ exista.
 ---
 title: "Acupuntura clásica: [concepto] en el Lingshu"
 source_url: "https://URL-REAL-DEL-ARCHIVO-O-PASAJE"
+source_language: zh
+source_jurisdiction:
+  - CN
 publication_date: "AAAA"
 source_kind: tradition-context
 source_type: acupuncture-primary-source-summary
 rights_status: unknown
+facets_version: 1
+tarjeta_id: acupuntura-conceptos-acupuntura-fuente-clasica-canales-lingshu
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - acupuntura
+sistema:
+  - neurologico-cognitivo
+  - digestivo
+area_de_salud:
+  - salud-digestiva
+  - estado-animo-estres
+tradicion: acupuntura
+seccion: tradicion
+alias:
+  - acupuntura
+  - meridianos
+  - canales
 limitations:
   - "Describe un texto médico histórico y su marco conceptual."
   - "No convierte sus términos en anatomía o fisiología moderna."
@@ -418,6 +474,7 @@ pero siempre como atribución textual y nunca como instrucción.
 - [ ] No hay recetas de puntos, dosis de sesiones ni técnica de punción.
 - [ ] Los derechos de la edición concreta están comprobados.
 - [ ] El frontmatter es compatible con VitaMap.
+- [ ] `marker`, `seccion`, `tradicion`, `sistema`, `area_de_salud` y `alias` siguen la taxonomía.
 - [ ] Las limitaciones explican procedencia, incertidumbre y alcance.
 
 ---

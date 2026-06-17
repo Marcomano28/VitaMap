@@ -29,12 +29,16 @@ const chunk: RetrievedChunk = {
   sourceDocumentType: "medicinal-species-identity-summary",
   limitations: ["No evalúa eficacia ni seguridad."],
   sourceUrl: "https://example.test/chaga",
+  sourceLanguage: "de",
+  sourceJurisdiction: ["DE"],
 };
 
 const prompt = wrapForPrompt([chunk]);
 
 assert.doesNotMatch(prompt, /rights_status:/);
 assert.match(prompt, /title="Chaga: identidad"/);
+assert.match(prompt, /source_language="de"/);
+assert.match(prompt, /source_jurisdiction="DE"/);
 assert.match(prompt, /Hymenochaetaceae/);
 assert.match(prompt, /abedules/);
 assert.doesNotMatch(prompt, /Tricholomataceae|coníferas|árboles muertos/i);

@@ -16,6 +16,8 @@ interface Citation {
   sourceKind?: string;
   sourceDocumentType?: string;
   sourceUrl?: string | null;
+  sourceLanguage?: string;
+  sourceJurisdiction?: string[];
   observedAt?: string;
 }
 
@@ -35,6 +37,21 @@ const KIND_LABEL: Record<Locale, Record<string, string>> = {
     "clinical-evidence": "Klinische Evidenz",
     "institutional-education": "Institutionelle Information",
     "tradition-context": "Tradition und Kontext",
+  },
+};
+
+const LANGUAGE_LABEL: Record<Locale, Record<string, string>> = {
+  es: {
+    de: "alemán",
+    en: "inglés",
+    es: "español",
+    zh: "chino",
+  },
+  de: {
+    de: "Deutsch",
+    en: "Englisch",
+    es: "Spanisch",
+    zh: "Chinesisch",
   },
 };
 
@@ -60,6 +77,10 @@ export function CitationCard({ c, locale }: { c: Citation; locale: Locale }) {
 
   const kindColor = KIND_COLOR[c.sourceKind ?? ""] ?? "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200";
   const kindLabel = c.sourceKind ? (KIND_LABEL[locale][c.sourceKind] ?? c.sourceKind) : undefined;
+  const sourceLocale = [
+    c.sourceLanguage ? (LANGUAGE_LABEL[locale][c.sourceLanguage] ?? c.sourceLanguage) : undefined,
+    c.sourceJurisdiction?.join("/"),
+  ].filter(Boolean).join(" · ");
   const inner = (
     <div className="block rounded border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-xs hover:border-[var(--color-accent)]">
       <div className="flex items-center justify-between gap-2">
@@ -72,6 +93,7 @@ export function CitationCard({ c, locale }: { c: Citation; locale: Locale }) {
       </div>
       <p className="text-[var(--color-muted)] mt-0.5 truncate">
         {c.sourceDocumentType ? `${c.sourceDocumentType} · ` : ""}
+        {sourceLocale ? `${sourceLocale} · ` : ""}
         {c.path}
       </p>
     </div>
