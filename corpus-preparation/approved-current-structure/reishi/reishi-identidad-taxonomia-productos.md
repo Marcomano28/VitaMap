@@ -1,18 +1,42 @@
 ---
-title: "Reishi/lingzhi (Ganoderma spp.): identidad y formas de producto"
-source_url: "https://www.mdpi.com/2309-608X/9/3/323"
-publication_date: "2023-03-05"
-doi: "10.3390/jof9030323"
+title: 'Reishi/lingzhi (Ganoderma spp.): identidad y formas de producto'
+source_url: 'https://www.mdpi.com/2309-608X/9/3/323'
+publication_date: '2023-03-05'
+doi: 10.3390/jof9030323
 source_kind: institutional-education
 source_type: medicinal-species-identity-summary
 rights_status: permitted
 limitations:
-  - "Reishi, lingzhi y Ganoderma lucidum se han usado de forma no uniforme en literatura, comercio y tradición."
-  - "No se debe extrapolar entre cuerpo fructífero, micelio, esporas, extractos o productos multingrediente."
-  - "La identidad taxonómica no demuestra eficacia clínica ni seguridad."
-  - "La nomenclatura ha cambiado: estudios anteriores pueden usar Ganoderma lingzhi o Ganoderma lucidum para el hongo que una revisión taxonómica de 2023 identifica como Ganoderma sichuanense."
+  - >-
+    Reishi, lingzhi y Ganoderma lucidum se han usado de forma no uniforme en
+    literatura, comercio y tradición.
+  - >-
+    No se debe extrapolar entre cuerpo fructífero, micelio, esporas, extractos o
+    productos multingrediente.
+  - La identidad taxonómica no demuestra eficacia clínica ni seguridad.
+  - >-
+    La nomenclatura ha cambiado: estudios anteriores pueden usar Ganoderma
+    lingzhi o Ganoderma lucidum para el hongo que una revisión taxonómica de
+    2023 identifica como Ganoderma sichuanense.
+facets_version: 1
+tarjeta_id: reishi-reishi-identidad-taxonomia-productos
+dominio: sustancias-naturales
+tipo:
+  - especie_medicinal
+  - suplemento
+marker:
+  - reishi
+sistema:
+  - inmunologico
+  - hepatobiliar
+area_de_salud:
+  - inmunidad
+  - antioxidante
+seccion: identidad
+alias:
+  - reishi
+  - ganoderma lucidum
 ---
-
 Capa: M1 · Identidad
 
 Pregunta que pretende responder:

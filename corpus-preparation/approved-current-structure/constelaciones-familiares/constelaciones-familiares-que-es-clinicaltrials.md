@@ -1,17 +1,39 @@
 ---
-title: "Constelaciones familiares: qué son y cómo se desarrolla una sesión"
-source_url: "https://clinicaltrials.gov/study/NCT03233958"
-publication_date: "2025-04-15"
+title: 'Constelaciones familiares: qué son y cómo se desarrolla una sesión'
+source_url: 'https://clinicaltrials.gov/study/NCT03233958'
+publication_date: '2025-04-15'
 source_kind: institutional-education
 source_type: complementary-practice-overview-summary
 rights_status: permitted
 limitations:
-  - "Describe la práctica y la experiencia propuesta; no demuestra su eficacia ni valida sus explicaciones."
-  - "Los formatos, la formación del facilitador y el encuadre varían entre escuelas."
-  - "No equivale automáticamente a terapia familiar sistémica ni a psicoterapia clínica."
-  - "La evidencia y la seguridad se examinan en tarjetas separadas."
+  - >-
+    Describe la práctica y la experiencia propuesta; no demuestra su eficacia ni
+    valida sus explicaciones.
+  - >-
+    Los formatos, la formación del facilitador y el encuadre varían entre
+    escuelas.
+  - >-
+    No equivale automáticamente a terapia familiar sistémica ni a psicoterapia
+    clínica.
+  - La evidencia y la seguridad se examinan en tarjetas separadas.
+facets_version: 1
+tarjeta_id: constelaciones-familiares-constelaciones-familiares-que-es-clinicaltrials
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - constelaciones-familiares
+sistema:
+  - neurologico-cognitivo
+area_de_salud:
+  - estado-animo-estres
+seccion: identidad
+alias:
+  - constelaciones familiares
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Constelaciones familiares: qué son
 
 ## Aclaración del nombre

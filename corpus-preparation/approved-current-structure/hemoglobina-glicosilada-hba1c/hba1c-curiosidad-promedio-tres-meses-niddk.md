@@ -1,16 +1,47 @@
 ---
-title: "HbA1c: por qué refleja un promedio de unos tres meses"
-source_url: "https://www.niddk.nih.gov/health-information/diagnostic-tests/a1c-test"
-publication_date: "2018-04"
+title: 'HbA1c: por qué refleja un promedio de unos tres meses'
+source_url: 'https://www.niddk.nih.gov/health-information/diagnostic-tests/a1c-test'
+publication_date: 2018-04
 source_kind: institutional-education
 source_type: science-curiosity-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la página original."
-  - "Refleja la revisión de abril de 2018; NIDDK indica que la página ya no se actualiza."
-  - "Describe el fundamento general de la prueba; no es un diagnóstico ni una guía de manejo."
+  - Síntesis editorial de VitaMap; no es una copia de la página original.
+  - >-
+    Refleja la revisión de abril de 2018; NIDDK indica que la página ya no se
+    actualiza.
+  - >-
+    Describe el fundamento general de la prueba; no es un diagnóstico ni una
+    guía de manejo.
+facets_version: 1
+tarjeta_id: hemoglobina-glicosilada-hba1c-hba1c-curiosidad-promedio-tres-meses-niddk
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - hba1c
+  - hemoglobina
+categoria:
+  - glucemia-insulina
+muestra:
+  - sangre-total
+sistema:
+  - endocrino-metabolico
+area_de_salud:
+  - control-glucemico
+  - energia-fatiga
+seccion: curiosidad
+alias:
+  - hba1c
+  - a1c
+  - hemoglobina glicosilada
+relacionado_con:
+  - id: glucosa-en-ayunas
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # HbA1c: por qué refleja un promedio de unos tres meses
 
 ## La idea en breve

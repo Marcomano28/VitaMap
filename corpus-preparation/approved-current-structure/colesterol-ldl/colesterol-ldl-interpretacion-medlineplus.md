@@ -1,17 +1,47 @@
 ---
-title: "Colesterol LDL: interpretación general de la analítica"
-source_url: "https://medlineplus.gov/cholesterollevelswhatyouneedtoknow.html"
-publication_date: "2025-05-05"
+title: 'Colesterol LDL: interpretación general de la analítica'
+source_url: 'https://medlineplus.gov/cholesterollevelswhatyouneedtoknow.html'
+publication_date: '2025-05-05'
 source_kind: institutional-education
 source_type: lab-interpretation-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la página original."
-  - "Los valores son referencias saludables generales, no objetivos individuales."
-  - "La interpretación depende de otros resultados y factores personales."
-  - "No ofrece ninguna recomendación de tratamiento ni de dosis."
+  - Síntesis editorial de VitaMap; no es una copia de la página original.
+  - 'Los valores son referencias saludables generales, no objetivos individuales.'
+  - La interpretación depende de otros resultados y factores personales.
+  - No ofrece ninguna recomendación de tratamiento ni de dosis.
+facets_version: 1
+tarjeta_id: colesterol-ldl-colesterol-ldl-interpretacion-medlineplus
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - colesterol-ldl
+categoria:
+  - perfil-lipidico
+muestra:
+  - suero
+  - plasma
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+area_de_salud:
+  - salud-cardiovascular
+  - longevidad
+seccion: interpretacion
+alias:
+  - ldl
+  - colesterol ldl
+  - colesterol total
+relacionado_con:
+  - id: colesterol-hdl
+    relacion: mismo_panel
+  - id: trigliceridos
+    relacion: mismo_panel
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Colesterol LDL: interpretación general
 
 ## Qué mide esta prueba

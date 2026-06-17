@@ -1,17 +1,48 @@
 ---
-title: "Triglicéridos: interpretación general"
-source_url: "https://medlineplus.gov/lab-tests/triglycerides-test/"
-publication_date: "2024-12-09"
+title: 'Triglicéridos: interpretación general'
+source_url: 'https://medlineplus.gov/lab-tests/triglycerides-test/'
+publication_date: '2024-12-09'
 source_kind: institutional-education
 source_type: lab-interpretation-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la página original."
-  - "Los rangos son referencias generales para adultos; se interpretan junto al resto del perfil lipídico y el riesgo cardiovascular global."
-  - "Un valor aislado no constituye un diagnóstico."
-  - "La necesidad de ayuno depende de las instrucciones del profesional y del contexto de la prueba."
+  - Síntesis editorial de VitaMap; no es una copia de la página original.
+  - >-
+    Los rangos son referencias generales para adultos; se interpretan junto al
+    resto del perfil lipídico y el riesgo cardiovascular global.
+  - Un valor aislado no constituye un diagnóstico.
+  - >-
+    La necesidad de ayuno depende de las instrucciones del profesional y del
+    contexto de la prueba.
+facets_version: 1
+tarjeta_id: trigliceridos-trigliceridos-interpretacion-medlineplus
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - trigliceridos
+categoria:
+  - perfil-lipidico
+muestra:
+  - suero
+  - plasma
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+area_de_salud:
+  - salud-cardiovascular
+  - control-glucemico
+  - longevidad
+seccion: interpretacion
+relacionado_con:
+  - id: colesterol-ldl
+    relacion: mismo_panel
+  - id: colesterol-hdl
+    relacion: mismo_panel
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Triglicéridos: interpretación general
 
 ## Qué mide esta prueba

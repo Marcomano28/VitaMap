@@ -1,17 +1,51 @@
 ---
-title: "Medicina china y función renal: evaluación científica actual"
-source_url: "https://pubmed.ncbi.nlm.nih.gov/38334322/"
-publication_date: "2024"
+title: 'Medicina china y función renal: evaluación científica actual'
+source_url: 'https://pubmed.ncbi.nlm.nih.gov/38334322/'
+publication_date: '2024'
 source_kind: tradition-context
 source_type: traditional-evidence-review-summary
 rights_status: licensed
 limitations:
-  - "Evalúa investigación moderna sobre medicina china en enfermedad renal crónica, no conceptos clásicos."
-  - "No se centra en creatinina aislada ni permite interpretar resultados individuales."
-  - "La evidencia disponible presenta heterogeneidad y limitaciones metodológicas."
-  - "No ofrece fórmulas, hierbas, acupuntura, dosis ni sustitución de atención médica."
+  - >-
+    Evalúa investigación moderna sobre medicina china en enfermedad renal
+    crónica, no conceptos clásicos.
+  - >-
+    No se centra en creatinina aislada ni permite interpretar resultados
+    individuales.
+  - >-
+    La evidencia disponible presenta heterogeneidad y limitaciones
+    metodológicas.
+  - >-
+    No ofrece fórmulas, hierbas, acupuntura, dosis ni sustitución de atención
+    médica.
+facets_version: 1
+tarjeta_id: creatinina-creatinina-mtc-evaluacion-cientifica-funcion-renal
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - creatinina
+categoria:
+  - perfil-renal
+muestra:
+  - suero
+  - orina
+sistema:
+  - renal-urinario
+area_de_salud:
+  - salud-renal
+  - longevidad
+seccion: evidencia
+tradicion: mtc
+relacionado_con:
+  - id: egfr
+    relacion: calculo_derivado
+  - id: albuminuria
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Medicina china y función renal: evaluación científica actual
 
 ## Qué se ha investigado

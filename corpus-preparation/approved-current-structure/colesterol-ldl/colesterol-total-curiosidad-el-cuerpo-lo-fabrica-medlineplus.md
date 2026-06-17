@@ -1,16 +1,49 @@
 ---
-title: "Colesterol: por qué el cuerpo fabrica casi todo el que necesita"
-source_url: "https://medlineplus.gov/cholesterol.html"
-publication_date: "2025-03-18"
+title: 'Colesterol: por qué el cuerpo fabrica casi todo el que necesita'
+source_url: 'https://medlineplus.gov/cholesterol.html'
+publication_date: '2025-03-18'
 source_kind: institutional-education
 source_type: science-curiosity-summary
 rights_status: permitted
 limitations:
-  - "Síntesis divulgativa; no sustituye información clínica detallada."
-  - "Una curiosidad no es una recomendación de salud."
-  - "Describe fisiología general y refleja la actualización de marzo de 2025 de la fuente."
+  - Síntesis divulgativa; no sustituye información clínica detallada.
+  - Una curiosidad no es una recomendación de salud.
+  - >-
+    Describe fisiología general y refleja la actualización de marzo de 2025 de
+    la fuente.
+facets_version: 1
+tarjeta_id: colesterol-ldl-colesterol-total-curiosidad-el-cuerpo-lo-fabrica-medlineplus
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - colesterol-ldl
+  - colesterol-total
+categoria:
+  - perfil-lipidico
+muestra:
+  - suero
+  - plasma
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+area_de_salud:
+  - salud-cardiovascular
+  - longevidad
+seccion: curiosidad
+alias:
+  - ldl
+  - colesterol ldl
+  - colesterol total
+relacionado_con:
+  - id: colesterol-hdl
+    relacion: mismo_panel
+  - id: trigliceridos
+    relacion: mismo_panel
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Colesterol: por qué el cuerpo fabrica casi todo el que necesita
 
 ## El dato

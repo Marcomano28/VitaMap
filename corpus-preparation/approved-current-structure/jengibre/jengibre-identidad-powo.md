@@ -1,17 +1,42 @@
 ---
-title: "Jengibre (Zingiber officinale): identidad y formas de producto"
-source_url: "https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:798372-1"
-publication_date: "1807"
+title: 'Jengibre (Zingiber officinale): identidad y formas de producto'
+source_url: 'https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:798372-1'
+publication_date: '1807'
 source_kind: institutional-education
 source_type: medicinal-species-identity-summary
 rights_status: permitted
 limitations:
-  - "Identifica la especie y las formas generales de producto; no evalúa eficacia ni seguridad."
-  - "La fecha corresponde a la primera publicación del nombre (Roscoe, 1807); POWO es una base taxonómica de actualización continua."
-  - "Jengibre fresco, seco, en polvo, extracto y aceite esencial no son equivalentes en composición."
-  - "El jengibre culinario y un extracto concentrado de suplemento no son comparables sin más."
+  - >-
+    Identifica la especie y las formas generales de producto; no evalúa eficacia
+    ni seguridad.
+  - >-
+    La fecha corresponde a la primera publicación del nombre (Roscoe, 1807);
+    POWO es una base taxonómica de actualización continua.
+  - >-
+    Jengibre fresco, seco, en polvo, extracto y aceite esencial no son
+    equivalentes en composición.
+  - >-
+    El jengibre culinario y un extracto concentrado de suplemento no son
+    comparables sin más.
+facets_version: 1
+tarjeta_id: jengibre-jengibre-identidad-powo
+dominio: sustancias-naturales
+tipo:
+  - especie_medicinal
+  - suplemento
+marker:
+  - jengibre
+sistema:
+  - digestivo
+  - reproductivo-hormonal
+area_de_salud:
+  - salud-digestiva
+seccion: identidad
+alias:
+  - jengibre
+  - ginger
+  - zingiber officinale
 ---
-
 # Jengibre (*Zingiber officinale*): identidad y formas de producto
 
 ## Identidad

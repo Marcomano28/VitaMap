@@ -1,18 +1,40 @@
 ---
-title: "Terapia craneosacral: origen y marco propio"
-source_url: "https://doi.org/10.1371/journal.pone.0167823"
-doi: "10.1371/journal.pone.0167823"
-publication_date: "2016-12-09"
+title: 'Terapia craneosacral: origen y marco propio'
+source_url: 'https://doi.org/10.1371/journal.pone.0167823'
+doi: 10.1371/journal.pone.0167823
+publication_date: '2016-12-09'
 source_kind: tradition-context
 source_type: complementary-practice-framework-summary
 rights_status: permitted
 limitations:
-  - "Describe el origen y el marco interno de la práctica; no demuestra que ese marco sea cierto."
-  - "El 'mecanismo respiratorio primario' y el 'ritmo craneosacral' son premisas de la práctica, discutidas científicamente."
-  - "La fuente documenta el origen de la osteopatía craneal, pero no reconstruye por completo la historia posterior de todas las escuelas de terapia craneosacral."
-  - "La fiabilidad de la palpación y la eficacia se evalúan en tarjetas aparte."
+  - >-
+    Describe el origen y el marco interno de la práctica; no demuestra que ese
+    marco sea cierto.
+  - >-
+    El 'mecanismo respiratorio primario' y el 'ritmo craneosacral' son premisas
+    de la práctica, discutidas científicamente.
+  - >-
+    La fuente documenta el origen de la osteopatía craneal, pero no reconstruye
+    por completo la historia posterior de todas las escuelas de terapia
+    craneosacral.
+  - La fiabilidad de la palpación y la eficacia se evalúan en tarjetas aparte.
+facets_version: 1
+tarjeta_id: terapia-craneosacral-terapia-craneosacral-origen-marco-guillaud
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - terapia-craneosacral
+sistema:
+  - osteoarticular
+  - neurologico-cognitivo
+area_de_salud:
+  - estado-animo-estres
+seccion: identidad
+alias:
+  - terapia craneosacral
+source_language: en
 ---
-
 # Terapia craneosacral: origen y marco propio
 
 ## Origen documentado

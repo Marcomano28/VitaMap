@@ -1,17 +1,45 @@
 ---
-title: "Ayurveda clásico: galagaṇḍa (bocio) en la Suśrutasaṃhitā"
-source_url: "https://www.wisdomlib.org/hinduism/book/sushruta-samhita-volume-2-nidanasthana/d/doc142869.html"
-publication_date: "1911"
+title: 'Ayurveda clásico: galagaṇḍa (bocio) en la Suśrutasaṃhitā'
+source_url: >-
+  https://www.wisdomlib.org/hinduism/book/sushruta-samhita-volume-2-nidanasthana/d/doc142869.html
+publication_date: '1911'
 source_kind: tradition-context
 source_type: traditional-primary-source-summary
 rights_status: unknown
 limitations:
-  - "Describe un concepto de un texto médico clásico, no una entidad biomédica moderna."
-  - "Pasaje verificado en una reproducción digital de la traducción de Bhishagratna (1911); falta confirmar los derechos del objeto digital exacto."
-  - "No establece equivalencias con la TSH ni con diagnósticos modernos."
-  - "No ofrece ninguna recomendación terapéutica."
+  - >-
+    Describe un concepto de un texto médico clásico, no una entidad biomédica
+    moderna.
+  - >-
+    Pasaje verificado en una reproducción digital de la traducción de
+    Bhishagratna (1911); falta confirmar los derechos del objeto digital exacto.
+  - No establece equivalencias con la TSH ni con diagnósticos modernos.
+  - No ofrece ninguna recomendación terapéutica.
+facets_version: 1
+tarjeta_id: tsh-tsh-ayurveda-fuente-clasica-susrutasamhita
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - tsh
+categoria:
+  - perfil-tiroideo
+muestra:
+  - suero
+  - plasma
+sistema:
+  - endocrino-metabolico
+  - reproductivo-hormonal
+area_de_salud:
+  - salud-tiroidea
+  - energia-fatiga
+  - salud-hormonal
+seccion: tradicion
+tradicion: ayurveda
+relacionado_con:
+  - id: t4-libre
+    relacion: lectura_conjunta
 ---
-
 # Galagaṇḍa (bocio) en el Ayurveda clásico según la Suśrutasaṃhitā
 
 ## Texto y procedencia

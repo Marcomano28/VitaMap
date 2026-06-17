@@ -1,17 +1,47 @@
 ---
-title: "Creatinina y Ayurveda: contexto histórico de Mutravaha Srotas"
-source_url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC3215359/"
-publication_date: "2010"
+title: 'Creatinina y Ayurveda: contexto histórico de Mutravaha Srotas'
+source_url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC3215359/'
+publication_date: '2010'
 source_kind: tradition-context
 source_type: traditional-scholarly-context-summary
 rights_status: licensed
 limitations:
-  - "Describe un concepto ayurvédico relacionado con orina y vías urinarias, no una entidad bioquímica moderna."
-  - "Mutravaha Srotas no equivale a creatinina, eGFR ni riñón anatómico moderno."
-  - "La fuente principal es una revisión académica de conceptos y hierbas; no es una edición crítica primaria."
-  - "No ofrece diagnóstico tradicional ni recomendaciones terapéuticas."
+  - >-
+    Describe un concepto ayurvédico relacionado con orina y vías urinarias, no
+    una entidad bioquímica moderna.
+  - 'Mutravaha Srotas no equivale a creatinina, eGFR ni riñón anatómico moderno.'
+  - >-
+    La fuente principal es una revisión académica de conceptos y hierbas; no es
+    una edición crítica primaria.
+  - No ofrece diagnóstico tradicional ni recomendaciones terapéuticas.
+facets_version: 1
+tarjeta_id: creatinina-creatinina-ayurveda-contexto-historico-mutravaha-srotas
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - creatinina
+categoria:
+  - perfil-renal
+muestra:
+  - suero
+  - orina
+sistema:
+  - renal-urinario
+area_de_salud:
+  - salud-renal
+  - longevidad
+seccion: tradicion
+tradicion: ayurveda
+relacionado_con:
+  - id: egfr
+    relacion: calculo_derivado
+  - id: albuminuria
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Mutravaha Srotas en Ayurveda: contexto histórico y límites de la comparación con creatinina
 
 ## Fuente estudiada

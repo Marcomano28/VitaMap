@@ -1,17 +1,54 @@
 ---
-title: "Colesterol total: interpretación general"
-source_url: "https://medlineplus.gov/cholesterol.html"
-publication_date: "2025-03-18"
+title: 'Colesterol total: interpretación general'
+source_url: 'https://medlineplus.gov/cholesterol.html'
+publication_date: '2025-03-18'
 source_kind: institutional-education
 source_type: lab-interpretation-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la página original."
-  - "El colesterol total es una cifra compuesta; se interpreta junto a LDL, HDL y triglicéridos y al riesgo cardiovascular global."
-  - "Los valores 'deseables' son referencias generales que dependen de la edad y de otros factores de riesgo."
-  - "Las equivalencias en mmol/L son conversiones aproximadas de los mg/dL publicados por la fuente."
+  - Síntesis editorial de VitaMap; no es una copia de la página original.
+  - >-
+    El colesterol total es una cifra compuesta; se interpreta junto a LDL, HDL y
+    triglicéridos y al riesgo cardiovascular global.
+  - >-
+    Los valores 'deseables' son referencias generales que dependen de la edad y
+    de otros factores de riesgo.
+  - >-
+    Las equivalencias en mmol/L son conversiones aproximadas de los mg/dL
+    publicados por la fuente.
+facets_version: 1
+tarjeta_id: colesterol-ldl-colesterol-total-interpretacion-medlineplus
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - colesterol-ldl
+  - colesterol-total
+categoria:
+  - perfil-lipidico
+muestra:
+  - suero
+  - plasma
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+area_de_salud:
+  - salud-cardiovascular
+  - longevidad
+seccion: interpretacion
+alias:
+  - ldl
+  - colesterol ldl
+  - colesterol total
+relacionado_con:
+  - id: colesterol-hdl
+    relacion: mismo_panel
+  - id: trigliceridos
+    relacion: mismo_panel
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Colesterol total: interpretación general
 
 ## Qué mide esta prueba

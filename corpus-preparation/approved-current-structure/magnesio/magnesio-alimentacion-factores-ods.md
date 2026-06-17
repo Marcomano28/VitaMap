@@ -1,18 +1,50 @@
 ---
-title: "Magnesio: fuentes alimentarias y factores relacionados"
-source_url: "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/"
-publication_date: "2026-01-06"
+title: 'Magnesio: fuentes alimentarias y factores relacionados'
+source_url: 'https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/'
+publication_date: '2026-01-06'
 source_kind: institutional-education
 source_type: nutrition-lifestyle-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la ficha original."
-  - "Describe relaciones generales, no una pauta dietética personalizada."
-  - "Las cantidades por alimento son valores de referencia, no objetivos individuales."
-  - "Los suplementos de magnesio y sus dosis son decisiones médicas."
-  - "El procesado y el refinado de los cereales reducen su contenido de magnesio."
+  - Síntesis editorial de VitaMap; no es una copia de la ficha original.
+  - 'Describe relaciones generales, no una pauta dietética personalizada.'
+  - >-
+    Las cantidades por alimento son valores de referencia, no objetivos
+    individuales.
+  - Los suplementos de magnesio y sus dosis son decisiones médicas.
+  - El procesado y el refinado de los cereales reducen su contenido de magnesio.
+facets_version: 1
+tarjeta_id: magnesio-magnesio-alimentacion-factores-ods
+dominio: laboratorio
+tipo:
+  - analito
+  - mineral
+marker:
+  - magnesio
+categoria:
+  - minerales-micronutrientes
+muestra:
+  - suero
+  - plasma
+sistema:
+  - endocrino-metabolico
+  - neurologico-cognitivo
+  - osteoarticular
+area_de_salud:
+  - energia-fatiga
+  - salud-osea
+  - salud-cognitiva
+  - rendimiento-deportivo
+seccion: alimentacion-factores
+relacionado_con:
+  - id: calcio
+    relacion: lectura_conjunta
+  - id: potasio
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Magnesio: alimentación y factores relacionados
 
 ## Qué factores se relacionan

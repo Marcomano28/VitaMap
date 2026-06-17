@@ -1,18 +1,45 @@
 ---
-title: "TSH (hormona tiroestimulante): interpretación general"
-source_url: "https://medlineplus.gov/lab-tests/tsh-thyroid-stimulating-hormone-test/"
-publication_date: "2024-10-30"
+title: 'TSH (hormona tiroestimulante): interpretación general'
+source_url: 'https://medlineplus.gov/lab-tests/tsh-thyroid-stimulating-hormone-test/'
+publication_date: '2024-10-30'
 source_kind: institutional-education
 source_type: lab-interpretation-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la página original."
-  - "La TSH indica si la tiroides funciona bien, pero no la causa del problema."
-  - "La fuente no publica un único rango numérico; cada laboratorio aporta el suyo."
-  - "Edad, embarazo y enfermedades agudas pueden alterar la interpretación."
-  - "No ofrece diagnóstico ni recomendación de tratamiento."
+  - Síntesis editorial de VitaMap; no es una copia de la página original.
+  - 'La TSH indica si la tiroides funciona bien, pero no la causa del problema.'
+  - >-
+    La fuente no publica un único rango numérico; cada laboratorio aporta el
+    suyo.
+  - 'Edad, embarazo y enfermedades agudas pueden alterar la interpretación.'
+  - No ofrece diagnóstico ni recomendación de tratamiento.
+facets_version: 1
+tarjeta_id: tsh-tsh-interpretacion-medlineplus
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - tsh
+categoria:
+  - perfil-tiroideo
+muestra:
+  - suero
+  - plasma
+sistema:
+  - endocrino-metabolico
+  - reproductivo-hormonal
+area_de_salud:
+  - salud-tiroidea
+  - energia-fatiga
+  - salud-hormonal
+seccion: interpretacion
+relacionado_con:
+  - id: t4-libre
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # TSH (hormona tiroestimulante)
 
 ## Qué mide esta prueba

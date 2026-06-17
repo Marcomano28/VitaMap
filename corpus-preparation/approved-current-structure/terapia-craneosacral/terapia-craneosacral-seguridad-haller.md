@@ -1,18 +1,39 @@
 ---
-title: "Terapia craneosacral: seguridad y límites"
-source_url: "https://doi.org/10.1186/s12891-019-3017-y"
-doi: "10.1186/s12891-019-3017-y"
-publication_date: "2019-12-31"
+title: 'Terapia craneosacral: seguridad y límites'
+source_url: 'https://doi.org/10.1186/s12891-019-3017-y'
+doi: 10.1186/s12891-019-3017-y
+publication_date: '2019-12-31'
 source_kind: clinical-evidence
 source_type: complementary-practice-safety-summary
 rights_status: permitted
 limitations:
-  - "Los ensayos incluidos estudiaron adultos con dolor crónico y excluyeron a niños y adolescentes."
-  - "Cinco de los diez ensayos no informaron sobre eventos adversos."
-  - "La ausencia de eventos graves notificados en los ensayos restantes no demuestra seguridad en cualquier técnica o población."
-  - "La fuente no evalúa titulaciones profesionales ni regulación por jurisdicción."
+  - >-
+    Los ensayos incluidos estudiaron adultos con dolor crónico y excluyeron a
+    niños y adolescentes.
+  - Cinco de los diez ensayos no informaron sobre eventos adversos.
+  - >-
+    La ausencia de eventos graves notificados en los ensayos restantes no
+    demuestra seguridad en cualquier técnica o población.
+  - >-
+    La fuente no evalúa titulaciones profesionales ni regulación por
+    jurisdicción.
+facets_version: 1
+tarjeta_id: terapia-craneosacral-terapia-craneosacral-seguridad-haller
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - terapia-craneosacral
+sistema:
+  - osteoarticular
+  - neurologico-cognitivo
+area_de_salud:
+  - estado-animo-estres
+seccion: seguridad
+alias:
+  - terapia craneosacral
+source_language: en
 ---
-
 # Terapia craneosacral: seguridad y límites
 
 ## Riesgos directos

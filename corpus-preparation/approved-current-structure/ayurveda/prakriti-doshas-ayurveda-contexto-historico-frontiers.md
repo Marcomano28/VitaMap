@@ -1,18 +1,44 @@
 ---
-title: "Prakriti y los tres doshas: concepto y variantes de un marco tradicional"
-source_url: "https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2025.1656249/full"
-doi: "10.3389/fmed.2025.1656249"
-publication_date: "2025"
+title: 'Prakriti y los tres doshas: concepto y variantes de un marco tradicional'
+source_url: >-
+  https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2025.1656249/full
+doi: 10.3389/fmed.2025.1656249
+publication_date: '2025'
 source_kind: tradition-context
 source_type: traditional-scholarly-context-summary
 rights_status: permitted
 limitations:
-  - "Describe un marco conceptual tradicional (el 'fondo'); no es un hecho biomédico ni un biomarcador validado (la 'figura')."
-  - "Síntesis de una revisión crítica revisada por pares (acceso abierto, CC BY), basada en su resumen y datos verificados; no es un análisis filológico de los textos clásicos."
-  - "Una coincidencia con categorías modernas no constituye confirmación científica ni equivalencia conceptual."
-  - "No es diagnóstico ni recomendación de salud."
+  - >-
+    Describe un marco conceptual tradicional (el 'fondo'); no es un hecho
+    biomédico ni un biomarcador validado (la 'figura').
+  - >-
+    Síntesis de una revisión crítica revisada por pares (acceso abierto, CC BY),
+    basada en su resumen y datos verificados; no es un análisis filológico de
+    los textos clásicos.
+  - >-
+    Una coincidencia con categorías modernas no constituye confirmación
+    científica ni equivalencia conceptual.
+  - No es diagnóstico ni recomendación de salud.
+facets_version: 1
+tarjeta_id: ayurveda-prakriti-doshas-ayurveda-contexto-historico-frontiers
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - ayurveda
+sistema:
+  - endocrino-metabolico
+  - digestivo
+area_de_salud:
+  - salud-digestiva
+  - salud-hormonal
+seccion: tradicion
+tradicion: ayurveda
+alias:
+  - ayurveda
+  - prakriti
+  - dosha
 ---
-
 # Prakriti y los tres doshas: concepto y variantes de un marco tradicional
 
 ## Fuente estudiada

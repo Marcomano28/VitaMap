@@ -1,17 +1,47 @@
 ---
-title: "Madhumeha en el Ayurveda clásico según la Suśrutasaṃhitā"
-source_url: "https://www.wisdomlib.org/hinduism/book/sushruta-samhita-volume-2-nidanasthana/d/doc142864.html"
-publication_date: "1911"
+title: Madhumeha en el Ayurveda clásico según la Suśrutasaṃhitā
+source_url: >-
+  https://www.wisdomlib.org/hinduism/book/sushruta-samhita-volume-2-nidanasthana/d/doc142864.html
+publication_date: '1911'
 source_kind: tradition-context
 source_type: traditional-primary-source-summary
 rights_status: permitted
 limitations:
-  - "Describe un concepto de un texto médico clásico (madhumeha), no la diabetes ni el metabolismo de la glucosa modernos."
-  - "Traducción de dominio público (Bhishagratna, 1911) consultada en reproducción digital; la numeración de los versos varía entre ediciones."
-  - "No establece equivalencias con biomarcadores ni diagnósticos modernos."
-  - "No ofrece ninguna recomendación terapéutica."
+  - >-
+    Describe un concepto de un texto médico clásico (madhumeha), no la diabetes
+    ni el metabolismo de la glucosa modernos.
+  - >-
+    Traducción de dominio público (Bhishagratna, 1911) consultada en
+    reproducción digital; la numeración de los versos varía entre ediciones.
+  - No establece equivalencias con biomarcadores ni diagnósticos modernos.
+  - No ofrece ninguna recomendación terapéutica.
+facets_version: 1
+tarjeta_id: hemoglobina-glicosilada-hba1c-madhumeha-ayurveda-fuente-clasica-susrutasamhita
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - hba1c
+  - hemoglobina
+categoria:
+  - glucemia-insulina
+muestra:
+  - sangre-total
+sistema:
+  - endocrino-metabolico
+area_de_salud:
+  - control-glucemico
+  - energia-fatiga
+seccion: tradicion
+tradicion: ayurveda
+alias:
+  - hba1c
+  - a1c
+  - hemoglobina glicosilada
+relacionado_con:
+  - id: glucosa-en-ayunas
+    relacion: lectura_conjunta
 ---
-
 # Madhumeha en el Ayurveda clásico según la Suśrutasaṃhitā
 
 ## Texto y procedencia

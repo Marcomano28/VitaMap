@@ -1,16 +1,46 @@
 ---
-title: "Magnesio: por qué participa en más de 300 reacciones del cuerpo"
-source_url: "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/"
-publication_date: "2026-01-06"
+title: 'Magnesio: por qué participa en más de 300 reacciones del cuerpo'
+source_url: 'https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/'
+publication_date: '2026-01-06'
 source_kind: institutional-education
 source_type: science-curiosity-summary
 rights_status: permitted
 limitations:
-  - "Síntesis divulgativa de VitaMap; no sustituye información clínica detallada."
-  - "Una curiosidad no es una recomendación de salud ni un diagnóstico."
-  - "No indica qué cantidad de magnesio necesita una persona concreta."
+  - Síntesis divulgativa de VitaMap; no sustituye información clínica detallada.
+  - Una curiosidad no es una recomendación de salud ni un diagnóstico.
+  - No indica qué cantidad de magnesio necesita una persona concreta.
+facets_version: 1
+tarjeta_id: magnesio-magnesio-curiosidad-cofactor-300-enzimas-ods
+dominio: laboratorio
+tipo:
+  - analito
+  - mineral
+marker:
+  - magnesio
+categoria:
+  - minerales-micronutrientes
+muestra:
+  - suero
+  - plasma
+sistema:
+  - endocrino-metabolico
+  - neurologico-cognitivo
+  - osteoarticular
+area_de_salud:
+  - energia-fatiga
+  - salud-osea
+  - salud-cognitiva
+  - rendimiento-deportivo
+seccion: curiosidad
+relacionado_con:
+  - id: calcio
+    relacion: lectura_conjunta
+  - id: potasio
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Magnesio: por qué participa en más de 300 reacciones del cuerpo
 
 ## El dato
@@ -34,10 +64,9 @@ normal. Por eso un mismo mineral aparece en tantos sistemas a la vez.
 Que el magnesio participe en cientos de reacciones explica su importancia, pero no
 significa que "más magnesio" mejore esas funciones en quien ya tiene suficiente.
 El cuerpo de un adulto contiene unos 25 gramos de magnesio, repartidos sobre todo
-entre los huesos y los tejidos; menos del 1 % circula en la sangre. Por eso el
-nivel en sangre se mantiene muy estable y refleja mal las reservas totales. Esta
-curiosidad ayuda a entender el papel del magnesio, no indica cuánto necesita una
-persona ni si conviene tomar suplementos.
+entre los huesos y los tejidos. Esta curiosidad ayuda a entender por qué el
+magnesio participa en tantos sistemas, pero no indica cuánto necesita una
+persona, si sus reservas son adecuadas ni si conviene tomar suplementos.
 
 ## Fuente principal
 NIH Office of Dietary Supplements. *Magnesium — Health Professional Fact Sheet*.

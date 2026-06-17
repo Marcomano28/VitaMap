@@ -1,19 +1,41 @@
 ---
-title: "Flores de Bach: seguridad, composición y límites"
-source_url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC2695424/"
-doi: "10.1186/1472-6882-9-16"
-pmid: "19470153"
-publication_date: "2009-05-26"
+title: 'Flores de Bach: seguridad, composición y límites'
+source_url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC2695424/'
+doi: 10.1186/1472-6882-9-16
+pmid: '19470153'
+publication_date: '2009-05-26'
 source_kind: clinical-evidence
 source_type: complementary-practice-safety-summary
 rights_status: permitted
 limitations:
-  - "La evidencia de seguridad de la revisión se calificó como muy baja."
-  - "Solo cuatro de seis estudios informaron explícitamente sobre efectos adversos y ninguno los definió previamente."
-  - "La composición, especialmente el contenido de alcohol, varía entre productos."
-  - "La revisión no establece la regulación actual de cada producto, profesión o país."
+  - La evidencia de seguridad de la revisión se calificó como muy baja.
+  - >-
+    Solo cuatro de seis estudios informaron explícitamente sobre efectos
+    adversos y ninguno los definió previamente.
+  - >-
+    La composición, especialmente el contenido de alcohol, varía entre
+    productos.
+  - >-
+    La revisión no establece la regulación actual de cada producto, profesión o
+    país.
+facets_version: 1
+tarjeta_id: flores-de-bach-flores-de-bach-seguridad-thaler
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - flores-de-bach
+sistema:
+  - neurologico-cognitivo
+area_de_salud:
+  - estado-animo-estres
+seccion: seguridad
+alias:
+  - flores de bach
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Flores de Bach: seguridad, composición y límites
 
 ## Qué se observó en los estudios

@@ -1,19 +1,48 @@
 ---
-title: "Extracto estandarizado de amla (Phyllanthus emblica) y función endotelial en síndrome metabólico: qué muestra la evidencia"
-source_url: "https://doi.org/10.1186/s12906-019-2509-5"
-doi: "10.1186/s12906-019-2509-5"
-publication_date: "2019"
+title: >-
+  Extracto estandarizado de amla (Phyllanthus emblica) y función endotelial en
+  síndrome metabólico: qué muestra la evidencia
+source_url: 'https://doi.org/10.1186/s12906-019-2509-5'
+doi: 10.1186/s12906-019-2509-5
+publication_date: '2019'
 source_kind: clinical-evidence
 source_type: natural-product-evidence-summary
 rights_status: permitted
 limitations:
-  - "Se refiere a un extracto acuoso estandarizado concreto (comercial), no al fruto fresco ni al polvo de amla."
-  - "Es un único ensayo pequeño y de un solo centro; no es una evidencia consolidada."
-  - "Mide marcadores subrogados (función endotelial, inflamación, lípidos), no episodios clínicos."
-  - "El producto fue suministrado por el fabricante del extracto."
-  - "No permite recomendar el amla como tratamiento de ninguna enfermedad."
+  - >-
+    Se refiere a un extracto acuoso estandarizado concreto (comercial), no al
+    fruto fresco ni al polvo de amla.
+  - >-
+    Es un único ensayo pequeño y de un solo centro; no es una evidencia
+    consolidada.
+  - >-
+    Mide marcadores subrogados (función endotelial, inflamación, lípidos), no
+    episodios clínicos.
+  - El producto fue suministrado por el fabricante del extracto.
+  - No permite recomendar el amla como tratamiento de ninguna enfermedad.
+facets_version: 1
+tarjeta_id: amalaki-amalaki-evidencia-sindrome-metabolico-extracto-estandarizado
+dominio: sustancias-naturales
+tipo:
+  - especie_medicinal
+  - suplemento
+marker:
+  - amalaki
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+  - digestivo
+area_de_salud:
+  - salud-cardiovascular
+  - control-glucemico
+  - antioxidante
+seccion: evidencia
+alias:
+  - amla
+  - amalaki
+  - phyllanthus emblica
+source_language: en
 ---
-
 # Extracto estandarizado de amla y función endotelial en síndrome metabólico
 
 ## Qué se estudió

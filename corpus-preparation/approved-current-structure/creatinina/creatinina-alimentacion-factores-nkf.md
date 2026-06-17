@@ -1,18 +1,48 @@
 ---
-title: "Creatinina: alimentación y factores relacionados"
-source_url: "https://www.kidney.org/kidney-topics/creatinine"
-publication_date: "2023-06-01"
+title: 'Creatinina: alimentación y factores relacionados'
+source_url: 'https://www.kidney.org/kidney-topics/creatinine'
+publication_date: '2023-06-01'
 source_kind: institutional-education
 source_type: nutrition-lifestyle-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la página original."
-  - "Describe factores generales que pueden influir en la creatinina; no es una pauta personalizada."
-  - "Cambiar un factor que modifica la creatinina no equivale necesariamente a mejorar la función renal."
-  - "La alimentación, la masa muscular y la hidratación deben interpretarse junto con el eGFR y otros datos clínicos."
-  - "No recomienda dietas, suplementos, dosis de proteína ni cambios de medicación."
+  - Síntesis editorial de VitaMap; no es una copia de la página original.
+  - >-
+    Describe factores generales que pueden influir en la creatinina; no es una
+    pauta personalizada.
+  - >-
+    Cambiar un factor que modifica la creatinina no equivale necesariamente a
+    mejorar la función renal.
+  - >-
+    La alimentación, la masa muscular y la hidratación deben interpretarse junto
+    con el eGFR y otros datos clínicos.
+  - >-
+    No recomienda dietas, suplementos, dosis de proteína ni cambios de
+    medicación.
+facets_version: 1
+tarjeta_id: creatinina-creatinina-alimentacion-factores-nkf
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - creatinina
+categoria:
+  - perfil-renal
+muestra:
+  - suero
+  - orina
+sistema:
+  - renal-urinario
+area_de_salud:
+  - salud-renal
+  - longevidad
+seccion: alimentacion-factores
+relacionado_con:
+  - id: egfr
+    relacion: calculo_derivado
+  - id: albuminuria
+    relacion: lectura_conjunta
 ---
-
 # Creatinina: alimentación y factores relacionados
 
 ## Qué factores se relacionan

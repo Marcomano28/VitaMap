@@ -163,10 +163,32 @@ El administrador actual conserva estos campos:
 ---
 title: "Título que identifica especie e intención"
 source_url: "https://URL-PRINCIPAL"
+source_language: en
+source_jurisdiction:
+  - GB
 publication_date: "AAAA-MM-DD"
 source_kind: institutional-education
 source_type: medicinal-species-identity-summary
 rights_status: permitted
+facets_version: 1
+tarjeta_id: curcuma-curcuma-identidad-powo
+dominio: sustancias-naturales
+tipo:
+  - especie_medicinal
+  - suplemento
+marker:
+  - curcuma
+sistema:
+  - osteoarticular
+  - digestivo
+area_de_salud:
+  - antiinflamatorio
+  - antioxidante
+seccion: identidad
+alias:
+  - cúrcuma
+  - turmeric
+  - Curcuma longa
 limitations:
   - "Límite específico de la tarjeta."
 ---
@@ -174,11 +196,14 @@ limitations:
 
 También admite `doi` y `pmid`.
 
-No añadas todavía campos taxonómicos personalizados al frontmatter operativo:
-el importador actual no los conserva. Incluye nombre científico, tipo de
-organismo, sinónimos, parte y preparación en el cuerpo de M1.
+Usa `corpus-preparation/corpus-taxonomy.json` como vocabulario canónico para
+`dominio`, `tipo`, `marker`, `sistema`, `area_de_salud`, `alias` y
+`relacionado_con`. Si la especie no existe en la taxonomía, propón primero la
+entrada de topic antes de redactar la tarjeta.
 
-Campos candidatos para una futura ampliación del catálogo:
+Los detalles botánicos y de producto siguen perteneciendo al cuerpo de la
+tarjeta M1 salvo que exista un campo operativo específico. Puedes incluirlos en
+el texto con una estructura clara:
 
 ```yaml
 organism_type: plant
@@ -195,8 +220,19 @@ tradition:
   - ayurveda
 ```
 
-No deben utilizarse hasta que el administrador pueda importarlos, mostrarlos y
-preservarlos.
+No uses esos campos botánicos como frontmatter operativo todavía: `dominio`,
+`tipo`, `marker`, `sistema`, `area_de_salud`, `seccion`, `alias` y
+`relacionado_con` sí son operativos; `scientific_name`, `part_used` y
+`preparation` siguen siendo contenido editorial.
+
+Mapeo habitual de `source_type` a `seccion`:
+
+| `source_type` | `seccion` |
+|---|---|
+| `medicinal-species-identity-summary` | `identidad` |
+| `traditional-medicinal-use-summary` | `uso-documentado` |
+| `natural-product-evidence-summary` | `evidencia` |
+| `natural-product-safety-summary` | `seguridad` |
 
 ---
 

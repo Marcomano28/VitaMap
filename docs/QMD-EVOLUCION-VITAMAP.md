@@ -23,7 +23,8 @@ función es más concreta:
 Cuando este documento contradiga ejemplos antiguos de `docs/ROADMAP.md`,
 prevalece este documento para la operación de QMD.
 
-La organización editorial por tema, las tarjetas A/B/C, T1/T2/T3 y AC1-AC4,
+La organización editorial por tema, las tarjetas A/B/C/D/E, T1/T2/T3 y
+AC1-AC4,
 y su evolución hacia recuperación por intención se definen en
 `docs/ARQUITECTURA-CORPUS-TEMATICO-Y-RECUPERACION.md`.
 
@@ -323,15 +324,26 @@ Este adaptador forma parte del contrato de integración y debe tener pruebas.
 
 ### 4.7 Estado del corpus compartido
 
-La tubería para consultar evidencia está implementada, pero el repositorio
-solo contiene `data/kb/guidelines/example-seed.md`. El propio documento se
-declara placeholder, usa `example.org` y no aporta evidencia clínica.
+La tubería para consultar evidencia está implementada. Conviene distinguir
+dos ubicaciones que se confunden con facilidad:
+
+- el **repositorio** (`data/kb/` en git) solo contiene
+  `data/kb/guidelines/example-seed.md`, un placeholder con `example.org`;
+- el **volumen de despliegue** (`vitamap_data:/data/kb` en el VPS) sí
+  contiene un corpus amplio y operativo (educación institucional,
+  evidencia clínica y tradición para los marcadores del piloto),
+  construido vía `/admin/corpus` directamente en el volumen.
+
+Esa separación es la fuente de verdad: **el corpus vivo está en el volumen,
+no en el repo.** Publicar markdown en `data/kb/` del repo y hacer `git pull`
+NO actualiza el volumen, y duplicar ahí lo que ya gestiona `/admin/corpus`
+genera documentos redundantes. La administración del corpus se hace por
+`/admin/corpus` (o `seed-kb` contra el volumen), no por git.
 
 Por tanto:
 
-- el RAG dual existe técnicamente;
+- el RAG dual existe y, en el despliegue, el corpus compartido es operativo;
 - la memoria personal ya puede recuperarse;
-- el corpus compartido todavía no puede considerarse operativo;
 - una respuesta que solo cite la analítica personal no demuestra consulta de
   evidencia.
 

@@ -1,17 +1,46 @@
 ---
-title: "Colesterol HDL: por qué más no siempre significa mejor"
-source_url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC8466913/"
-publication_date: "2021"
+title: 'Colesterol HDL: por qué más no siempre significa mejor'
+source_url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8466913/'
+publication_date: '2021'
 source_kind: institutional-education
 source_type: science-curiosity-summary
 rights_status: permitted
 limitations:
-  - "Resume conocimiento científico en evolución."
-  - "No modifica la interpretación clínica individual."
-  - "Las investigaciones sobre funcionalidad del HDL continúan desarrollándose."
-  - "No establece objetivos terapéuticos."
+  - Resume conocimiento científico en evolución.
+  - No modifica la interpretación clínica individual.
+  - Las investigaciones sobre funcionalidad del HDL continúan desarrollándose.
+  - No establece objetivos terapéuticos.
+facets_version: 1
+tarjeta_id: colesterol-hdl-colesterol-hdl-curiosidad-mas-no-siempre-es-mejor
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - colesterol-hdl
+categoria:
+  - perfil-lipidico
+muestra:
+  - suero
+  - plasma
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+area_de_salud:
+  - salud-cardiovascular
+  - longevidad
+seccion: curiosidad
+alias:
+  - hdl
+  - colesterol hdl
+relacionado_con:
+  - id: colesterol-ldl
+    relacion: mismo_panel
+  - id: trigliceridos
+    relacion: mismo_panel
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Colesterol HDL: por qué más no siempre significa mejor
 
 ## La idea clásica

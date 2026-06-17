@@ -1,16 +1,52 @@
 ---
-title: "Vitamina D: por qué su forma activa funciona como una hormona"
-source_url: "https://ods.od.nih.gov/factsheets/VitaminD-HealthProfessional/"
-publication_date: "2025-06-27"
+title: 'Vitamina D: por qué su forma activa funciona como una hormona'
+source_url: 'https://ods.od.nih.gov/factsheets/VitaminD-HealthProfessional/'
+publication_date: '2025-06-27'
 source_kind: institutional-education
 source_type: science-curiosity-summary
 rights_status: permitted
 limitations:
-  - "Síntesis divulgativa de VitaMap; no sustituye información clínica detallada."
-  - "Una curiosidad no es una recomendación de salud ni un diagnóstico."
-  - "No indica qué cantidad de vitamina D necesita una persona concreta."
+  - Síntesis divulgativa de VitaMap; no sustituye información clínica detallada.
+  - Una curiosidad no es una recomendación de salud ni un diagnóstico.
+  - No indica qué cantidad de vitamina D necesita una persona concreta.
+facets_version: 1
+tarjeta_id: vitamina-d-vitamina-d-curiosidad-hormona-ods
+dominio: laboratorio
+tipo:
+  - analito
+  - vitamina
+marker:
+  - vitamina-d
+categoria:
+  - vitaminas
+  - metabolismo-oseo
+muestra:
+  - suero
+  - plasma
+sistema:
+  - osteoarticular
+  - endocrino-metabolico
+  - inmunologico
+area_de_salud:
+  - salud-osea
+  - inmunidad
+  - energia-fatiga
+seccion: curiosidad
+alias:
+  - 25-OH-D
+  - calcidiol
+  - colecalciferol
+relacionado_con:
+  - id: calcio
+    relacion: lectura_conjunta
+  - id: fosfato
+    relacion: lectura_conjunta
+  - id: pth
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Vitamina D: por qué su forma activa funciona como una hormona
 
 ## El dato

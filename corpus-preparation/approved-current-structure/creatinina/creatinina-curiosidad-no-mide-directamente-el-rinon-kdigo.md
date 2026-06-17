@@ -1,17 +1,48 @@
 ---
-title: "Creatinina: por qué no mide directamente todo el riñón"
-source_url: "https://pubmed.ncbi.nlm.nih.gov/38519239/"
-publication_date: "2024-04"
+title: 'Creatinina: por qué no mide directamente todo el riñón'
+source_url: 'https://pubmed.ncbi.nlm.nih.gov/38519239/'
+publication_date: 2024-04
 source_kind: institutional-education
 source_type: science-curiosity-summary
 rights_status: licensed
 limitations:
-  - "Síntesis divulgativa basada en guías y educación sanitaria; no sustituye una evaluación clínica."
-  - "Explica una limitación del biomarcador, no una forma de interpretar resultados individuales."
-  - "El eGFR también es una estimación y puede ser impreciso en algunas situaciones."
-  - "No ofrece diagnóstico, tratamiento ni recomendaciones personalizadas."
+  - >-
+    Síntesis divulgativa basada en guías y educación sanitaria; no sustituye una
+    evaluación clínica.
+  - >-
+    Explica una limitación del biomarcador, no una forma de interpretar
+    resultados individuales.
+  - >-
+    El eGFR también es una estimación y puede ser impreciso en algunas
+    situaciones.
+  - 'No ofrece diagnóstico, tratamiento ni recomendaciones personalizadas.'
+facets_version: 1
+tarjeta_id: creatinina-creatinina-curiosidad-no-mide-directamente-el-rinon-kdigo
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - creatinina
+categoria:
+  - perfil-renal
+muestra:
+  - suero
+  - orina
+sistema:
+  - renal-urinario
+area_de_salud:
+  - salud-renal
+  - longevidad
+seccion: curiosidad
+relacionado_con:
+  - id: egfr
+    relacion: calculo_derivado
+  - id: albuminuria
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Creatinina: por qué no mide directamente todo el riñón
 
 ## El dato

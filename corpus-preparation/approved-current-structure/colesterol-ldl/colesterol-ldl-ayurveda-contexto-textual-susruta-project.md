@@ -1,18 +1,52 @@
 ---
-title: "Ayurveda clásico: contexto textual para interpretar medas en la Suśrutasaṃhitā"
-source_url: "https://sushrutaproject1.github.io/"
-doi: "10.5281/zenodo.20091033"
-publication_date: "2026-05-08"
+title: 'Ayurveda clásico: contexto textual para interpretar medas en la Suśrutasaṃhitā'
+source_url: 'https://sushrutaproject1.github.io/'
+doi: 10.5281/zenodo.20091033
+publication_date: '2026-05-08'
 source_kind: tradition-context
 source_type: traditional-scholarly-context-summary
 rights_status: licensed
 limitations:
-  - "Explica la transmisión textual de la Suśrutasaṃhitā; no evalúa la eficacia clínica de una práctica ayurvédica."
-  - "No compara todavía cada lectura de medas entre todos los manuscritos y ediciones conservados."
-  - "La edición crítica de la recensión nepalesa continúa evolucionando."
-  - "No equipara medas con colesterol, LDL ni tejido adiposo definido por la biomedicina moderna."
+  - >-
+    Explica la transmisión textual de la Suśrutasaṃhitā; no evalúa la eficacia
+    clínica de una práctica ayurvédica.
+  - >-
+    No compara todavía cada lectura de medas entre todos los manuscritos y
+    ediciones conservados.
+  - La edición crítica de la recensión nepalesa continúa evolucionando.
+  - >-
+    No equipara medas con colesterol, LDL ni tejido adiposo definido por la
+    biomedicina moderna.
+facets_version: 1
+tarjeta_id: colesterol-ldl-colesterol-ldl-ayurveda-contexto-textual-susruta-project
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - colesterol-ldl
+categoria:
+  - perfil-lipidico
+muestra:
+  - suero
+  - plasma
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+area_de_salud:
+  - salud-cardiovascular
+  - longevidad
+seccion: tradicion
+tradicion: ayurveda
+alias:
+  - ldl
+  - colesterol ldl
+  - colesterol total
+relacionado_con:
+  - id: colesterol-hdl
+    relacion: mismo_panel
+  - id: trigliceridos
+    relacion: mismo_panel
 ---
-
 # Suśrutasaṃhitā: contexto textual para interpretar medas
 
 ## Fuente estudiada

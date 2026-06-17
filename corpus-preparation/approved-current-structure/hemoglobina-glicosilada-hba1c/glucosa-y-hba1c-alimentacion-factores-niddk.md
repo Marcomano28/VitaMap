@@ -1,17 +1,48 @@
 ---
-title: "Glucosa y HbA1c: factores cotidianos relacionados"
-source_url: "https://www.niddk.nih.gov/health-information/diabetes/overview/risk-factors-type-2-diabetes"
-publication_date: "2022-07"
+title: 'Glucosa y HbA1c: factores cotidianos relacionados'
+source_url: >-
+  https://www.niddk.nih.gov/health-information/diabetes/overview/risk-factors-type-2-diabetes
+publication_date: 2022-07
 source_kind: institutional-education
 source_type: nutrition-lifestyle-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la página original."
-  - "Describe asociaciones generales de riesgo, no causas individuales."
-  - "No es una recomendación de dieta, ejercicio, suplementos ni tratamiento."
-  - "Refleja la revisión de julio de 2022; NIDDK indica que la página ya no se actualiza."
+  - Síntesis editorial de VitaMap; no es una copia de la página original.
+  - 'Describe asociaciones generales de riesgo, no causas individuales.'
+  - 'No es una recomendación de dieta, ejercicio, suplementos ni tratamiento.'
+  - >-
+    Refleja la revisión de julio de 2022; NIDDK indica que la página ya no se
+    actualiza.
+facets_version: 1
+tarjeta_id: hemoglobina-glicosilada-hba1c-glucosa-y-hba1c-alimentacion-factores-niddk
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - glucosa-en-ayunas
+  - hba1c
+  - hemoglobina
+categoria:
+  - glucemia-insulina
+muestra:
+  - sangre-total
+sistema:
+  - endocrino-metabolico
+area_de_salud:
+  - control-glucemico
+  - energia-fatiga
+seccion: alimentacion-factores
+alias:
+  - hba1c
+  - a1c
+  - hemoglobina glicosilada
+relacionado_con:
+  - id: glucosa-en-ayunas
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Glucosa y HbA1c: factores cotidianos relacionados
 
 ## Qué factores se relacionan

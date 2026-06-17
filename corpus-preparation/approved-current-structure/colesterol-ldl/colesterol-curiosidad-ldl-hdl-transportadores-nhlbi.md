@@ -1,17 +1,52 @@
 ---
-title: "Colesterol: el «bueno» y el «malo» no son dos moléculas diferentes"
-source_url: "https://www.nhlbi.nih.gov/health/blood-cholesterol"
-publication_date: "2024-04-17"
+title: 'Colesterol: el «bueno» y el «malo» no son dos moléculas diferentes'
+source_url: 'https://www.nhlbi.nih.gov/health/blood-cholesterol'
+publication_date: '2024-04-17'
 source_kind: institutional-education
 source_type: science-curiosity-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la página del NHLBI."
-  - "Tarjeta de curiosidad científica: explica un concepto general, no interpreta tu resultado concreto."
-  - "No contiene diagnósticos ni recomendaciones de tratamiento."
-  - "Las expresiones colesterol bueno y malo describen sus transportadores, no dos tipos distintos de molécula de colesterol."
+  - Síntesis editorial de VitaMap; no es una copia de la página del NHLBI.
+  - >-
+    Tarjeta de curiosidad científica: explica un concepto general, no interpreta
+    tu resultado concreto.
+  - No contiene diagnósticos ni recomendaciones de tratamiento.
+  - >-
+    Las expresiones colesterol bueno y malo describen sus transportadores, no
+    dos tipos distintos de molécula de colesterol.
+facets_version: 1
+tarjeta_id: colesterol-ldl-colesterol-curiosidad-ldl-hdl-transportadores-nhlbi
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - colesterol-hdl
+  - colesterol-ldl
+categoria:
+  - perfil-lipidico
+muestra:
+  - suero
+  - plasma
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+area_de_salud:
+  - salud-cardiovascular
+  - longevidad
+seccion: curiosidad
+alias:
+  - ldl
+  - colesterol ldl
+  - colesterol total
+relacionado_con:
+  - id: colesterol-hdl
+    relacion: mismo_panel
+  - id: trigliceridos
+    relacion: mismo_panel
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Colesterol: el «bueno» y el «malo» no son dos moléculas diferentes
 
 ## El dato

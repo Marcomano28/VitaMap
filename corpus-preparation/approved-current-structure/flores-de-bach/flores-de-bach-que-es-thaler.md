@@ -1,19 +1,41 @@
 ---
-title: "Flores de Bach: qué son y cómo se utilizan"
-source_url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC2695424/"
-doi: "10.1186/1472-6882-9-16"
-pmid: "19470153"
-publication_date: "2009-05-26"
+title: 'Flores de Bach: qué son y cómo se utilizan'
+source_url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC2695424/'
+doi: 10.1186/1472-6882-9-16
+pmid: '19470153'
+publication_date: '2009-05-26'
 source_kind: clinical-evidence
 source_type: complementary-practice-overview-summary
 rights_status: permitted
 limitations:
-  - "Describe el sistema clásico y sus formas habituales de uso; no demuestra eficacia."
-  - "Las marcas y escuelas posteriores pueden variar en preparación, mezclas y modo de consulta."
-  - "El posible valor reflexivo de la práctica es distinto de un efecto específico del preparado."
-  - "La evidencia clínica y la seguridad se examinan en tarjetas separadas."
+  - >-
+    Describe el sistema clásico y sus formas habituales de uso; no demuestra
+    eficacia.
+  - >-
+    Las marcas y escuelas posteriores pueden variar en preparación, mezclas y
+    modo de consulta.
+  - >-
+    El posible valor reflexivo de la práctica es distinto de un efecto
+    específico del preparado.
+  - La evidencia clínica y la seguridad se examinan en tarjetas separadas.
+facets_version: 1
+tarjeta_id: flores-de-bach-flores-de-bach-que-es-thaler
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - flores-de-bach
+sistema:
+  - neurologico-cognitivo
+area_de_salud:
+  - estado-animo-estres
+seccion: identidad
+alias:
+  - flores de bach
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Flores de Bach: qué son
 
 ## Aclaración del nombre

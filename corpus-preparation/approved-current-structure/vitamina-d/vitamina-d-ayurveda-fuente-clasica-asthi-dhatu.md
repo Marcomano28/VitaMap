@@ -1,18 +1,59 @@
 ---
-title: "Ayurveda clásico: el asthi dhātu (tejido óseo) en la Suśrutasaṃhitā"
-source_url: "https://doi.org/10.5281/zenodo.20091000"
-doi: "10.5281/zenodo.20091000"
-publication_date: "2026-05-09"
+title: 'Ayurveda clásico: el asthi dhātu (tejido óseo) en la Suśrutasaṃhitā'
+source_url: 'https://doi.org/10.5281/zenodo.20091000'
+doi: 10.5281/zenodo.20091000
+publication_date: '2026-05-09'
 source_kind: tradition-context
 source_type: traditional-primary-source-summary
 rights_status: permitted
 limitations:
-  - "Describe un concepto de un texto médico clásico (asthi dhātu), no una entidad biomédica moderna."
-  - "Procede de una edición crítica provisional; las lecturas pueden variar en versiones futuras."
-  - "No establece equivalencias con la vitamina D, el magnesio, el calcio ni ningún biomarcador o mineral."
-  - "No ofrece una recomendación terapéutica."
+  - >-
+    Describe un concepto de un texto médico clásico (asthi dhātu), no una
+    entidad biomédica moderna.
+  - >-
+    Procede de una edición crítica provisional; las lecturas pueden variar en
+    versiones futuras.
+  - >-
+    No establece equivalencias con la vitamina D, el magnesio, el calcio ni
+    ningún biomarcador o mineral.
+  - No ofrece una recomendación terapéutica.
+facets_version: 1
+tarjeta_id: vitamina-d-vitamina-d-ayurveda-fuente-clasica-asthi-dhatu
+dominio: laboratorio
+tipo:
+  - analito
+  - vitamina
+marker:
+  - vitamina-d
+categoria:
+  - vitaminas
+  - metabolismo-oseo
+muestra:
+  - suero
+  - plasma
+sistema:
+  - osteoarticular
+  - endocrino-metabolico
+  - inmunologico
+area_de_salud:
+  - salud-osea
+  - inmunidad
+  - energia-fatiga
+seccion: tradicion
+tradicion: ayurveda
+alias:
+  - 25-OH-D
+  - calcidiol
+  - colecalciferol
+relacionado_con:
+  - id: calcio
+    relacion: lectura_conjunta
+  - id: fosfato
+    relacion: lectura_conjunta
+  - id: pth
+    relacion: lectura_conjunta
+source_language: en
 ---
-
 # El asthi dhātu (tejido óseo) en la Suśrutasaṃhitā
 
 ## Texto y procedencia

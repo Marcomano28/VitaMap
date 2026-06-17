@@ -1,18 +1,43 @@
 ---
-title: "Kinesiología aplicada: origen y marco propio"
-source_url: "https://pubmed.ncbi.nlm.nih.gov/9200049/"
-pmid: "9200049"
-publication_date: "1997"
+title: 'Kinesiología aplicada: origen y marco propio'
+source_url: 'https://pubmed.ncbi.nlm.nih.gov/9200049/'
+pmid: '9200049'
+publication_date: '1997'
 source_kind: tradition-context
 source_type: complementary-practice-framework-summary
 rights_status: permitted
 limitations:
-  - "Describe el origen y el marco interno de la práctica; no demuestra que ese marco sea cierto ni que funcione."
-  - "Los conceptos de 'energía', meridianos o chakras se atribuyen a la práctica y a tradiciones que toma prestadas, no a una realidad anatómica demostrada."
-  - "Distintas escuelas usan estos conceptos de forma diferente; no hay una doctrina única."
-  - "Una afirmación del fundador o de una escuela no equivale a un hecho histórico ni clínico."
+  - >-
+    Describe el origen y el marco interno de la práctica; no demuestra que ese
+    marco sea cierto ni que funcione.
+  - >-
+    Los conceptos de 'energía', meridianos o chakras se atribuyen a la práctica
+    y a tradiciones que toma prestadas, no a una realidad anatómica demostrada.
+  - >-
+    Distintas escuelas usan estos conceptos de forma diferente; no hay una
+    doctrina única.
+  - >-
+    Una afirmación del fundador o de una escuela no equivale a un hecho
+    histórico ni clínico.
+facets_version: 1
+tarjeta_id: kinesiologia-aplicada-kinesiologia-aplicada-origen-marco-goodheart
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - kinesiologia-aplicada
+sistema:
+  - osteoarticular
+  - neurologico-cognitivo
+area_de_salud:
+  - rendimiento-deportivo
+seccion: identidad
+alias:
+  - kinesiologia aplicada
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Kinesiología aplicada: origen y marco propio
 
 ## Origen documentado

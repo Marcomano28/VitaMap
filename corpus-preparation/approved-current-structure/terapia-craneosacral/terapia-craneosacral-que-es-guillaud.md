@@ -1,18 +1,37 @@
 ---
-title: "Terapia craneosacral: qué es"
-source_url: "https://doi.org/10.1371/journal.pone.0167823"
-doi: "10.1371/journal.pone.0167823"
-publication_date: "2016-12-09"
+title: 'Terapia craneosacral: qué es'
+source_url: 'https://doi.org/10.1371/journal.pone.0167823'
+doi: 10.1371/journal.pone.0167823
+publication_date: '2016-12-09'
 source_kind: clinical-evidence
 source_type: complementary-practice-overview-summary
 rights_status: permitted
 limitations:
-  - "Describe en qué consiste la práctica; no la valida ni la recomienda."
-  - "La revisión describe técnicas del campo craneal; no establece que todas las escuelas apliquen exactamente el mismo procedimiento."
-  - "El origen y el marco propio, la evaluación científica y la seguridad se tratan en tarjetas aparte."
-  - "No es una guía de autoaplicación."
+  - Describe en qué consiste la práctica; no la valida ni la recomienda.
+  - >-
+    La revisión describe técnicas del campo craneal; no establece que todas las
+    escuelas apliquen exactamente el mismo procedimiento.
+  - >-
+    El origen y el marco propio, la evaluación científica y la seguridad se
+    tratan en tarjetas aparte.
+  - No es una guía de autoaplicación.
+facets_version: 1
+tarjeta_id: terapia-craneosacral-terapia-craneosacral-que-es-guillaud
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - terapia-craneosacral
+sistema:
+  - osteoarticular
+  - neurologico-cognitivo
+area_de_salud:
+  - estado-animo-estres
+seccion: identidad
+alias:
+  - terapia craneosacral
+source_language: en
 ---
-
 # Terapia craneosacral: qué es
 
 ## Aclaración del nombre

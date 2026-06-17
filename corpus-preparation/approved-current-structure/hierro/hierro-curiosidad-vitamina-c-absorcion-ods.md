@@ -1,16 +1,51 @@
 ---
-title: "Hierro: por qué la vitamina C mejora la absorción del hierro vegetal"
-source_url: "https://ods.od.nih.gov/factsheets/Iron-HealthProfessional/"
-publication_date: "2025-09-04"
+title: 'Hierro: por qué la vitamina C mejora la absorción del hierro vegetal'
+source_url: 'https://ods.od.nih.gov/factsheets/Iron-HealthProfessional/'
+publication_date: '2025-09-04'
 source_kind: institutional-education
 source_type: science-curiosity-summary
 rights_status: permitted
 limitations:
-  - "Síntesis divulgativa de VitaMap; no sustituye información clínica detallada."
-  - "Una curiosidad no es una recomendación de salud ni un diagnóstico."
-  - "No indica qué cantidad de hierro o de vitamina C necesita una persona concreta."
+  - Síntesis divulgativa de VitaMap; no sustituye información clínica detallada.
+  - Una curiosidad no es una recomendación de salud ni un diagnóstico.
+  - >-
+    No indica qué cantidad de hierro o de vitamina C necesita una persona
+    concreta.
+facets_version: 1
+tarjeta_id: hierro-hierro-curiosidad-vitamina-c-absorcion-ods
+dominio: laboratorio
+tipo:
+  - analito
+  - mineral
+  - panel
+marker:
+  - hierro
+  - vitamina-c
+categoria:
+  - minerales-micronutrientes
+  - hematologia
+muestra:
+  - suero
+  - plasma
+sistema:
+  - hematologico
+area_de_salud:
+  - energia-fatiga
+  - rendimiento-deportivo
+seccion: curiosidad
+alias:
+  - hierro
+  - ferritina
+  - transferrina
+relacionado_con:
+  - id: vitamina-c
+    relacion: afecta_absorcion
+  - id: proteina-c-reactiva
+    relacion: modifica_interpretacion
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Hierro: por qué la vitamina C mejora la absorción del hierro vegetal
 
 ## El dato

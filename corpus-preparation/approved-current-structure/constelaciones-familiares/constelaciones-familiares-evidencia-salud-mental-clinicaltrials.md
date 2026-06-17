@@ -1,17 +1,42 @@
 ---
-title: "Constelaciones familiares y salud mental: qué se ha investigado"
-source_url: "https://clinicaltrials.gov/study/NCT05051462"
-publication_date: "2025-09-26"
+title: 'Constelaciones familiares y salud mental: qué se ha investigado'
+source_url: 'https://clinicaltrials.gov/study/NCT05051462'
+publication_date: '2025-09-26'
 source_kind: clinical-evidence
 source_type: complementary-practice-evidence-summary
 rights_status: permitted
 limitations:
-  - "La investigación se concentra en pocos equipos, muestras pequeñas y población general."
-  - "Los estudios usan formatos y desenlaces diferentes, por lo que no prueban una eficacia universal."
-  - "El ensayo aleatorizado más reciente fue modificado durante la pandemia y tuvo baja potencia estadística."
-  - "Los resultados clínicos no validan el mecanismo del 'campo' ni la exactitud de una representación."
+  - >-
+    La investigación se concentra en pocos equipos, muestras pequeñas y
+    población general.
+  - >-
+    Los estudios usan formatos y desenlaces diferentes, por lo que no prueban
+    una eficacia universal.
+  - >-
+    El ensayo aleatorizado más reciente fue modificado durante la pandemia y
+    tuvo baja potencia estadística.
+  - >-
+    Los resultados clínicos no validan el mecanismo del 'campo' ni la exactitud
+    de una representación.
+facets_version: 1
+tarjeta_id: >-
+  constelaciones-familiares-constelaciones-familiares-evidencia-salud-mental-clinicaltrials
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - constelaciones-familiares
+sistema:
+  - neurologico-cognitivo
+area_de_salud:
+  - estado-animo-estres
+seccion: evidencia
+alias:
+  - constelaciones familiares
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Constelaciones familiares y salud mental: estado de la evidencia
 
 ## Pregunta evaluada

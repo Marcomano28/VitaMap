@@ -1,17 +1,46 @@
 ---
-title: "Quilomicrones y VLDL: dos sistemas que transportan triglicéridos"
-source_url: "https://medlineplus.gov/lab-tests/cholesterol-levels/"
-publication_date: "2024-10-15"
+title: 'Quilomicrones y VLDL: dos sistemas que transportan triglicéridos'
+source_url: 'https://medlineplus.gov/lab-tests/cholesterol-levels/'
+publication_date: '2024-10-15'
 source_kind: institutional-education
 source_type: science-curiosity-summary
 rights_status: permitted
 limitations:
-  - "Síntesis divulgativa de VitaMap; no reproduce las fuentes originales."
-  - "Explica el transporte general de triglicéridos, no una analítica individual."
-  - "La necesidad de ayuno depende de las instrucciones del laboratorio o del profesional."
-  - "No ofrece diagnóstico ni recomendación de tratamiento."
+  - Síntesis divulgativa de VitaMap; no reproduce las fuentes originales.
+  - 'Explica el transporte general de triglicéridos, no una analítica individual.'
+  - >-
+    La necesidad de ayuno depende de las instrucciones del laboratorio o del
+    profesional.
+  - No ofrece diagnóstico ni recomendación de tratamiento.
+facets_version: 1
+tarjeta_id: trigliceridos-trigliceridos-curiosidad-quilomicrones-vldl-medlineplus
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - trigliceridos
+categoria:
+  - perfil-lipidico
+muestra:
+  - suero
+  - plasma
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+area_de_salud:
+  - salud-cardiovascular
+  - control-glucemico
+  - longevidad
+seccion: curiosidad
+relacionado_con:
+  - id: colesterol-ldl
+    relacion: mismo_panel
+  - id: colesterol-hdl
+    relacion: mismo_panel
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Quilomicrones y VLDL: dos sistemas que transportan triglicéridos
 
 ## El dato

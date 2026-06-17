@@ -1,20 +1,60 @@
 ---
-title: "Guggulu (Commiphora mukul) para el colesterol: evaluación científica actual"
-source_url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC8229657/"
-doi: "10.3390/medicina57060546"
-pmid: "34071454"
-publication_date: "2021-06"
+title: 'Guggulu (Commiphora mukul) para el colesterol: evaluación científica actual'
+source_url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8229657/'
+doi: 10.3390/medicina57060546
+pmid: '34071454'
+publication_date: 2021-06
 source_kind: tradition-context
 source_type: traditional-evidence-review-summary
 rights_status: licensed
 limitations:
-  - "Evalúa productos con guggulu frente a marcadores lipídicos; no habla en nombre de la tradición ni sustituye al texto clásico."
-  - "Los estudios utilizaron preparados, extractos, poblaciones y duraciones diferentes; sus resultados no son directamente intercambiables."
-  - "El metaanálisis encontró efectos favorables, pero muchos ensayos tenían información insuficiente sobre aleatorización y ocultación, y los estudios de guggulu mostraron heterogeneidad elevada."
-  - "No se ha demostrado que guggulu reduzca infartos, ictus, mortalidad ni riesgo cardiovascular."
-  - "No es una recomendación de tratamiento, producto o dosis."
+  - >-
+    Evalúa productos con guggulu frente a marcadores lipídicos; no habla en
+    nombre de la tradición ni sustituye al texto clásico.
+  - >-
+    Los estudios utilizaron preparados, extractos, poblaciones y duraciones
+    diferentes; sus resultados no son directamente intercambiables.
+  - >-
+    El metaanálisis encontró efectos favorables, pero muchos ensayos tenían
+    información insuficiente sobre aleatorización y ocultación, y los estudios
+    de guggulu mostraron heterogeneidad elevada.
+  - >-
+    No se ha demostrado que guggulu reduzca infartos, ictus, mortalidad ni
+    riesgo cardiovascular.
+  - 'No es una recomendación de tratamiento, producto o dosis.'
+facets_version: 1
+tarjeta_id: colesterol-ldl-colesterol-ldl-ayurveda-evaluacion-cientifica-gyawali
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - colesterol-ldl
+categoria:
+  - perfil-lipidico
+muestra:
+  - suero
+  - plasma
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+area_de_salud:
+  - salud-cardiovascular
+  - longevidad
+seccion: evidencia
+tradicion: ayurveda
+alias:
+  - ldl
+  - colesterol ldl
+  - colesterol total
+relacionado_con:
+  - id: colesterol-hdl
+    relacion: mismo_panel
+  - id: trigliceridos
+    relacion: mismo_panel
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Guggulu (Commiphora mukul): evaluación científica actual frente al colesterol
 
 ## Qué se ha investigado

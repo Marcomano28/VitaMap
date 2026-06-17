@@ -1,17 +1,48 @@
 ---
-title: "HDL y medicina china: contexto histórico de flema y humedad"
-source_url: "https://www.sciopen.com/article/10.1016/j.jtcms.2020.10.004"
-publication_date: "2020-12"
+title: 'HDL y medicina china: contexto histórico de flema y humedad'
+source_url: 'https://www.sciopen.com/article/10.1016/j.jtcms.2020.10.004'
+publication_date: 2020-12
 source_kind: tradition-context
 source_type: traditional-scholarly-context-summary
 rights_status: unknown
 limitations:
-  - "Describe categorías tradicionales usadas en estudios de constitución y síndrome, no biomarcadores modernos."
-  - "Flema-humedad no equivale a HDL, LDL, colesterol ni triglicéridos."
-  - "La evidencia citada procede sobre todo de estudios observacionales y revisiones modernas."
-  - "No ofrece diagnóstico tradicional ni recomendaciones terapéuticas."
+  - >-
+    Describe categorías tradicionales usadas en estudios de constitución y
+    síndrome, no biomarcadores modernos.
+  - 'Flema-humedad no equivale a HDL, LDL, colesterol ni triglicéridos.'
+  - >-
+    La evidencia citada procede sobre todo de estudios observacionales y
+    revisiones modernas.
+  - No ofrece diagnóstico tradicional ni recomendaciones terapéuticas.
+facets_version: 1
+tarjeta_id: colesterol-hdl-hdl-mtc-contexto-historico-flema-y-humedad
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - colesterol-hdl
+categoria:
+  - perfil-lipidico
+muestra:
+  - suero
+  - plasma
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+area_de_salud:
+  - salud-cardiovascular
+  - longevidad
+seccion: tradicion
+tradicion: mtc
+alias:
+  - hdl
+  - colesterol hdl
+relacionado_con:
+  - id: colesterol-ldl
+    relacion: mismo_panel
+  - id: trigliceridos
+    relacion: mismo_panel
 ---
-
 # Flema y humedad en medicina china: contexto para entender comparaciones modernas con lípidos
 
 ## Fuente estudiada

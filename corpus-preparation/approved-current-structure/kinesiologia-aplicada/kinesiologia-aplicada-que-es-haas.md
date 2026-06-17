@@ -1,18 +1,35 @@
 ---
-title: "Kinesiología aplicada: qué es"
-source_url: "https://doi.org/10.1186/1746-1340-15-11"
-doi: "10.1186/1746-1340-15-11"
-publication_date: "2007"
+title: 'Kinesiología aplicada: qué es'
+source_url: 'https://doi.org/10.1186/1746-1340-15-11'
+doi: 10.1186/1746-1340-15-11
+publication_date: '2007'
 source_kind: institutional-education
 source_type: complementary-practice-overview-summary
 rights_status: permitted
 limitations:
-  - "Describe en qué consiste la práctica; no la valida ni la recomienda."
-  - "No debe confundirse con la kinesiología académica (ciencia del movimiento)."
-  - "El origen y el marco propio, y la evaluación científica, se tratan en tarjetas aparte."
-  - "No es una guía de autoaplicación ni un método diagnóstico validado."
+  - Describe en qué consiste la práctica; no la valida ni la recomienda.
+  - No debe confundirse con la kinesiología académica (ciencia del movimiento).
+  - >-
+    El origen y el marco propio, y la evaluación científica, se tratan en
+    tarjetas aparte.
+  - No es una guía de autoaplicación ni un método diagnóstico validado.
+facets_version: 1
+tarjeta_id: kinesiologia-aplicada-kinesiologia-aplicada-que-es-haas
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - kinesiologia-aplicada
+sistema:
+  - osteoarticular
+  - neurologico-cognitivo
+area_de_salud:
+  - rendimiento-deportivo
+seccion: identidad
+alias:
+  - kinesiologia aplicada
+source_language: en
 ---
-
 # Kinesiología aplicada: qué es
 
 ## Aclaración del nombre

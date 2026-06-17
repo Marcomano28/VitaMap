@@ -1,17 +1,40 @@
 ---
-title: "Constelaciones familiares: origen, influencias y marco propio"
-source_url: "https://clinicaltrials.gov/study/NCT03233958"
-publication_date: "2025-04-15"
+title: 'Constelaciones familiares: origen, influencias y marco propio'
+source_url: 'https://clinicaltrials.gov/study/NCT03233958'
+publication_date: '2025-04-15'
 source_kind: tradition-context
 source_type: complementary-practice-framework-summary
 rights_status: permitted
 limitations:
-  - "Contextualiza la historia y el lenguaje de la práctica; no demuestra que su marco sea verdadero."
-  - "Las escuelas posteriores no comparten una doctrina ni una formación homogéneas."
-  - "La transmisión intergeneracional es un campo de estudio real, pero no valida automáticamente la percepción representativa."
-  - "La eficacia y la seguridad requieren fuentes y preguntas diferentes."
+  - >-
+    Contextualiza la historia y el lenguaje de la práctica; no demuestra que su
+    marco sea verdadero.
+  - >-
+    Las escuelas posteriores no comparten una doctrina ni una formación
+    homogéneas.
+  - >-
+    La transmisión intergeneracional es un campo de estudio real, pero no valida
+    automáticamente la percepción representativa.
+  - La eficacia y la seguridad requieren fuentes y preguntas diferentes.
+facets_version: 1
+tarjeta_id: >-
+  constelaciones-familiares-constelaciones-familiares-origen-marco-clinicaltrials
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - constelaciones-familiares
+sistema:
+  - neurologico-cognitivo
+area_de_salud:
+  - estado-animo-estres
+seccion: identidad
+alias:
+  - constelaciones familiares
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Constelaciones familiares: origen y marco propio
 
 ## Origen documentado

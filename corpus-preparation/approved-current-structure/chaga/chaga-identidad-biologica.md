@@ -1,17 +1,43 @@
 ---
-title: "Chaga (Inonotus obliquus): identidad y material utilizado"
-source_url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC7707248/"
-publication_date: "2019-10-11"
-doi: "10.1080/23802359.2019.1675548"
+title: 'Chaga (Inonotus obliquus): identidad y material utilizado'
+source_url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC7707248/'
+publication_date: '2019-10-11'
+doi: 10.1080/23802359.2019.1675548
 source_kind: institutional-education
 source_type: medicinal-species-identity-summary
 rights_status: permitted
 limitations:
-  - "Resume la identidad biológica y el material conocido como chaga; no evalúa eficacia ni seguridad."
-  - "La fuente principal es un estudio taxonómico y genómico, no un análisis de productos comerciales."
-  - "Las bases taxonómicas pueden mostrar variantes en la cita de autor del nombre científico."
+  - >-
+    Resume la identidad biológica y el material conocido como chaga; no evalúa
+    eficacia ni seguridad.
+  - >-
+    La fuente principal es un estudio taxonómico y genómico, no un análisis de
+    productos comerciales.
+  - >-
+    Las bases taxonómicas pueden mostrar variantes en la cita de autor del
+    nombre científico.
+facets_version: 1
+tarjeta_id: chaga-chaga-identidad-biologica
+dominio: sustancias-naturales
+tipo:
+  - especie_medicinal
+  - suplemento
+marker:
+  - chaga
+sistema:
+  - inmunologico
+  - renal-urinario
+area_de_salud:
+  - inmunidad
+  - antioxidante
+seccion: identidad
+alias:
+  - chaga
+  - inonotus obliquus
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Chaga (*Inonotus obliquus*): identidad y material utilizado
 
 ## Identidad

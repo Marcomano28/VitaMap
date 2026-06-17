@@ -1,18 +1,52 @@
 ---
-title: "Magnesio en sangre: interpretación general del análisis"
-source_url: "https://medlineplus.gov/lab-tests/magnesium-blood-test/"
-publication_date: "2023-10-25"
+title: 'Magnesio en sangre: interpretación general del análisis'
+source_url: 'https://medlineplus.gov/lab-tests/magnesium-blood-test/'
+publication_date: '2023-10-25'
 source_kind: institutional-education
 source_type: lab-interpretation-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la página original."
-  - "La fuente describe los resultados como bajos, altos o anormales y no fija un valor numérico universal; cada laboratorio define su rango."
-  - "El magnesio en sangre puede ser normal aunque las reservas del cuerpo sean bajas."
-  - "Diversos medicamentos y enfermedades pueden alterar el resultado."
-  - "No ofrece diagnóstico ni recomendación de tratamiento."
+  - Síntesis editorial de VitaMap; no es una copia de la página original.
+  - >-
+    La fuente describe los resultados como bajos, altos o anormales y no fija un
+    valor numérico universal; cada laboratorio define su rango.
+  - >-
+    El magnesio en sangre puede ser normal aunque las reservas del cuerpo sean
+    bajas.
+  - Diversos medicamentos y enfermedades pueden alterar el resultado.
+  - No ofrece diagnóstico ni recomendación de tratamiento.
+facets_version: 1
+tarjeta_id: magnesio-magnesio-interpretacion-medlineplus
+dominio: laboratorio
+tipo:
+  - analito
+  - mineral
+marker:
+  - magnesio
+categoria:
+  - minerales-micronutrientes
+muestra:
+  - suero
+  - plasma
+sistema:
+  - endocrino-metabolico
+  - neurologico-cognitivo
+  - osteoarticular
+area_de_salud:
+  - energia-fatiga
+  - salud-osea
+  - salud-cognitiva
+  - rendimiento-deportivo
+seccion: interpretacion
+relacionado_con:
+  - id: calcio
+    relacion: lectura_conjunta
+  - id: potasio
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Magnesio en sangre
 
 ## Qué mide esta prueba

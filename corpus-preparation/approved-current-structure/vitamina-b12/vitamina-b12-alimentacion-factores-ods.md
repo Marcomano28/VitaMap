@@ -1,18 +1,50 @@
 ---
-title: "Vitamina B12: fuentes alimentarias y factores de absorción"
-source_url: "https://ods.od.nih.gov/factsheets/VitaminB12-Consumer/"
-publication_date: "2023-12-15"
+title: 'Vitamina B12: fuentes alimentarias y factores de absorción'
+source_url: 'https://ods.od.nih.gov/factsheets/VitaminB12-Consumer/'
+publication_date: '2023-12-15'
 source_kind: institutional-education
 source_type: nutrition-lifestyle-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la ficha original."
-  - "Describe relaciones generales, no una pauta dietética personalizada."
-  - "Las cantidades de referencia son poblacionales, no objetivos individuales."
-  - "Los suplementos, las inyecciones y sus dosis son decisiones médicas."
-  - "Las algas y los fermentados no aportan una cantidad uniforme ni necesariamente activa de B12."
+  - Síntesis editorial de VitaMap; no es una copia de la ficha original.
+  - 'Describe relaciones generales, no una pauta dietética personalizada.'
+  - 'Las cantidades de referencia son poblacionales, no objetivos individuales.'
+  - 'Los suplementos, las inyecciones y sus dosis son decisiones médicas.'
+  - >-
+    Las algas y los fermentados no aportan una cantidad uniforme ni
+    necesariamente activa de B12.
+facets_version: 1
+tarjeta_id: vitamina-b12-vitamina-b12-alimentacion-factores-ods
+dominio: laboratorio
+tipo:
+  - analito
+  - vitamina
+marker:
+  - vitamina-b12
+categoria:
+  - vitaminas
+  - hematologia
+muestra:
+  - suero
+  - plasma
+sistema:
+  - hematologico
+  - neurologico-cognitivo
+area_de_salud:
+  - energia-fatiga
+  - salud-cognitiva
+  - estado-animo-estres
+seccion: alimentacion-factores
+alias:
+  - b12
+  - cobalamina
+relacionado_con:
+  - id: acido-folico
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Vitamina B12: alimentación y factores relacionados
 
 ## Qué factores se relacionan

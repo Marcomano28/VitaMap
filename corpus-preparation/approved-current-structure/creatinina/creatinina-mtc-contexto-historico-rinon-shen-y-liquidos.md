@@ -1,17 +1,47 @@
 ---
-title: "Creatinina y medicina china: contexto histórico del Riñón, Shèn y los líquidos"
-source_url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC8983196/"
-publication_date: "2022"
+title: 'Creatinina y medicina china: contexto histórico del Riñón, Shèn y los líquidos'
+source_url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8983196/'
+publication_date: '2022'
 source_kind: tradition-context
 source_type: traditional-scholarly-context-summary
 rights_status: licensed
 limitations:
-  - "Describe el concepto tradicional de Riñón/Shèn en medicina china, no el riñón anatómico moderno."
-  - "Shèn no equivale a creatinina, eGFR ni filtración glomerular."
-  - "La fuente principal es una revisión moderna que interpreta conceptos clásicos; no es una edición primaria del Huangdi Neijing."
-  - "No ofrece diagnóstico tradicional ni recomendaciones terapéuticas."
+  - >-
+    Describe el concepto tradicional de Riñón/Shèn en medicina china, no el
+    riñón anatómico moderno.
+  - 'Shèn no equivale a creatinina, eGFR ni filtración glomerular.'
+  - >-
+    La fuente principal es una revisión moderna que interpreta conceptos
+    clásicos; no es una edición primaria del Huangdi Neijing.
+  - No ofrece diagnóstico tradicional ni recomendaciones terapéuticas.
+facets_version: 1
+tarjeta_id: creatinina-creatinina-mtc-contexto-historico-rinon-shen-y-liquidos
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - creatinina
+categoria:
+  - perfil-renal
+muestra:
+  - suero
+  - orina
+sistema:
+  - renal-urinario
+area_de_salud:
+  - salud-renal
+  - longevidad
+seccion: tradicion
+tradicion: mtc
+relacionado_con:
+  - id: egfr
+    relacion: calculo_derivado
+  - id: albuminuria
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Riñón, Shèn y líquidos en medicina china: contexto para no confundirlo con creatinina
 
 ## Fuente estudiada

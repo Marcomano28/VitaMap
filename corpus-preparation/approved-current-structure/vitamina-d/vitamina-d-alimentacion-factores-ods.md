@@ -1,18 +1,56 @@
 ---
-title: "Vitamina D: sol, alimentación y factores relacionados"
-source_url: "https://ods.od.nih.gov/factsheets/VitaminD-HealthProfessional/"
-publication_date: "2025-06-27"
+title: 'Vitamina D: sol, alimentación y factores relacionados'
+source_url: 'https://ods.od.nih.gov/factsheets/VitaminD-HealthProfessional/'
+publication_date: '2025-06-27'
 source_kind: institutional-education
 source_type: nutrition-lifestyle-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la ficha original."
-  - "Describe relaciones generales, no una pauta dietética ni una recomendación de exposición solar."
-  - "La síntesis cutánea varía mucho entre personas y lugares; no es predecible."
-  - "Los suplementos de vitamina D y sus dosis son decisiones médicas."
-  - "Pocos alimentos contienen vitamina D de forma natural."
+  - Síntesis editorial de VitaMap; no es una copia de la ficha original.
+  - >-
+    Describe relaciones generales, no una pauta dietética ni una recomendación
+    de exposición solar.
+  - La síntesis cutánea varía mucho entre personas y lugares; no es predecible.
+  - Los suplementos de vitamina D y sus dosis son decisiones médicas.
+  - Pocos alimentos contienen vitamina D de forma natural.
+facets_version: 1
+tarjeta_id: vitamina-d-vitamina-d-alimentacion-factores-ods
+dominio: laboratorio
+tipo:
+  - analito
+  - vitamina
+marker:
+  - vitamina-d
+categoria:
+  - vitaminas
+  - metabolismo-oseo
+muestra:
+  - suero
+  - plasma
+sistema:
+  - osteoarticular
+  - endocrino-metabolico
+  - inmunologico
+area_de_salud:
+  - salud-osea
+  - inmunidad
+  - energia-fatiga
+seccion: alimentacion-factores
+alias:
+  - 25-OH-D
+  - calcidiol
+  - colecalciferol
+relacionado_con:
+  - id: calcio
+    relacion: lectura_conjunta
+  - id: fosfato
+    relacion: lectura_conjunta
+  - id: pth
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Vitamina D: sol, alimentación y factores relacionados
 
 ## Qué factores se relacionan

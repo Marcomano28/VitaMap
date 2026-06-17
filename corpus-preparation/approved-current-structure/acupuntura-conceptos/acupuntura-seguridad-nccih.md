@@ -1,16 +1,43 @@
 ---
-title: "Acupuntura: seguridad y limites generales"
-source_url: "https://www.nccih.nih.gov/health/acupuncture-effectiveness-and-safety"
-publication_date: "2022-10"
+title: 'Acupuntura: seguridad y limites generales'
+source_url: 'https://www.nccih.nih.gov/health/acupuncture-effectiveness-and-safety'
+publication_date: 2022-10
 source_kind: institutional-education
 source_type: acupuncture-safety-summary
 rights_status: permitted
 limitations:
-  - "Resumen educativo de seguridad; no es supervision clinica ni sustituye la valoracion de un profesional."
-  - "No incluye instrucciones de puncion, localizacion para autoaplicacion ni seleccion de puntos."
-  - "Los riesgos descritos dependen de la formacion del profesional y del material empleado."
+  - >-
+    Resumen educativo de seguridad; no es supervision clinica ni sustituye la
+    valoracion de un profesional.
+  - >-
+    No incluye instrucciones de puncion, localizacion para autoaplicacion ni
+    seleccion de puntos.
+  - >-
+    Los riesgos descritos dependen de la formacion del profesional y del
+    material empleado.
+facets_version: 1
+tarjeta_id: acupuntura-conceptos-acupuntura-seguridad-nccih
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - acupuntura
+sistema:
+  - neurologico-cognitivo
+  - digestivo
+area_de_salud:
+  - salud-digestiva
+  - estado-animo-estres
+seccion: seguridad
+tradicion: acupuntura
+alias:
+  - acupuntura
+  - neiguan
+  - pc6
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Acupuntura: seguridad y límites generales
 
 ## Riesgos conocidos

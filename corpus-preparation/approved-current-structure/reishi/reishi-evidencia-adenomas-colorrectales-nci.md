@@ -1,19 +1,49 @@
 ---
-title: "Extracto MAK y adenomas colorrectales: señal clínica preliminar"
-source_url: "https://www.cancer.gov/about-cancer/treatment/cam/hp/mushrooms-pdq"
-publication_date: "2024-11-06"
-pmid: "20518254"
+title: 'Extracto MAK y adenomas colorrectales: señal clínica preliminar'
+source_url: 'https://www.cancer.gov/about-cancer/treatment/cam/hp/mushrooms-pdq'
+publication_date: '2024-11-06'
+pmid: '20518254'
 source_kind: clinical-evidence
 source_type: natural-product-evidence-summary
 rights_status: permitted
 limitations:
-  - "La evidencia procede de un único estudio con control concurrente sin asignación aleatoria de los participantes."
-  - "Solo 96 de las 123 personas inscritas en el grupo MAK completaron el estudio como participantes elegibles."
-  - "El desenlace fueron adenomas colorrectales, no incidencia de cáncer colorrectal."
-  - "El extracto del medio de cultivo de micelio no equivale a cualquier producto de reishi."
-  - "La identidad publicada como Ganoderma lucidum no fue verificada con taxonomía molecular moderna."
+  - >-
+    La evidencia procede de un único estudio con control concurrente sin
+    asignación aleatoria de los participantes.
+  - >-
+    Solo 96 de las 123 personas inscritas en el grupo MAK completaron el estudio
+    como participantes elegibles.
+  - >-
+    El desenlace fueron adenomas colorrectales, no incidencia de cáncer
+    colorrectal.
+  - >-
+    El extracto del medio de cultivo de micelio no equivale a cualquier producto
+    de reishi.
+  - >-
+    La identidad publicada como Ganoderma lucidum no fue verificada con
+    taxonomía molecular moderna.
+facets_version: 1
+tarjeta_id: reishi-reishi-evidencia-adenomas-colorrectales-nci
+dominio: sustancias-naturales
+tipo:
+  - especie_medicinal
+  - suplemento
+marker:
+  - reishi
+sistema:
+  - inmunologico
+  - hepatobiliar
+area_de_salud:
+  - inmunidad
+  - antioxidante
+seccion: evidencia
+alias:
+  - reishi
+  - ganoderma lucidum
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 Capa: M3 · Evidencia moderna
 
 Pregunta que pretende responder:

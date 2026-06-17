@@ -1,16 +1,42 @@
 ---
-title: "Acupuntura clásica: el concepto de canales (jingmai) en el Lingshu (BORRADOR)"
-source_url: "https://ctext.org/huangdi-neijing/jing-mai"
+title: 'Acupuntura clásica: el concepto de canales (jingmai) en el Lingshu (BORRADOR)'
+source_url: 'https://ctext.org/huangdi-neijing/jing-mai'
 source_kind: tradition-context
 source_type: acupuncture-primary-source-summary
 rights_status: unknown
 limitations:
-  - "BORRADOR: falta verificar la fecha de la edición/transcripción digital concreta y su licencia; no publicar en RAG hasta confirmarlas (por eso se omite publication_date)."
-  - "Describe un texto médico histórico y su marco conceptual; no convierte sus términos en anatomía o fisiología modernas."
-  - "Las traducciones y la datación del texto son objeto de debate académico."
-  - "No ofrece instrucciones de tratamiento ni de punción."
+  - >-
+    BORRADOR: falta verificar la fecha de la edición/transcripción digital
+    concreta y su licencia; no publicar en RAG hasta confirmarlas (por eso se
+    omite publication_date).
+  - >-
+    Describe un texto médico histórico y su marco conceptual; no convierte sus
+    términos en anatomía o fisiología modernas.
+  - Las traducciones y la datación del texto son objeto de debate académico.
+  - No ofrece instrucciones de tratamiento ni de punción.
+facets_version: 1
+tarjeta_id: acupuntura-conceptos-acupuntura-fuente-clasica-canales-lingshu
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - acupuntura
+sistema:
+  - neurologico-cognitivo
+  - digestivo
+area_de_salud:
+  - salud-digestiva
+  - estado-animo-estres
+seccion: tradicion
+tradicion: acupuntura
+alias:
+  - acupuntura
+  - neiguan
+  - pc6
+source_language: zh
+source_jurisdiction:
+  - CN
 ---
-
 # El concepto de canales (jingmai) en el Lingshu
 
 ## Texto y procedencia

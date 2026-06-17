@@ -1,17 +1,49 @@
 ---
-title: "Glucosa plasmática en ayunas: interpretación general"
-source_url: "https://www.niddk.nih.gov/health-information/diabetes/overview/tests-diagnosis"
-publication_date: "2022-07"
+title: 'Glucosa plasmática en ayunas: interpretación general'
+source_url: 'https://www.niddk.nih.gov/health-information/diabetes/overview/tests-diagnosis'
+publication_date: 2022-07
 source_kind: institutional-education
 source_type: lab-interpretation-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la página original."
-  - "Los rangos son referencias generales para adultos no embarazados, no objetivos individuales."
-  - "El diagnóstico exige confirmación con una segunda prueba y valoración clínica."
-  - "Refleja la revisión de julio de 2022; NIDDK indica que la página ya no se actualiza, así que conviene contrastarla con los estándares vigentes."
+  - Síntesis editorial de VitaMap; no es una copia de la página original.
+  - >-
+    Los rangos son referencias generales para adultos no embarazados, no
+    objetivos individuales.
+  - >-
+    El diagnóstico exige confirmación con una segunda prueba y valoración
+    clínica.
+  - >-
+    Refleja la revisión de julio de 2022; NIDDK indica que la página ya no se
+    actualiza, así que conviene contrastarla con los estándares vigentes.
+facets_version: 1
+tarjeta_id: glucosa-en-ayunas-glucosa-en-ayunas-interpretacion-niddk
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - glucosa-en-ayunas
+categoria:
+  - glucemia-insulina
+muestra:
+  - suero
+  - plasma
+sistema:
+  - endocrino-metabolico
+area_de_salud:
+  - control-glucemico
+  - energia-fatiga
+seccion: interpretacion
+alias:
+  - glucosa
+  - glucemia
+relacionado_con:
+  - id: hba1c
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Glucosa plasmática en ayunas: interpretación general
 
 ## Qué mide esta prueba
