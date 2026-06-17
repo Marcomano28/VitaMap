@@ -197,6 +197,13 @@ Implementación actual:
 - El prompt QMD recibe `source_language` y `source_jurisdiction`.
 - Las tarjetas de cita pueden mostrar el idioma y jurisdicción de la fuente.
 
+Pendiente futuro: añadir una capa de **lectura complementaria** separada de la
+fuente citada. El `source_url` debe seguir apuntando a la fuente exacta usada
+para construir la tarjeta. Si una misma institución ofrece variantes en español
+o alemán, o existe una página DE/EU equivalente útil para el público alemán, se
+debería modelar aparte (`source_alternates`) y mostrar en la UI como lectura
+adicional, no como evidencia principal de la respuesta.
+
 ---
 
 ## 4. Qué queda por hacer
