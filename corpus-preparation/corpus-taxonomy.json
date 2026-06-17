@@ -178,6 +178,74 @@
     }
   },
   "document_overrides": {
+    "clinical-evidence/extracto-mak-y-adenomas-colorrectales-senal-clinica-preliminar-a83e09f3.md": {
+      "topic": "reishi",
+      "marker": ["reishi"]
+    },
+    "clinical-evidence/ganopoly-en-cancer-de-pulmon-avanzado-evidencia-sobre-marcadores-inmunologicos-8a1484a4.md": {
+      "topic": "reishi",
+      "marker": ["reishi"]
+    },
+    "clinical-evidence/higado-y-ceguera-nocturna-un-remedio-documentado-en-la-medicina-antigua-c2dcd53a.md": {
+      "topic": "vitamina-a",
+      "marker": ["vitamina-a"]
+    },
+    "clinical-evidence/retinol-e-inflamacion-como-se-leen-juntos-la-vitamina-a-y-los-marcadores-de-infl-e878538e.md": {
+      "topic": "vitamina-a",
+      "marker": ["vitamina-a", "proteina-c-reactiva"],
+      "relacionado_con": [
+        { "id": "proteina-c-reactiva", "relacion": "modifica_interpretacion" }
+      ]
+    },
+    "clinical-evidence/t4-y-t3-una-hormona-circulante-que-los-tejidos-pueden-transformar-adba8a86.md": {
+      "topic": "tiroxina libre",
+      "marker": ["t4-libre"]
+    },
+    "institutional-education/biotina-por-que-puede-producir-resultados-falsos-en-algunos-analisis-9aff766b.md": {
+      "topic": "interferencias-analiticas",
+      "marker": ["general"]
+    },
+    "institutional-education/colesterol-el-bueno-y-el-malo-no-son-dos-moleculas-diferentes-c5eb97c5.md": {
+      "topic": "colesterol-ldl",
+      "marker": ["colesterol-hdl", "colesterol-ldl"]
+    },
+    "institutional-education/colesterol-por-que-el-cuerpo-fabrica-casi-todo-el-que-necesita-7318c926.md": {
+      "topic": "colesterol-ldl",
+      "marker": ["colesterol-ldl", "colesterol-total"]
+    },
+    "institutional-education/guggulu-commiphora-mukul-para-el-colesterol-evaluacion-cientifica-actual-dadece86.md": {
+      "topic": "colesterol-ldl",
+      "marker": ["colesterol-ldl"],
+      "tradicion": "ayurveda"
+    },
+    "institutional-education/leucocitos-y-formula-leucocitaria-como-se-leen-juntos-el-recuento-total-y-los-su-9ca11a98.md": {
+      "topic": "leucocitos",
+      "marker": ["leucocitos"],
+      "suppress_review": ["single-marker-lectura-conjunta"]
+    },
+    "institutional-education/madhumeha-y-prameha-contexto-historico-y-variantes-0d0ccad6.md": {
+      "topic": "hemoglobina-glicosilada-hba1c",
+      "marker": ["hba1c", "hemoglobina"],
+      "tradicion": "ayurveda"
+    },
+    "institutional-education/plantas-y-suplementos-tradicionales-para-el-azucar-en-sangre-evaluacion-cientifi-3158532c.md": {
+      "topic": "hemoglobina-glicosilada-hba1c",
+      "marker": ["hba1c", "hemoglobina"]
+    },
+    "institutional-education/vitamina-b6-e-inflamacion-por-que-un-plp-bajo-necesita-contexto-58b6a651.md": {
+      "topic": "vitamina-b6",
+      "marker": ["vitamina-b6", "proteina-c-reactiva"],
+      "relacionado_con": [
+        { "id": "proteina-c-reactiva", "relacion": "modifica_interpretacion" }
+      ]
+    },
+    "institutional-education/vitamina-e-y-colesterol-por-que-se-leen-juntos-cb1c91de.md": {
+      "topic": "vitamina-e",
+      "marker": ["vitamina-e", "colesterol-total"],
+      "relacionado_con": [
+        { "id": "colesterol-total", "relacion": "modifica_interpretacion" }
+      ]
+    },
     "leucocitos/leucocitos-formula-leucocitaria-lectura-conjunta-medlineplus.md": {
       "marker": ["leucocitos"],
       "suppress_review": ["single-marker-lectura-conjunta"]

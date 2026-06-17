@@ -310,9 +310,15 @@ function inferFacets(absPath) {
     review.push(message);
   }
 
+  const overrideTopic = typeof override.topic === "string" ? override.topic.trim() : "";
+  const overrideEntry = overrideTopic ? taxonomy.topics?.[overrideTopic] : undefined;
+  if (overrideTopic && !overrideEntry) {
+    addReview("unknown-topic-override", `topic override desconocido: ${overrideTopic}`);
+  }
+
   const folderEntry = taxonomy.topics?.[folder];
-  const inferredMarkers = override.marker ?? inferMarkers(folderEntry, relativePath, data, parsed);
-  const entry = folderEntry ?? inferEntryFromMarkers(asArray(inferredMarkers));
+  const inferredMarkers = override.marker ?? inferMarkers(overrideEntry ?? folderEntry, relativePath, data, parsed);
+  const entry = overrideEntry ?? folderEntry ?? inferEntryFromMarkers(asArray(inferredMarkers));
 
   if (!entry) addReview("missing-topic", `sin entrada en corpus-taxonomy.json para carpeta "${folder}"`);
   if (!sourceSection(sourceType, filename)) addReview("unmapped-source-type", `source_type no mapeado: ${sourceType || "(vacío)"}`);
