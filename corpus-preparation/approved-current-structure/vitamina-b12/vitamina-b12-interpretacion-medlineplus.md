@@ -1,19 +1,55 @@
 ---
-title: "Vitamina B12 (cobalamina): interpretación general del análisis"
-source_url: "https://medlineplus.gov/lab-tests/vitamin-b-test/"
-publication_date: "2023-05-09"
+title: 'Vitamina B12 (cobalamina): interpretación general del análisis'
+source_url: 'https://medlineplus.gov/lab-tests/vitamin-b-test/'
+publication_date: '2023-05-09'
 source_kind: institutional-education
 source_type: lab-interpretation-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la página original."
-  - "La fuente no fija un valor numérico universal; cada laboratorio define el suyo."
-  - "La inflamación y ciertos medicamentos pueden alterar el resultado."
-  - "Un valor normal con síntomas no descarta un problema y puede requerir otras pruebas."
-  - "El ácido metilmalónico también puede elevarse por insuficiencia renal y con la edad."
-  - "No ofrece diagnóstico ni recomendación de tratamiento."
+  - Síntesis editorial de VitaMap; no es una copia de la página original.
+  - >-
+    La fuente no fija un valor numérico universal; cada laboratorio define el
+    suyo.
+  - La inflamación y ciertos medicamentos pueden alterar el resultado.
+  - >-
+    Un valor normal con síntomas no descarta un problema y puede requerir otras
+    pruebas.
+  - >-
+    El ácido metilmalónico también puede elevarse por insuficiencia renal y con
+    la edad.
+  - No ofrece diagnóstico ni recomendación de tratamiento.
+facets_version: 1
+tarjeta_id: vitamina-b12-vitamina-b12-interpretacion-medlineplus
+dominio: laboratorio
+tipo:
+  - analito
+  - vitamina
+marker:
+  - vitamina-b12
+categoria:
+  - vitaminas
+  - hematologia
+muestra:
+  - suero
+  - plasma
+sistema:
+  - hematologico
+  - neurologico-cognitivo
+area_de_salud:
+  - energia-fatiga
+  - salud-cognitiva
+  - estado-animo-estres
+seccion: interpretacion
+alias:
+  - b12
+  - cobalamina
+relacionado_con:
+  - id: acido-folico
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Vitamina B12 (cobalamina)
 
 ## Qué mide esta prueba

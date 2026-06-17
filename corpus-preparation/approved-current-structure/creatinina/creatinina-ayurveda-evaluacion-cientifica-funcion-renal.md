@@ -1,17 +1,49 @@
 ---
-title: "Ayurveda y función renal: evaluación científica actual"
-source_url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC8568826/"
-publication_date: "2021"
+title: 'Ayurveda y función renal: evaluación científica actual'
+source_url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8568826/'
+publication_date: '2021'
 source_kind: tradition-context
 source_type: traditional-evidence-review-summary
 rights_status: licensed
 limitations:
-  - "Evalúa investigación moderna sobre intervenciones AYUSH o ayurvédicas relacionadas con enfermedad renal, no textos clásicos."
-  - "No se centra en creatinina aislada como marcador único."
-  - "La evidencia disponible incluye estudios heterogéneos, a menudo con limitaciones metodológicas."
-  - "No ofrece tratamientos, fórmulas, dosis ni sustitución de atención nefrológica."
+  - >-
+    Evalúa investigación moderna sobre intervenciones AYUSH o ayurvédicas
+    relacionadas con enfermedad renal, no textos clásicos.
+  - No se centra en creatinina aislada como marcador único.
+  - >-
+    La evidencia disponible incluye estudios heterogéneos, a menudo con
+    limitaciones metodológicas.
+  - >-
+    No ofrece tratamientos, fórmulas, dosis ni sustitución de atención
+    nefrológica.
+facets_version: 1
+tarjeta_id: creatinina-creatinina-ayurveda-evaluacion-cientifica-funcion-renal
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - creatinina
+categoria:
+  - perfil-renal
+muestra:
+  - suero
+  - orina
+sistema:
+  - renal-urinario
+area_de_salud:
+  - salud-renal
+  - longevidad
+seccion: evidencia
+tradicion: ayurveda
+relacionado_con:
+  - id: egfr
+    relacion: calculo_derivado
+  - id: albuminuria
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Ayurveda y función renal: evaluación científica actual
 
 ## Qué se ha investigado

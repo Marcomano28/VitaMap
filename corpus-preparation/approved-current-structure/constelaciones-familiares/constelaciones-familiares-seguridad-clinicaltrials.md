@@ -1,17 +1,41 @@
 ---
-title: "Constelaciones familiares: seguridad, encuadre y límites"
-source_url: "https://clinicaltrials.gov/study/NCT05051462"
-publication_date: "2025-09-26"
+title: 'Constelaciones familiares: seguridad, encuadre y límites'
+source_url: 'https://clinicaltrials.gov/study/NCT05051462'
+publication_date: '2025-09-26'
 source_kind: clinical-evidence
 source_type: complementary-practice-safety-summary
 rights_status: permitted
 limitations:
-  - "Los efectos desfavorables se han medido de formas distintas y en pocas muestras."
-  - "En varios estudios los facilitadores tenían amplia experiencia o formación clínica; los datos no representan cualquier taller."
-  - "El ensayo más reciente no recogió efectos adversos equivalentes en el grupo de espera."
-  - "La regulación y el significado de los títulos profesionales dependen del país y deben comprobarse localmente."
+  - >-
+    Los efectos desfavorables se han medido de formas distintas y en pocas
+    muestras.
+  - >-
+    En varios estudios los facilitadores tenían amplia experiencia o formación
+    clínica; los datos no representan cualquier taller.
+  - >-
+    El ensayo más reciente no recogió efectos adversos equivalentes en el grupo
+    de espera.
+  - >-
+    La regulación y el significado de los títulos profesionales dependen del
+    país y deben comprobarse localmente.
+facets_version: 1
+tarjeta_id: constelaciones-familiares-constelaciones-familiares-seguridad-clinicaltrials
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - constelaciones-familiares
+sistema:
+  - neurologico-cognitivo
+area_de_salud:
+  - estado-animo-estres
+seccion: seguridad
+alias:
+  - constelaciones familiares
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Constelaciones familiares: seguridad, encuadre y límites
 
 ## Qué riesgos se han observado

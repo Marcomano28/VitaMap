@@ -174,10 +174,27 @@ El administrador admite:
 ---
 title: "Título que identifica práctica e intención"
 source_url: "https://URL-PRINCIPAL"
+source_language: en
+source_jurisdiction:
+  - INT
 publication_date: "AAAA-MM-DD"
 source_kind: institutional-education
 source_type: complementary-practice-overview-summary
 rights_status: permitted
+facets_version: 1
+tarjeta_id: flores-de-bach-flores-de-bach-que-es-thaler
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - flores-de-bach
+sistema:
+  - neurologico-cognitivo
+area_de_salud:
+  - estado-animo-estres
+seccion: identidad
+alias:
+  - flores de bach
 limitations:
   - "Límite específico de la tarjeta."
 ---
@@ -198,9 +215,29 @@ PC1 suele usar `institutional-education`, PC2 suele usar
 `tradition-context`, PC3 suele usar `clinical-evidence` y PC4 suele usar
 `institutional-education`. La fuente real prevalece sobre esta orientación.
 
-No añadas todavía campos nuevos al frontmatter operativo. La variante, el tipo
-de afirmación, la profesión y la jurisdicción deben constar en el cuerpo hasta
-que el importador pueda conservar metadatos adicionales.
+Usa `corpus-preparation/corpus-taxonomy.json` como vocabulario canónico para
+`dominio`, `tipo`, `marker`, `sistema`, `area_de_salud`, `seccion`, `alias` y
+`relacionado_con`. Si la práctica no existe en la taxonomía, propón primero la
+entrada de topic antes de redactar la tarjeta.
+
+No uses `tradicion` por defecto para prácticas complementarias modernas. Una
+tarjeta sobre Flores de Bach, kinesiología aplicada, constelaciones familiares
+o terapia craneosacral puede ser `source_kind: tradition-context` si explica su
+marco interno o historia, pero su `seccion` será normalmente `identidad`, no
+`tradicion`. Reserva `tradicion` para tradiciones identificables como
+`ayurveda`, `mtc` o `acupuntura`, salvo que la taxonomía defina otra cosa.
+
+La variante, el tipo de afirmación, la profesión y la jurisdicción deben
+constar en el cuerpo de la tarjeta, no como campos libres inventados.
+
+Mapeo habitual de `source_type` a `seccion`:
+
+| `source_type` | `seccion` |
+|---|---|
+| `complementary-practice-overview-summary` | `identidad` |
+| `complementary-practice-framework-summary` | `identidad` |
+| `complementary-practice-evidence-summary` | `evidencia` |
+| `complementary-practice-safety-summary` | `seguridad` |
 
 ---
 

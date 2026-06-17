@@ -1,17 +1,50 @@
 ---
-title: "Madhumeha y prameha: contexto histórico y variantes"
-source_url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC3331310"
-pmid: "22557679"
-publication_date: "1989"
+title: 'Madhumeha y prameha: contexto histórico y variantes'
+source_url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC3331310'
+pmid: '22557679'
+publication_date: '1989'
 source_kind: tradition-context
 source_type: traditional-scholarly-context-summary
 rights_status: licensed
 limitations:
-  - "Resume cómo la erudición ha interpretado el concepto; no es el texto clásico (T1) ni la evidencia clínica (T3)."
-  - "Las tensiones conceptuales descritas son internas a la tradición clásica; no implican equivalencia con la diabetes ni con biomarcadores modernos."
-  - "No establece equivalencias modernas ni recomendaciones terapéuticas."
+  - >-
+    Resume cómo la erudición ha interpretado el concepto; no es el texto clásico
+    (T1) ni la evidencia clínica (T3).
+  - >-
+    Las tensiones conceptuales descritas son internas a la tradición clásica; no
+    implican equivalencia con la diabetes ni con biomarcadores modernos.
+  - No establece equivalencias modernas ni recomendaciones terapéuticas.
+facets_version: 1
+tarjeta_id: >-
+  hemoglobina-glicosilada-hba1c-madhumeha-ayurveda-contexto-historico-murthy-singh
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - hba1c
+  - hemoglobina
+categoria:
+  - glucemia-insulina
+muestra:
+  - sangre-total
+sistema:
+  - endocrino-metabolico
+area_de_salud:
+  - control-glucemico
+  - energia-fatiga
+seccion: tradicion
+tradicion: ayurveda
+alias:
+  - hba1c
+  - a1c
+  - hemoglobina glicosilada
+relacionado_con:
+  - id: glucosa-en-ayunas
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Madhumeha y prameha: contexto histórico y variantes
 
 ## Fuente estudiada

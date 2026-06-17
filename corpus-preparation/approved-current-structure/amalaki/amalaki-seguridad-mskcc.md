@@ -1,18 +1,45 @@
 ---
-title: "Amla (Phyllanthus emblica): seguridad y precauciones"
-source_url: "https://www.mskcc.org/cancer-care/integrative-medicine/herbs/emblica-officinalis"
-publication_date: "2023-04-05"
+title: 'Amla (Phyllanthus emblica): seguridad y precauciones'
+source_url: >-
+  https://www.mskcc.org/cancer-care/integrative-medicine/herbs/emblica-officinalis
+publication_date: '2023-04-05'
 source_kind: institutional-education
 source_type: natural-product-safety-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la ficha original."
-  - "Los datos de seguridad en humanos son limitados; la ausencia de daño observado no demuestra seguridad."
-  - "Las interacciones descritas proceden sobre todo de estudios pequeños y se refieren a extractos."
-  - "Distingue el uso alimentario del fruto del de suplementos concentrados."
-  - "No sustituye la valoración de un profesional ni propone suspender o ajustar medicación."
+  - Síntesis editorial de VitaMap; no es una copia de la ficha original.
+  - >-
+    Los datos de seguridad en humanos son limitados; la ausencia de daño
+    observado no demuestra seguridad.
+  - >-
+    Las interacciones descritas proceden sobre todo de estudios pequeños y se
+    refieren a extractos.
+  - Distingue el uso alimentario del fruto del de suplementos concentrados.
+  - >-
+    No sustituye la valoración de un profesional ni propone suspender o ajustar
+    medicación.
+facets_version: 1
+tarjeta_id: amalaki-amalaki-seguridad-mskcc
+dominio: sustancias-naturales
+tipo:
+  - especie_medicinal
+  - suplemento
+marker:
+  - amalaki
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+  - digestivo
+area_de_salud:
+  - salud-cardiovascular
+  - control-glucemico
+  - antioxidante
+seccion: seguridad
+alias:
+  - amla
+  - amalaki
+  - phyllanthus emblica
 ---
-
 # Amla (*Phyllanthus emblica*): seguridad y precauciones
 
 ## Efectos adversos conocidos

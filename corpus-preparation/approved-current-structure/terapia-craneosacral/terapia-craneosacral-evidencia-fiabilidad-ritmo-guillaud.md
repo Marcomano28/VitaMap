@@ -1,17 +1,38 @@
 ---
-title: "Terapia craneosacral: ¿es fiable la palpación del 'ritmo craneosacral'?"
-source_url: "https://doi.org/10.1371/journal.pone.0167823"
-doi: "10.1371/journal.pone.0167823"
-publication_date: "2016-12-09"
+title: 'Terapia craneosacral: ¿es fiable la palpación del ''ritmo craneosacral''?'
+source_url: 'https://doi.org/10.1371/journal.pone.0167823'
+doi: 10.1371/journal.pone.0167823
+publication_date: '2016-12-09'
 source_kind: clinical-evidence
 source_type: complementary-practice-evidence-summary
 rights_status: permitted
 limitations:
-  - "Evalúa la fiabilidad de la palpación diagnóstica, no la eficacia del tratamiento (tratada aparte)."
-  - "La revisión abarca el campo craneal (osteopatía craneal y terapia craneosacral), que comparten la misma premisa."
-  - "No haber demostrado fiabilidad no equivale a una prueba de que el tratamiento 'no haga nada'."
+  - >-
+    Evalúa la fiabilidad de la palpación diagnóstica, no la eficacia del
+    tratamiento (tratada aparte).
+  - >-
+    La revisión abarca el campo craneal (osteopatía craneal y terapia
+    craneosacral), que comparten la misma premisa.
+  - >-
+    No haber demostrado fiabilidad no equivale a una prueba de que el
+    tratamiento 'no haga nada'.
+facets_version: 1
+tarjeta_id: terapia-craneosacral-terapia-craneosacral-evidencia-fiabilidad-ritmo-guillaud
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - terapia-craneosacral
+sistema:
+  - osteoarticular
+  - neurologico-cognitivo
+area_de_salud:
+  - estado-animo-estres
+seccion: evidencia
+alias:
+  - terapia craneosacral
+source_language: en
 ---
-
 # Terapia craneosacral: fiabilidad de la palpación del "ritmo craneosacral"
 
 ## Pregunta evaluada

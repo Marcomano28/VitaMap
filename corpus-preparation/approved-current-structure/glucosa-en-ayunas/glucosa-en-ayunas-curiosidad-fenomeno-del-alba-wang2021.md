@@ -1,16 +1,47 @@
 ---
-title: "Glucosa en ayunas: por qué sube de madrugada (el fenómeno del alba)"
-source_url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC8361546/"
-publication_date: "2021"
+title: 'Glucosa en ayunas: por qué sube de madrugada (el fenómeno del alba)'
+source_url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8361546/'
+publication_date: '2021'
 source_kind: institutional-education
 source_type: science-curiosity-summary
 rights_status: licensed
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia del texto original."
-  - "Describe un fenómeno fisiológico general observado en personas con y sin diabetes; no es un diagnóstico ni una guía de manejo."
-  - "El estudio principal se centra en diabetes tipo 2; la extensión a personas sin diabetes se menciona como hallazgo de prevalencia, no como análisis detallado."
+  - Síntesis editorial de VitaMap; no es una copia del texto original.
+  - >-
+    Describe un fenómeno fisiológico general observado en personas con y sin
+    diabetes; no es un diagnóstico ni una guía de manejo.
+  - >-
+    El estudio principal se centra en diabetes tipo 2; la extensión a personas
+    sin diabetes se menciona como hallazgo de prevalencia, no como análisis
+    detallado.
+facets_version: 1
+tarjeta_id: glucosa-en-ayunas-glucosa-en-ayunas-curiosidad-fenomeno-del-alba-wang2021
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - glucosa-en-ayunas
+categoria:
+  - glucemia-insulina
+muestra:
+  - suero
+  - plasma
+sistema:
+  - endocrino-metabolico
+area_de_salud:
+  - control-glucemico
+  - energia-fatiga
+seccion: curiosidad
+alias:
+  - glucosa
+  - glucemia
+relacionado_con:
+  - id: hba1c
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Glucosa en ayunas: por qué sube de madrugada (el fenómeno del alba)
 
 ## En qué consiste

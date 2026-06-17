@@ -1,17 +1,52 @@
 ---
-title: "Plantas y suplementos tradicionales para el azúcar en sangre: evaluación científica actual"
-source_url: "https://www.nccih.nih.gov/health/diabetes-and-dietary-supplements-what-you-need-to-know"
-publication_date: "2023-11"
+title: >-
+  Plantas y suplementos tradicionales para el azúcar en sangre: evaluación
+  científica actual
+source_url: >-
+  https://www.nccih.nih.gov/health/diabetes-and-dietary-supplements-what-you-need-to-know
+publication_date: 2023-11
 source_kind: tradition-context
 source_type: traditional-evidence-review-summary
 rights_status: permitted
 limitations:
-  - "Resume el estado de la evidencia moderna; no habla en nombre de ninguna tradición ni sustituye a una fuente clásica (T1)."
-  - "No es una recomendación de tratamiento, suplemento ni dosis."
-  - "La evidencia recopilada es en su mayoría limitada y heterogénea; las conclusiones pueden cambiar."
-  - "No sustituye el tratamiento médico de la diabetes."
+  - >-
+    Resume el estado de la evidencia moderna; no habla en nombre de ninguna
+    tradición ni sustituye a una fuente clásica (T1).
+  - 'No es una recomendación de tratamiento, suplemento ni dosis.'
+  - >-
+    La evidencia recopilada es en su mayoría limitada y heterogénea; las
+    conclusiones pueden cambiar.
+  - No sustituye el tratamiento médico de la diabetes.
+facets_version: 1
+tarjeta_id: >-
+  hemoglobina-glicosilada-hba1c-azucar-en-sangre-suplementos-evaluacion-cientifica-nccih
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - hba1c
+  - hemoglobina
+categoria:
+  - glucemia-insulina
+muestra:
+  - sangre-total
+sistema:
+  - endocrino-metabolico
+area_de_salud:
+  - control-glucemico
+  - energia-fatiga
+seccion: evidencia
+alias:
+  - hba1c
+  - a1c
+  - hemoglobina glicosilada
+relacionado_con:
+  - id: glucosa-en-ayunas
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Plantas y suplementos tradicionales para el azúcar en sangre: evaluación científica actual
 
 ## Qué se ha investigado

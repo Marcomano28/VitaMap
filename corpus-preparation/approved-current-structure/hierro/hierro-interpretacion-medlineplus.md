@@ -1,18 +1,57 @@
 ---
-title: "Hierro y ferritina: interpretación general de las pruebas"
-source_url: "https://medlineplus.gov/lab-tests/iron-tests/"
-publication_date: "2024-04-10"
+title: 'Hierro y ferritina: interpretación general de las pruebas'
+source_url: 'https://medlineplus.gov/lab-tests/iron-tests/'
+publication_date: '2024-04-10'
 source_kind: institutional-education
 source_type: lab-interpretation-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la página original."
-  - "La fuente no publica un rango numérico universal; cada laboratorio define el suyo."
-  - "El hierro en sangre varía a lo largo del día y con el ciclo menstrual."
-  - "La ferritina puede elevarse por inflamación aunque las reservas no sean altas."
-  - "Un resultado anormal no significa por sí solo una enfermedad que requiera tratamiento."
+  - Síntesis editorial de VitaMap; no es una copia de la página original.
+  - >-
+    La fuente no publica un rango numérico universal; cada laboratorio define el
+    suyo.
+  - El hierro en sangre varía a lo largo del día y con el ciclo menstrual.
+  - >-
+    La ferritina puede elevarse por inflamación aunque las reservas no sean
+    altas.
+  - >-
+    Un resultado anormal no significa por sí solo una enfermedad que requiera
+    tratamiento.
+facets_version: 1
+tarjeta_id: hierro-hierro-interpretacion-medlineplus
+dominio: laboratorio
+tipo:
+  - analito
+  - mineral
+  - panel
+marker:
+  - ferritina
+  - hierro
+categoria:
+  - minerales-micronutrientes
+  - hematologia
+muestra:
+  - suero
+  - plasma
+sistema:
+  - hematologico
+area_de_salud:
+  - energia-fatiga
+  - rendimiento-deportivo
+seccion: interpretacion
+alias:
+  - hierro
+  - ferritina
+  - transferrina
+relacionado_con:
+  - id: vitamina-c
+    relacion: afecta_absorcion
+  - id: proteina-c-reactiva
+    relacion: modifica_interpretacion
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Hierro y ferritina
 
 ## Qué miden estas pruebas

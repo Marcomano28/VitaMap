@@ -1,16 +1,46 @@
 ---
-title: "Vitamina B12: cobalto en el centro y origen microbiano"
-source_url: "https://ods.od.nih.gov/factsheets/VitaminB12-HealthProfessional/"
-publication_date: "2025-07-02"
+title: 'Vitamina B12: cobalto en el centro y origen microbiano'
+source_url: 'https://ods.od.nih.gov/factsheets/VitaminB12-HealthProfessional/'
+publication_date: '2025-07-02'
 source_kind: institutional-education
 source_type: science-curiosity-summary
 rights_status: permitted
 limitations:
-  - "Síntesis divulgativa de VitaMap; no sustituye información clínica detallada."
-  - "Una curiosidad no es una recomendación de salud ni un diagnóstico."
-  - "No indica qué cantidad de B12 necesita una persona concreta."
+  - Síntesis divulgativa de VitaMap; no sustituye información clínica detallada.
+  - Una curiosidad no es una recomendación de salud ni un diagnóstico.
+  - No indica qué cantidad de B12 necesita una persona concreta.
+facets_version: 1
+tarjeta_id: vitamina-b12-vitamina-b12-curiosidad-cobalto-ods
+dominio: laboratorio
+tipo:
+  - analito
+  - vitamina
+marker:
+  - vitamina-b12
+categoria:
+  - vitaminas
+  - hematologia
+muestra:
+  - suero
+  - plasma
+sistema:
+  - hematologico
+  - neurologico-cognitivo
+area_de_salud:
+  - energia-fatiga
+  - salud-cognitiva
+  - estado-animo-estres
+seccion: curiosidad
+alias:
+  - b12
+  - cobalamina
+relacionado_con:
+  - id: acido-folico
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Vitamina B12: cobalto en el centro y origen microbiano
 
 ## El dato

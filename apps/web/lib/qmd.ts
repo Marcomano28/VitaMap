@@ -18,7 +18,14 @@ import {
   readPersonalFrontmatter,
 } from "./frontmatter";
 import { qmdHitSnippet, qmdRelativePath } from "./qmd-hit";
-import { markersIn, filterByMarkers } from "./marker-scope";
+import {
+  applyHealthAreaPreference,
+  applyLensPreference,
+  expandQueryForHealthAreas,
+  filterByMarkers,
+} from "./marker-scope";
+import { inferSourceLocaleFromUrl, normalizeJurisdiction, preferEvidenceForLocale } from "./source-locale";
+import type { Locale } from "./i18n";
 export { wrapForPrompt } from "./qmd-prompt";
 
 // =====================================================================
@@ -41,8 +48,23 @@ export interface RetrievedChunk {
   score: number;
   sourceKind?: EvidenceSourceKind;
   sourceDocumentType?: string;
+  facetsVersion?: number;
+  tarjetaId?: string;
+  dominio?: string;
+  tipo?: string[];
+  marker?: string[];
+  categoria?: string[];
+  muestra?: string[];
+  sistema?: string[];
+  areaDeSalud?: string[];
+  seccion?: string;
+  tradicion?: string;
+  alias?: string[];
+  relacionadoCon?: Array<{ id: string; relacion?: string }>;
   limitations?: string[];
   sourceUrl?: string;
+  sourceLanguage?: string;
+  sourceJurisdiction?: string[];
   observedAt?: string;
 }
 
@@ -191,6 +213,33 @@ export async function closeUserStore(userId: string): Promise<void> {
 
 type RawHit = Awaited<ReturnType<QMDStore["search"]>>[number];
 
+function stringArray(value: unknown): string[] | undefined {
+  if (Array.isArray(value)) {
+    const values = value.filter((item): item is string =>
+      typeof item === "string" && item.trim().length > 0
+    );
+    return values.length > 0 ? values : undefined;
+  }
+  if (typeof value === "string" && value.trim()) return [value.trim()];
+  return undefined;
+}
+
+function relationArray(value: unknown): Array<{ id: string; relacion?: string }> | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const values = value.flatMap((item) => {
+    if (!item || typeof item !== "object") return [];
+    const rel = item as Record<string, unknown>;
+    if (typeof rel.id !== "string" || !rel.id.trim()) return [];
+    return [{
+      id: rel.id.trim(),
+      relacion: typeof rel.relacion === "string" && rel.relacion.trim()
+        ? rel.relacion.trim()
+        : undefined,
+    }];
+  });
+  return values.length > 0 ? values : undefined;
+}
+
 async function mapPersonalHit(userId: string, hit: RawHit): Promise<RetrievedChunk> {
   const rel = qmdRelativePath(hit, "memory");
   const abs = path.join(userMemoryDir(userId), rel);
@@ -227,8 +276,31 @@ async function mapEvidenceHit(hit: RawHit): Promise<RetrievedChunk> {
         : undefined,
     sourceDocumentType:
       typeof fm.source_type === "string" ? fm.source_type : undefined,
+    facetsVersion:
+      typeof fm.facets_version === "number" ? fm.facets_version : undefined,
+    tarjetaId: typeof fm.tarjeta_id === "string" ? fm.tarjeta_id : undefined,
+    dominio: typeof fm.dominio === "string" ? fm.dominio : undefined,
+    tipo: stringArray(fm.tipo),
+    marker: stringArray(fm.marker),
+    categoria: stringArray(fm.categoria),
+    muestra: stringArray(fm.muestra),
+    sistema: stringArray(fm.sistema),
+    areaDeSalud: stringArray(fm.area_de_salud),
+    seccion: typeof fm.seccion === "string" ? fm.seccion : undefined,
+    tradicion: typeof fm.tradicion === "string" ? fm.tradicion : undefined,
+    alias: stringArray(fm.alias),
+    relacionadoCon: relationArray(fm.relacionado_con),
     limitations: Array.isArray(fm.limitations) ? fm.limitations : undefined,
     sourceUrl: typeof fm.source_url === "string" ? fm.source_url : undefined,
+    sourceLanguage:
+      typeof fm.source_language === "string" && fm.source_language.trim()
+        ? fm.source_language.trim().toLowerCase()
+        : inferSourceLocaleFromUrl(typeof fm.source_url === "string" ? fm.source_url : undefined)
+            .sourceLanguage,
+    sourceJurisdiction:
+      normalizeJurisdiction(fm.source_jurisdiction) ??
+      inferSourceLocaleFromUrl(typeof fm.source_url === "string" ? fm.source_url : undefined)
+        .sourceJurisdiction,
   };
 }
 
@@ -239,6 +311,25 @@ async function mapEvidenceHit(hit: RawHit): Promise<RetrievedChunk> {
 export interface QueryOptions {
   limit?: number;
   minScore?: number;
+  locale?: Locale;
+  /**
+   * Filtro FUERTE: marcadores del tema clínico que acotan la KB (ver
+   * lib/marker-scope.ts `deriveScope`). Se calculan en la ruta de chat a partir
+   * del mensaje y su ventana de contexto; la memoria personal ya no decide el
+   * scope. Vacío o ausente = no filtrar.
+   */
+  markers?: readonly string[];
+  /**
+   * Preferencia SUAVE: marcadores-lente (perspectiva de tradición/práctica). No
+   * filtran; reordenan para que las tarjetas de esa tradición suban al primer
+   * plano (ver `applyLensPreference`).
+   */
+  lens?: readonly string[];
+  /**
+   * Puente AMPLIO por motivo de consulta (`area_de_salud`). No filtra duro:
+   * expande la query de KB y reordena candidatos por `areaDeSalud`.
+   */
+  healthAreas?: readonly string[];
 }
 
 function normalizedSearchQueries(query: string) {
@@ -280,27 +371,35 @@ export async function queryMemoryAndKB(
     getKbStore(),
   ]);
 
-  // Evitar expansión y reranking locales, demasiado costosos en el VPS
-  // CPU-only, manteniendo recuperación híbrida BM25 + vector.
-  const searches = normalizedSearchQueries(query);
-
   // Acotación por marcador (flag KB_MARKER_SCOPE, default off). Sin reranking
   // el score de QMD es posicional, no de relevancia, y un documento de otro
   // marcador puede colarse (ver lib/marker-scope.ts). Cuando está activa,
   // pedimos más candidatos de KB para tener margen al filtrar.
   const markerScope = process.env.KB_MARKER_SCOPE === "true";
-  const kbLimit = markerScope ? Math.max(limit * 3, 10) : limit;
+  const localePreference = opts.locale === "de" || opts.locale === "es";
+  const kbLimit = markerScope || localePreference ? Math.max(limit * 4, 12) : limit;
+  const healthAreas = new Set(opts.healthAreas ?? []);
+  const strongMarkers = new Set(opts.markers ?? []);
+  const healthAreaActive = markerScope && strongMarkers.size === 0 && healthAreas.size > 0;
+
+  // Evitar expansión y reranking locales, demasiado costosos en el VPS
+  // CPU-only, manteniendo recuperación híbrida BM25 + vector. La expansión por
+  // area_de_salud solo afecta a KB; la memoria personal se busca con la query
+  // original para no sesgar el contexto personal.
+  const userSearches = normalizedSearchQueries(query);
+  const kbQuery = healthAreaActive ? expandQueryForHealthAreas(query, healthAreas) : query;
+  const kbSearches = normalizedSearchQueries(kbQuery);
 
   const [personalHits, evidenceHits] = await Promise.all([
     userStore.search({
-      queries: searches,
+      queries: userSearches,
       rerank: false,
       limit,
       minScore,
       candidateLimit: 10,
     }),
     kbStore.search({
-      queries: searches,
+      queries: kbSearches,
       rerank: false,
       limit: kbLimit,
       minScore,
@@ -313,17 +412,32 @@ export async function queryMemoryAndKB(
     Promise.all(evidenceHits.map(mapEvidenceHit)),
   ]);
 
-  if (!markerScope) return { personal, evidence: evidence.slice(0, limit) };
+  if (!markerScope) {
+    const localizedEvidence = preferEvidenceForLocale(evidence, opts.locale).slice(0, limit);
+    return { personal, evidence: localizedEvidence };
+  }
 
-  // Marcadores en juego: los de la analítica del usuario (su memoria) más los
-  // de la pregunta. Si no se detecta ninguno, filterByMarkers no filtra.
-  const contextText = [query, ...personal.map((p) => `${p.title} ${p.snippet}`)].join(" ");
-  const allowed = markersIn(contextText);
-  const scopedEvidence = filterByMarkers(evidence, allowed).slice(0, limit);
+  // Marcadores en juego: los calcula la ruta de chat (mensaje actual + ventana
+  // corta de mensajes del usuario; ver lib/marker-scope.ts `deriveScope`). La
+  // memoria personal ya no abre el scope. Si el conjunto viene vacío,
+  // filterByMarkers no filtra.
+  const allowed = strongMarkers;
+  const lens = new Set(opts.lens ?? []);
+  const markerFilteredEvidence = filterByMarkers(evidence, allowed);
+  // Preferencias suaves: locale -> lens -> area_de_salud. El area de salud se
+  // aplica al final para mantener el motivo de consulta por encima de docs
+  // genéricos, sin descartar nada.
+  const localizedEvidence = preferEvidenceForLocale(markerFilteredEvidence, opts.locale);
+  const lensPreferredEvidence = applyLensPreference(localizedEvidence, lens);
+  const scopedEvidence = applyHealthAreaPreference(lensPreferredEvidence, healthAreas).slice(0, limit);
   console.info("[chat] marker scope", {
     before: evidence.length,
     after: scopedEvidence.length,
     markers: allowed.size,
+    lens: lens.size,
+    healthAreas: healthAreas.size,
+    healthAreaActive,
+    locale: opts.locale,
   });
   return { personal, evidence: scopedEvidence };
 }

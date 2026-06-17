@@ -1,18 +1,47 @@
 ---
-title: "Chaga (Inonotus obliquus): nefropatía por oxalato y límites de seguridad"
-source_url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC8913114/"
-publication_date: "2022-03-11"
-doi: "10.1097/MD.0000000000028997"
+title: 'Chaga (Inonotus obliquus): nefropatía por oxalato y límites de seguridad'
+source_url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8913114/'
+publication_date: '2022-03-11'
+doi: 10.1097/MD.0000000000028997
 source_kind: institutional-education
 source_type: natural-product-safety-summary
 rights_status: permitted
 limitations:
-  - "La evidencia procede de informes de casos: permite detectar una señal de daño, pero no calcular su frecuencia."
-  - "Los casos no establecen una dosis segura ni permiten atribuir el daño a todos los productos de chaga."
-  - "La tarjeta no evalúa interacciones medicamentosas ni seguridad en embarazo, lactancia o infancia por falta de respaldo suficiente en las fuentes citadas."
-  - "No incluye dosis, calendarios ni indicaciones de suspensión: no es consejo clínico."
+  - >-
+    La evidencia procede de informes de casos: permite detectar una señal de
+    daño, pero no calcular su frecuencia.
+  - >-
+    Los casos no establecen una dosis segura ni permiten atribuir el daño a
+    todos los productos de chaga.
+  - >-
+    La tarjeta no evalúa interacciones medicamentosas ni seguridad en embarazo,
+    lactancia o infancia por falta de respaldo suficiente en las fuentes
+    citadas.
+  - >-
+    No incluye dosis, calendarios ni indicaciones de suspensión: no es consejo
+    clínico.
+facets_version: 1
+tarjeta_id: chaga-chaga-seguridad-nefropatia-oxalato
+dominio: sustancias-naturales
+tipo:
+  - especie_medicinal
+  - suplemento
+marker:
+  - chaga
+sistema:
+  - inmunologico
+  - renal-urinario
+area_de_salud:
+  - inmunidad
+  - antioxidante
+seccion: seguridad
+alias:
+  - chaga
+  - inonotus obliquus
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Chaga (*Inonotus obliquus*): nefropatía por oxalato y límites de seguridad
 
 ## Señal de daño renal

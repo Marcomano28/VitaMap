@@ -1,16 +1,47 @@
 ---
-title: "Triglicéridos: la grasa de reserva que el cuerpo fabrica con las calorías de más"
-source_url: "https://medlineplus.gov/triglycerides.html"
-publication_date: "2025-08-10"
+title: >-
+  Triglicéridos: la grasa de reserva que el cuerpo fabrica con las calorías de
+  más
+source_url: 'https://medlineplus.gov/triglycerides.html'
+publication_date: '2025-08-10'
 source_kind: institutional-education
 source_type: science-curiosity-summary
 rights_status: permitted
 limitations:
-  - "Síntesis divulgativa; no sustituye información clínica detallada."
-  - "Una curiosidad no es una recomendación de salud."
-  - "Describe fisiología general y refleja la actualización de agosto de 2025 de la fuente."
+  - Síntesis divulgativa; no sustituye información clínica detallada.
+  - Una curiosidad no es una recomendación de salud.
+  - >-
+    Describe fisiología general y refleja la actualización de agosto de 2025 de
+    la fuente.
+facets_version: 1
+tarjeta_id: trigliceridos-trigliceridos-curiosidad-reserva-de-energia-medlineplus
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - trigliceridos
+categoria:
+  - perfil-lipidico
+muestra:
+  - suero
+  - plasma
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+area_de_salud:
+  - salud-cardiovascular
+  - control-glucemico
+  - longevidad
+seccion: curiosidad
+relacionado_con:
+  - id: colesterol-ldl
+    relacion: mismo_panel
+  - id: colesterol-hdl
+    relacion: mismo_panel
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Triglicéridos: la grasa de reserva que el cuerpo fabrica con las calorías de más
 
 ## El dato

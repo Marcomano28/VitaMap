@@ -1,19 +1,60 @@
 ---
-title: "Ayurveda clásico: el concepto de medas (tejido graso) en la Suśrutasaṃhitā"
-source_url: "https://saktumiva.org/wiki/wujastyk/susrutasamhita/01-su.su-1-31/provisional-edition_sutrasthana-1-31?upama_scroll=SS.1.15.14"
-doi: "10.5281/zenodo.20091000"
-publication_date: "2026-05-09"
+title: 'Ayurveda clásico: el concepto de medas (tejido graso) en la Suśrutasaṃhitā'
+source_url: >-
+  https://saktumiva.org/wiki/wujastyk/susrutasamhita/01-su.su-1-31/provisional-edition_sutrasthana-1-31?upama_scroll=SS.1.15.14
+doi: 10.5281/zenodo.20091000
+publication_date: '2026-05-09'
 source_kind: tradition-context
 source_type: traditional-primary-source-summary
 rights_status: licensed
 limitations:
-  - "Describe el concepto clásico de medas (tejido graso), no la lipoproteína LDL ni el colesterol sérico."
-  - "No establece equivalencia entre medas y el colesterol LDL ni con ningún biomarcador de laboratorio moderno."
-  - "La edición digital consultada es provisional y presenta una colación de varios manuscritos; el capítulo 15 no figura como edición crítica finalizada."
-  - "El registro de Zenodo declara CC BY 4.0, mientras que la cabecera del archivo indica CC BY-SA 3.0; se conserva la condición más restrictiva de atribución y compartir igual."
-  - "Es una síntesis histórica y filológica, no una recomendación diagnóstica o terapéutica."
+  - >-
+    Describe el concepto clásico de medas (tejido graso), no la lipoproteína LDL
+    ni el colesterol sérico.
+  - >-
+    No establece equivalencia entre medas y el colesterol LDL ni con ningún
+    biomarcador de laboratorio moderno.
+  - >-
+    La edición digital consultada es provisional y presenta una colación de
+    varios manuscritos; el capítulo 15 no figura como edición crítica
+    finalizada.
+  - >-
+    El registro de Zenodo declara CC BY 4.0, mientras que la cabecera del
+    archivo indica CC BY-SA 3.0; se conserva la condición más restrictiva de
+    atribución y compartir igual.
+  - >-
+    Es una síntesis histórica y filológica, no una recomendación diagnóstica o
+    terapéutica.
+facets_version: 1
+tarjeta_id: colesterol-ldl-colesterol-ldl-ayurveda-fuente-clasica-susrutasamhita
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - colesterol-ldl
+categoria:
+  - perfil-lipidico
+muestra:
+  - suero
+  - plasma
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+area_de_salud:
+  - salud-cardiovascular
+  - longevidad
+seccion: tradicion
+tradicion: ayurveda
+alias:
+  - ldl
+  - colesterol ldl
+  - colesterol total
+relacionado_con:
+  - id: colesterol-hdl
+    relacion: mismo_panel
+  - id: trigliceridos
+    relacion: mismo_panel
 ---
-
 # Medas (tejido graso) en el Ayurveda clásico según la Suśrutasaṃhitā
 
 ## Texto y procedencia

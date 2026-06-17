@@ -1,18 +1,45 @@
 ---
-title: "Cúrcuma y curcumina para la artrosis de rodilla: estado de la evidencia"
-source_url: "https://www.nccih.nih.gov/health/turmeric"
-publication_date: "2025-04"
+title: 'Cúrcuma y curcumina para la artrosis de rodilla: estado de la evidencia'
+source_url: 'https://www.nccih.nih.gov/health/turmeric'
+publication_date: 2025-04
 source_kind: clinical-evidence
 source_type: natural-product-evidence-summary
 rights_status: permitted
 limitations:
-  - "Resume evidencia sobre artrosis de rodilla, no sobre cualquier tipo de dolor o inflamación."
-  - "Los estudios emplean productos, dosis y formulaciones diferentes."
-  - "Los resultados de curcumina o extractos no se trasladan automáticamente a la cúrcuma culinaria."
-  - "La evidencia inicial es positiva, pero todavía no permite una conclusión definitiva."
-  - "No recomienda un producto, una dosis ni sustituir tratamientos indicados."
+  - >-
+    Resume evidencia sobre artrosis de rodilla, no sobre cualquier tipo de dolor
+    o inflamación.
+  - 'Los estudios emplean productos, dosis y formulaciones diferentes.'
+  - >-
+    Los resultados de curcumina o extractos no se trasladan automáticamente a la
+    cúrcuma culinaria.
+  - >-
+    La evidencia inicial es positiva, pero todavía no permite una conclusión
+    definitiva.
+  - 'No recomienda un producto, una dosis ni sustituir tratamientos indicados.'
+facets_version: 1
+tarjeta_id: curcuma-curcuma-evidencia-artrosis-rodilla-nccih
+dominio: sustancias-naturales
+tipo:
+  - especie_medicinal
+  - suplemento
+marker:
+  - curcuma
+sistema:
+  - osteoarticular
+  - digestivo
+area_de_salud:
+  - antiinflamatorio
+  - antioxidante
+seccion: evidencia
+alias:
+  - curcuma
+  - turmeric
+  - curcuma longa
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Cúrcuma y curcumina para la artrosis de rodilla
 
 ## Qué se estudió

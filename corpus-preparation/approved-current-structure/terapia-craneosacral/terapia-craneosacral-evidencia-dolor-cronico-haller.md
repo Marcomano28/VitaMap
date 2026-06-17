@@ -1,19 +1,44 @@
 ---
-title: "Terapia craneosacral para el dolor crónico: estado de la evidencia"
-source_url: "https://doi.org/10.1186/s12891-019-3017-y"
-doi: "10.1186/s12891-019-3017-y"
-publication_date: "2019-12-31"
+title: 'Terapia craneosacral para el dolor crónico: estado de la evidencia'
+source_url: 'https://doi.org/10.1186/s12891-019-3017-y'
+doi: 10.1186/s12891-019-3017-y
+publication_date: '2019-12-31'
 source_kind: clinical-evidence
 source_type: complementary-practice-evidence-summary
 rights_status: permitted
 limitations:
-  - "Evalúa la eficacia para el dolor crónico, no para otras condiciones ni en bebés."
-  - "Se basa en 10 ensayos pequeños y heterogéneos; no permite concluir eficacia para un diagnóstico doloroso concreto."
-  - "La mayoría de los resultados fueron comunicados por los pacientes y el riesgo de sesgo era con frecuencia incierto o alto."
-  - "Cuatro autores de la revisión participaron en uno de los ensayos incluidos; un quinto autor evaluó de forma independiente su riesgo de sesgo."
-  - "Un efecto sobre el dolor no valida el 'ritmo craneosacral' como mecanismo (su fiabilidad se trata aparte)."
+  - >-
+    Evalúa la eficacia para el dolor crónico, no para otras condiciones ni en
+    bebés.
+  - >-
+    Se basa en 10 ensayos pequeños y heterogéneos; no permite concluir eficacia
+    para un diagnóstico doloroso concreto.
+  - >-
+    La mayoría de los resultados fueron comunicados por los pacientes y el
+    riesgo de sesgo era con frecuencia incierto o alto.
+  - >-
+    Cuatro autores de la revisión participaron en uno de los ensayos incluidos;
+    un quinto autor evaluó de forma independiente su riesgo de sesgo.
+  - >-
+    Un efecto sobre el dolor no valida el 'ritmo craneosacral' como mecanismo
+    (su fiabilidad se trata aparte).
+facets_version: 1
+tarjeta_id: terapia-craneosacral-terapia-craneosacral-evidencia-dolor-cronico-haller
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - terapia-craneosacral
+sistema:
+  - osteoarticular
+  - neurologico-cognitivo
+area_de_salud:
+  - estado-animo-estres
+seccion: evidencia
+alias:
+  - terapia craneosacral
+source_language: en
 ---
-
 # Terapia craneosacral para el dolor crónico: estado de la evidencia
 
 ## Pregunta evaluada

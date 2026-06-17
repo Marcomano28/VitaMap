@@ -1,18 +1,44 @@
 ---
-title: "Inonotus obliquus en Siberia y Rusia: uso documentado"
-source_url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC11132974/"
-publication_date: "2023-10-20"
-doi: "10.1080/21501203.2023.2260408"
+title: 'Inonotus obliquus en Siberia y Rusia: uso documentado'
+source_url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC11132974/'
+publication_date: '2023-10-20'
+doi: 10.1080/21501203.2023.2260408
 source_kind: tradition-context
 source_type: traditional-medicinal-use-summary
 rights_status: permitted
 limitations:
-  - "Resume una revisión académica secundaria; no verifica directamente cada documento histórico citado."
-  - "Describe un uso popular histórico, no eficacia demostrada."
-  - "Las atribuciones tradicionales usan categorías que no equivalen a diagnósticos modernos."
-  - "El uso tradicional es del esclerocio en infusión o tintura; no se traslada a extractos estandarizados ni a compuestos aislados."
+  - >-
+    Resume una revisión académica secundaria; no verifica directamente cada
+    documento histórico citado.
+  - 'Describe un uso popular histórico, no eficacia demostrada.'
+  - >-
+    Las atribuciones tradicionales usan categorías que no equivalen a
+    diagnósticos modernos.
+  - >-
+    El uso tradicional es del esclerocio en infusión o tintura; no se traslada a
+    extractos estandarizados ni a compuestos aislados.
+facets_version: 1
+tarjeta_id: chaga-chaga-uso-documentado-rusia-mycology
+dominio: sustancias-naturales
+tipo:
+  - especie_medicinal
+  - suplemento
+marker:
+  - chaga
+sistema:
+  - inmunologico
+  - renal-urinario
+area_de_salud:
+  - inmunidad
+  - antioxidante
+seccion: uso-documentado
+alias:
+  - chaga
+  - inonotus obliquus
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # *Inonotus obliquus* en Siberia y Rusia: uso documentado
 
 ## Fuente y contexto

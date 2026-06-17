@@ -1,17 +1,42 @@
 ---
-title: "Cúrcuma (Curcuma longa): identidad y formas de producto"
-source_url: "https://www.nccih.nih.gov/health/turmeric"
-publication_date: "2025-04"
+title: 'Cúrcuma (Curcuma longa): identidad y formas de producto'
+source_url: 'https://www.nccih.nih.gov/health/turmeric'
+publication_date: 2025-04
 source_kind: institutional-education
 source_type: medicinal-species-identity-summary
 rights_status: permitted
 limitations:
-  - "Identifica la especie y las formas generales de producto; no evalúa eficacia."
-  - "Los productos llamados cúrcuma pueden variar en especie, composición y preparación."
-  - "Cúrcuma, extracto de cúrcuma y curcumina aislada no son equivalentes."
-  - "No ofrece recomendaciones de consumo ni de tratamiento."
+  - >-
+    Identifica la especie y las formas generales de producto; no evalúa
+    eficacia.
+  - >-
+    Los productos llamados cúrcuma pueden variar en especie, composición y
+    preparación.
+  - 'Cúrcuma, extracto de cúrcuma y curcumina aislada no son equivalentes.'
+  - No ofrece recomendaciones de consumo ni de tratamiento.
+facets_version: 1
+tarjeta_id: curcuma-curcuma-identidad-nccih
+dominio: sustancias-naturales
+tipo:
+  - especie_medicinal
+  - suplemento
+marker:
+  - curcuma
+sistema:
+  - osteoarticular
+  - digestivo
+area_de_salud:
+  - antiinflamatorio
+  - antioxidante
+seccion: identidad
+alias:
+  - curcuma
+  - turmeric
+  - curcuma longa
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Cúrcuma (*Curcuma longa*): identidad y formas de producto
 
 ## Identidad

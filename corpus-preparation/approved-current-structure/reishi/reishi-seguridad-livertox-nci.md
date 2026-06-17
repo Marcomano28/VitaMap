@@ -1,18 +1,44 @@
 ---
-title: "Reishi/lingzhi: seguridad y precauciones"
-source_url: "https://www.ncbi.nlm.nih.gov/books/NBK609014/"
-publication_date: "2024-10-05"
-pmid: "39527685"
+title: 'Reishi/lingzhi: seguridad y precauciones'
+source_url: 'https://www.ncbi.nlm.nih.gov/books/NBK609014/'
+publication_date: '2024-10-05'
+pmid: '39527685'
 source_kind: institutional-education
 source_type: natural-product-safety-summary
 rights_status: permitted
 limitations:
-  - "La seguridad depende de especie, parte, extracto, duración, calidad y productos combinados."
-  - "Los ensayos pequeños de corta duración no descartan eventos raros."
-  - "Los casos hepáticos publicados tienen atribución variable y a veces incluyen otros productos o causas posibles."
-  - "Esta tarjeta no propone dosis, suspensiones de medicación ni manejo clínico individual."
+  - >-
+    La seguridad depende de especie, parte, extracto, duración, calidad y
+    productos combinados.
+  - Los ensayos pequeños de corta duración no descartan eventos raros.
+  - >-
+    Los casos hepáticos publicados tienen atribución variable y a veces incluyen
+    otros productos o causas posibles.
+  - >-
+    Esta tarjeta no propone dosis, suspensiones de medicación ni manejo clínico
+    individual.
+facets_version: 1
+tarjeta_id: reishi-reishi-seguridad-livertox-nci
+dominio: sustancias-naturales
+tipo:
+  - especie_medicinal
+  - suplemento
+marker:
+  - reishi
+sistema:
+  - inmunologico
+  - hepatobiliar
+area_de_salud:
+  - inmunidad
+  - antioxidante
+seccion: seguridad
+alias:
+  - reishi
+  - ganoderma lucidum
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 Capa: M4 · Seguridad
 
 Pregunta que pretende responder:

@@ -1,17 +1,45 @@
 ---
-title: "Jengibre (Zingiber officinale): uso documentado en farmacopeas y sistemas tradicionales"
-source_url: "https://web.archive.org/web/20200403075635/https://apps.who.int/medicinedocs/en/d/Js2200e/30.html"
-publication_date: "1999"
+title: >-
+  Jengibre (Zingiber officinale): uso documentado en farmacopeas y sistemas
+  tradicionales
+source_url: >-
+  https://web.archive.org/web/20200403075635/https://apps.who.int/medicinedocs/en/d/Js2200e/30.html
+publication_date: '1999'
 source_kind: tradition-context
 source_type: traditional-medicinal-use-summary
 rights_status: permitted
 limitations:
-  - "Describe usos atribuidos a farmacopeas y tradiciones; no demuestra eficacia clínica."
-  - "La monografía reúne usos de varias tradiciones; no todos están respaldados por ensayos."
-  - "Se cita una edición de 1999 a través de una copia archivada de la página original de la OMS."
-  - "El uso tradicional no equivale a una pauta de dosis ni a una recomendación de tratamiento."
+  - >-
+    Describe usos atribuidos a farmacopeas y tradiciones; no demuestra eficacia
+    clínica.
+  - >-
+    La monografía reúne usos de varias tradiciones; no todos están respaldados
+    por ensayos.
+  - >-
+    Se cita una edición de 1999 a través de una copia archivada de la página
+    original de la OMS.
+  - >-
+    El uso tradicional no equivale a una pauta de dosis ni a una recomendación
+    de tratamiento.
+facets_version: 1
+tarjeta_id: jengibre-jengibre-uso-documentado-who-monografia
+dominio: sustancias-naturales
+tipo:
+  - especie_medicinal
+  - suplemento
+marker:
+  - jengibre
+sistema:
+  - digestivo
+  - reproductivo-hormonal
+area_de_salud:
+  - salud-digestiva
+seccion: uso-documentado
+alias:
+  - jengibre
+  - ginger
+  - zingiber officinale
 ---
-
 # Jengibre (*Zingiber officinale*): uso documentado
 
 ## Fuente y contexto

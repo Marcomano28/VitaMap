@@ -1,17 +1,46 @@
 ---
-title: "Colesterol HDL: alimentación y factores relacionados"
-source_url: "https://medlineplus.gov/hdlthegoodcholesterol.html"
-publication_date: "2025-03-20"
+title: 'Colesterol HDL: alimentación y factores relacionados'
+source_url: 'https://medlineplus.gov/hdlthegoodcholesterol.html'
+publication_date: '2025-03-20'
 source_kind: institutional-education
 source_type: nutrition-lifestyle-summary
 rights_status: permitted
 limitations:
-  - "Resume asociaciones generales observadas en estudios poblacionales."
-  - "No constituye una pauta personalizada."
-  - "Los efectos individuales pueden variar."
-  - "No sustituye la valoración médica."
+  - Resume asociaciones generales observadas en estudios poblacionales.
+  - No constituye una pauta personalizada.
+  - Los efectos individuales pueden variar.
+  - No sustituye la valoración médica.
+facets_version: 1
+tarjeta_id: colesterol-hdl-colesterol-hdl-alimentacion-factores-medlineplus
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - colesterol-hdl
+categoria:
+  - perfil-lipidico
+muestra:
+  - suero
+  - plasma
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+area_de_salud:
+  - salud-cardiovascular
+  - longevidad
+seccion: alimentacion-factores
+alias:
+  - hdl
+  - colesterol hdl
+relacionado_con:
+  - id: colesterol-ldl
+    relacion: mismo_panel
+  - id: trigliceridos
+    relacion: mismo_panel
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Colesterol HDL: alimentación y factores relacionados
 
 ## Qué factores se relacionan

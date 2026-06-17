@@ -1,18 +1,58 @@
 ---
-title: "Vitamina D (25-OH): interpretación general del análisis"
-source_url: "https://medlineplus.gov/lab-tests/vitamin-d-test/"
-publication_date: "2024-12-04"
+title: 'Vitamina D (25-OH): interpretación general del análisis'
+source_url: 'https://medlineplus.gov/lab-tests/vitamin-d-test/'
+publication_date: '2024-12-04'
 source_kind: institutional-education
 source_type: lab-interpretation-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la página original."
-  - "La fuente describe los resultados como deficientes, insuficientes, suficientes o tóxicos y no fija un único valor numérico universal."
-  - "Los puntos de corte numéricos proceden de una fuente complementaria y no son objetivos individuales."
-  - "La prueba de rutina no se recomienda para todas las personas."
-  - "No ofrece diagnóstico ni recomendación de tratamiento."
+  - Síntesis editorial de VitaMap; no es una copia de la página original.
+  - >-
+    La fuente describe los resultados como deficientes, insuficientes,
+    suficientes o tóxicos y no fija un único valor numérico universal.
+  - >-
+    Los puntos de corte numéricos proceden de una fuente complementaria y no son
+    objetivos individuales.
+  - La prueba de rutina no se recomienda para todas las personas.
+  - No ofrece diagnóstico ni recomendación de tratamiento.
+facets_version: 1
+tarjeta_id: vitamina-d-vitamina-d-interpretacion-medlineplus
+dominio: laboratorio
+tipo:
+  - analito
+  - vitamina
+marker:
+  - vitamina-d
+categoria:
+  - vitaminas
+  - metabolismo-oseo
+muestra:
+  - suero
+  - plasma
+sistema:
+  - osteoarticular
+  - endocrino-metabolico
+  - inmunologico
+area_de_salud:
+  - salud-osea
+  - inmunidad
+  - energia-fatiga
+seccion: interpretacion
+alias:
+  - 25-OH-D
+  - calcidiol
+  - colecalciferol
+relacionado_con:
+  - id: calcio
+    relacion: lectura_conjunta
+  - id: fosfato
+    relacion: lectura_conjunta
+  - id: pth
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Vitamina D (25-hidroxivitamina D, 25-OH)
 
 ## Qué mide esta prueba

@@ -1,16 +1,43 @@
 ---
-title: "Neiguan (PC6): nombre tradicional y estandarizacion moderna"
-source_url: "https://apps.who.int/iris/bitstream/handle/10665/353407/9789290613831-eng.pdf"
-publication_date: "2008"
+title: 'Neiguan (PC6): nombre tradicional y estandarizacion moderna'
+source_url: 'https://apps.who.int/iris/bitstream/handle/10665/353407/9789290613831-eng.pdf'
+publication_date: '2008'
 source_kind: tradition-context
 source_type: acupuncture-terminology-summary
 rights_status: unknown
 limitations:
-  - "Resume nomenclatura y estandarizacion; deben verificarse las condiciones de reutilizacion de la publicacion de la OMS."
-  - "Normalizar un nombre o una localizacion no demuestra la existencia anatomica de canales ni la eficacia del punto."
-  - "No es una guia de localizacion para autoaplicacion ni incluye tecnica de puncion."
+  - >-
+    Resume nomenclatura y estandarizacion; deben verificarse las condiciones de
+    reutilizacion de la publicacion de la OMS.
+  - >-
+    Normalizar un nombre o una localizacion no demuestra la existencia anatomica
+    de canales ni la eficacia del punto.
+  - >-
+    No es una guia de localizacion para autoaplicacion ni incluye tecnica de
+    puncion.
+facets_version: 1
+tarjeta_id: acupuntura-conceptos-acupuntura-terminologia-neiguan-pc6-who
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - acupuntura
+sistema:
+  - neurologico-cognitivo
+  - digestivo
+area_de_salud:
+  - salud-digestiva
+  - estado-animo-estres
+seccion: tradicion
+tradicion: acupuntura
+alias:
+  - acupuntura
+  - neiguan
+  - pc6
+source_language: en
+source_jurisdiction:
+  - INT
 ---
-
 # Neiguan (PC6): nombre y procedencia
 
 ## Nombre tradicional

@@ -1,17 +1,53 @@
 ---
-title: "Medicina china y perfiles lipídicos: evaluación científica actual"
-source_url: "https://www.frontiersin.org/journals/cardiovascular-medicine/articles/10.3389/fcvm.2024.1407536/full"
-publication_date: "2024-07-18"
+title: 'Medicina china y perfiles lipídicos: evaluación científica actual'
+source_url: >-
+  https://www.frontiersin.org/journals/cardiovascular-medicine/articles/10.3389/fcvm.2024.1407536/full
+publication_date: '2024-07-18'
 source_kind: tradition-context
 source_type: traditional-evidence-review-summary
 rights_status: permitted
 limitations:
-  - "Evalúa ensayos modernos sobre medicina herbal china añadida a tratamiento convencional."
-  - "La población principal fue de pacientes con enfermedad coronaria, no personas sanas con HDL aislado."
-  - "Los estudios incluidos presentaron heterogeneidad y limitaciones metodológicas."
-  - "No ofrece fórmulas, dosis, combinaciones de hierbas ni recomendaciones de tratamiento."
+  - >-
+    Evalúa ensayos modernos sobre medicina herbal china añadida a tratamiento
+    convencional.
+  - >-
+    La población principal fue de pacientes con enfermedad coronaria, no
+    personas sanas con HDL aislado.
+  - >-
+    Los estudios incluidos presentaron heterogeneidad y limitaciones
+    metodológicas.
+  - >-
+    No ofrece fórmulas, dosis, combinaciones de hierbas ni recomendaciones de
+    tratamiento.
+facets_version: 1
+tarjeta_id: colesterol-hdl-hdl-mtc-evaluacion-cientifica-dislipidemia
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - colesterol-hdl
+categoria:
+  - perfil-lipidico
+muestra:
+  - suero
+  - plasma
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+area_de_salud:
+  - salud-cardiovascular
+  - longevidad
+seccion: evidencia
+tradicion: mtc
+alias:
+  - hdl
+  - colesterol hdl
+relacionado_con:
+  - id: colesterol-ldl
+    relacion: mismo_panel
+  - id: trigliceridos
+    relacion: mismo_panel
 ---
-
 # Medicina china y perfiles lipídicos: evaluación científica actual
 
 ## Qué se ha investigado

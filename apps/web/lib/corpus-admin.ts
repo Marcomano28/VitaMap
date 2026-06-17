@@ -20,6 +20,24 @@ export const RIGHTS_STATUSES = [
   "licensed",
 ] as const;
 
+export const FACET_FRONTMATTER_FIELDS = [
+  "source_language",
+  "source_jurisdiction",
+  "facets_version",
+  "tarjeta_id",
+  "dominio",
+  "tipo",
+  "marker",
+  "categoria",
+  "muestra",
+  "sistema",
+  "area_de_salud",
+  "seccion",
+  "tradicion",
+  "alias",
+  "relacionado_con",
+] as const;
+
 const optionalText = (max: number) =>
   z.preprocess(
     (value) => {
@@ -77,6 +95,7 @@ export const CorpusDraftInputSchema = z
     sourceType: z.string().trim().min(2).max(100),
     rightsStatus: z.enum(RIGHTS_STATUSES),
     limitations: z.array(z.string().trim().min(1).max(400)).max(20),
+    extraFrontmatter: z.record(z.unknown()).optional(),
     body: z.string().trim().max(250_000),
   })
   .superRefine((value, ctx) => {
@@ -161,6 +180,7 @@ function serializeDocument(
 ): string {
   const frontmatter = {
     ...metadata,
+    ...(input.extraFrontmatter ?? {}),
     title: input.title,
     source_url: sourceUrlFor(input),
     doi: input.doi,
@@ -210,6 +230,11 @@ function parseStoredDocument(
     sourceType: textValue(data.source_type) ?? textValue(data.category) ?? "unknown",
     rightsStatus,
     limitations,
+    extraFrontmatter: Object.fromEntries(
+      FACET_FRONTMATTER_FIELDS
+        .filter((key) => data[key] !== undefined)
+        .map((key) => [key, data[key]]),
+    ),
     body: parsed.content.trim(),
   };
 

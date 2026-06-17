@@ -1,18 +1,41 @@
 ---
-title: "Kinesiología aplicada: ¿es válido el test muscular como método diagnóstico?"
-source_url: "https://doi.org/10.1186/1746-1340-15-11"
-doi: "10.1186/1746-1340-15-11"
-publication_date: "2007"
+title: 'Kinesiología aplicada: ¿es válido el test muscular como método diagnóstico?'
+source_url: 'https://doi.org/10.1186/1746-1340-15-11'
+doi: 10.1186/1746-1340-15-11
+publication_date: '2007'
 source_kind: clinical-evidence
 source_type: complementary-practice-evidence-summary
 rights_status: permitted
 limitations:
-  - "Evalúa la validez del test muscular como método diagnóstico, no cada posible tratamiento."
-  - "Las conclusiones 'no superó al azar' se refieren a los estudios concretos (nutrientes, alérgenos) que lo evaluaron."
-  - "Evidencia insuficiente significa que no se ha demostrado validez, no una prueba universal de que 'nunca' ocurra nada."
-  - "Trata la kinesiología aplicada (test muscular), no la ciencia del movimiento."
+  - >-
+    Evalúa la validez del test muscular como método diagnóstico, no cada posible
+    tratamiento.
+  - >-
+    Las conclusiones 'no superó al azar' se refieren a los estudios concretos
+    (nutrientes, alérgenos) que lo evaluaron.
+  - >-
+    Evidencia insuficiente significa que no se ha demostrado validez, no una
+    prueba universal de que 'nunca' ocurra nada.
+  - >-
+    Trata la kinesiología aplicada (test muscular), no la ciencia del
+    movimiento.
+facets_version: 1
+tarjeta_id: kinesiologia-aplicada-kinesiologia-aplicada-evidencia-test-muscular-haas
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - kinesiologia-aplicada
+sistema:
+  - osteoarticular
+  - neurologico-cognitivo
+area_de_salud:
+  - rendimiento-deportivo
+seccion: evidencia
+alias:
+  - kinesiologia aplicada
+source_language: en
 ---
-
 # Kinesiología aplicada: validez del test muscular como método diagnóstico
 
 ## Pregunta evaluada

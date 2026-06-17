@@ -1,19 +1,43 @@
 ---
-title: "Flores de Bach para la ansiedad: evidencia antigua y resultados posteriores"
-source_url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC2695424/"
-doi: "10.1186/1472-6882-9-16"
-pmid: "19470153"
-publication_date: "2009-05-26"
+title: 'Flores de Bach para la ansiedad: evidencia antigua y resultados posteriores'
+source_url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC2695424/'
+doi: 10.1186/1472-6882-9-16
+pmid: '19470153'
+publication_date: '2009-05-26'
 source_kind: clinical-evidence
 source_type: complementary-practice-evidence-summary
 rights_status: permitted
 limitations:
-  - "La revisión principal buscó estudios solo hasta junio de 2008 y no incluye el ensayo favorable publicado en 2021."
-  - "Los ensayos estudian poblaciones, mezclas y duraciones distintas; no permiten una conclusión universal."
-  - "El ensayo de 2021 fue registrado después de comenzar el reclutamiento y necesita evaluación independiente y replicación."
-  - "La respuesta subjetiva o el significado del ritual no demuestran un efecto específico del preparado."
+  - >-
+    La revisión principal buscó estudios solo hasta junio de 2008 y no incluye
+    el ensayo favorable publicado en 2021.
+  - >-
+    Los ensayos estudian poblaciones, mezclas y duraciones distintas; no
+    permiten una conclusión universal.
+  - >-
+    El ensayo de 2021 fue registrado después de comenzar el reclutamiento y
+    necesita evaluación independiente y replicación.
+  - >-
+    La respuesta subjetiva o el significado del ritual no demuestran un efecto
+    específico del preparado.
+facets_version: 1
+tarjeta_id: flores-de-bach-flores-de-bach-evidencia-ansiedad-thaler
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - flores-de-bach
+sistema:
+  - neurologico-cognitivo
+area_de_salud:
+  - estado-animo-estres
+seccion: evidencia
+alias:
+  - flores de bach
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Flores de Bach para la ansiedad: estado de la evidencia
 
 ## Pregunta evaluada

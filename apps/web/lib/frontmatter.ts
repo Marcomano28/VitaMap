@@ -22,8 +22,23 @@ export interface PersonalFrontmatter {
 export interface EvidenceFrontmatter {
   title?: string;
   source_url?: string;
+  source_language?: string;
+  source_jurisdiction?: string | string[];
   source_kind?: string;
   source_type?: string;
+  facets_version?: number;
+  tarjeta_id?: string;
+  dominio?: string;
+  tipo?: string[];
+  marker?: string | string[];
+  categoria?: string[];
+  muestra?: string[];
+  sistema?: string[];
+  area_de_salud?: string[];
+  seccion?: string;
+  tradicion?: string;
+  alias?: string[];
+  relacionado_con?: Array<{ id?: string; relacion?: string }>;
   limitations?: string[];
   category?: string;
   indexed_at?: string;

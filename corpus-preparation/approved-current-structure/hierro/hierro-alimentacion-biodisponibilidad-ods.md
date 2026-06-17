@@ -1,18 +1,53 @@
 ---
-title: "Hierro: fuentes alimentarias, biodisponibilidad y vitamina C"
-source_url: "https://ods.od.nih.gov/factsheets/Iron-HealthProfessional/"
-publication_date: "2025-09-04"
+title: 'Hierro: fuentes alimentarias, biodisponibilidad y vitamina C'
+source_url: 'https://ods.od.nih.gov/factsheets/Iron-HealthProfessional/'
+publication_date: '2025-09-04'
 source_kind: institutional-education
 source_type: nutrition-lifestyle-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la ficha original."
-  - "Describe relaciones generales, no una pauta dietética personalizada."
-  - "Las cantidades por alimento son valores de referencia, no objetivos individuales."
-  - "El efecto de potenciadores e inhibidores se atenúa en una dieta variada."
-  - "Los suplementos de hierro y sus dosis son decisiones médicas."
+  - Síntesis editorial de VitaMap; no es una copia de la ficha original.
+  - 'Describe relaciones generales, no una pauta dietética personalizada.'
+  - >-
+    Las cantidades por alimento son valores de referencia, no objetivos
+    individuales.
+  - El efecto de potenciadores e inhibidores se atenúa en una dieta variada.
+  - Los suplementos de hierro y sus dosis son decisiones médicas.
+facets_version: 1
+tarjeta_id: hierro-hierro-alimentacion-biodisponibilidad-ods
+dominio: laboratorio
+tipo:
+  - analito
+  - mineral
+  - panel
+marker:
+  - hierro
+  - vitamina-c
+categoria:
+  - minerales-micronutrientes
+  - hematologia
+muestra:
+  - suero
+  - plasma
+sistema:
+  - hematologico
+area_de_salud:
+  - energia-fatiga
+  - rendimiento-deportivo
+seccion: alimentacion-factores
+alias:
+  - hierro
+  - ferritina
+  - transferrina
+relacionado_con:
+  - id: vitamina-c
+    relacion: afecta_absorcion
+  - id: proteina-c-reactiva
+    relacion: modifica_interpretacion
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Hierro: alimentación y biodisponibilidad
 
 ## Qué factores se relacionan

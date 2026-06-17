@@ -1,17 +1,51 @@
 ---
-title: "Hemoglobina glicosilada (HbA1c): interpretación general"
-source_url: "https://www.niddk.nih.gov/health-information/diagnostic-tests/a1c-test"
-publication_date: "2018-04"
+title: 'Hemoglobina glicosilada (HbA1c): interpretación general'
+source_url: 'https://www.niddk.nih.gov/health-information/diagnostic-tests/a1c-test'
+publication_date: 2018-04
 source_kind: institutional-education
 source_type: lab-interpretation-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la página original."
-  - "Los rangos son referencias generales para adultos no embarazados, no objetivos individuales."
-  - "El diagnóstico exige confirmación con una segunda prueba y valoración clínica."
-  - "Refleja la revisión de abril de 2018; NIDDK indica que la página ya no se actualiza, así que conviene contrastarla con los estándares vigentes."
+  - Síntesis editorial de VitaMap; no es una copia de la página original.
+  - >-
+    Los rangos son referencias generales para adultos no embarazados, no
+    objetivos individuales.
+  - >-
+    El diagnóstico exige confirmación con una segunda prueba y valoración
+    clínica.
+  - >-
+    Refleja la revisión de abril de 2018; NIDDK indica que la página ya no se
+    actualiza, así que conviene contrastarla con los estándares vigentes.
+facets_version: 1
+tarjeta_id: >-
+  hemoglobina-glicosilada-hba1c-hemoglobina-glicosilada-hba1c-interpretacion-niddk
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - hba1c
+  - hemoglobina
+categoria:
+  - glucemia-insulina
+muestra:
+  - sangre-total
+sistema:
+  - endocrino-metabolico
+area_de_salud:
+  - control-glucemico
+  - energia-fatiga
+seccion: interpretacion
+alias:
+  - hba1c
+  - a1c
+  - hemoglobina glicosilada
+relacionado_con:
+  - id: glucosa-en-ayunas
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Hemoglobina glicosilada (HbA1c): interpretación general
 
 ## Qué mide esta prueba

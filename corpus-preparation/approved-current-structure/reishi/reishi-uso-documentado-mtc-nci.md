@@ -1,17 +1,44 @@
 ---
-title: "Reishi/lingzhi en medicina china: uso documentado"
-source_url: "https://www.cancer.gov/about-cancer/treatment/cam/hp/mushrooms-pdq"
-publication_date: "2024-11-06"
+title: 'Reishi/lingzhi en medicina china: uso documentado'
+source_url: 'https://www.cancer.gov/about-cancer/treatment/cam/hp/mushrooms-pdq'
+publication_date: '2024-11-06'
 source_kind: tradition-context
 source_type: traditional-medicinal-use-summary
 rights_status: permitted
 limitations:
-  - "Esta tarjeta describe uso histórico o tradicional; no demuestra eficacia clínica."
-  - "Las fuentes históricas no usan la taxonomía molecular moderna de Ganoderma."
-  - "Los conceptos de qi, longevidad y envejecimiento pertenecen al marco tradicional y no equivalen automáticamente a desenlaces biomédicos."
-  - "El resumen institucional no permite identificar con precisión la especie, el espécimen ni la preparación descritos por el texto antiguo."
+  - >-
+    Esta tarjeta describe uso histórico o tradicional; no demuestra eficacia
+    clínica.
+  - Las fuentes históricas no usan la taxonomía molecular moderna de Ganoderma.
+  - >-
+    Los conceptos de qi, longevidad y envejecimiento pertenecen al marco
+    tradicional y no equivalen automáticamente a desenlaces biomédicos.
+  - >-
+    El resumen institucional no permite identificar con precisión la especie, el
+    espécimen ni la preparación descritos por el texto antiguo.
+facets_version: 1
+tarjeta_id: reishi-reishi-uso-documentado-mtc-nci
+dominio: sustancias-naturales
+tipo:
+  - especie_medicinal
+  - suplemento
+marker:
+  - reishi
+sistema:
+  - inmunologico
+  - hepatobiliar
+area_de_salud:
+  - inmunidad
+  - antioxidante
+seccion: uso-documentado
+tradicion: mtc
+alias:
+  - reishi
+  - ganoderma lucidum
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 Capa: M2 · Uso documentado
 
 Pregunta que pretende responder:

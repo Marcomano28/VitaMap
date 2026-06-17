@@ -1,18 +1,49 @@
 ---
-title: "Creatinina: interpretación general"
-source_url: "https://medlineplus.gov/lab-tests/creatinine-test/"
-publication_date: "2023-12-05"
+title: 'Creatinina: interpretación general'
+source_url: 'https://medlineplus.gov/lab-tests/creatinine-test/'
+publication_date: '2023-12-05'
 source_kind: institutional-education
 source_type: lab-interpretation-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la página original."
-  - "Los valores de referencia pueden variar según el laboratorio, la edad, el sexo y el método de medición."
-  - "La creatinina aislada no mide toda la función renal ni confirma por sí sola enfermedad renal."
-  - "La interpretación moderna suele requerir eGFR, albuminuria y contexto clínico."
-  - "No ofrece diagnóstico ni recomendación de tratamiento."
+  - Síntesis editorial de VitaMap; no es una copia de la página original.
+  - >-
+    Los valores de referencia pueden variar según el laboratorio, la edad, el
+    sexo y el método de medición.
+  - >-
+    La creatinina aislada no mide toda la función renal ni confirma por sí sola
+    enfermedad renal.
+  - >-
+    La interpretación moderna suele requerir eGFR, albuminuria y contexto
+    clínico.
+  - No ofrece diagnóstico ni recomendación de tratamiento.
+facets_version: 1
+tarjeta_id: creatinina-creatinina-interpretacion-medlineplus
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - creatinina
+categoria:
+  - perfil-renal
+muestra:
+  - suero
+  - orina
+sistema:
+  - renal-urinario
+area_de_salud:
+  - salud-renal
+  - longevidad
+seccion: interpretacion
+relacionado_con:
+  - id: egfr
+    relacion: calculo_derivado
+  - id: albuminuria
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Creatinina: interpretación general
 
 ## Qué mide esta prueba

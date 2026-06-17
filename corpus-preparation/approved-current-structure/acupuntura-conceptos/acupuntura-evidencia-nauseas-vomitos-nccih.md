@@ -1,16 +1,45 @@
 ---
-title: "Acupuntura para las nauseas y vomitos asociados al tratamiento del cancer: estado de la evidencia"
-source_url: "https://www.nccih.nih.gov/health/acupuncture-effectiveness-and-safety"
-publication_date: "2022-10"
+title: >-
+  Acupuntura para las nauseas y vomitos asociados al tratamiento del cancer:
+  estado de la evidencia
+source_url: 'https://www.nccih.nih.gov/health/acupuncture-effectiveness-and-safety'
+publication_date: 2022-10
 source_kind: tradition-context
 source_type: acupuncture-evidence-review-summary
 rights_status: permitted
 limitations:
-  - "Cubre una sola indicacion (nauseas/vomitos por tratamiento del cancer); no debe extrapolarse a otras condiciones."
-  - "Parte de la evidencia procede de estudios previos a los antiemeticos modernos; su beneficio anadido al tratamiento estandar es incierto."
-  - "No es consejo de tratamiento ni incluye seleccion de puntos, numero de sesiones ni tecnica."
+  - >-
+    Cubre una sola indicacion (nauseas/vomitos por tratamiento del cancer); no
+    debe extrapolarse a otras condiciones.
+  - >-
+    Parte de la evidencia procede de estudios previos a los antiemeticos
+    modernos; su beneficio anadido al tratamiento estandar es incierto.
+  - >-
+    No es consejo de tratamiento ni incluye seleccion de puntos, numero de
+    sesiones ni tecnica.
+facets_version: 1
+tarjeta_id: acupuntura-conceptos-acupuntura-evidencia-nauseas-vomitos-nccih
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - acupuntura
+sistema:
+  - neurologico-cognitivo
+  - digestivo
+area_de_salud:
+  - salud-digestiva
+  - estado-animo-estres
+seccion: evidencia
+tradicion: acupuntura
+alias:
+  - acupuntura
+  - neiguan
+  - pc6
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Acupuntura para las náuseas y vómitos por tratamiento del cáncer: estado de la evidencia
 
 ## Qué se estudió

@@ -1,19 +1,43 @@
 ---
-title: "Jengibre para las náuseas y vómitos del embarazo: qué muestra la evidencia"
-source_url: "https://doi.org/10.1186/1475-2891-13-20"
-doi: "10.1186/1475-2891-13-20"
-publication_date: "2014"
+title: 'Jengibre para las náuseas y vómitos del embarazo: qué muestra la evidencia'
+source_url: 'https://doi.org/10.1186/1475-2891-13-20'
+doi: 10.1186/1475-2891-13-20
+publication_date: '2014'
 source_kind: clinical-evidence
 source_type: natural-product-evidence-summary
 rights_status: permitted
 limitations:
-  - "Se refiere al jengibre oral para las náuseas del embarazo, no a otras indicaciones."
-  - "El número de ensayos es limitado y su calidad y dosis varían."
-  - "Mide alivio de síntomas (escalas de náusea), no desenlaces obstétricos a largo plazo."
-  - "No establece una dosis ni sustituye la valoración obstétrica."
-  - "El embarazo es una situación de especial cautela; cualquier uso debe consultarse."
+  - >-
+    Se refiere al jengibre oral para las náuseas del embarazo, no a otras
+    indicaciones.
+  - El número de ensayos es limitado y su calidad y dosis varían.
+  - >-
+    Mide alivio de síntomas (escalas de náusea), no desenlaces obstétricos a
+    largo plazo.
+  - No establece una dosis ni sustituye la valoración obstétrica.
+  - >-
+    El embarazo es una situación de especial cautela; cualquier uso debe
+    consultarse.
+facets_version: 1
+tarjeta_id: jengibre-jengibre-evidencia-nauseas-embarazo-metaanalisis
+dominio: sustancias-naturales
+tipo:
+  - especie_medicinal
+  - suplemento
+marker:
+  - jengibre
+sistema:
+  - digestivo
+  - reproductivo-hormonal
+area_de_salud:
+  - salud-digestiva
+seccion: evidencia
+alias:
+  - jengibre
+  - ginger
+  - zingiber officinale
+source_language: en
 ---
-
 # Jengibre para las náuseas y vómitos del embarazo
 
 ## Qué se estudió

@@ -1,18 +1,42 @@
 ---
-title: "Jengibre (Zingiber officinale): seguridad y precauciones"
-source_url: "https://www.nccih.nih.gov/health/ginger"
-publication_date: "2025-02"
+title: 'Jengibre (Zingiber officinale): seguridad y precauciones'
+source_url: 'https://www.nccih.nih.gov/health/ginger'
+publication_date: 2025-02
 source_kind: institutional-education
 source_type: natural-product-safety-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de las fuentes originales."
-  - "La ausencia de daño observado en estudios no equivale a seguridad demostrada."
-  - "Las interacciones descritas son precauciones razonables, no contraindicaciones plenamente establecidas."
-  - "Distingue el uso alimentario del jengibre del de suplementos concentrados."
-  - "No propone dosis ni sustituye la valoración de un profesional sanitario."
+  - Síntesis editorial de VitaMap; no es una copia de las fuentes originales.
+  - >-
+    La ausencia de daño observado en estudios no equivale a seguridad
+    demostrada.
+  - >-
+    Las interacciones descritas son precauciones razonables, no
+    contraindicaciones plenamente establecidas.
+  - Distingue el uso alimentario del jengibre del de suplementos concentrados.
+  - No propone dosis ni sustituye la valoración de un profesional sanitario.
+facets_version: 1
+tarjeta_id: jengibre-jengibre-seguridad-nccih
+dominio: sustancias-naturales
+tipo:
+  - especie_medicinal
+  - suplemento
+marker:
+  - jengibre
+sistema:
+  - digestivo
+  - reproductivo-hormonal
+area_de_salud:
+  - salud-digestiva
+seccion: seguridad
+alias:
+  - jengibre
+  - ginger
+  - zingiber officinale
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Jengibre (*Zingiber officinale*): seguridad y precauciones
 
 ## Efectos adversos conocidos

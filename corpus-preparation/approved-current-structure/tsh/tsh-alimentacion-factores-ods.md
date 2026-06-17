@@ -1,19 +1,46 @@
 ---
-title: "TSH y función tiroidea: el yodo y otros factores de la alimentación"
-source_url: "https://ods.od.nih.gov/factsheets/Iodine-Consumer/"
-publication_date: "2024-05-01"
+title: 'TSH y función tiroidea: el yodo y otros factores de la alimentación'
+source_url: 'https://ods.od.nih.gov/factsheets/Iodine-Consumer/'
+publication_date: '2024-05-01'
 source_kind: institutional-education
 source_type: nutrition-lifestyle-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la ficha original."
-  - "Describe relaciones generales, no una forma de corregir un valor de TSH."
-  - "Las cantidades de referencia son poblacionales, no objetivos individuales."
-  - "Los suplementos y sus dosis son una decisión médica, no parte de esta tarjeta."
-  - "El contenido de yodo de las algas y los productos de kelp es muy variable."
-  - "En zonas con yodo suficiente la deficiencia es poco frecuente."
+  - Síntesis editorial de VitaMap; no es una copia de la ficha original.
+  - 'Describe relaciones generales, no una forma de corregir un valor de TSH.'
+  - 'Las cantidades de referencia son poblacionales, no objetivos individuales.'
+  - >-
+    Los suplementos y sus dosis son una decisión médica, no parte de esta
+    tarjeta.
+  - El contenido de yodo de las algas y los productos de kelp es muy variable.
+  - En zonas con yodo suficiente la deficiencia es poco frecuente.
+facets_version: 1
+tarjeta_id: tsh-tsh-alimentacion-factores-ods
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - tsh
+categoria:
+  - perfil-tiroideo
+muestra:
+  - suero
+  - plasma
+sistema:
+  - endocrino-metabolico
+  - reproductivo-hormonal
+area_de_salud:
+  - salud-tiroidea
+  - energia-fatiga
+  - salud-hormonal
+seccion: alimentacion-factores
+relacionado_con:
+  - id: t4-libre
+    relacion: lectura_conjunta
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # TSH y función tiroidea: el yodo y otros factores de la alimentación
 
 ## Qué factores se relacionan

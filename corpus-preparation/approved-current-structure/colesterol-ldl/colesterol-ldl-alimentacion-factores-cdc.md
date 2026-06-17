@@ -1,18 +1,54 @@
 ---
-title: "Colesterol LDL: alimentación y factores relacionados"
-source_url: "https://www.cdc.gov/cholesterol/prevention/index.html"
-publication_date: "2024-05-15"
+title: 'Colesterol LDL: alimentación y factores relacionados'
+source_url: 'https://www.cdc.gov/cholesterol/prevention/index.html'
+publication_date: '2024-05-15'
 source_kind: institutional-education
 source_type: nutrition-lifestyle-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la página de los CDC."
-  - "Describe asociaciones generales de estilo de vida, no efectos garantizados sobre el LDL de cada persona."
-  - "No es una pauta dietética personalizada ni una recomendación de tratamiento."
-  - "El contexto alimentario refleja recomendaciones de EE. UU.; las guías locales pueden variar."
-  - "La referencia a los CDC no implica que los CDC, HHS o el Gobierno de EE. UU. respalden VitaMap."
+  - Síntesis editorial de VitaMap; no es una copia de la página de los CDC.
+  - >-
+    Describe asociaciones generales de estilo de vida, no efectos garantizados
+    sobre el LDL de cada persona.
+  - No es una pauta dietética personalizada ni una recomendación de tratamiento.
+  - >-
+    El contexto alimentario refleja recomendaciones de EE. UU.; las guías
+    locales pueden variar.
+  - >-
+    La referencia a los CDC no implica que los CDC, HHS o el Gobierno de EE. UU.
+    respalden VitaMap.
+facets_version: 1
+tarjeta_id: colesterol-ldl-colesterol-ldl-alimentacion-factores-cdc
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - colesterol-ldl
+categoria:
+  - perfil-lipidico
+muestra:
+  - suero
+  - plasma
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+area_de_salud:
+  - salud-cardiovascular
+  - longevidad
+seccion: alimentacion-factores
+alias:
+  - ldl
+  - colesterol ldl
+  - colesterol total
+relacionado_con:
+  - id: colesterol-hdl
+    relacion: mismo_panel
+  - id: trigliceridos
+    relacion: mismo_panel
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Colesterol LDL: alimentación y factores relacionados
 
 ## Qué factores se relacionan

@@ -1,17 +1,45 @@
 ---
-title: "Ganopoly en cáncer de pulmón avanzado: evidencia sobre marcadores inmunológicos"
-source_url: "https://www.cancer.gov/about-cancer/treatment/cam/hp/mushrooms-pdq"
-publication_date: "2024-11-06"
+title: >-
+  Ganopoly en cáncer de pulmón avanzado: evidencia sobre marcadores
+  inmunológicos
+source_url: 'https://www.cancer.gov/about-cancer/treatment/cam/hp/mushrooms-pdq'
+publication_date: '2024-11-06'
 source_kind: clinical-evidence
 source_type: natural-product-evidence-summary
 rights_status: permitted
 limitations:
-  - "Se trata de un ensayo abierto pequeño que no midió respuesta tumoral, supervivencia ni calidad de vida."
-  - "Los participantes también recibían tratamientos oncológicos u otras terapias complementarias."
-  - "Los marcadores inmunológicos no equivalen a eficacia contra el cáncer."
-  - "El nombre Ganoderma lucidum del producto publicado no confirma su identidad con taxonomía moderna."
+  - >-
+    Se trata de un ensayo abierto pequeño que no midió respuesta tumoral,
+    supervivencia ni calidad de vida.
+  - >-
+    Los participantes también recibían tratamientos oncológicos u otras terapias
+    complementarias.
+  - Los marcadores inmunológicos no equivalen a eficacia contra el cáncer.
+  - >-
+    El nombre Ganoderma lucidum del producto publicado no confirma su identidad
+    con taxonomía moderna.
+facets_version: 1
+tarjeta_id: reishi-reishi-evidencia-cancer-pulmon-nci
+dominio: sustancias-naturales
+tipo:
+  - especie_medicinal
+  - suplemento
+marker:
+  - reishi
+sistema:
+  - inmunologico
+  - hepatobiliar
+area_de_salud:
+  - inmunidad
+  - antioxidante
+seccion: evidencia
+alias:
+  - reishi
+  - ganoderma lucidum
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 Capa: M3 · Evidencia moderna
 
 Pregunta que pretende responder:

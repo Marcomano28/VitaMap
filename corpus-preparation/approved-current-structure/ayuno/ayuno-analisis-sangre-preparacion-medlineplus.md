@@ -1,18 +1,47 @@
 ---
-title: "Ayuno antes de un análisis de sangre"
-source_url: "https://medlineplus.gov/lab-tests/fasting-for-a-blood-test/"
-publication_date: "2025-08-28"
+title: Ayuno antes de un análisis de sangre
+source_url: 'https://medlineplus.gov/lab-tests/fasting-for-a-blood-test/'
+publication_date: '2025-08-28'
 source_kind: institutional-education
 source_type: test-preparation-summary
 rights_status: permitted
 limitations:
-  - "Síntesis educativa de VitaMap; no reproduce el contenido de la página original."
-  - "La duración y las condiciones exactas del ayuno las indica el profesional o el laboratorio."
-  - "No es una pauta personalizada ni sustituye las instrucciones de la prueba concreta."
-  - "No recomienda suspender ni cambiar medicamentos; eso solo lo decide el profesional."
-  - "No ofrece diagnóstico."
+  - >-
+    Síntesis educativa de VitaMap; no reproduce el contenido de la página
+    original.
+  - >-
+    La duración y las condiciones exactas del ayuno las indica el profesional o
+    el laboratorio.
+  - >-
+    No es una pauta personalizada ni sustituye las instrucciones de la prueba
+    concreta.
+  - >-
+    No recomienda suspender ni cambiar medicamentos; eso solo lo decide el
+    profesional.
+  - No ofrece diagnóstico.
+facets_version: 1
+tarjeta_id: ayuno-ayuno-analisis-sangre-preparacion-medlineplus
+dominio: metodologia-preanalitica
+tipo:
+  - metodologia
+marker:
+  - general
+categoria:
+  - metodologia-preanalitica
+muestra:
+  - suero
+  - plasma
+  - sangre-total
+sistema:
+  - endocrino-metabolico
+  - digestivo
+area_de_salud:
+  - control-glucemico
+seccion: preanalitica
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Ayuno antes de un análisis de sangre
 
 ## Qué significa ayunar para una prueba

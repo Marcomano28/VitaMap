@@ -1,19 +1,45 @@
 ---
-title: "Extractos de chaga y cáncer: evidencia preclínica y límites clínicos"
-source_url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC11132974/"
-publication_date: "2023-10-20"
-doi: "10.1080/21501203.2023.2260408"
+title: 'Extractos de chaga y cáncer: evidencia preclínica y límites clínicos'
+source_url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC11132974/'
+publication_date: '2023-10-20'
+doi: 10.1080/21501203.2023.2260408
 source_kind: clinical-evidence
 source_type: natural-product-evidence-summary
 rights_status: permitted
 limitations:
-  - "La revisión resume principalmente estudios en células y animales; no demuestra eficacia oncológica en personas."
-  - "Los hallazgos se refieren a extractos o compuestos concretos y no se trasladan a cualquier producto de chaga."
-  - "Actividad de laboratorio no equivale a beneficio clínico."
-  - "Los registros de ensayos cambian con el tiempo; la búsqueda complementaria se revisó el 11 de junio de 2026."
-  - "No describe un uso oncológico en personas y no es una recomendación."
+  - >-
+    La revisión resume principalmente estudios en células y animales; no
+    demuestra eficacia oncológica en personas.
+  - >-
+    Los hallazgos se refieren a extractos o compuestos concretos y no se
+    trasladan a cualquier producto de chaga.
+  - Actividad de laboratorio no equivale a beneficio clínico.
+  - >-
+    Los registros de ensayos cambian con el tiempo; la búsqueda complementaria
+    se revisó el 11 de junio de 2026.
+  - No describe un uso oncológico en personas y no es una recomendación.
+facets_version: 1
+tarjeta_id: chaga-chaga-evidencia-cancer-revisiones
+dominio: sustancias-naturales
+tipo:
+  - especie_medicinal
+  - suplemento
+marker:
+  - chaga
+sistema:
+  - inmunologico
+  - renal-urinario
+area_de_salud:
+  - inmunidad
+  - antioxidante
+seccion: evidencia
+alias:
+  - chaga
+  - inonotus obliquus
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Extractos de chaga y cáncer: evidencia preclínica y límites clínicos
 
 ## Qué se estudió

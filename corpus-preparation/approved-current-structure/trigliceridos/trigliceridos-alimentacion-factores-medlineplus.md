@@ -1,17 +1,46 @@
 ---
-title: "Triglicéridos: alimentación y factores relacionados"
-source_url: "https://medlineplus.gov/triglycerides.html"
-publication_date: "2025-08-10"
+title: 'Triglicéridos: alimentación y factores relacionados'
+source_url: 'https://medlineplus.gov/triglycerides.html'
+publication_date: '2025-08-10'
 source_kind: institutional-education
 source_type: nutrition-lifestyle-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial de VitaMap; no es una copia de la página original."
-  - "Describe factores generales asociados, no causas individuales ni una pauta personalizada."
-  - "No es una recomendación de dieta, ejercicio ni tratamiento."
-  - "Refleja la actualización de agosto de 2025 de la fuente."
+  - Síntesis editorial de VitaMap; no es una copia de la página original.
+  - >-
+    Describe factores generales asociados, no causas individuales ni una pauta
+    personalizada.
+  - 'No es una recomendación de dieta, ejercicio ni tratamiento.'
+  - Refleja la actualización de agosto de 2025 de la fuente.
+facets_version: 1
+tarjeta_id: trigliceridos-trigliceridos-alimentacion-factores-medlineplus
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - trigliceridos
+categoria:
+  - perfil-lipidico
+muestra:
+  - suero
+  - plasma
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+area_de_salud:
+  - salud-cardiovascular
+  - control-glucemico
+  - longevidad
+seccion: alimentacion-factores
+relacionado_con:
+  - id: colesterol-ldl
+    relacion: mismo_panel
+  - id: colesterol-hdl
+    relacion: mismo_panel
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Triglicéridos: alimentación y factores relacionados
 
 ## Qué hábitos se relacionan

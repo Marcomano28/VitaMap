@@ -1,18 +1,47 @@
 ---
-title: "Prakriti y doshas: qué ha encontrado la Ayurgenómica (evaluación científica)"
-source_url: "https://pubmed.ncbi.nlm.nih.gov/18782426/"
-pmid: "18782426"
-publication_date: "2008-09"
+title: 'Prakriti y doshas: qué ha encontrado la Ayurgenómica (evaluación científica)'
+source_url: 'https://pubmed.ncbi.nlm.nih.gov/18782426/'
+pmid: '18782426'
+publication_date: 2008-09
 source_kind: tradition-context
 source_type: traditional-evidence-review-summary
 rights_status: permitted
 limitations:
-  - "Resume una investigación emergente y aún discutida; no es consenso científico ni valida el marco tradicional."
-  - "Fuente principal de acceso abierto (CC BY); síntesis basada en sus resúmenes y datos verificados."
-  - "Hallazgos correlacionales, en cohortes mayoritariamente indias y con muestras limitadas o muy seleccionadas; sin utilidad clínica validada."
-  - "No es diagnóstico ni recomendación; una coincidencia entre marcos no es confirmación científica."
+  - >-
+    Resume una investigación emergente y aún discutida; no es consenso
+    científico ni valida el marco tradicional.
+  - >-
+    Fuente principal de acceso abierto (CC BY); síntesis basada en sus resúmenes
+    y datos verificados.
+  - >-
+    Hallazgos correlacionales, en cohortes mayoritariamente indias y con
+    muestras limitadas o muy seleccionadas; sin utilidad clínica validada.
+  - >-
+    No es diagnóstico ni recomendación; una coincidencia entre marcos no es
+    confirmación científica.
+facets_version: 1
+tarjeta_id: ayurveda-prakriti-doshas-evaluacion-cientifica-ayurgenomica
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - ayurveda
+sistema:
+  - endocrino-metabolico
+  - digestivo
+area_de_salud:
+  - salud-digestiva
+  - salud-hormonal
+seccion: evidencia
+tradicion: ayurveda
+alias:
+  - ayurveda
+  - prakriti
+  - dosha
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Prakriti y doshas: qué ha encontrado la Ayurgenómica (evaluación científica)
 
 ## Qué se ha investigado

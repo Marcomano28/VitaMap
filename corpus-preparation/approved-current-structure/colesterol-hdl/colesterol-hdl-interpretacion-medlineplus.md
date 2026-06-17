@@ -1,17 +1,48 @@
 ---
-title: "Colesterol HDL: interpretación general"
-source_url: "https://medlineplus.gov/hdlthegoodcholesterol.html"
-publication_date: "2025-03-20"
+title: 'Colesterol HDL: interpretación general'
+source_url: 'https://medlineplus.gov/hdlthegoodcholesterol.html'
+publication_date: '2025-03-20'
 source_kind: institutional-education
 source_type: lab-interpretation-summary
 rights_status: permitted
 limitations:
-  - "Síntesis editorial basada en información pública de MedlinePlus."
-  - "Los valores de referencia son orientativos y no sustituyen los del laboratorio."
-  - "El riesgo cardiovascular depende de múltiples factores además del HDL."
-  - "No establece diagnósticos ni recomendaciones de tratamiento."
+  - Síntesis editorial basada en información pública de MedlinePlus.
+  - >-
+    Los valores de referencia son orientativos y no sustituyen los del
+    laboratorio.
+  - El riesgo cardiovascular depende de múltiples factores además del HDL.
+  - No establece diagnósticos ni recomendaciones de tratamiento.
+facets_version: 1
+tarjeta_id: colesterol-hdl-colesterol-hdl-interpretacion-medlineplus
+dominio: laboratorio
+tipo:
+  - analito
+marker:
+  - colesterol-hdl
+categoria:
+  - perfil-lipidico
+muestra:
+  - suero
+  - plasma
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+area_de_salud:
+  - salud-cardiovascular
+  - longevidad
+seccion: interpretacion
+alias:
+  - hdl
+  - colesterol hdl
+relacionado_con:
+  - id: colesterol-ldl
+    relacion: mismo_panel
+  - id: trigliceridos
+    relacion: mismo_panel
+source_language: en
+source_jurisdiction:
+  - US
 ---
-
 # Colesterol HDL: interpretación general
 
 ## Qué mide esta prueba

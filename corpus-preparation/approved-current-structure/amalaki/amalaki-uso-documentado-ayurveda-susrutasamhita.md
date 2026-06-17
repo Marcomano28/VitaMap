@@ -1,18 +1,48 @@
 ---
-title: "Āmalakī (Phyllanthus emblica) en el Ayurveda clásico: uso documentado como rasāyana"
-source_url: "https://doi.org/10.5281/zenodo.20091000"
-doi: "10.5281/zenodo.20091000"
-publication_date: "2026-05-09"
+title: >-
+  Āmalakī (Phyllanthus emblica) en el Ayurveda clásico: uso documentado como
+  rasāyana
+source_url: 'https://doi.org/10.5281/zenodo.20091000'
+doi: 10.5281/zenodo.20091000
+publication_date: '2026-05-09'
 source_kind: tradition-context
 source_type: traditional-medicinal-use-summary
 rights_status: permitted
 limitations:
-  - "Describe un uso atribuido a un texto clásico; no demuestra eficacia clínica."
-  - "Procede de una edición crítica provisional; las lecturas pueden variar en versiones futuras."
-  - "El texto clásico no conoce la vitamina C, el escorbuto ni la absorción de hierro; rasāyana no equivale a vitamina."
-  - "Los efectos atribuidos (memoria, longevidad) pertenecen al marco tradicional y no son desenlaces biomédicos."
+  - Describe un uso atribuido a un texto clásico; no demuestra eficacia clínica.
+  - >-
+    Procede de una edición crítica provisional; las lecturas pueden variar en
+    versiones futuras.
+  - >-
+    El texto clásico no conoce la vitamina C, el escorbuto ni la absorción de
+    hierro; rasāyana no equivale a vitamina.
+  - >-
+    Los efectos atribuidos (memoria, longevidad) pertenecen al marco tradicional
+    y no son desenlaces biomédicos.
+facets_version: 1
+tarjeta_id: amalaki-amalaki-uso-documentado-ayurveda-susrutasamhita
+dominio: sustancias-naturales
+tipo:
+  - especie_medicinal
+  - suplemento
+marker:
+  - amalaki
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+  - digestivo
+area_de_salud:
+  - salud-cardiovascular
+  - control-glucemico
+  - antioxidante
+seccion: uso-documentado
+tradicion: ayurveda
+alias:
+  - amla
+  - amalaki
+  - phyllanthus emblica
+source_language: en
 ---
-
 # Āmalakī (*Phyllanthus emblica*) como rasāyana en la Suśrutasaṃhitā
 
 ## Fuente y contexto

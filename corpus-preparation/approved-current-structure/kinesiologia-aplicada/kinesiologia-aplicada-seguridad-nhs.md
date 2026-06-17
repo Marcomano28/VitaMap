@@ -1,17 +1,40 @@
 ---
-title: "Kinesiología aplicada: seguridad y límites"
-source_url: "https://www.nhs.uk/conditions/food-intolerance/"
-publication_date: "2022-11-25"
+title: 'Kinesiología aplicada: seguridad y límites'
+source_url: 'https://www.nhs.uk/conditions/food-intolerance/'
+publication_date: '2022-11-25'
 source_kind: institutional-education
 source_type: complementary-practice-safety-summary
 rights_status: permitted
 limitations:
-  - "La ausencia de daño físico directo no equivale a seguridad demostrada del conjunto de la práctica."
-  - "El mayor riesgo es indirecto: decisiones de salud tomadas a partir de un método no validado."
-  - "La regulación y la cualificación varían según el país; deben comprobarse en registros oficiales vigentes."
-  - "No ofrece instrucciones de autoaplicación ni indica suspender tratamientos."
+  - >-
+    La ausencia de daño físico directo no equivale a seguridad demostrada del
+    conjunto de la práctica.
+  - >-
+    El mayor riesgo es indirecto: decisiones de salud tomadas a partir de un
+    método no validado.
+  - >-
+    La regulación y la cualificación varían según el país; deben comprobarse en
+    registros oficiales vigentes.
+  - No ofrece instrucciones de autoaplicación ni indica suspender tratamientos.
+facets_version: 1
+tarjeta_id: kinesiologia-aplicada-kinesiologia-aplicada-seguridad-nhs
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - kinesiologia-aplicada
+sistema:
+  - osteoarticular
+  - neurologico-cognitivo
+area_de_salud:
+  - rendimiento-deportivo
+seccion: seguridad
+alias:
+  - kinesiologia aplicada
+source_language: en
+source_jurisdiction:
+  - GB
 ---
-
 # Kinesiología aplicada: seguridad y límites
 
 ## Riesgos directos

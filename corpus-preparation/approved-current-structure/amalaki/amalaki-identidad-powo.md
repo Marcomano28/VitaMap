@@ -1,17 +1,45 @@
 ---
-title: "Amla / āmalakī (Phyllanthus emblica): identidad y formas de producto"
-source_url: "https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:353838-1"
-publication_date: "1753"
+title: 'Amla / āmalakī (Phyllanthus emblica): identidad y formas de producto'
+source_url: 'https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:353838-1'
+publication_date: '1753'
 source_kind: institutional-education
 source_type: medicinal-species-identity-summary
 rights_status: permitted
 limitations:
-  - "Identifica la especie y las formas generales de producto; no evalúa eficacia ni seguridad."
-  - "La fecha corresponde a la primera publicación del nombre (Linnaeus, 1753); POWO es una base taxonómica de actualización continua."
-  - "El nombre Emblica officinalis sigue siendo muy común en la literatura, pero es un sinónimo del nombre aceptado."
-  - "Fruto fresco, zumo, polvo seco, extracto y producto multingrediente no son equivalentes."
+  - >-
+    Identifica la especie y las formas generales de producto; no evalúa eficacia
+    ni seguridad.
+  - >-
+    La fecha corresponde a la primera publicación del nombre (Linnaeus, 1753);
+    POWO es una base taxonómica de actualización continua.
+  - >-
+    El nombre Emblica officinalis sigue siendo muy común en la literatura, pero
+    es un sinónimo del nombre aceptado.
+  - >-
+    Fruto fresco, zumo, polvo seco, extracto y producto multingrediente no son
+    equivalentes.
+facets_version: 1
+tarjeta_id: amalaki-amalaki-identidad-powo
+dominio: sustancias-naturales
+tipo:
+  - especie_medicinal
+  - suplemento
+marker:
+  - amalaki
+sistema:
+  - cardiovascular
+  - endocrino-metabolico
+  - digestivo
+area_de_salud:
+  - salud-cardiovascular
+  - control-glucemico
+  - antioxidante
+seccion: identidad
+alias:
+  - amla
+  - amalaki
+  - phyllanthus emblica
 ---
-
 # Amla / āmalakī (*Phyllanthus emblica*): identidad y formas de producto
 
 ## Identidad

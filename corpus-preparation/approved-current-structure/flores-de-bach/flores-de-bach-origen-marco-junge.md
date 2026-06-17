@@ -1,18 +1,41 @@
 ---
-title: "Flores de Bach: origen, filosofía y recepción social"
-source_url: "https://revistadeantropologia.uchile.cl/index.php/RCA/article/view/64438"
-doi: "10.5354/0719-1472.2021.64438"
-publication_date: "2021-07-26"
+title: 'Flores de Bach: origen, filosofía y recepción social'
+source_url: 'https://revistadeantropologia.uchile.cl/index.php/RCA/article/view/64438'
+doi: 10.5354/0719-1472.2021.64438
+publication_date: '2021-07-26'
 source_kind: tradition-context
 source_type: complementary-practice-framework-summary
 rights_status: permitted
 limitations:
-  - "El estudio antropológico se centra en dos centros de atención primaria gestionados por organizaciones sociales en Santiago de Chile; no representa todos los usos de las Flores de Bach."
-  - "Aporta una lectura social y política de la práctica, no una historia exhaustiva ni una evaluación de eficacia clínica."
-  - "El significado histórico o social del sistema no establece eficacia clínica."
-  - "Las afirmaciones sobre vibración o energía se atribuyen al marco y no se presentan como mecanismos comprobados."
+  - >-
+    El estudio antropológico se centra en dos centros de atención primaria
+    gestionados por organizaciones sociales en Santiago de Chile; no representa
+    todos los usos de las Flores de Bach.
+  - >-
+    Aporta una lectura social y política de la práctica, no una historia
+    exhaustiva ni una evaluación de eficacia clínica.
+  - El significado histórico o social del sistema no establece eficacia clínica.
+  - >-
+    Las afirmaciones sobre vibración o energía se atribuyen al marco y no se
+    presentan como mecanismos comprobados.
+facets_version: 1
+tarjeta_id: flores-de-bach-flores-de-bach-origen-marco-junge
+dominio: tradiciones-practicas
+tipo:
+  - intervencion
+marker:
+  - flores-de-bach
+sistema:
+  - neurologico-cognitivo
+area_de_salud:
+  - estado-animo-estres
+seccion: identidad
+alias:
+  - flores de bach
+source_language: es
+source_jurisdiction:
+  - CL
 ---
-
 # Flores de Bach: origen, filosofía y recepción social
 
 ## Origen documentado

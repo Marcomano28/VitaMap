@@ -48,19 +48,21 @@ para fuentes y métodos capaces de sostenerlas.
 
 ---
 
-## 2. Lugar dentro de las tres tarjetas
+## 2. Lugar dentro de las cinco tarjetas
 
 | Tarjeta | Propósito | Brief |
 |---|---|---|
 | **A · Interpretación** | Entender el marcador y sus referencias generales | Brief principal |
 | **B · Alimentación y factores** | Comprender factores cotidianos relacionados | Brief principal |
 | **C · Curiosidad científica** | Descubrir un mecanismo o dato memorable | Este brief |
+| **D · Lectura conjunta** | Comprender relaciones documentadas entre marcadores | Brief principal y módulo D |
+| **E · Seguimiento temporal** | Comprender comparabilidad, variación y cambio | Brief principal y módulo E |
 
 No es obligatorio producir una tarjeta C para cada tema. Debe existir solo
 cuando haya un dato científicamente sólido, relevante y distinto de A y B.
 
 Los documentos tradicionales son capas adicionales y explícitas. No forman
-parte automáticamente del trío y no deben producirse para completar una cuota.
+parte automáticamente de A–E y no deben producirse para completar una cuota.
 Su presencia en el corpus no implica que deban aparecer en todas las respuestas:
 la recuperación podrá priorizarlos cuando la persona solicite esa tradición o
 active una comparación.
@@ -79,6 +81,27 @@ Para acupuntura usa el brief especializado
 `PROMPT-INVESTIGACION-RAG-ACUPUNTURA.md`. La acupuntura añade nomenclatura de
 puntos, procedimientos y riesgos que requieren reglas propias.
 
+### Facetado y cobertura
+
+Este brief usa el mismo contrato de frontmatter que
+`PROMPT-INVESTIGACION-RAG.md`. Antes de redactar una tarjeta C, T1, T2 o T3,
+comprueba `corpus-preparation/corpus-taxonomy.json`:
+
+- si el topic existe, copia sus facets base y ajusta `seccion`;
+- si el topic no existe, propón primero la entrada de taxonomía;
+- si la tarjeta pertenece a Ayurveda, MTC o acupuntura, usa `tradicion`;
+- no uses `tradicion` para prácticas complementarias modernas salvo que la
+  taxonomía lo defina expresamente;
+- declara `relacionado_con` solo cuando la fuente sostenga la relación.
+
+Valores habituales de `seccion` en este brief:
+
+| Documento | `seccion` |
+|---|---|
+| C · Curiosidad científica | `curiosidad` |
+| T1/T2 · Fuente o contexto tradicional | `tradicion` |
+| T3 · Evidencia moderna sobre tradición | `evidencia` |
+
 ---
 
 ## 3. Ciencia actualizada y trazable
@@ -93,6 +116,12 @@ puntos, procedimientos y riesgos que requieren reglas propias.
 - Refleja la incertidumbre cuando la investigación sea preliminar o mixta.
 - No completes huecos de memoria. Toda afirmación importante debe poder
   localizarse en una fuente declarada.
+- Busca también en sociedades de medicina de laboratorio, academias
+  profesionales, universidades y publicaciones revisadas por pares cuando una
+  fuente institucional general no explique el método, la interferencia o el
+  límite de la medición.
+- Una institución prestigiosa no basta: comprueba autoría, fecha, revisión
+  editorial, aplicabilidad y derechos de la página concreta.
 - Comprueba los derechos de la página concreta. No uses artículos de la
   A.D.A.M. Medical Encyclopedia de MedlinePlus (`/ency/article/`): son contenido
   licenciado y no permiten su ingestión en sistemas RAG sin autorización.
@@ -123,7 +152,9 @@ Una sola idea memorable, planteada sin exageración.
 Explicación científica accesible.
 
 ## Qué se sabe y qué no
-Grado de certeza y límites.
+Grado de certeza y límites. Explica qué parte está bien establecida, qué depende
+del contexto y qué permanece abierto, sin convertirlo en un debate para
+especialistas.
 
 ## Fuente principal
 Cita y URL.
@@ -138,6 +169,28 @@ Cita y URL.
 5. Desarrolla una sola idea memorable.
 6. Debe existir una conexión temática clara con el marcador al que acompaña.
 7. Longitud orientativa: 150–350 palabras.
+8. No conviertas un mecanismo plausible en beneficio clínico ni una asociación
+   en causa.
+9. Da preferencia a curiosidades que mejoren la lectura de analíticas:
+   diferencias entre cantidad y función, artefactos de laboratorio,
+   variabilidad biológica, relaciones entre marcadores y límites de medición.
+
+### La frontera sin ruido académico
+
+La sección `Qué se sabe y qué no` debe permitir que la persona vea el horizonte
+de la ciencia sin recibir una lista de controversias. Presenta:
+
+- el núcleo sólido;
+- el límite concreto de la prueba o explicación;
+- la pregunta que sigue abierta, solo si es relevante.
+
+No uses expresiones vagas como "se necesita más investigación" sin explicar qué
+falta: replicación, muestras mayores, comparación entre métodos, seguimiento a
+largo plazo o demostración de un beneficio clínico.
+
+La incertidumbre no convierte todas las hipótesis en equivalentes. Una señal
+preliminar debe permanecer en segundo plano frente a conocimiento replicado y
+fuentes institucionales o consensuadas.
 
 ### Frontmatter
 
@@ -145,10 +198,40 @@ Cita y URL.
 ---
 title: "Vitamina D: por qué su forma activa funciona como una hormona"
 source_url: "https://ods.od.nih.gov/factsheets/VitaminD-HealthProfessional/"
+source_language: en
+source_jurisdiction:
+  - US
 publication_date: "2024"
 source_kind: institutional-education
 source_type: science-curiosity-summary
 rights_status: permitted
+facets_version: 1
+tarjeta_id: vitamina-d-vitamina-d-curiosidad-hormona-ods
+dominio: laboratorio
+tipo:
+  - analito
+  - vitamina
+marker:
+  - vitamina-d
+categoria:
+  - vitaminas
+  - metabolismo-oseo
+muestra:
+  - suero
+  - plasma
+sistema:
+  - osteoarticular
+  - endocrino-metabolico
+  - inmunologico
+area_de_salud:
+  - salud-osea
+  - inmunidad
+  - energia-fatiga
+seccion: curiosidad
+alias:
+  - 25-OH-D
+  - calcidiol
+  - colecalciferol
 limitations:
   - "Síntesis divulgativa; no sustituye información clínica detallada."
   - "Una curiosidad no es una recomendación de salud."
@@ -329,11 +412,36 @@ pasaje o archivo y DOI o identificador estable cuando exista.
 ---
 title: "Ayurveda clásico: [concepto] en [obra]"
 source_url: "https://URL-EXACTA-DE-LA-EDICION-O-PASAJE"
+source_language: en
+source_jurisdiction:
+  - INT
 doi: "DOI-DE-LA-VERSION-SI-EXISTE"
 publication_date: "AAAA-MM-DD"
 source_kind: tradition-context
 source_type: traditional-primary-source-summary
 rights_status: unknown
+facets_version: 1
+tarjeta_id: vitamina-d-vitamina-d-ayurveda-fuente-clasica-asthi-dhatu
+dominio: laboratorio
+tipo:
+  - analito
+  - vitamina
+marker:
+  - vitamina-d
+categoria:
+  - vitaminas
+  - metabolismo-oseo
+muestra:
+  - suero
+  - plasma
+sistema:
+  - osteoarticular
+  - endocrino-metabolico
+  - inmunologico
+area_de_salud:
+  - salud-osea
+tradicion: ayurveda
+seccion: tradicion
 limitations:
   - "Describe un concepto de un texto médico clásico, no una entidad biomédica moderna."
   - "Indica el estado editorial y las limitaciones de la versión consultada."
@@ -498,8 +606,11 @@ fuente principal con derechos compatibles.
 ## 7. Checklist de calidad
 
 - [ ] Es una tarjeta C, T1, T2 o T3; no mezcla sus funciones.
-- [ ] Aporta una intención distinta de las tarjetas A y B.
+- [ ] Aporta una intención distinta de las tarjetas A, B, D y E.
 - [ ] No existe ya una tarjeta equivalente en el lote.
+- [ ] Usa `corpus-taxonomy.json` para `marker`, `sistema`, `area_de_salud`, `alias` y relaciones.
+- [ ] `seccion` corresponde a la capa: `curiosidad`, `tradicion` o `evidencia`.
+- [ ] `tradicion` aparece solo cuando corresponde a una tradición identificable.
 - [ ] `source_kind` y `source_type` corresponden al documento real.
 - [ ] La fuente es vigente y reputada.
 - [ ] La fuente principal permite el uso declarado y no prohíbe RAG o embeddings.
