@@ -34,10 +34,13 @@ alias:
 relacionado_con:
   - id: berberina
     relacion: contiene_compuesto
+    direccion: dirigida
   - id: glucosa-en-ayunas
     relacion: comparacion_contextual
+    direccion: dirigida
   - id: hba1c
     relacion: comparacion_contextual
+    direccion: dirigida
 limitations:
   - "Documenta el uso tradicional de la raíz/tallo y de extractos (rasāñjana/rasaut), no de la berberina aislada."
   - "El uso clásico no demuestra eficacia clínica; categorías como kuṣṭha o las propiedades rasa/vīrya no equivalen a diagnósticos ni mecanismos biomédicos."

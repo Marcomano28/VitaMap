@@ -34,12 +34,16 @@ alias:
 relacionado_con:
   - id: silibinina
     relacion: componente_relacionado_no_equivalente
+    direccion: dirigida
   - id: glucosa-en-ayunas
     relacion: modifica_interpretacion_contextual
+    direccion: dirigida
   - id: alt
     relacion: seguridad_contextual
+    direccion: dirigida
   - id: ast
     relacion: seguridad_contextual
+    direccion: dirigida
 limitations:
   - "La buena tolerancia general no equivale a seguridad demostrada en todos los grupos; faltan datos de uso prolongado y en embarazo/lactancia."
   - "Varias interacciones son teóricas (efecto in vitro sobre CYP/glucoproteína-P) y no equivalen a contraindicaciones confirmadas."

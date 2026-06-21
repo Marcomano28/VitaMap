@@ -101,6 +101,34 @@ async function main() {
       assert.ok(validated.body.length > 20);
       assert.ok(validated.limitations.length > 0);
     }
+    const importedWithEvidence = corpusDraftInputFromForm(
+      new FormData(),
+      `---
+title: Evidence preservation fixture
+source_url: https://example.org/evidence
+source_kind: clinical-evidence
+source_type: natural-product-evidence-summary
+rights_status: permitted
+limitations:
+  - Fixture only
+evidence:
+  certeza: moderada
+  direccion: a-favor
+  poblacion: adultos
+  motivos_descenso:
+    - imprecision
+---
+
+Body long enough to pass corpus draft validation.
+`,
+    );
+    const validatedWithEvidence = CorpusDraftInputSchema.parse(importedWithEvidence);
+    assert.deepEqual(validatedWithEvidence.extraFrontmatter?.evidence, {
+      certeza: "moderada",
+      direccion: "a-favor",
+      poblacion: "adultos",
+      motivos_descenso: ["imprecision"],
+    });
 
     const created = await createCorpusDraft(baseInput);
     assert.equal((await listCorpusDrafts()).length, 1);
@@ -112,6 +140,36 @@ async function main() {
     });
     assert.equal(updated.title, "Updated clinical source");
     assert.equal((await listCorpusDrafts())[0]?.title, "Updated clinical source");
+
+    const evidenceDraft = await createCorpusDraft({
+      ...baseInput,
+      title: "Draft with imported evidence",
+      rightsStatus: "permitted",
+      body: "This imported content is long enough to keep extra frontmatter.",
+      extraFrontmatter: {
+        marker: ["berberina"],
+        evidence: {
+          certeza: "baja",
+          direccion: "a-favor",
+          motivos_descenso: ["riesgo-de-sesgo"],
+        },
+      },
+    });
+    await updateCorpusDraft(evidenceDraft.id, {
+      ...baseInput,
+      title: "Draft with edited title",
+      rightsStatus: "permitted",
+      body: "This edited content keeps the imported extra frontmatter.",
+    });
+    const editedEvidenceDraft = (await listCorpusDrafts()).find(
+      (document) => document.id === evidenceDraft.id,
+    );
+    assert.deepEqual(editedEvidenceDraft?.extraFrontmatter?.evidence, {
+      certeza: "baja",
+      direccion: "a-favor",
+      motivos_descenso: ["riesgo-de-sesgo"],
+    });
+    await deleteCorpusDraft(evidenceDraft.id);
 
     await assert.rejects(
       publishCorpusDraft(created.id, "admin@example.com"),

@@ -33,12 +33,16 @@ alias:
 relacionado_con:
   - id: cinarina
     relacion: marcador_quimico_no_equivalente
+    direccion: dirigida
   - id: acido-clorogenico
     relacion: marcador_quimico_no_equivalente
+    direccion: dirigida
   - id: colesterol-ldl
     relacion: comparacion_contextual_moderna
+    direccion: dirigida
   - id: alt
     relacion: comparacion_contextual_moderna
+    direccion: dirigida
 limitations:
   - "La materia prima medicinal es la HOJA (extracto), no la parte comestible (cabezuela); no son intercambiables."
   - "La identidad no demuestra eficacia ni seguridad; el contenido de compuestos varía según el extracto y el producto."

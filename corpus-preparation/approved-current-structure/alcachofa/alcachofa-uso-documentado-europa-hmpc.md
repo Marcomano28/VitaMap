@@ -33,12 +33,16 @@ alias:
 relacionado_con:
   - id: cinarina
     relacion: marcador_quimico_no_equivalente
+    direccion: dirigida
   - id: colesterol-ldl
     relacion: comparacion_contextual_moderna
+    direccion: dirigida
   - id: alt
     relacion: comparacion_contextual_moderna
+    direccion: dirigida
   - id: ast
     relacion: comparacion_contextual_moderna
+    direccion: dirigida
 limitations:
   - "La tradición medicinal documenta la HOJA amarga (infusión/extracto), no la cabezuela comestible ni la cinarina aislada."
   - "En la Antigüedad grecorromana la alcachofa fue sobre todo un alimento; el marco medicinal hepatobiliar/colerético es posterior y europeo, no debe atribuirse sin más a Dioscórides."

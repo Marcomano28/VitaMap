@@ -30,12 +30,16 @@ alias:
 relacionado_con:
   - id: cinarina
     relacion: marcador_quimico_no_equivalente
+    direccion: dirigida
   - id: bilirrubina
     relacion: seguridad_contextual
+    direccion: dirigida
   - id: ggt
     relacion: seguridad_contextual
+    direccion: dirigida
   - id: fosfatasa-alcalina
     relacion: seguridad_contextual
+    direccion: dirigida
 limitations:
   - "Las contraindicaciones biliares derivan del efecto colerético; son una precaución basada en el mecanismo, no en una serie amplia de casos."
   - "Faltan datos en embarazo, lactancia y uso prolongado."

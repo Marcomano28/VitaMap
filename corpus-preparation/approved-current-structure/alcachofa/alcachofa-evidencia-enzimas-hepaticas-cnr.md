@@ -36,10 +36,22 @@ alias:
 relacionado_con:
   - id: cinarina
     relacion: marcador_quimico_no_equivalente
+    direccion: dirigida
   - id: alt
     relacion: marcador_intermedio
+    direccion: dirigida
   - id: ast
     relacion: marcador_intermedio
+    direccion: dirigida
+evidence:
+  certeza: muy-baja
+  direccion: a-favor
+  poblacion: "adultos con enzimas hepaticas elevadas, sobre todo NAFLD/NASH o sobrepeso/obesidad"
+  motivos_descenso:
+    - inconsistencia
+    - riesgo-de-sesgo
+    - imprecision
+    - evidencia-indirecta
 limitations:
   - "ALT y AST son marcadores indirectos, no desenlaces clínicos (histología, descompensación, mortalidad)."
   - "Pocos ensayos (en torno a 8), heterogeneidad muy alta y tamaños pequeños; riesgo de sesgo."

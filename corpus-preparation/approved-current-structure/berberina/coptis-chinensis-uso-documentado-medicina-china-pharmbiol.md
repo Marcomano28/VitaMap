@@ -34,10 +34,13 @@ alias:
 relacionado_con:
   - id: berberina
     relacion: contiene_compuesto
+    direccion: dirigida
   - id: glucosa-en-ayunas
     relacion: comparacion_contextual
+    direccion: dirigida
   - id: hba1c
     relacion: comparacion_contextual
+    direccion: dirigida
 limitations:
   - "Documenta el uso tradicional del rizoma entero (huáng lián), no de la berberina aislada; el compuesto es una lectura moderna, no la unidad de la tradición."
   - "El uso histórico no demuestra eficacia clínica; las categorías de la MTC (calor-humedad, fuego, toxicidad) no equivalen a diagnósticos biomédicos."

@@ -32,18 +32,25 @@ alias:
 relacionado_con:
   - id: huang-lian
     relacion: fuente_botanica
+    direccion: dirigida
   - id: goldenseal
     relacion: fuente_botanica
+    direccion: dirigida
   - id: daruharidra
     relacion: fuente_botanica
+    direccion: dirigida
   - id: glucosa-en-ayunas
     relacion: comparacion_contextual
+    direccion: dirigida
   - id: hba1c
     relacion: comparacion_contextual
+    direccion: dirigida
   - id: colesterol-ldl
     relacion: comparacion_contextual
+    direccion: dirigida
   - id: trigliceridos
     relacion: comparacion_contextual
+    direccion: dirigida
 limitations:
   - "Describe un compuesto, no una especie: no debe usarse para atribuir propiedades a ninguna planta de origen concreta."
   - "La identidad química no demuestra eficacia ni seguridad para ningún uso."

@@ -34,6 +34,12 @@ export function corpusDraftInputFromForm(
         ? importedLimitations.split(/\r?\n/)
         : [];
 
+  const extraFrontmatter = Object.fromEntries(
+    FACET_FRONTMATTER_FIELDS
+      .filter((key) => uploadedData[key] !== undefined)
+      .map((key) => [key, uploadedData[key]]),
+  );
+
   return {
     title: field("title", "title") ?? "",
     sourceUrl: field("source_url", "source_url"),
@@ -50,11 +56,7 @@ export function corpusDraftInputFromForm(
       "rights_status",
     ) as CorpusDraftInput["rightsStatus"],
     limitations: limitations.filter(Boolean),
-    extraFrontmatter: Object.fromEntries(
-      FACET_FRONTMATTER_FIELDS
-        .filter((key) => uploadedData[key] !== undefined)
-        .map((key) => [key, uploadedData[key]]),
-    ),
+    extraFrontmatter: Object.keys(extraFrontmatter).length > 0 ? extraFrontmatter : undefined,
     body: parsed.content,
   };
 }

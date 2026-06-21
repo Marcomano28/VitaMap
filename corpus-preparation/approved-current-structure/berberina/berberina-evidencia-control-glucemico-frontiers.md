@@ -33,14 +33,27 @@ alias:
 relacionado_con:
   - id: glucosa-en-ayunas
     relacion: modifica_interpretacion_contextual
+    direccion: dirigida
   - id: hba1c
     relacion: modifica_interpretacion_contextual
+    direccion: dirigida
   - id: insulina-en-ayunas
     relacion: lectura_conjunta
+    direccion: simetrica
   - id: berberina
     relacion: compuesto_aislado
+    direccion: dirigida
   - id: huang-lian
     relacion: contiene_compuesto
+    direccion: dirigida
+evidence:
+  certeza: baja
+  direccion: a-favor
+  poblacion: "adultos con diabetes tipo 2; estudios cortos, a menudo como coadyuvante"
+  motivos_descenso:
+    - riesgo-de-sesgo
+    - evidencia-indirecta
+    - imprecision
 limitations:
   - "La evidencia se refiere a berberina aislada (clorhidrato), no a las plantas que la contienen ni a goldenseal."
   - "La calidad metodológica de muchos ensayos incluidos es baja y una parte importante procede de bases de datos chinas, con riesgo de sesgo."

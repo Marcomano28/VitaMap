@@ -36,16 +36,31 @@ alias:
 relacionado_con:
   - id: colesterol-ldl
     relacion: modifica_interpretacion_contextual
+    direccion: dirigida
   - id: colesterol-total
     relacion: modifica_interpretacion_contextual
+    direccion: dirigida
   - id: trigliceridos
     relacion: modifica_interpretacion_contextual
+    direccion: dirigida
   - id: colesterol-hdl
     relacion: resultado_inconsistente
+    direccion: dirigida
   - id: berberina
     relacion: compuesto_aislado
+    direccion: dirigida
   - id: huang-lian
     relacion: contiene_compuesto
+    direccion: dirigida
+evidence:
+  certeza: baja
+  direccion: a-favor
+  poblacion: "adultos con alteraciones cardiometabolicas o componentes del sindrome metabolico"
+  motivos_descenso:
+    - inconsistencia
+    - riesgo-de-sesgo
+    - sesgo-de-publicacion
+    - evidencia-indirecta
 limitations:
   - "La evidencia se refiere a berberina aislada, no a las plantas que la contienen."
   - "La fuente principal evalúa los lípidos como componentes del síndrome metabólico; no es exclusivamente una población de dislipidemia primaria."

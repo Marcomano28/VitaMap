@@ -36,10 +36,13 @@ alias:
 relacionado_con:
   - id: silibinina
     relacion: componente_relacionado_no_equivalente
+    direccion: dirigida
   - id: alt
     relacion: marcador_contextual_no_diagnostico
+    direccion: dirigida
   - id: ast
     relacion: marcador_contextual_no_diagnostico
+    direccion: dirigida
 limitations:
   - "Distingue planta, extracto (silimarina) y compuesto aislado (silibinina): no son intercambiables en dosis ni en comportamiento."
   - "La silimarina oral y la silibinina intravenosa (para intoxicación por Amanita) son preparaciones distintas y no comparables."

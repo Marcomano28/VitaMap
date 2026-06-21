@@ -33,8 +33,10 @@ alias:
 relacionado_con:
   - id: berberina
     relacion: contiene_compuesto
+    direccion: dirigida
   - id: huang-lian
     relacion: posible_sustitucion_adulteracion
+    direccion: dirigida
 limitations:
   - "Documenta el uso tradicional del rizoma/raíz entero, no de la berberina aislada; además, por vía oral se absorbe muy poca berberina del goldenseal, por lo que la evidencia metabólica sobre berberina purificada no debe leerse como evidencia sobre goldenseal."
   - "El uso histórico (indígena y ecléctico) no demuestra eficacia clínica; las categorías de la época (tónico amargo, lavado ocular, estómago 'agrio') no equivalen a diagnósticos biomédicos."

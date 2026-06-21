@@ -38,12 +38,25 @@ alias:
 relacionado_con:
   - id: silibinina
     relacion: componente_relacionado_no_equivalente
+    direccion: dirigida
   - id: alt
     relacion: marcador_intermedio
+    direccion: dirigida
   - id: ast
     relacion: marcador_intermedio
+    direccion: dirigida
   - id: fosfatasa-alcalina
     relacion: marcador_intermedio
+    direccion: dirigida
+evidence:
+  certeza: baja
+  direccion: a-favor
+  poblacion: "adultos con elevacion de enzimas hepaticas, especialmente NAFLD/MASLD o hepatitis viral"
+  motivos_descenso:
+    - inconsistencia
+    - riesgo-de-sesgo
+    - sesgo-de-publicacion
+    - evidencia-indirecta
 limitations:
   - "ALT y AST son marcadores indirectos (enzimas), no desenlaces clínicos como mortalidad, descompensación o histología."
   - "El efecto no es uniforme: en metaanálisis se observa en NAFLD y hepatitis viral, pero no en daño hepático por fármacos ni en enfermedad hepática por alcohol."

@@ -32,14 +32,19 @@ alias:
 relacionado_con:
   - id: goldenseal
     relacion: contiene_compuesto
+    direccion: dirigida
   - id: huang-lian
     relacion: contiene_compuesto
+    direccion: dirigida
   - id: glucosa-en-ayunas
     relacion: modifica_interpretacion_contextual
+    direccion: dirigida
   - id: hba1c
     relacion: modifica_interpretacion_contextual
+    direccion: dirigida
   - id: colesterol-ldl
     relacion: comparacion_contextual
+    direccion: dirigida
 limitations:
   - "La seguridad depende de la preparación, la dosis y la duración; no hay buenos datos de uso prolongado."
   - "Varias interacciones se infieren del efecto sobre enzimas/transportadores (CYP, glucoproteína-P) y no equivalen a contraindicaciones confirmadas caso por caso."

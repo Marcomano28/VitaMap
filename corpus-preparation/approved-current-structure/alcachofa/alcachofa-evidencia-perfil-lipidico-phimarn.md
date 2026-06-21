@@ -38,14 +38,28 @@ alias:
 relacionado_con:
   - id: cinarina
     relacion: marcador_quimico_no_equivalente
+    direccion: dirigida
   - id: colesterol-ldl
     relacion: modifica_interpretacion_contextual
+    direccion: dirigida
   - id: colesterol-total
     relacion: modifica_interpretacion_contextual
+    direccion: dirigida
   - id: trigliceridos
     relacion: modifica_interpretacion_contextual
+    direccion: dirigida
   - id: glucosa-en-ayunas
     relacion: comparacion_contextual
+    direccion: dirigida
+evidence:
+  certeza: baja
+  direccion: a-favor
+  poblacion: "adultos con dislipidemia o factores cardiometabolicos"
+  motivos_descenso:
+    - inconsistencia
+    - riesgo-de-sesgo
+    - evidencia-indirecta
+    - imprecision
 limitations:
   - "La evidencia se refiere al extracto de hoja, no a la alcachofa como alimento."
   - "Heterogeneidad alta entre ensayos y calidad metodológica desigual; varios estudios son pequeños."

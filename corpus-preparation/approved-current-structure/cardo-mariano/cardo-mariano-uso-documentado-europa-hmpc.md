@@ -34,12 +34,16 @@ alias:
 relacionado_con:
   - id: silimarina
     relacion: desarrollo_moderno_no_equivalente
+    direccion: dirigida
   - id: silibinina
     relacion: compuesto_relacionado_no_equivalente
+    direccion: dirigida
   - id: alt
     relacion: comparacion_contextual_moderna
+    direccion: dirigida
   - id: ast
     relacion: comparacion_contextual_moderna
+    direccion: dirigida
 limitations:
   - "Documenta el uso tradicional del fruto/'semilla' (tisanas, tinturas), no de la silimarina estandarizada ni de la silibinina aislada, que son refinamientos modernos."
   - "Las categorías premodernas (mordedura de serpiente, 'evacuar la bilis', obstrucciones del hígado y el bazo, melancolía) no equivalen a diagnósticos ni desenlaces actuales."
