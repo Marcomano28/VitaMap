@@ -19,7 +19,12 @@ assert.ok(markersIn("Vitamina K y TP/INR").has("vitamina-k"));
 assert.ok(markersIn("Vitamina K y TP/INR").has("tp-inr"));
 assert.equal(markersIn("INR prolongado").has("vitamina-k"), false, "INR no debe ser alias de vitamina K");
 const hepaticMarkers = markersIn("pruebas-hepaticas-alt-ast-alp-y-ggt");
-assert.deepEqual([...hepaticMarkers].sort(), ["alt", "ast", "fosfatasa-alcalina", "ggt"]);
+// El grupo de consulta "perfil-hepatico" abarca enzimas + bilirrubina, albúmina,
+// proteínas totales y TP/INR (el panel hepático completo).
+assert.deepEqual(
+  [...hepaticMarkers].sort(),
+  ["albumina", "alt", "ast", "bilirrubina", "fosfatasa-alcalina", "ggt", "proteinas-totales", "tp-inr"],
+);
 assert.equal(hepaticMarkers.has("higado"), false, "higado es grupo de consulta, no marker");
 // no debe confundir palabras que contienen el alias ("salt" no es "alt")
 assert.equal(markersIn("resultado salt water").has("alt"), false);

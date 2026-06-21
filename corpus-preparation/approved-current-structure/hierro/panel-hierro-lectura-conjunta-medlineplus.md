@@ -32,6 +32,8 @@ marker:
   - ferritina
   - hierro
   - transferrina
+  - tibc
+  - saturacion-transferrina
 categoria:
   - minerales-micronutrientes
   - hematologia
@@ -48,6 +50,11 @@ alias:
   - hierro
   - ferritina
   - transferrina
+  - tibc
+  - saturacion de transferrina
+  - ferropenia
+  - anemia de la inflamacion
+  - anemia de enfermedad cronica
 relacionado_con:
   - id: vitamina-c
     relacion: afecta_absorcion
@@ -92,6 +99,25 @@ entender cuánto hierro está disponible y cómo está siendo transportado.
   estudio de acumulación, pero una ferritina alta aislada no equivale
   automáticamente a sobrecarga de hierro.
 
+## Ferropenia frente a anemia de la inflamación
+
+Una distinción concreta que el panel ayuda a resolver, descrita por NIDDK: el
+hierro circulante puede estar bajo en dos situaciones que se confunden con
+facilidad.
+
+- **Ferropenia (falta real de hierro):** el hierro está bajo tanto en la sangre
+  como en los depósitos (ferritina baja, saturación de transferrina baja).
+- **Anemia de la inflamación (o de enfermedad crónica):** el hierro circulante
+  está bajo, pero los depósitos son normales o altos, porque la inflamación
+  impide usar el hierro almacenado (ferritina normal o elevada).
+
+La ferritina es la pieza que mejor distingue ambas situaciones, pero tiene una
+trampa: la inflamación la eleva, así que una ferritina normal o alta no
+garantiza depósitos suficientes cuando hay infección o enfermedad crónica. Ahí
+la saturación de transferrina aporta contexto sobre el hierro realmente
+disponible. Las dos situaciones pueden además coexistir (por ejemplo, en
+enfermedad inflamatoria intestinal o renal); el patrón orienta, no diagnostica.
+
 ## Qué no permite concluir el conjunto
 
 El panel no distingue automáticamente entre pérdidas de sangre, poco aporte,
@@ -116,3 +142,7 @@ https://medlineplus.gov/lab-tests/iron-tests/
   2024. https://medlineplus.gov/lab-tests/complete-blood-count-cbc/
 - MedlinePlus. *C-Reactive Protein (CRP) Test*. Actualizado el 11 de junio de
   2025. https://medlineplus.gov/lab-tests/c-reactive-protein-crp-test/
+- National Institute of Diabetes and Digestive and Kidney Diseases (NIDDK).
+  *Anemia of Inflammation or Chronic Disease* (distinción ferropenia vs.
+  anemia de la inflamación). Última revisión: septiembre de 2018.
+  https://www.niddk.nih.gov/health-information/blood-diseases/anemia-inflammation-chronic-disease

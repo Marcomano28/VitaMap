@@ -194,6 +194,14 @@ fuentes institucionales o consensuadas.
 
 ### Frontmatter
 
+> **Contrato mínimo de evidencia (v0).** Aplica además el bloque `evidence` y el
+> `relacionado_con[].direccion` de `PROMPT-INVESTIGACION-RAG.md` §3 bis. El bloque
+> `evidence` (con `certeza`) es obligatorio cuando la tarjeta afirma algo
+> biomédico, de eficacia o de asociación (C, T3); en tarjetas de autoridad textual
+> (fuente clásica T1, contexto histórico T2) `certeza` y `direccion` pueden
+> omitirse. `relacionado_con[].id` es un **marcador canónico**, no la clave de
+> topic ni el nombre científico (p. ej. `huang-lian`, no `coptis-chinensis`).
+
 ```yaml
 ---
 title: "Vitamina D: por qué su forma activa funciona como una hormona"

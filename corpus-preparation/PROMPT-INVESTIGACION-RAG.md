@@ -104,8 +104,12 @@ alias:
 relacionado_con:
   - id: colesterol-hdl
     relacion: mismo_panel
+    direccion: simetrica
   - id: trigliceridos
     relacion: mismo_panel
+    direccion: simetrica
+evidence:
+  certeza: alta
 limitations:
   - "Síntesis editorial de VitaMap; no es una copia de la página original."
   - "Los valores son referencias generales, no objetivos individuales."
@@ -113,6 +117,11 @@ limitations:
   - "No ofrece una recomendación de tratamiento."
 ---
 ```
+
+> El bloque `evidence` y el `direccion` de `relacionado_con` son el **Contrato
+> mínimo de evidencia (v0)**. Aquí aparece su forma corta (una tarjeta de
+> interpretación bien establecida). La forma completa, las reglas de cuándo es
+> obligatorio y el vocabulario controlado están en la sección **3 bis**.
 
 ### Reglas de los campos
 
@@ -138,14 +147,108 @@ limitations:
 | `seccion` | Intención recuperable del fragmento: A=`interpretacion`, B=`alimentacion-factores`, D=`lectura-conjunta`, E=`seguimiento`. |
 | `tradicion` | Solo cuando la tarjeta pertenezca claramente a una tradición identificable (`ayurveda`, `mtc`, `acupuntura`). No lo uses para prácticas complementarias modernas por defecto. |
 | `alias` | Sinónimos y formas de búsqueda que puede escribir el usuario; no sustituyen a `marker`. |
-| `relacionado_con` | Enlaces explícitos entre marcadores o intervenciones, con `id` canónico y `relacion` breve (`lectura_conjunta`, `mismo_panel`, `modifica_interpretacion`, `afecta_absorcion`, etc.). |
-| `limitations` | Lista de 3–5 advertencias honestas sobre los límites del documento. |
+| `relacionado_con` | Enlaces explícitos entre marcadores o intervenciones, con `id` canónico y `relacion` breve (`lectura_conjunta`, `mismo_panel`, `modifica_interpretacion`, `afecta_absorcion`, etc.). El `id` debe ser un **marcador canónico** de la taxonomía, no la clave de topic ni el nombre científico (p. ej. `huang-lian`, no `coptis-chinensis`). |
+| `relacionado_con[].direccion` | `simetrica` (la relación vale en ambos sentidos: `mismo_panel`, `lectura_conjunta`) o `dirigida` (A influye sobre B: `modifica_interpretacion`, `se_calcula_con`, `afecta_absorcion`). Ver sección 3 bis. |
+| `relacionado_con[].contexto` | Opcional. Texto breve: en qué condición aplica la relación (p. ej. "en inflamación"). |
+| `evidence` | Contrato mínimo de evidencia (v0). Ver sección 3 bis. |
+| `limitations` | Lista de 3–5 advertencias honestas sobre los límites del documento. Es el lugar de las afirmaciones que la fuente **no** permite sostener (no inventes un campo aparte). |
 
 Usa ortografía y acentos correctos también en el frontmatter. El título se
 muestra al usuario en las tarjetas de cita.
 
 El modelo prepara un borrador. No declares que ha sido revisado o aprobado por
 una persona; ese estado lo registra VitaMap durante la revisión administrativa.
+
+## 3 bis. Contrato mínimo de evidencia (v0)
+
+Esta es la **única parte nueva del frontmatter** respecto a versiones anteriores
+del brief, y es **obligatoria para tarjetas nuevas**. No cambia cómo investigas:
+hace legible por máquina la auditoría de la sección 7 que ya haces al leer la
+fuente. Captúralo **ahora**, mientras tienes la fuente abierta; reconstruir la
+certeza o el porqué de una relación más tarde obliga a releerlo todo.
+
+Estos campos hoy **no se consumen** en la recuperación (son inertes hasta el
+Tramo 2 de `docs/DIRECCION-METODOLOGICA-EVIDENCIA-Y-GRAFO.md`). Se capturan para
+no tener que rellenarlos en una pasada futura. Su forma se valida en
+`apps/web/scripts/test-marker-taxonomy.ts`: un valor fuera del vocabulario
+rompe la build.
+
+### El bloque `evidence`
+
+```yaml
+evidence:
+  certeza: moderada          # alta | moderada | baja | muy-baja   (siempre)
+  direccion: a-favor         # a-favor | en-contra | incierta      (solo si hay afirmación)
+  poblacion: "adultos sanos" # texto libre, opcional (solo si la evidencia es población-específica)
+  motivos_descenso:          # solo si certeza < alta; lista de los dominios de abajo
+    - imprecision
+    - evidencia-indirecta
+```
+
+- **`certeza`** (siempre): traduce los tres niveles de la sección 7. *Bien
+  establecido* → `alta`; consistente pero con matices → `moderada`; señal real
+  con límites serios → `baja`; apenas preliminar → `muy-baja`. La declara el
+  editor **citando la fuente**, no es un cálculo propio de VitaMap.
+- **`direccion`** (condicional): solo cuando la tarjeta sostiene una afirmación
+  de eficacia o asociación (típico en C, D, E, evidencia moderna T3/M3/AC3).
+  Una tarjeta puramente descriptiva (una A que explica "qué mide la GGT") **no
+  lleva `direccion`**: no afirma un efecto.
+- **`poblacion`** (opcional): solo si el resultado depende de la población
+  (p. ej. umbral de ferritina en inflamación). En educación general, omítelo.
+- **`motivos_descenso`** (solo si `certeza` no es `alta`): por qué no es mayor.
+  Vocabulario controlado, alineado con los tipos de incertidumbre de la
+  sección 7:
+
+  | Valor | Tipo de incertidumbre (sección 7) |
+  |---|---|
+  | `riesgo-de-sesgo` | estudios con problemas de diseño o conducción |
+  | `inconsistencia` | resultados que no concuerdan entre estudios |
+  | `evidencia-indirecta` | población, intervención o desenlace distintos del de la tarjeta |
+  | `imprecision` | muestras pequeñas, intervalos amplios |
+  | `sesgo-de-publicacion` | probable falta de estudios negativos |
+
+`certeza` **no es** lo mismo que la marca de terreno que ve el usuario. La marca
+combina la certeza con la dependencia del contexto; un dato de `certeza: alta`
+puede seguir siendo "cruce de caminos" si su lectura cambia con la persona. No
+intentes fijar la marca aquí: solo declara la firmeza de la evidencia.
+
+### `relacionado_con` con dirección
+
+Añade `direccion` a cada relación (y `contexto` cuando ayude):
+
+```yaml
+relacionado_con:
+  - id: huang-lian            # marcador CANÓNICO, nunca la clave de topic ni el nombre científico
+    relacion: contiene_compuesto
+    direccion: dirigida
+  - id: glucosa-en-ayunas
+    relacion: modifica_interpretacion
+    direccion: dirigida
+    contexto: "en seguimiento de control glucémico"
+```
+
+- `simetrica`: la relación vale en ambos sentidos (`mismo_panel`,
+  `lectura_conjunta`, `misma_familia_analitica`).
+- `dirigida`: una cosa influye sobre otra (`modifica_interpretacion`,
+  `se_calcula_con`, `afecta_absorcion`, `precursor_dietetico`,
+  `contiene_compuesto`).
+
+### Ejemplo completo — tarjeta de evidencia con afirmación
+
+```yaml
+evidence:
+  certeza: baja
+  direccion: a-favor
+  poblacion: "adultos con dislipemia"
+  motivos_descenso:
+    - riesgo-de-sesgo
+    - inconsistencia
+```
+
+> Una afirmación de eficacia con `certeza: baja` debe leerse y redactarse como
+> "horizonte abierto", no como promesa. El guardarraíl de la sección 6 manda: la
+> etiqueta nunca debe sonar más firme que la evidencia. Rigor honesto, no
+> precisión fingida.
 
 ### Reglas de facetado
 
@@ -638,6 +741,8 @@ aplicables al marcador, la muestra y la población de la tarjeta.
 - [ ] El frontmatter contiene campos compatibles con VitaMap y facets del vocabulario canónico.
 - [ ] Si el topic falta en `corpus-taxonomy.json`, se propone entrada de taxonomía antes de redactar.
 - [ ] `marker`, `categoria`, `sistema`, `area_de_salud`, `seccion`, `alias` y `relacionado_con` son coherentes con la taxonomía.
+- [ ] Cada `relacionado_con[].id` es un marcador canónico (no la clave de topic ni el nombre científico) y declara `direccion` (`simetrica`/`dirigida`).
+- [ ] Incluye el bloque `evidence` con `certeza` (Contrato mínimo v0, sección 3 bis); `direccion` solo si hay afirmación; `motivos_descenso` si `certeza` no es `alta`.
 - [ ] `source_kind` y `source_type` corresponden al documento real.
 - [ ] `rights_status` refleja derechos comprobados.
 - [ ] La fuente no prohíbe derivados, embeddings, indexación o uso en RAG.

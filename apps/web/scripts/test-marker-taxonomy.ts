@@ -12,6 +12,7 @@ import {
 
 interface Relation {
   id?: unknown;
+  direccion?: unknown;
 }
 
 interface Topic {
@@ -44,6 +45,51 @@ function stringArray(value: unknown): string[] {
 function relationArray(value: unknown): Relation[] {
   if (!Array.isArray(value)) return [];
   return value.filter((item): item is Relation => Boolean(item) && typeof item === "object");
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+// Contrato mínimo de evidencia (v0). Vocabulario controlado. Ver
+// corpus-preparation/PROMPT-INVESTIGACION-RAG.md §3 bis y
+// docs/DIRECCION-METODOLOGICA-EVIDENCIA-Y-GRAFO.md (Tramo 2). La validación
+// comprueba la FORMA cuando el campo existe; no exige presencia (backfill
+// oportunista), así que es aditiva: tarjetas sin estos campos siguen pasando.
+const CERTEZA = new Set(["alta", "moderada", "baja", "muy-baja"]);
+const DIRECCION_EFECTO = new Set(["a-favor", "en-contra", "incierta"]);
+const MOTIVOS_DESCENSO = new Set([
+  "riesgo-de-sesgo",
+  "inconsistencia",
+  "evidencia-indirecta",
+  "imprecision",
+  "sesgo-de-publicacion",
+]);
+const DIRECCION_RELACION = new Set(["simetrica", "dirigida"]);
+
+/** Una arista con `direccion` presente pero fuera del vocabulario. */
+function relationDireccionViolation(rel: Relation): boolean {
+  return rel.direccion !== undefined && !DIRECCION_RELACION.has(String(rel.direccion));
+}
+
+/** Valida el bloque `evidence` de una tarjeta. Devuelve los problemas hallados. */
+function evidenceProblems(relPath: string, evidence: unknown): string[] {
+  if (evidence === undefined) return [];
+  if (!isRecord(evidence)) return [`${relPath} -> evidence debe ser un objeto`];
+  const problems: string[] = [];
+  const { certeza, direccion, motivos_descenso } = evidence;
+  if (certeza === undefined) {
+    problems.push(`${relPath} -> evidence sin certeza (campo requerido del bloque)`);
+  } else if (!CERTEZA.has(String(certeza))) {
+    problems.push(`${relPath} -> certeza invalida: ${String(certeza)}`);
+  }
+  if (direccion !== undefined && !DIRECCION_EFECTO.has(String(direccion))) {
+    problems.push(`${relPath} -> evidence.direccion invalida: ${String(direccion)}`);
+  }
+  for (const motivo of stringArray(motivos_descenso)) {
+    if (!MOTIVOS_DESCENSO.has(motivo)) problems.push(`${relPath} -> motivo_descenso invalido: ${motivo}`);
+  }
+  return problems;
 }
 
 function markdownFiles(root: string): string[] {
@@ -127,11 +173,13 @@ assert.deepEqual(
 );
 
 const unknownRelations: string[] = [];
+const badRelationDireccion: string[] = [];
 for (const [topicId, topic] of Object.entries(taxonomy.topics ?? {})) {
   for (const rel of relationArray(topic.relacionado_con)) {
     if (typeof rel.id === "string" && !generatedMarkers.has(rel.id)) {
       unknownRelations.push(`topics.${topicId} -> ${rel.id}`);
     }
+    if (relationDireccionViolation(rel)) badRelationDireccion.push(`topics.${topicId} -> ${String(rel.direccion)}`);
   }
 }
 for (const [docPath, override] of Object.entries(taxonomy.document_overrides ?? {})) {
@@ -139,12 +187,16 @@ for (const [docPath, override] of Object.entries(taxonomy.document_overrides ?? 
     if (typeof rel.id === "string" && !generatedMarkers.has(rel.id)) {
       unknownRelations.push(`document_overrides.${docPath} -> ${rel.id}`);
     }
+    if (relationDireccionViolation(rel)) {
+      badRelationDireccion.push(`document_overrides.${docPath} -> ${String(rel.direccion)}`);
+    }
   }
 }
 assert.deepEqual(unknownRelations, [], "relacionado_con debe apuntar a markers canonicos");
 
 const unknownCorpusMarkers: string[] = [];
 const unknownCorpusRelations: string[] = [];
+const corpusEvidenceProblems: string[] = [];
 for (const file of markdownFiles(corpusRoot)) {
   const relPath = path.relative(corpusRoot, file).split(path.sep).join("/");
   const data = matter(fs.readFileSync(file, "utf8")).data as Record<string, unknown>;
@@ -155,10 +207,18 @@ for (const file of markdownFiles(corpusRoot)) {
     if (typeof rel.id === "string" && !generatedMarkers.has(rel.id)) {
       unknownCorpusRelations.push(`${relPath} -> ${rel.id}`);
     }
+    if (relationDireccionViolation(rel)) badRelationDireccion.push(`${relPath} -> ${String(rel.direccion)}`);
   }
+  corpusEvidenceProblems.push(...evidenceProblems(relPath, data.evidence));
 }
 
 assert.deepEqual(unknownCorpusMarkers, [], "las tarjetas locales no deben usar markers fuera de taxonomia");
 assert.deepEqual(unknownCorpusRelations, [], "las tarjetas locales no deben enlazar relacionado_con fuera de taxonomia");
+assert.deepEqual(
+  badRelationDireccion,
+  [],
+  "relacionado_con.direccion solo admite 'simetrica' o 'dirigida' (Contrato mínimo v0)",
+);
+assert.deepEqual(corpusEvidenceProblems, [], "el bloque evidence debe seguir el Contrato mínimo de evidencia v0");
 
 console.log("test-marker-taxonomy: OK (taxonomia, runtime y corpus reconciliados)");

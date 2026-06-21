@@ -239,6 +239,13 @@ exista.
 
 ### Frontmatter
 
+> **Contrato mínimo de evidencia (v0).** Aplica además el bloque `evidence` y el
+> `relacionado_con[].direccion` de `PROMPT-INVESTIGACION-RAG.md` §3 bis. El bloque
+> `evidence` (con `certeza`) es obligatorio en tarjetas con afirmación de eficacia
+> o seguridad (AC3 evidencia por indicación, AC4 seguridad); en AC1 (fuente
+> clásica) y AC2 (nomenclatura) puede omitirse. `relacionado_con[].id` es un
+> **marcador canónico**, no la clave de topic.
+
 ```yaml
 ---
 title: "Acupuntura clásica: [concepto] en el Lingshu"

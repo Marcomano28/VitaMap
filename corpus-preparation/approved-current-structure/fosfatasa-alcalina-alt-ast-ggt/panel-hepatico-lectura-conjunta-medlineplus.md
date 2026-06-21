@@ -1,6 +1,9 @@
 ---
-title: 'Pruebas hepáticas: cómo se leen juntas enzimas, bilirrubina y proteínas'
+title: 'Panel hepático: cómo se leen juntos enzimas, bilirrubina, proteínas y coagulación'
 source_url: 'https://medlineplus.gov/lab-tests/liver-function-tests/'
+source_language: en
+source_jurisdiction:
+  - US
 publication_date: '2023-12-05'
 source_kind: institutional-education
 source_type: lab-pattern-interpretation-summary
@@ -16,8 +19,8 @@ limitations:
     MedlinePlus no publica rangos numéricos en estas páginas: cada valor se
     compara con el intervalo de referencia del laboratorio.
   - >-
-    Albúmina, bilirrubina y tiempo de protrombina también pueden alterarse por
-    causas no hepáticas.
+    Bilirrubina, albúmina, proteínas totales y tiempo de protrombina (TP/INR)
+    también pueden alterarse por causas no hepáticas.
   - >-
     No ofrece diagnóstico, tratamiento, dosis ni una frecuencia personalizada de
     seguimiento.
@@ -32,6 +35,10 @@ marker:
   - ast
   - fosfatasa-alcalina
   - ggt
+  - bilirrubina
+  - albumina
+  - proteinas-totales
+  - tp-inr
 categoria:
   - perfil-hepatico
 muestra:
@@ -39,43 +46,71 @@ muestra:
   - plasma
 sistema:
   - hepatobiliar
+  - digestivo
+  - hematologico
 area_de_salud:
   - salud-hepatica
 seccion: lectura-conjunta
 alias:
   - perfil hepatico
+  - panel hepatico
   - pruebas hepaticas
-  - transaminasas
-source_language: en
-source_jurisdiction:
-  - US
+  - funcion hepatica
+  - leberwerte
+relacionado_con:
+  - id: alt
+    relacion: mismo_panel
+  - id: ast
+    relacion: mismo_panel
+  - id: fosfatasa-alcalina
+    relacion: mismo_panel
+  - id: ggt
+    relacion: mismo_panel
+  - id: bilirrubina
+    relacion: lectura_conjunta
+  - id: albumina
+    relacion: lectura_conjunta
+  - id: proteinas-totales
+    relacion: lectura_conjunta
+  - id: tp-inr
+    relacion: modifica_interpretacion
 ---
-# Pruebas hepáticas: cómo se leen juntas enzimas, bilirrubina y proteínas
+
+# Panel hepático: cómo se leen juntos enzimas, bilirrubina, proteínas y coagulación
 
 ## Qué marcadores forman el grupo
 
 Las pruebas hepáticas (también llamadas panel o perfil hepático; en alemán,
-*Leberwerte*) reúnen sustancias que responden preguntas diferentes:
+*Leberwerte*) reúnen sustancias que responden preguntas diferentes. MedlinePlus
+enumera albúmina, proteínas totales, ALP/fosfatasa alcalina, ALT, AST, GGT,
+bilirrubina, LDH y tiempo de protrombina (TP). En la práctica, muchas analíticas
+muestran solo una parte del panel —a menudo ALT, AST, FA y GGT— y pueden faltar
+bilirrubina, albúmina y proteínas totales.
+
+Conviene agruparlas por lo que aportan:
 
 - **ALT (GPT) y AST (GOT):** lesión celular; la AST también procede de otros
-  tejidos.
+  tejidos, como el músculo.
 - **Fosfatasa alcalina (ALP/AP) y GGT:** componente hepatobiliar o colestásico;
   la ALP también puede proceder del hueso.
-- **Bilirrubina:** procesamiento y excreción, con causas hepáticas y no
-  hepáticas.
-- **Albúmina y tiempo de protrombina (TP/INR):** contexto sobre síntesis, sin ser
-  exclusivos del hígado.
+- **Bilirrubina:** procesamiento y excreción de bilis, con causas hepáticas y no
+  hepáticas (también destrucción acelerada de glóbulos rojos).
+- **Albúmina y proteínas totales:** proteínas plasmáticas; informan sobre
+  síntesis, pero también sobre nutrición, riñón e inflamación.
+- **Tiempo de protrombina (TP/INR):** coagulación; la protrombina se fabrica en
+  el hígado, por lo que aporta una señal de síntesis funcional.
 
-Por eso llamar a todas ellas "enzimas del hígado" o "pruebas de función" oculta
-una diferencia importante: algunas reflejan lesión o colestasis y otras aportan
-información sobre función.
+Por eso llamar a todas "enzimas del hígado" o "pruebas de función" oculta una
+diferencia importante: algunas reflejan lesión o colestasis y otras aportan
+información sobre la función o la síntesis.
 
 ## Por qué se leen juntos
 
-La relación entre ALT/AST y ALP describe el tipo predominante de alteración; GGT
-ayuda a interpretar el origen de la ALP; y bilirrubina, albúmina y TP/INR añaden
-información distinta. El patrón orienta la siguiente pregunta clínica, pero no
-sustituye historia, síntomas, medicamentos ni pruebas posteriores.
+Ninguna cifra aislada cuenta toda la historia. La relación entre ALT/AST y ALP
+describe el tipo predominante de alteración; la GGT ayuda a interpretar el origen
+de la ALP; y bilirrubina, albúmina, proteínas totales y TP/INR añaden dimensiones
+distintas. Cuando el panel solo trae ALT, AST, FA y GGT, se centra más en daño
+celular y vía biliar que en síntesis o excreción.
 
 ## Qué patrones generales ayudan a orientar
 
@@ -84,30 +119,27 @@ Las guías describen tres dibujos generales:
 - **Predominio hepatocelular:** ALT y AST aumentan más que la ALP. Orienta a que
   la señal principal procede de lesión de células hepáticas.
 - **Predominio colestásico:** la ALP aumenta más que ALT y AST. Una GGT elevada
-  apoya que la ALP tenga origen hepatobiliar; una GGT normal hace considerar con
-  más fuerza fuentes no hepáticas, como el hueso.
-- **Patrón mixto:** ALT/AST y ALP muestran elevaciones relevantes al mismo
-  tiempo. Combina rasgos de los dos patrones anteriores.
+  apoya un origen hepatobiliar; una GGT normal hace considerar con más fuerza
+  fuentes no hepáticas, como el hueso.
+- **Patrón mixto:** ALT/AST y ALP muestran elevaciones relevantes a la vez.
 
-Son predominancias, no diagnósticos. AASLD publica un cálculo denominado valor R
+Son predominancias, no diagnósticos. AASLD publica un cálculo llamado valor R
 para clasificarlas, pero esta tarjeta no lo aplica a resultados personales.
-
-Dentro del patrón hepatocelular, la ALT aporta mayor especificidad hepática y la
-AST necesita más contexto por su presencia en otros tejidos. Dentro del patrón
-colestásico, la relación ALP/GGT ayuda a orientar el tejido de origen.
-
-La **bilirrubina**, la **albúmina** y el **TP/INR** responden a preguntas
-diferentes. Una bilirrubina elevada puede acompañar alteraciones de excreción o
-procesamiento. Una albúmina baja o un TP/INR prolongado pueden aportar contexto
-sobre síntesis, pero también tienen causas no hepáticas.
+Dentro del patrón hepatocelular, la ALT aporta mayor especificidad hepática que
+la AST. Una **bilirrubina** elevada puede acompañar alteraciones de excreción o
+procesamiento; una **albúmina** baja, unas **proteínas totales** alteradas o un
+**TP/INR** prolongado pueden aportar contexto sobre síntesis, pero también tienen
+causas no hepáticas.
 
 ## Qué no permite concluir el conjunto
 
 El patrón no identifica causa, duración, gravedad ni tratamiento. Una ALP puede
-proceder del hueso; una AST, del músculo; y bilirrubina, albúmina o TP/INR pueden
-alterarse por causas no hepáticas. Un panel sin alteraciones tampoco excluye toda
-enfermedad. Importan síntomas, antecedentes, medicamentos, alcohol, factores
-metabólicos y evolución temporal.
+proceder del hueso; una AST, del músculo; y bilirrubina, albúmina, proteínas
+totales o TP/INR pueden alterarse por causas no hepáticas (riñón, nutrición,
+inflamación, fármacos como la warfarina, alcohol o vitamina K). Un panel sin
+alteraciones tampoco excluye toda enfermedad. La lectura conjunta acota la
+siguiente pregunta, pero sigue necesitando síntomas, antecedentes, medicación,
+método del laboratorio y evolución temporal.
 
 ## Fuente principal
 
@@ -117,14 +149,14 @@ https://medlineplus.gov/lab-tests/liver-function-tests/
 
 ## Fuentes complementarias
 
-Gamma-glutamyl Transferase (GGT) Test. MedlinePlus, NLM. 29 de julio de 2024.
-https://medlineplus.gov/lab-tests/gamma-glutamyl-transferase-ggt-test/
-
 ALT Blood Test. MedlinePlus, NLM. 5 de noviembre de 2024.
 https://medlineplus.gov/lab-tests/alt-blood-test/
 
 AST Test. MedlinePlus, NLM. 5 de noviembre de 2024.
 https://medlineplus.gov/lab-tests/ast-test/
+
+Gamma-glutamyl Transferase (GGT) Test. MedlinePlus, NLM. 29 de julio de 2024.
+https://medlineplus.gov/lab-tests/gamma-glutamyl-transferase-ggt-test/
 
 Alkaline Phosphatase. MedlinePlus, NLM. 5 de noviembre de 2024.
 https://medlineplus.gov/lab-tests/alkaline-phosphatase/
@@ -136,3 +168,4 @@ https://www.aasld.org/liver-fellow-network/core-series/back-basics/how-approach-
 American College of Gastroenterology. *ACG Clinical Guideline: Evaluation of
 Abnormal Liver Chemistries*. 2017.
 https://gi.org/guideline/evaluation-of-abnormal-liver-chemistries/
+</content>

@@ -5,6 +5,18 @@
 export const TAXONOMY_VERSION = 1 as const;
 
 export const MARKER_ALIASES = {
+  "acido-arachidonico": [
+    "AA",
+    "acido-arachidonico",
+    "arachidonic acid",
+    "Arachidonsäure"
+  ],
+  "acido-clorogenico": [
+    "acido clorogenico",
+    "ácido clorogénico",
+    "acido-clorogenico",
+    "chlorogenic acid"
+  ],
   "acido-folico": [
     "acido folico",
     "acido-folico",
@@ -19,14 +31,52 @@ export const MARKER_ALIASES = {
     "acido-urico",
     "urato"
   ],
+  "acth": [
+    "acth",
+    "adrenocorticotropes hormon",
+    "corticotropina",
+    "hormona adrenocorticotropa"
+  ],
   "acupuntura": [
     "acupuntura",
     "neiguan",
     "pc6"
   ],
+  "ala": [
+    "ácido alfa-linolénico",
+    "ala",
+    "alpha-linolenic acid",
+    "Alpha-Linolensäure"
+  ],
+  "albumina": [
+    "alb",
+    "albumin",
+    "albumina",
+    "albumina serica"
+  ],
   "albuminuria": [
+    "acr",
+    "albumin-kreatinin-quotient",
     "albumina en orina",
-    "albuminuria"
+    "albuminuria",
+    "cociente albumina creatinina",
+    "microalbumina en orina",
+    "microalbuminuria",
+    "uacr"
+  ],
+  "alcachofa": [
+    "alcachofa",
+    "artichoke",
+    "cinarina",
+    "cynara cardunculus",
+    "Cynara cardunculus",
+    "cynara scolymus",
+    "Cynara scolymus",
+    "cynarae folium",
+    "Cynarae folium",
+    "extracto de hoja de alcachofa",
+    "globe artichoke",
+    "hoja de alcachofera"
   ],
   "alt": [
     "alanina aminotransferasa",
@@ -37,6 +87,40 @@ export const MARKER_ALIASES = {
     "amla",
     "phyllanthus emblica"
   ],
+  "anti-tiroglobulina": [
+    "anti tg",
+    "anti tiroglobulina",
+    "anti-tiroglobulina",
+    "anticuerpos antitiroglobulina",
+    "antitiroglobulina",
+    "tg ak"
+  ],
+  "anti-tpo": [
+    "anti tpo",
+    "anti-tpo",
+    "anticuerpos antiperoxidasa",
+    "antiperoxidasa",
+    "peroxidasa tiroidea",
+    "tpo ak"
+  ],
+  "apolipoproteina-b": [
+    "apo b",
+    "apo-b",
+    "apob",
+    "apob-100",
+    "apolipoprotein b",
+    "apolipoproteina b",
+    "apolipoproteína b",
+    "apolipoproteina-b"
+  ],
+  "ashwagandha": [
+    "ashwagandha",
+    "ginseng indio",
+    "oroval",
+    "winter cherry",
+    "withania",
+    "withania somnifera"
+  ],
   "ast": [
     "aspartato aminotransferasa",
     "ast"
@@ -46,12 +130,79 @@ export const MARKER_ALIASES = {
     "dosha",
     "prakriti"
   ],
+  "berberina": [
+    "bbr",
+    "berberina",
+    "berberina hcl",
+    "berberine",
+    "clorhidrato de berberina"
+  ],
+  "beta-crosslaps": [
+    "beta crosslaps",
+    "beta ctx",
+    "beta-crosslaps",
+    "bone resorption marker",
+    "c-telopeptido",
+    "c-terminal telopeptide",
+    "ctx",
+    "CTX",
+    "ctx-i",
+    "CTX-I",
+    "β-ctx",
+    "β-CTX"
+  ],
+  "bilirrubina": [
+    "bilirrubina",
+    "bilirrubina directa",
+    "bilirrubina indirecta",
+    "bilirrubina total",
+    "bilirubin",
+    "bilirubina"
+  ],
+  "bnp": [
+    "bnp",
+    "brain natriuretic peptide",
+    "peptido natriuretico cerebral",
+    "péptido natriurético cerebral",
+    "péptido natriurético tipo b"
+  ],
+  "c-peptido": [
+    "c peptide",
+    "c peptido",
+    "c-peptido",
+    "insulina propia",
+    "peptido c"
+  ],
   "calcio": [
     "calcio"
+  ],
+  "cardo-mariano": [
+    "cardo mariano",
+    "cardo-mariano",
+    "carduus marianus",
+    "mary thistle",
+    "milk thistle",
+    "silybum marianum",
+    "st mary's thistle"
   ],
   "chaga": [
     "chaga",
     "inonotus obliquus"
+  ],
+  "cinarina": [
+    "1,5-dicafeoilquinico",
+    "1,5-dicaffeoylquinic acid",
+    "cinarina",
+    "cynarin"
+  ],
+  "cistatina-c": [
+    "cistatina",
+    "cistatina c",
+    "cistatina-c",
+    "cys-c",
+    "cystatin c",
+    "cystatin c egfr",
+    "egfr cistatina"
   ],
   "colesterol-hdl": [
     "colesterol hdl",
@@ -65,6 +216,14 @@ export const MARKER_ALIASES = {
     "ldl",
     "ldl cholesterol"
   ],
+  "colesterol-no-hdl": [
+    "colesterol no hdl",
+    "colesterol-no-hdl",
+    "no hdl",
+    "no-hdl",
+    "non hdl",
+    "non-hdl cholesterol"
+  ],
   "colesterol-total": [
     "colesterol total",
     "colesterol-total"
@@ -72,6 +231,17 @@ export const MARKER_ALIASES = {
   "constelaciones-familiares": [
     "constelaciones familiares",
     "constelaciones-familiares"
+  ],
+  "cortisol": [
+    "cortisol",
+    "cortisol en orina 24h",
+    "cortisol libre",
+    "cortisol salival",
+    "cortisol serico",
+    "hidrocortisona",
+    "hormona del estres",
+    "kortisol",
+    "stresshormon"
   ],
   "creatinina": [
     "creatinina"
@@ -81,14 +251,53 @@ export const MARKER_ALIASES = {
     "curcuma longa",
     "turmeric"
   ],
+  "daruharidra": [
+    "berberis aristata",
+    "daruharidra",
+    "dāruharidrā",
+    "indian barberry",
+    "rasanjana",
+    "rasaut"
+  ],
+  "dha": [
+    "ácido docosahexaenoico",
+    "dha",
+    "docosahexaenoic acid",
+    "Docosahexaensäure"
+  ],
+  "dhea-s": [
+    "dehidroepiandrosterona",
+    "dehidroepiandrosterona sulfato",
+    "dhea",
+    "dhea-s",
+    "dhea-so4",
+    "dhea-sulfate",
+    "dheas",
+    "sulfato de dhea"
+  ],
   "egfr": [
     "egfr",
     "filtrado glomerular"
+  ],
+  "epa": [
+    "ácido eicosapentaenoico",
+    "eicosapentaenoic acid",
+    "Eicosapentaensäure",
+    "epa"
   ],
   "eritrocitos": [
     "eritrocitos",
     "globulos rojos",
     "rbc"
+  ],
+  "estradiol": [
+    "17 beta estradiol",
+    "e2",
+    "estradiol",
+    "estrogen",
+    "estrogenos",
+    "oestradiol",
+    "ostradiol"
   ],
   "ferritina": [
     "ferritin",
@@ -108,6 +317,12 @@ export const MARKER_ALIASES = {
     "fosfato",
     "fosforo"
   ],
+  "fsh": [
+    "folitropina",
+    "follicle stimulating hormone",
+    "fsh",
+    "hormona foliculoestimulante"
+  ],
   "general": [
     "general"
   ],
@@ -124,6 +339,14 @@ export const MARKER_ALIASES = {
     "glucose",
     "nuchternglukose"
   ],
+  "goldenseal": [
+    "goldenseal",
+    "hydrastis",
+    "hydrastis canadensis",
+    "orange root",
+    "sello de oro",
+    "yellow root"
+  ],
   "hba1c": [
     "a1c",
     "hba1c",
@@ -139,6 +362,38 @@ export const MARKER_ALIASES = {
     "eisen",
     "hierro"
   ],
+  "homa-ir": [
+    "homa",
+    "homa ir",
+    "homa-ir",
+    "homa2",
+    "indice homa"
+  ],
+  "homocisteina": [
+    "homocisteina",
+    "homocisteina total",
+    "homocystein",
+    "homocysteine",
+    "thcy"
+  ],
+  "huang-lian": [
+    "coptidis rhizoma",
+    "coptis chinensis",
+    "goldthread",
+    "huang lian",
+    "huáng lián",
+    "huang-lian",
+    "rhizoma coptidis"
+  ],
+  "insulina-en-ayunas": [
+    "fasting insulin",
+    "insulina",
+    "insulina basal",
+    "insulina en ayunas",
+    "insulina serica",
+    "insulina-en-ayunas",
+    "nuchterninsulin"
+  ],
   "jengibre": [
     "ginger",
     "jengibre",
@@ -153,6 +408,21 @@ export const MARKER_ALIASES = {
     "leucocito",
     "leucocitos"
   ],
+  "lh": [
+    "hormona luteinizante",
+    "lh",
+    "luteinizing hormone",
+    "lutropina"
+  ],
+  "lipoproteina-a": [
+    "lipoprotein a",
+    "lipoproteina a",
+    "lipoproteína a",
+    "lipoproteina-a",
+    "lp a",
+    "lp(a)",
+    "lpa"
+  ],
   "magnesio": [
     "magnesio"
   ],
@@ -164,11 +434,53 @@ export const MARKER_ALIASES = {
     "tcm",
     "traditionelle chinesische medizin"
   ],
+  "nt-probnp": [
+    "n-terminal pro b-type natriuretic peptide",
+    "nt pro bnp",
+    "nt-probnp",
+    "peptido natriuretico",
+    "péptido natriurético",
+    "péptidos natriuréticos"
+  ],
+  "omega-3-indice": [
+    "EPA DHA membrana eritrocitaria",
+    "EPA+DHA en eritrocitos",
+    "EPA+DHA en membrana",
+    "Fettsäurestatus",
+    "HS-Omega-3 Index",
+    "índice omega-3",
+    "O3I",
+    "omega 3 index",
+    "omega-3 index",
+    "Omega-3-Fettsäure-Index",
+    "omega-3-indice"
+  ],
+  "osteocalcina": [
+    "bone gla protein",
+    "bone Gla protein",
+    "oc",
+    "OC",
+    "osteocalcin",
+    "osteocalcina",
+    "proteina gla osea"
+  ],
   "plaquetas": [
     "plaquetas"
   ],
   "potasio": [
     "potasio"
+  ],
+  "progesterona": [
+    "p4",
+    "progesterona",
+    "progesterone"
+  ],
+  "prolactina": [
+    "hormona lactogena",
+    "prl",
+    "prolactin",
+    "prolactina",
+    "prolaktin"
   ],
   "proteina-c-reactiva": [
     "crp",
@@ -178,9 +490,29 @@ export const MARKER_ALIASES = {
     "proteina c reactiva",
     "proteina-c-reactiva"
   ],
+  "proteinas-totales": [
+    "a g ratio",
+    "proteina total",
+    "proteinas totales",
+    "proteinas-totales",
+    "relacion a g",
+    "relacion albumina globulina",
+    "total protein"
+  ],
   "pth": [
+    "hormona paratiroidea",
+    "nebenschilddrüsenhormon",
+    "parathormon",
     "parathormona",
-    "pth"
+    "pth",
+    "PTH",
+    "pth intacta"
+  ],
+  "ratio-omega-6-omega-3": [
+    "n-6/n-3 ratio",
+    "omega-6/omega-3 ratio",
+    "Omega-6/Omega-3-Verhältnis",
+    "ratio-omega-6-omega-3"
   ],
   "reishi": [
     "ganoderma lucidum",
@@ -188,6 +520,49 @@ export const MARKER_ALIASES = {
   ],
   "reticulocitos": [
     "reticulocitos"
+  ],
+  "rhodiola": [
+    "golden root",
+    "raiz de oro",
+    "rhodiola",
+    "rhodiola rosea",
+    "rosenwurz",
+    "roseroot"
+  ],
+  "saturacion-transferrina": [
+    "indice de saturacion de transferrina",
+    "ist",
+    "saturacion de transferrina",
+    "saturacion-transferrina",
+    "transferrin saturation",
+    "transferrinsattigung",
+    "tsat"
+  ],
+  "shbg": [
+    "globulina fijadora de hormonas sexuales",
+    "globulina transportadora de hormonas sexuales",
+    "sex hormone binding globulin",
+    "shbg",
+    "tebg"
+  ],
+  "silibinina": [
+    "silibina",
+    "silibinina",
+    "silybin",
+    "silybinin"
+  ],
+  "silimarina": [
+    "silimarina",
+    "silymarin"
+  ],
+  "t3-libre": [
+    "freies t3",
+    "ft3",
+    "t3 libre",
+    "t3-libre",
+    "t3l",
+    "triyodotironina",
+    "triyodotironina libre"
   ],
   "t4-libre": [
     "freies t4",
@@ -199,6 +574,25 @@ export const MARKER_ALIASES = {
   "terapia-craneosacral": [
     "terapia craneosacral",
     "terapia-craneosacral"
+  ],
+  "testosterona-total": [
+    "free testosterone",
+    "freies testosteron",
+    "testosteron",
+    "testosterona",
+    "testosterona biodisponible",
+    "testosterona libre",
+    "testosterona serica",
+    "testosterona total",
+    "testosterona-total",
+    "total testosterone"
+  ],
+  "tibc": [
+    "capacidad total de fijacion de hierro",
+    "capacidad total de fijacion del hierro",
+    "gesamteisenbindungskapazitat",
+    "tibc",
+    "total iron binding capacity"
   ],
   "tp-inr": [
     "inr",
@@ -219,6 +613,16 @@ export const MARKER_ALIASES = {
   ],
   "tsh": [
     "tsh"
+  ],
+  "urea-bun": [
+    "blood urea nitrogen",
+    "bun",
+    "harnstoff",
+    "harnstoff-stickstoff",
+    "nitrogeno ureico",
+    "nitrogeno ureico en sangre",
+    "urea",
+    "urea-bun"
   ],
   "vitamina-a": [
     "betacaroteno",
@@ -274,7 +678,10 @@ export const MARKER_ALIASES = {
     "vitamina-k"
   ],
   "vsg": [
+    "bsg",
+    "esr",
     "velocidad de sedimentacion",
+    "velocidad de sedimentacion globular",
     "vsg"
   ]
 } as const satisfies Record<string, readonly string[]>;
@@ -308,8 +715,11 @@ export const QUERY_GROUPS = {
       "zuckerstoffwechsel"
     ],
     "markers": [
+      "c-peptido",
       "glucosa-en-ayunas",
-      "hba1c"
+      "hba1c",
+      "homa-ir",
+      "insulina-en-ayunas"
     ]
   },
   "hematologia": {
@@ -341,6 +751,61 @@ export const QUERY_GROUPS = {
       "vsg"
     ]
   },
+  "marcadores-cardiovasculares-avanzados": {
+    "aliases": [
+      "erweiterte herz kreislauf marker",
+      "marcadores cardiovasculares avanzados",
+      "marcadores-cardiovasculares-avanzados",
+      "panel cardiovascular avanzado",
+      "riesgo cardiovascular avanzado"
+    ],
+    "markers": [
+      "apolipoproteina-b",
+      "bnp",
+      "homocisteina",
+      "lipoproteina-a",
+      "nt-probnp"
+    ]
+  },
+  "metabolismo-oseo": {
+    "aliases": [
+      "knochenmarker",
+      "knochenstoffwechsel",
+      "metabolismo oseo",
+      "metabolismo-oseo",
+      "remodelado oseo",
+      "salud osea",
+      "vitamina d calcio pth"
+    ],
+    "markers": [
+      "beta-crosslaps",
+      "calcio",
+      "fosfato",
+      "magnesio",
+      "osteocalcina",
+      "pth",
+      "vitamina-d"
+    ]
+  },
+  "perfil-acidos-grasos": {
+    "aliases": [
+      "acidos grasos",
+      "fettsauren",
+      "fettsaureprofil",
+      "indice omega-3",
+      "omega-3 index",
+      "perfil de acidos grasos",
+      "perfil-acidos-grasos"
+    ],
+    "markers": [
+      "acido-arachidonico",
+      "ala",
+      "dha",
+      "epa",
+      "omega-3-indice",
+      "ratio-omega-6-omega-3"
+    ]
+  },
   "perfil-hepatico": {
     "aliases": [
       "funcion hepatica",
@@ -353,10 +818,14 @@ export const QUERY_GROUPS = {
       "transaminasas"
     ],
     "markers": [
+      "albumina",
       "alt",
       "ast",
+      "bilirrubina",
       "fosfatasa-alcalina",
-      "ggt"
+      "ggt",
+      "proteinas-totales",
+      "tp-inr"
     ]
   },
   "perfil-lipidico": {
@@ -369,9 +838,12 @@ export const QUERY_GROUPS = {
       "perfil-lipidico"
     ],
     "markers": [
+      "apolipoproteina-b",
       "colesterol-hdl",
       "colesterol-ldl",
+      "colesterol-no-hdl",
       "colesterol-total",
+      "lipoproteina-a",
       "trigliceridos"
     ]
   },
@@ -388,8 +860,10 @@ export const QUERY_GROUPS = {
     "markers": [
       "acido-urico",
       "albuminuria",
+      "cistatina-c",
       "creatinina",
-      "egfr"
+      "egfr",
+      "urea-bun"
     ]
   },
   "perfil-tiroideo": {
@@ -402,6 +876,9 @@ export const QUERY_GROUPS = {
       "tiroides"
     ],
     "markers": [
+      "anti-tiroglobulina",
+      "anti-tpo",
+      "t3-libre",
       "t4-libre",
       "tsh"
     ]
@@ -463,6 +940,7 @@ export const HEALTH_AREAS = {
       "stress"
     ],
     "markers": [
+      "cortisol",
       "vitamina-b12",
       "vitamina-b6",
       "acupuntura",
@@ -471,6 +949,60 @@ export const HEALTH_AREAS = {
       "constelaciones-familiares",
       "terapia-craneosacral"
     ]
+  },
+  "salud-hormonal": {
+    "aliases": [
+      "andropausia",
+      "deseo sexual",
+      "desequilibrio hormonal",
+      "fertilidad",
+      "hormonal",
+      "hormonas",
+      "hormone",
+      "hormonhaushalt",
+      "hormonstatus",
+      "libido",
+      "libidoverlust",
+      "menopausia",
+      "salud hormonal",
+      "salud-hormonal",
+      "wechseljahre"
+    ],
+    "markers": [
+      "testosterona-total",
+      "estradiol",
+      "shbg",
+      "lh",
+      "fsh",
+      "prolactina",
+      "progesterona",
+      "dhea-s"
+    ]
+  },
+  "salud-osea": {
+    "aliases": [
+      "fragilidad osea",
+      "huesos",
+      "knochengesundheit",
+      "knochenstoffwechsel",
+      "metabolismo oseo",
+      "osteopenia",
+      "osteoporose",
+      "osteoporosis",
+      "remodelado oseo",
+      "salud osea",
+      "salud-osea"
+    ],
+    "markers": [
+      "vitamina-d",
+      "calcio",
+      "fosfato",
+      "pth",
+      "magnesio",
+      "vitamina-k",
+      "beta-crosslaps",
+      "osteocalcina"
+    ]
   }
 } as const satisfies Record<
   string,
@@ -478,52 +1010,101 @@ export const HEALTH_AREAS = {
 >;
 
 export const CANONICAL_MARKERS = [
+  "acido-arachidonico",
+  "acido-clorogenico",
   "acido-folico",
   "acido-urico",
+  "acth",
   "acupuntura",
+  "ala",
+  "albumina",
   "albuminuria",
+  "alcachofa",
   "alt",
   "amalaki",
+  "anti-tiroglobulina",
+  "anti-tpo",
+  "apolipoproteina-b",
+  "ashwagandha",
   "ast",
   "ayurveda",
+  "berberina",
+  "beta-crosslaps",
+  "bilirrubina",
+  "bnp",
+  "c-peptido",
   "calcio",
+  "cardo-mariano",
   "chaga",
+  "cinarina",
+  "cistatina-c",
   "colesterol-hdl",
   "colesterol-ldl",
+  "colesterol-no-hdl",
   "colesterol-total",
   "constelaciones-familiares",
+  "cortisol",
   "creatinina",
   "curcuma",
+  "daruharidra",
+  "dha",
+  "dhea-s",
   "egfr",
+  "epa",
   "eritrocitos",
+  "estradiol",
   "ferritina",
   "flores-de-bach",
   "fosfatasa-alcalina",
   "fosfato",
+  "fsh",
   "general",
   "ggt",
   "glucosa-en-ayunas",
+  "goldenseal",
   "hba1c",
   "hematocrito",
   "hemoglobina",
   "hierro",
+  "homa-ir",
+  "homocisteina",
+  "huang-lian",
+  "insulina-en-ayunas",
   "jengibre",
   "kinesiologia-aplicada",
   "leucocitos",
+  "lh",
+  "lipoproteina-a",
   "magnesio",
   "mtc",
+  "nt-probnp",
+  "omega-3-indice",
+  "osteocalcina",
   "plaquetas",
   "potasio",
+  "progesterona",
+  "prolactina",
   "proteina-c-reactiva",
+  "proteinas-totales",
   "pth",
+  "ratio-omega-6-omega-3",
   "reishi",
   "reticulocitos",
+  "rhodiola",
+  "saturacion-transferrina",
+  "shbg",
+  "silibinina",
+  "silimarina",
+  "t3-libre",
   "t4-libre",
   "terapia-craneosacral",
+  "testosterona-total",
+  "tibc",
   "tp-inr",
   "transferrina",
   "trigliceridos",
   "tsh",
+  "urea-bun",
   "vitamina-a",
   "vitamina-b12",
   "vitamina-b6",

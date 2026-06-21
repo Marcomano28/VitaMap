@@ -168,6 +168,13 @@ regulación ni evidencia.
 
 ## 5. Frontmatter compatible con VitaMap
 
+> **Contrato mínimo de evidencia (v0).** Aplica además el bloque `evidence` y el
+> `relacionado_con[].direccion` de `PROMPT-INVESTIGACION-RAG.md` §3 bis. El bloque
+> `evidence` (con `certeza`) es obligatorio cuando la tarjeta afirma eficacia,
+> beneficio o seguridad de una práctica; en tarjetas de descripción o contexto
+> puede omitirse. `relacionado_con[].id` es un **marcador canónico**, no la clave
+> de topic.
+
 El administrador admite:
 
 ```yaml
