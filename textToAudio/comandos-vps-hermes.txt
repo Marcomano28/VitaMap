@@ -1,0 +1,155 @@
+==========================================================
+  GUÍA DE COMANDOS — VPS + HERMES AGENT
+  (operar desde la terminal de tu Mac)
+==========================================================
+
+Notas previas:
+- Tu Mac y el VPS son máquinas distintas. Desde el Mac "entras"
+  al VPS por SSH. Una vez dentro, todos los comandos corren en
+  el VPS, no en el Mac.
+- Hermes vive en la carpeta ~/hermes del VPS.
+- VitaMap vive en su propio docker-compose (NO lo toques al operar
+  Hermes; son contenedores separados).
+- Sustituye IP_DEL_VPS por la IP real de tu servidor.
+
+
+----------------------------------------------------------
+1) CONECTARSE AL VPS
+----------------------------------------------------------
+
+# Entrar por SSH (desde tu Mac):
+ssh root@IP_DEL_VPS
+
+# Salir del VPS (volver a tu Mac):
+exit
+
+
+----------------------------------------------------------
+2) IR A LA CARPETA DE HERMES
+----------------------------------------------------------
+
+cd ~/hermes
+
+# Ver qué archivos hay:
+ls -la
+
+
+----------------------------------------------------------
+3) OPERAR HERMES (encender / apagar / reiniciar / estado)
+----------------------------------------------------------
+# (Ejecutar siempre desde dentro de ~/hermes)
+
+# Encender Hermes (en segundo plano):
+docker compose up -d
+
+# Apagar Hermes (no borra nada, los datos se conservan):
+docker compose down
+
+# Reiniciar (p. ej. tras cambiar configuración):
+docker compose restart
+
+# Ver si está encendido y su estado:
+docker compose ps
+
+# Ver el consumo de RAM/CPU en vivo (Ctrl+C para salir):
+docker stats hermes
+
+
+----------------------------------------------------------
+4) VER LOS LOGS (lo que está haciendo el agente)
+----------------------------------------------------------
+
+# Seguir los logs en vivo (Ctrl+C deja de mirar; NO apaga Hermes):
+docker compose logs -f
+
+# Ver solo las últimas 50 líneas:
+docker compose logs --tail 50
+
+
+----------------------------------------------------------
+5) ABRIR EL DASHBOARD WEB (panel de control)
+----------------------------------------------------------
+# El dashboard está protegido: solo accesible por túnel SSH.
+
+# 5a. Desde tu Mac, abre el túnel (deja esta ventana abierta):
+ssh -L 9119:127.0.0.1:9119 root@IP_DEL_VPS
+
+# 5b. Con el túnel abierto, en el navegador de tu Mac entra a:
+#     http://localhost:9119
+#     (usuario y contraseña = los del docker-compose.yml)
+
+
+----------------------------------------------------------
+6) EDITAR LA CONFIGURACIÓN
+----------------------------------------------------------
+
+# Editar claves/tokens y ajustes (modelo, Telegram, etc.):
+nano ~/hermes/data/.env
+
+# Tras editar, recargar:
+docker compose restart
+
+# Configurar qué herramientas puede usar el agente (interactivo):
+docker compose exec hermes hermes tools
+
+# Comprobar problemas de configuración:
+docker compose exec hermes hermes doctor
+
+
+----------------------------------------------------------
+7) HABLAR CON EL AGENTE
+----------------------------------------------------------
+# Se controla por Telegram: escríbele a tu bot desde el móvil
+# o desde Telegram en el Mac. Solo tu usuario (allowlist) puede.
+# No necesitas la terminal para conversar con él.
+
+
+----------------------------------------------------------
+8) ACTUALIZAR HERMES A LA ÚLTIMA VERSIÓN
+----------------------------------------------------------
+# IMPORTANTE: como usas una imagen propia (Dockerfile con
+# yt-dlp + ffmpeg), NO actualices con "pull" a secas, porque
+# perderías yt-dlp. Hay que RECONSTRUIR con --build para que
+# tu imagen se rehaga sobre la última versión de Hermes y
+# vuelva a incluir yt-dlp y ffmpeg.
+
+cd ~/hermes
+
+# 1. Baja la última versión base de Hermes:
+docker pull nousresearch/hermes-agent:latest
+
+# 2. Reconstruye TU imagen sobre esa base y levanta:
+docker compose up -d --build
+
+# 3. Limpia la caché de build que deja la reconstrucción:
+docker builder prune -af
+
+# 4. Comprueba que yt-dlp y ffmpeg siguen ahí:
+docker compose exec hermes yt-dlp --version
+docker compose exec hermes ffmpeg -version
+
+# (Reconstruir también actualiza yt-dlp a su última versión,
+#  útil porque YouTube cambia y yt-dlp se queda obsoleto.)
+
+
+----------------------------------------------------------
+9) MANTENIMIENTO DEL SERVIDOR (disco)
+----------------------------------------------------------
+
+# Ver espacio libre en disco:
+df -h /
+
+# Ver qué ocupa Docker (imágenes, volúmenes, caché de build):
+docker system df
+
+# Limpiar SOLO la caché de build (segura; recupera mucho espacio):
+docker builder prune -af
+
+
+----------------------------------------------------------
+10) REGLA DE ORO
+----------------------------------------------------------
+# Si dudas, NO ejecutes "docker compose down" ni prune fuera de
+# la carpeta ~/hermes. VitaMap (el piloto de usuarios) corre en
+# su propio compose; operar Hermes nunca debe tocarlo.
+==========================================================

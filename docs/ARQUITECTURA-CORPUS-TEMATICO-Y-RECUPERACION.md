@@ -695,6 +695,13 @@ búsqueda ni duplicar la fuente de verdad.
 
 ## 10. Evolución propuesta
 
+Las etapas E0–E6 ordenan la **ingeniería de recuperación**. Su complemento
+metodológico —cómo graduar la evidencia (GRADE-lite), anclar markers con códigos
+y unidades (FHIR/LOINC/UCUM) y despertar el grafo de relaciones con pesos y
+direcciones— vive, en progresión, en
+[DIRECCION-METODOLOGICA-EVIDENCIA-Y-GRAFO.md](DIRECCION-METODOLOGICA-EVIDENCIA-Y-GRAFO.md).
+El §5 de ese documento cruza sus tramos con estas etapas.
+
 ### Etapa E0 · Corpus pequeño y medible
 
 Objetivo inmediato:
