@@ -1,0 +1,600 @@
+TRANSCRIPCIÓN DETALLADA DE CLASE
+Tema: Por qué un RAG puede recuperar documentos irrelevantes y cómo corregirlo con acotación por marcador en un proyecto Next.js desplegado en un VPS con QMD
+Nivel: Desarrollo web y de aplicaciones, ciclo de grado medio
+
+Profesor:
+Buenos días. Hoy vamos a trabajar un aspecto muy concreto, pero muy importante, de la implementación de inteligencia artificial en una aplicación web real. No vamos a hablar de IA como algo mágico, ni de modelos que "lo saben todo", ni de poner un chatbot en una página y ya está. Vamos a hablar de una parte muy técnica, muy práctica y muy habitual cuando usamos IA con documentación propia: el camino de retrieval, es decir, el camino por el que la aplicación busca información antes de que el modelo escriba la respuesta.
+
+El contexto es el siguiente. Tenemos una aplicación hecha con Next.js, desplegada en un VPS. Es decir, no estamos solamente en local, no es una demo en el portátil, sino una aplicación que vive en un servidor. Dentro de esa aplicación se usa RAG. Recordad qué significaba RAG: Retrieval Augmented Generation. Traducido a un lenguaje sencillo: antes de que el modelo genere una respuesta, buscamos documentos relevantes en una base de conocimiento, se los pasamos como contexto y luego el modelo redacta usando ese contexto.
+
+Voy a repetir esta idea porque es la base de toda la clase: primero se busca, después se redacta. Primero retrieval, después generación. Primero recuperamos fragmentos de documentos, luego el modelo de chat escribe. Si la búsqueda trae documentos malos, raros o fuera de tema, el modelo puede acabar usando o citando cosas que no debería. Por eso, cuando aparece una respuesta incorrecta, no siempre el culpable es el modelo que escribe. Muchas veces el problema está antes, en lo que le hemos dado para leer.
+
+En los apuntes aparece un ejemplo muy claro: el usuario pregunta por glucosa o colesterol LDL, pero el sistema recupera y acaba citando un documento sobre pruebas hepáticas, es decir, sobre hígado. El documento de hígado no debería estar ahí. La pregunta no iba de ALT, AST, GGT, fosfatasa alcalina ni marcadores hepáticos. Iba de otra cosa. Entonces nos preguntamos: ¿por qué se cuela el hígado en una conversación de glucosa o LDL?
+
+Esa es la pregunta de hoy.
+
+Y os adelanto la respuesta en una frase, para que tengamos una brújula durante toda la explicación: el documento de hígado se cuela porque el sistema de búsqueda está mirando toda la base de conocimiento, sin limitarse al marcador de la conversación, y además el score que se está usando no mide relevancia real, sino posición en el ranking.
+
+Lo digo otra vez de otra manera: el problema no es que Mistral redacte mal. El problema es que la fase de búsqueda le está metiendo al contexto un documento que no toca. Mistral redacta; Qwen3 busca. El fallo está en buscar, no en redactar.
+
+1. Separar mentalmente dos fases: buscar y responder
+
+Profesor:
+Vamos por partes. En una aplicación con RAG hay dos tareas que a veces se mezclan en nuestra cabeza, pero que técnicamente son distintas.
+
+La primera tarea es recuperar información. A esto lo llamamos retrieval. Aquí el sistema recibe una pregunta, por ejemplo: "¿qué debo hacer para nivelar los valores?", y busca en una base de conocimiento los documentos que cree que pueden ayudar. Esta búsqueda puede combinar varias técnicas: búsqueda por palabras, búsqueda vectorial, embeddings, fusión híbrida, etc.
+
+La segunda tarea es generar una respuesta. Aquí un modelo de lenguaje recibe la pregunta del usuario y los documentos recuperados, y redacta una respuesta humana, amable, clara y segura.
+
+En el proyecto de los apuntes hay tres modelos o roles distintos. El modelo de chat es el que escribe. Durante el piloto se usa Mistral Small, y más adelante se habla de Qwen3-4B para blindaje final. El modelo de embeddings, Qwen3-Embedding-0.6B, convierte texto en vectores para buscar por significado. Y el reranker, Qwen3-Reranker, serviría para reordenar los resultados por relevancia real, aunque en este caso está apagado por coste de CPU.
+
+Fijaos en la palabra "roles". No todos los modelos hacen lo mismo. Uno redacta, otro vectoriza, otro podría reordenar. Es como en un equipo de trabajo: una persona busca documentos, otra los ordena, otra escribe el informe final. Si la persona que busca mete en la mesa un documento que no tiene nada que ver, la persona que redacta puede quedar contaminada por ese documento. Aunque escriba bien, está trabajando con material equivocado.
+
+Por eso, cuando el sistema cita un documento hepático en una pregunta de glucosa, no debemos saltar directamente a "el modelo de chat se ha inventado algo". Puede ser, pero aquí la evidencia apunta a otra cosa: el documento hepático entró en los resultados recuperados. Y como entró en los resultados recuperados, también entró en las citas.
+
+Esta distinción es una de las ideas clave de la clase:
+
+Punto: generar no es recuperar;
+Punto: redactar no es buscar;
+Punto: el modelo de chat no controla por sí solo qué documentos aparecen en el contexto;
+Punto: si el retrieval falla, la generación queda condicionada.
+
+Dicho con la frase de los apuntes: Mistral redacta; Qwen3 busca. El problema del hígado está en la parte de buscar.
+
+2. Qué es QMD en esta arquitectura
+
+Profesor:
+Ahora hablemos de QMD. En los apuntes se menciona QMD como la pieza que gestiona la búsqueda híbrida sobre la base de conocimiento y la memoria. Para esta clase no necesitamos conocer todos sus detalles internos, pero sí entender el flujo.
+
+Tenemos una base de conocimiento, o KB. Esa KB contiene documentos, tarjetas o fragmentos sobre distintos marcadores: glucosa, colesterol LDL, vitamina D, pruebas hepáticas, preparación para analíticas, interferencias, ayuno, etc. La aplicación Next.js, cuando recibe una pregunta en una ruta como app api chat route punto t s, consulta esa base mediante funciones de búsqueda, por ejemplo en lib qmd punto t s.
+
+El sistema devuelve hits, es decir, resultados. Cada resultado suele tener un texto, metadatos, quizá un nombre de archivo, quizá frontmatter, y un score. El score se suele interpretar como una medida de relevancia: cuanto más alto, más relevante. Pero aquí está una de las trampas importantes de la clase: en este caso concreto, sin reranking, ese score no es una relevancia real. Es prácticamente una fórmula posicional.
+
+En los apuntes aparece una prueba llamada kb:check, donde los scores salían así:
+
+1. score: 1
+2. score: 0.5
+3. score: 0.3333
+4. score: 0.25
+5. score: 0.2
+
+Eso no parece una evaluación fina del contenido. Eso es 1 dividido entre la posición. Primer resultado: uno dividido entre uno. Segundo resultado: uno dividido entre dos. Tercer resultado: uno dividido entre tres. Cuarto: uno dividido entre cuatro. Quinto: uno dividido entre cinco.
+
+Cuando vemos esa secuencia, debemos sospechar. Si un sistema midiera relevancia semántica real, no esperaríamos una progresión tan perfecta: 1, 0.5, 0.3333, 0.25. Eso nos está diciendo: "este número representa dónde cayó el documento en el ranking, no cuánto habla realmente del tema".
+
+Lo vuelvo a decir porque es fundamental: el score se parece a una nota, pero no se comporta como una nota. Parece que diga "este documento es relevante con 0.5", pero en realidad está diciendo "este documento quedó segundo".
+
+Esto cambia completamente cómo debemos leer el parámetro minScore.
+
+3. El falso amigo: minScore
+
+Profesor:
+En muchas APIs de búsqueda tenemos un parámetro llamado minScore. Suena a "puntuación mínima de relevancia". Uno piensa: "si pongo minScore: 0.35, solo entran documentos con relevancia superior a 0.35". Parece razonable.
+
+Pero en los apuntes se ve que el sistema tenía minScore: 0.35 y que el score real, sin reranking, era uno dividido entre posición. Entonces, ¿qué significa minScore: 0.35?
+
+Vamos a calcularlo mentalmente:
+
+Punto: puesto 1: score 1.0, entra;
+Punto: puesto 2: score 0.5, entra;
+Punto: puesto 3: score 0.3333, no entra porque está por debajo de 0.35;
+Punto: puesto 4: score 0.25, no entra;
+Punto: puesto 5: score 0.2, no entra.
+
+Por tanto, minScore: 0.35 no está diciendo "quédate con lo relevante". Está diciendo "quédate con los dos primeros puestos". Nada más.
+
+Y aquí está el problema: si un documento de hígado cae en el puesto 1 o 2, entra siempre. Da igual que sea de hígado, de colesterol, de vitamina D o de otra cosa. El minScore no lo entiende. El minScore no mira el significado médico del documento. El minScore no sabe si el marcador coincide con la pregunta. Solo recorta por posición.
+
+Vamos a usar una analogía. Imaginad que buscáis en una biblioteca "glucosa en ayunas", y el bibliotecario os trae cinco libros. En vez de evaluar si cada libro habla de glucosa, simplemente les pone nota por el orden en que los encontró: al primero le pone un 10, al segundo un 5, al tercero un 3,3. Si luego decimos "solo acepto libros con más de 3,5", nos quedamos con los dos primeros. Pero eso no demuestra que los dos primeros sean correctos. Solo demuestra que estaban arriba.
+
+Eso es lo que pasa con minScore cuando el score es posicional. No filtra relevancia; corta el ranking.
+
+Esta es una lección muy práctica para desarrollo: los nombres de los parámetros pueden engañar. Un parámetro llamado minScore no siempre significa lo que nosotros queremos que signifique. Hay que mirar qué score se está calculando realmente.
+
+4. Por qué el documento de hígado sube al top
+
+Profesor:
+Ahora vamos a preguntarnos: si el usuario habla de glucosa o LDL, ¿por qué un documento de pruebas hepáticas puede quedar arriba?
+
+La primera razón es que la consulta es amplia. La pregunta "¿qué debo hacer para nivelar los valores?" es muy genérica. No dice explícitamente "glucosa", "LDL" o "vitamina D". Entonces el sistema intenta condensar la intención y aparecen palabras muy generales: "factores", "qué hacer", "medicamentos", "valores".
+
+La segunda razón es que el documento hepático también contiene palabras generales. Por ejemplo, puede llamarse algo como "pruebas hepáticas — preparación y factores que influyen". Además menciona medicamentos. Entonces tenemos un solapamiento por palabras sueltas:
+
+Punto: el usuario habla de "qué hacer";
+Punto: la consulta condensada habla de "factores";
+Punto: el documento hepático habla de "factores que influyen";
+Punto: el documento hepático menciona "medicamentos".
+
+Si la búsqueda combina BM25, que se fija mucho en palabras, con búsqueda vectorial, que intenta captar significado, esos solapamientos pueden empujar un documento fuera de tema hacia arriba.
+
+La tercera razón es que el corpus tiene muchos documentos. Si tienes 90 o más documentos y buscas de forma amplia, siempre puede aparecer un documento que comparte vocabulario aunque no comparta intención. En corpus pequeños esto puede pasar menos, pero en corpus grandes la probabilidad aumenta.
+
+Y la cuarta razón, que para mí es la raíz del problema, es que se busca en todo el KB. Todo. No hay un filtro que diga: "si la conversación va de glucosa y LDL, no busques documentos de hígado".
+
+Esto es como entrar en una tienda enorme y pedir "algo para ajustar valores". Si no le dices al sistema qué pasillo mirar, puede ir al pasillo de glucosa, al de colesterol, al de hígado o al de vitaminas. La solución no es solo ordenar mejor los resultados; la solución es no buscar en pasillos que no tienen sentido.
+
+Por eso decimos que el problema es estructural. No es un error pequeño de una respuesta concreta. Es una debilidad del diseño del retrieval.
+
+5. Sin reranking, nadie corrige el orden
+
+Profesor:
+Ahora entra el reranker. ¿Qué es un reranker? Es una pieza que recibe los candidatos ya encontrados y los reordena evaluando la relevancia real respecto a la pregunta.
+
+Imaginad que el buscador inicial trae 20 documentos. Algunos entran por palabras, otros por vectores. El reranker actúa como un segundo lector más exigente. Mira la pregunta y mira cada documento, y dice: "este sí responde", "este no responde", "este está relacionado solo de refilón", "este habla de otro marcador".
+
+En los apuntes se menciona Qwen3-Reranker. Ese reranker podría hundir el documento de hígado si la pregunta realmente va de glucosa o LDL. Pero está apagado por coste de CPU. Se difiere a GPU. Esto es muy realista en despliegues en VPS: no todo lo que es técnicamente ideal cabe en la máquina disponible.
+
+Aquí hay una enseñanza de arquitectura: muchas veces sabemos cuál sería la solución potente, pero no podemos activarla porque consume demasiada CPU, memoria o tiempo de respuesta. En un VPS, los recursos importan. Si el reranker ralentiza demasiado o satura la máquina, quizá no se puede usar en producción todavía.
+
+Entonces tenemos que preguntarnos: ¿qué podemos arreglar sin GPU?
+
+Y ahí aparece la opción de acotar por marcador.
+
+6. Qué significa "filtrar por marcador"
+
+Profesor:
+Vamos a definir marcador. En este proyecto, un marcador es una entidad de la analítica: glucosa en ayunas, colesterol LDL, vitamina D, ALT, AST, GGT, etc. Cada documento de la base de conocimiento debería estar relacionado con uno o varios marcadores, o ser un documento general.
+
+Filtrar por marcador significa que, antes de pasar documentos al modelo, limitamos los resultados a los marcadores que tienen sentido para la conversación.
+
+Si la analítica del usuario contiene glucosa, LDL y vitamina D, y la pregunta habla de "nivelar los valores", lo razonable es que el sistema busque documentos de glucosa, LDL, vitamina D y quizá documentos generales sobre ayuno o interferencias. Lo que no tiene sentido es que meta un documento específico de pruebas hepáticas si el usuario no tiene marcadores hepáticos en su analítica y la pregunta no habla de hígado.
+
+Esta idea se llama en los apuntes "recuperación selectiva por intención". Es una frase larga, pero el concepto es sencillo: no busques en todo; busca en la parte del conocimiento que corresponde a la intención y al marcador.
+
+Lo repito con otra analogía. Si estamos haciendo una aplicación de recetas y el usuario pregunta por una receta vegana, no basta con buscar "proteína" en toda la base de recetas. Primero deberíamos limitar a recetas veganas. Luego, dentro de recetas veganas, buscamos las más relevantes. Ese primer filtro evita que aparezca una receta de pollo simplemente porque contiene la palabra "proteína".
+
+Aquí igual. Si estamos en una conversación de LDL, no queremos que aparezca hígado solo porque comparte palabras como "factores", "preparación" o "medicamentos".
+
+7. El problema: QMD no permite ese filtro directamente
+
+Profesor:
+Ahora viene una parte importante para quienes vais a programar esto. La idea "filtrar por marcador" suena fácil. Uno piensa: "pues le pasamos a search un where: marker: 'glucosa' y listo".
+
+Pero los apuntes dicen que la firma de búsqueda disponible no acepta filter, where ni metadata. La firma HybridQueryOptions acepta cosas como:
+
+Punto: limit;
+Punto: minScore;
+Punto: candidateLimit;
+Punto: explain;
+Punto: intent;
+Punto: skipRerank;
+Punto: chunkStrategy;
+Punto: hooks.
+
+Pero no acepta un filtro por frontmatter. No hay un parámetro para decir: "solo documentos cuyo marker sea glucosa". QMD 2.5.3, según los apuntes, permite acotar por colección en algunas búsquedas de bajo nivel, pero no filtrar search por campos de frontmatter como marker.
+
+Esto es muy importante porque cambia la implementación. La solución no puede ser simplemente "añadir un parámetro al search". La opción A, filtro por marcador, sigue siendo correcta, pero no se implementa dentro de QMD. Se implementa en nuestro código, después de recuperar candidatos.
+
+A esto lo llamamos post-filtrado. Pedimos más candidatos a QMD, leemos los metadatos o el frontmatter de cada resultado, descartamos los que no pertenecen al marcador adecuado y nos quedamos con el top-N final.
+
+La estrategia sería:
+
+1. pedir más candidatos de los necesarios;
+2. mapear cada hit y leer su información;
+3. detectar qué marcadores están permitidos para esta conversación;
+4. eliminar los documentos de marcadores no permitidos;
+5. conservar documentos generales o transversales;
+6. recortar el resultado final al número de documentos que queremos pasar al modelo.
+
+Fijaos en el paso 1: pedimos más candidatos. ¿Por qué? Porque si antes pedíamos solo 5 y luego filtramos, podríamos quedarnos con 1 o con 0. Si queremos terminar con 5 buenos, quizá debemos pedir 20 candidatos primero, filtrar y luego quedarnos con los mejores 5 permitidos.
+
+Ese patrón es bastante común: ampliar primero, filtrar después, recortar al final.
+
+8. El campo marker en el frontmatter
+
+Profesor:
+Para filtrar por marcador necesitamos saber de qué marcador es cada documento. Y aquí aparece otro detalle de diseño de datos: los documentos existentes tienen campos como source kind o source type, pero no necesariamente tienen un campo marker.
+
+Si el marcador está solo implícito en el nombre del archivo o en el título, el sistema tiene que adivinar. Por ejemplo, si el archivo se llama glucosa-en-ayunas-preparacion.md, podemos deducir que es de glucosa. Si el archivo está en una carpeta llamada colesterol-ldl, podemos deducir que es de LDL. Pero esto es frágil.
+
+La versión robusta es añadir un campo marker al frontmatter. El frontmatter, recordad, es esa parte superior de un archivo Markdown con metadatos. Algo así:
+
+title: Preparación para glucosa en ayunas
+marker: glucosa-en-ayunas
+source type: educational
+
+Con ese campo, el documento declara de forma explícita a qué marcador pertenece. Ya no hay que adivinar por el nombre. Si un documento cubre varios marcadores, marker puede ser una lista:
+
+marker: vitamina-d, calcio, fosfato, pth 
+
+Y si un documento no pertenece a un marcador concreto, sino que es transversal, puede usar marker: general. Por ejemplo, un documento sobre ayuno, interferencias analíticas o preparación general puede ser relevante en varias conversaciones, así que no conviene descartarlo.
+
+Este diseño tiene una consecuencia de mantenimiento: necesitamos un vocabulario común. No vale que un documento ponga "LDL", otro "colesterol LDL", otro "colesterol-ldl" y otro "cLDL". Si el filtro espera colesterol-ldl, el corpus debe usar colesterol-ldl. El nombre de carpeta, el campo marker, las claves del filtro y los nombres de marcador extraídos de la analítica deben hablar el mismo idioma.
+
+Esta es otra idea clave de la clase: la IA no arregla un vocabulario de datos caótico. Si queremos retrieval preciso, necesitamos metadatos precisos.
+
+9. Cómo sabemos qué marcadores tiene el usuario
+
+Profesor:
+Ahora preguntamos: vale, podemos etiquetar documentos con marker, pero ¿cómo sabemos qué marcadores están permitidos para cada usuario?
+
+Los apuntes dicen que la analítica del usuario sí guarda los marcadores de forma usable. Hay una extracción que produce objetos con name, value, unit y referencerange. Luego la memoria escribe esos datos en una tabla Markdown con columnas como marcador, valor, unidad, rango y flag.
+
+Eso significa que la aplicación puede leer la memoria del usuario y saber que esa persona tiene, por ejemplo:
+
+Punto: glucosa en ayunas;
+Punto: colesterol LDL;
+Punto: vitamina D.
+
+Y si esa analítica sintética no tiene ALT, AST, GGT o ALP, entonces no hay marcadores hepáticos en juego. Por tanto, un filtro por marcador excluiría automáticamente el documento hepático.
+
+Este punto es importante: no estamos inventando una interpretación clínica. No estamos diciendo "el usuario tiene un problema de glucosa". Simplemente estamos leyendo qué marcadores aparecen en su analítica. Es una operación de estructura de datos, no un diagnóstico.
+
+Lo explico con un ejemplo de programación. Si tenemos esta tabla:
+Marcador, valor, unidad, rango y estado.
+Glucosa en ayunas: 98 miligramos por decilitro, rango 70 a 99, estado normal.
+Colesterol LDL: 132 miligramos por decilitro, estado alto.
+Vitamina D: 22 nanogramos por mililitro, estado bajo.
+La aplicación puede derivar un conjunto permitido:
+
+ glucosa-en-ayunas, colesterol-ldl, vitamina-d 
+
+Después, cuando QMD devuelva candidatos, revisamos cada documento:
+
+Punto: Documento de glucosa: permitido.
+Punto: Documento de LDL: permitido.
+Punto: Documento de vitamina D: permitido.
+Punto: Documento general sobre ayuno: permitido.
+Punto: Documento de pruebas hepáticas: no permitido.
+
+El resultado es que el hígado ya no llega al contexto. Y si no llega al contexto, tampoco aparece como cita.
+
+10. Por qué las citas también fallan
+
+Profesor:
+En los apuntes aparece una corrección interesante. Primero se pensó que una solución barata podía ser una regla de guardrail: "que el modelo no cite una fuente que no usó de verdad". A primera vista parece buena idea. Pero luego se revisó cómo se construyen las citas.
+
+El problema es que, en route.ts, las citas no son necesariamente las que el modelo eligió conscientemente. Son todos los chunks recuperados. Es decir, si el documento hepático se recupera, aparece en la lista de citas. No porque el modelo dijera "quiero citar este documento", sino porque el sistema de citas está construido desde los resultados recuperados.
+
+Esto cambia el diagnóstico. No basta con decirle al modelo "no cites el hígado". El hígado ya está en el paquete de evidencias. La cita nace del retrieval, no de una decisión semántica del modelo.
+
+Por eso la opción C, la del guardrail de citas, deja de ser barata. Para hacerla bien habría que resolver un problema de atribución: saber qué fuentes usó realmente el modelo para cada afirmación. Eso no es trivial.
+
+La conclusión es clara: si queremos matar el síntoma y la causa, tenemos que impedir que el documento irrelevante se recupere. Si no entra al contexto, no contamina la respuesta y no aparece como cita.
+
+Otra vez la idea clave, desde otro ángulo: la forma más limpia de evitar una mala cita es no recuperar una mala fuente.
+
+11. Orden realista de soluciones
+
+Profesor:
+Los apuntes comparan varias opciones. Vamos a repasarlas, pero no como una tabla fría, sino pensando como equipo de desarrollo que tiene que decidir prioridades.
+
+Primera opción: recalibrar o quitar minScore. Esto es barato. Ya hemos visto que minScore no mide relevancia real si el score es posicional. Podemos dejar de tratar 0.35 como si fuera una probabilidad o una nota semántica. En vez de confiar en minScore, podemos usar limit y candidateLimit de forma más consciente. Esto reduce algo de ruido, pero no impide por sí solo que el hígado entre si queda arriba.
+
+Segunda opción: activar reranking. Es una solución potente porque un reranker sí puede evaluar relevancia real. Pero tiene coste alto en CPU y se deja para GPU. En un VPS, esto puede no ser viable de inmediato.
+
+Tercera opción: guardrail de citas. Parecía barata, pero al revisar que las citas se generan desde todos los chunks recuperados, deja de ser un parche sencillo. Resolverlo bien implica atribución fina.
+
+Cuarta opción: filtro por marcador. Es más trabajo que cambiar un parámetro, porque requiere lógica en nuestro código, derivar marcadores de la memoria y quizá añadir marker al corpus. Pero es el arreglo de raíz. Si el hígado no corresponde a los marcadores en juego, no entra.
+
+Por eso la prioridad final de los apuntes es clara: la opción A, el filtro por marcador, es la importante. No es un atajo. Es un mini-proyecto. Pero es la solución que elimina a la vez la contaminación del contexto y la cita errónea.
+
+Cuando diseñamos sistemas reales, muchas veces la solución buena no es la más rápida. Y muchas veces la solución rápida no arregla la causa. Aquí vemos esa diferencia con mucha claridad.
+
+12. Implementarlo sin romper producción: flags
+
+Profesor:
+Ahora pasamos a una parte muy práctica de despliegue. En los apuntes se habla de flags: ASSISTANTEDUGUIDE y KB MARKER SCOPE.
+
+Un flag es una variable de configuración que permite activar o desactivar una funcionalidad. Por ejemplo:
+
+KB MARKER SCOPE=false
+
+significa que el filtro por marcador está apagado. Si lo cambiamos a:
+
+KB MARKER SCOPE=true
+
+lo activamos.
+
+¿Por qué hacemos esto? Porque en producción no queremos introducir cambios grandes a ciegas. Si tocamos retrieval y algo sale mal, podemos afectar a todas las respuestas. Con un flag, el código puede estar desplegado pero inerte. Lo activamos cuando estamos listos para validar. Y si algo falla, lo apagamos sin revertir todo el despliegue.
+
+Esto es una práctica profesional. No se trata solo de escribir código, sino de desplegar con seguridad.
+
+La estrategia indicada es incremental:
+
+Punto: primero construir el núcleo puro y testeable del filtro;
+Punto: luego cablearlo en queryMemoryAndKB detrás de KB MARKER SCOPE;
+Punto: después validarlo en el VPS, donde está el corpus real;
+Punto: finalmente mejorar el corpus con el campo marker.
+
+Fijaos en "núcleo puro y testeable". Eso significa que la lógica de marcador se puede probar sin depender de toda la aplicación, sin depender del servidor, sin depender de Mistral, sin depender de QMD en vivo. Podemos darle una lista de marcadores permitidos y una lista de documentos candidatos y comprobar que filtra bien.
+
+Este enfoque reduce riesgos. En lugar de tocarlo todo de golpe, separamos la lógica y la probamos.
+
+13. Dónde vive el corpus en un despliegue con Docker
+
+Profesor:
+Hay un detalle de despliegue que no quiero que se nos pase. Los apuntes indican que el corpus vivo está en un volumen Docker, el volumen Docker vitamap data, en la ruta data kb, construido vía admin corpus. No está simplemente en el repo de Git.
+
+Esto es importantísimo. Muchos estudiantes, cuando empiezan con despliegues, piensan: "si cambio un archivo Markdown en data kb y hago git pull en el servidor, ya he actualizado la base de conocimiento". Pero en este caso no. Si el sistema en producción lee desde un volumen Docker, el repo no es la fuente viva del corpus. Puedes cambiar archivos en Git y que la aplicación siga usando los documentos del volumen.
+
+Además, si publicas Markdown en data kb del repo y luego tienes otro corpus en el volumen, puedes duplicar o desincronizar información. Tendrás una cosa en el código y otra cosa en producción.
+
+Por eso, cuando hablamos de backfill del campo marker, no basta con editar localmente. Hay que saber dónde están los documentos reales, cómo se cargan, cómo se indexan y cómo se actualiza el volumen.
+
+Otra idea clave: en aplicaciones con IA, el comportamiento no depende solo del código. Depende también del corpus, de los índices, de los volúmenes, de los embeddings y de la configuración.
+
+Si en local no se reproduce el caso del hígado porque esos documentos no están en local, pero sí se reproduce en el VPS porque allí está el corpus real, entonces la validación debe hacerse en el VPS.
+
+14. Cómo quedaría el flujo corregido
+
+Profesor:
+Vamos a imaginar el flujo corregido de principio a fin.
+
+Primero, el usuario pregunta:
+
+"¿Qué debo hacer para nivelar los valores?"
+
+La pregunta es vaga. El sistema no debería asumir demasiado. Pero sí puede mirar la memoria del usuario y ver qué marcadores existen en su analítica. Supongamos que están glucosa, LDL y vitamina D.
+
+Segundo, queryMemoryAndKB se prepara para consultar la KB. Como KB MARKER SCOPE está activado, no se limita a pedir los 5 resultados finales. Pide más candidatos, por ejemplo 20 o 30, porque sabe que después filtrará.
+
+Tercero, QMD devuelve candidatos mediante búsqueda híbrida. Puede que entre esos candidatos aparezcan documentos de glucosa, LDL, vitamina D, generales y quizá un documento hepático.
+
+Cuarto, nuestro código revisa los candidatos. Para cada documento intenta saber su marker. Si ya existe el campo marker en el frontmatter, lo usa. Si todavía no existe, puede usar una estrategia provisional basada en nombre de archivo o carpeta.
+
+Quinto, el filtro conserva los documentos cuyo marcador esté permitido. Conserva también los generales. Descarta el documento hepático si no hay marcadores hepáticos en la conversación.
+
+Sexto, se recorta al top-N final. Esos documentos son los que se pasan al modelo de chat.
+
+Séptimo, el modelo redacta una respuesta educativa. Si está activa la guía educativa, explica el marcador en general, cita fuentes y evita diagnosticar, prescribir o fijar objetivos individuales. Es decir, ayuda a entender sin cruzar límites médicos.
+
+Octavo, las citas se construyen a partir de los chunks recuperados. Como el hígado ya no está entre los chunks finales, no aparece como cita.
+
+Este flujo corregido resuelve las dos cosas a la vez: mejora el contexto y mejora las citas.
+
+15. Diferencia entre documento específico, multi-marcador y general
+
+Profesor:
+Para implementar bien el marker, necesitamos clasificar documentos.
+
+Un documento específico pertenece a un marcador. Por ejemplo:
+
+Punto: glucosa-en-ayunas;
+Punto: colesterol-ldl;
+Punto: vitamina-d;
+Punto: alt;
+Punto: ast.
+
+Un documento multi-marcador cubre varios. Por ejemplo, una tarjeta de lectura conjunta de vitamina D, calcio, fosfato y PTH no debería tener un único marker. Debería tener una lista. Así, si la conversación incluye vitamina D, el documento puede seguir siendo relevante. Si incluye calcio, también.
+
+Un documento general no pertenece a un marcador concreto. Por ejemplo, ayuno, interferencias analíticas o preparación general. Estos documentos pueden ser útiles para varias preguntas. Por eso el filtro debe conservarlos de forma conservadora.
+
+La palabra "conservadora" aquí significa: si no estamos seguros, evitamos romper la experiencia. Si no detectamos marcador, no filtramos. Si el documento es general, lo dejamos pasar. El objetivo no es dejar al modelo sin contexto, sino quitar documentos claramente fuera de ámbito.
+
+Este equilibrio es importante. Un filtro demasiado agresivo puede ser peligroso desde el punto de vista del producto porque puede eliminar documentos útiles. Un filtro demasiado laxo deja pasar ruido. La ingeniería está en encontrar ese punto medio.
+
+16. La guía educativa y los límites de la respuesta
+
+Profesor:
+Aunque hoy nos centramos en retrieval, los apuntes también mencionan la guía educativa del asistente. Esto conecta con la parte de generación.
+
+El producto no debe diagnosticar, no debe prescribir y no debe fijar objetivos individuales. Pero tampoco debe ser inútil. Si el usuario pregunta "¿qué me recomiendas?", responder solo con otra pregunta puede ser seguro, pero deja al usuario sin ayuda.
+
+La regla educativa intenta resolver eso. El asistente puede explicar el marcador en general. Puede decir qué significa a nivel educativo, qué factores suelen influir y qué conviene preparar para hablar con un profesional. Pero no debe decir "tienes X diagnóstico" ni "toma Y" ni "tu objetivo debe ser Z".
+
+Esto se activa con ASSISTANTEDUGUIDE. Igual que el filtro de marcador, está detrás de un flag. Eso permite validarlo antes de encenderlo en el piloto real.
+
+Aquí se ve otra separación importante:
+
+Punto: KB MARKER SCOPE mejora qué información entra al contexto;
+Punto: ASSISTANTEDUGUIDE mejora cómo se redacta la respuesta.
+
+Uno actúa antes de escribir. El otro actúa durante la escritura. Son capas diferentes.
+
+Si solo activamos la guía educativa pero dejamos que entren documentos irrelevantes, el modelo puede seguir viendo hígado cuando no toca. Si solo filtramos el retrieval pero no cuidamos la generación, podríamos tener buenos documentos pero una respuesta poco útil o demasiado arriesgada. En un sistema serio necesitamos ambas cosas.
+
+17. Por qué no debemos culpar solo al modelo de chat
+
+Profesor:
+Quiero insistir en una idea porque es muy común en proyectos con IA. Cuando una respuesta sale mal, la reacción rápida es decir: "el modelo falló". Pero eso es demasiado simple.
+
+En una arquitectura RAG, una respuesta depende de varias capas:
+
+Punto: la pregunta original;
+Punto: la condensación de la consulta;
+Punto: los embeddings;
+Punto: la búsqueda BM25;
+Punto: la búsqueda vectorial;
+Punto: la fusión de resultados;
+Punto: el minScore;
+Punto: el limit;
+Punto: el candidateLimit;
+Punto: el reranking si existe;
+Punto: los filtros de negocio;
+Punto: el contexto que se pasa al modelo;
+Punto: el prompt del sistema;
+Punto: el modelo de generación;
+Punto: la forma de construir citas;
+Punto: los guardrails.
+
+Si algo falla, debemos localizar en qué capa falla. En este caso, la evidencia apunta al retrieval porque el documento incorrecto está entre los chunks recuperados. Y si las citas son todos los chunks recuperados, la cita incorrecta también nace ahí.
+
+Esta forma de pensar es la que diferencia una integración superficial de IA de una integración profesional. No basta con "poner un modelo". Hay que observar el pipeline completo.
+
+18. Ejemplo explicado como si estuviéramos depurando
+
+Profesor:
+Vamos a imaginar que estamos depurando en clase.
+
+Caso: usuario con analítica sintética que incluye glucosa, LDL y vitamina D. No incluye ALT, AST, GGT ni ALP. Pregunta: "¿qué debo hacer para nivelar los valores?"
+
+Paso 1: miramos qué consulta se envía al retrieval. Vemos que es amplia: aparecen términos como factores, qué hacer, medicamentos.
+
+Paso 2: miramos los resultados de QMD. Vemos que el documento hepático aparece en puesto 1 o 2. Su score es 1 o 0.5.
+
+Paso 3: miramos los demás scores. Son 1, 0.5, 0.3333, 0.25, 0.2. Reconocemos patrón uno dividido entre posición.
+
+Paso 4: miramos minScore: 0.35. Concluimos que solo deja pasar puesto 1 y puesto 2. Si hígado está ahí, entra.
+
+Paso 5: miramos si hay reranking. Vemos rerank:false o skipRerank activado. No hay segunda evaluación de relevancia.
+
+Paso 6: miramos si QMD permite filtrar por marker en search. No hay where ni filter ni metadata.
+
+Paso 7: miramos cómo se construyen las citas. Vemos que son todos los chunks recuperados.
+
+Diagnóstico técnico: el sistema no tiene una puerta de relevancia por marcador. minScore no es suficiente, reranking está apagado y el corpus se busca entero.
+
+Solución técnica prioritaria: implementar post-filtrado por marcador en queryMemoryAndKB detrás de KB MARKER SCOPE, y preparar el corpus con marker en frontmatter.
+
+Fijaos que no hemos usado opiniones. Hemos seguido evidencias. Eso es depurar.
+
+19. Qué implica para el código de Next.js
+
+Profesor:
+En una aplicación Next.js moderna, especialmente usando App Router, una ruta como app api chat route punto t s suele ser la entrada de la conversación. Ahí recibimos el mensaje, cargamos memoria, consultamos KB, llamamos al LLM y devolvemos respuesta.
+
+La lógica de retrieval no debería estar mezclada sin control dentro de la ruta. Es mejor tener funciones en lib qmd punto t s, lib marker scope punto t s y otros módulos. Así podemos probarlas.
+
+Un diseño razonable sería:
+
+Punto: route.ts orquesta la petición;
+Punto: queryMemoryAndKB obtiene memoria y evidencia;
+Punto: marker-scope.ts contiene la lógica pura de marcadores;
+Punto: mapEvidenceHit normaliza resultados y lee metadatos;
+Punto: el prompt del modelo recibe solo evidencias ya filtradas.
+
+Esto facilita tests. Por ejemplo, un test de marker-scope puede crear candidatos ficticios:
+
+Punto: candidato A: marker glucosa-en-ayunas;
+Punto: candidato B: marker colesterol-ldl;
+Punto: candidato C: marker pruebas-hepaticas;
+Punto: candidato D: marker general.
+
+Luego le pasamos allowedMarkers = glucosa-en-ayunas, colesterol-ldl y comprobamos que A, B y D se quedan, pero C se va.
+
+Ese test no necesita levantar Next.js. No necesita llamar a Mistral. No necesita conectar con QMD real. Eso es bueno.
+
+20. Un posible pseudocódigo del filtro
+
+Profesor:
+No vamos a escribir el código exacto del proyecto, pero sí la forma mental del pseudocódigo.
+
+Primero, la función recibe la pregunta y la memoria del usuario. Después comprueba si la variable de entorno KB MARKER SCOPE está activada. Si está activada, deriva los marcadores permitidos a partir de la memoria y de la pregunta. Si no está activada, no aplica acotación por marcador.
+
+Luego pide candidatos a QMD. Cuando el filtro está activo, pide más candidatos de los que necesita al final: por ejemplo, treinta resultados iniciales y sesenta candidatos internos. Cuando el filtro está apagado, pide menos.
+
+Después normaliza los resultados, aplica el filtro por marcador si hay marcadores permitidos y, al final, recorta la lista a los cinco documentos que se pasarán al modelo.
+
+Esto no es el código final, pero enseña la idea. El filtro se activa por flag. Si no hay marcadores detectados, no filtra. Si hay marcadores, conserva documentos de esos marcadores y documentos generales.
+
+Lo que quiero que veáis es que el filtro por marcador no depende del modelo de chat. No necesitamos pedirle a Mistral que "sea más cuidadoso". Estamos arreglando la entrada.
+
+21. Riesgos y límites de la solución
+
+Profesor:
+Ninguna solución es perfecta. En los apuntes se reconoce una limitación honesta: si el match se hace por nombre, usando la taxonomía del piloto, funciona para los marcadores actuales, pero un corpus con más variantes pediría un campo marker normalizado.
+
+¿Qué significa esto? Que si tenemos documentos con nombres inconsistentes, el filtro puede equivocarse. Por ejemplo:
+
+Punto: "ldl-colesterol.md";
+Punto: "colesterol-malo.md";
+Punto: "cLDL.md";
+Punto: "lipidos-baja-densidad.md".
+
+Todos podrían referirse al mismo marcador, pero si el sistema solo busca una cadena concreta, puede no reconocerlos. Por eso el campo marker es importante. No queremos que la lógica dependa de adivinar nombres.
+
+También hay documentos multi-marcador que requieren revisión humana. El backfill puede detectar muchos automáticamente desde carpetas, pero los 23 multi-marcador reportados deben revisarse. ¿Por qué? Porque una tarjeta de lectura conjunta puede cubrir varios marcadores y necesitamos decidir su lista exacta.
+
+Otro límite: si la pregunta del usuario menciona explícitamente un marcador que no está en su memoria, quizá sí debamos permitirlo. Por ejemplo, si el usuario pregunta: "¿qué son las transaminasas?", aunque su analítica actual no tenga ALT o AST, puede tener sentido recuperar documentos hepáticos. Por eso los apuntes hablan de derivar marcadores de la memoria del usuario y de la pregunta.
+
+No se trata de cerrar la puerta de forma ciega. Se trata de abrir la puerta correcta según contexto.
+
+22. Validación en el VPS
+
+Profesor:
+La validación final debe hacerse en el VPS porque el caso del hígado se reproduce allí. Esto tiene sentido si recordamos que el corpus vivo está en el volumen Docker. El entorno local puede no tener los mismos documentos, el mismo índice o el mismo estado.
+
+La prueba sería:
+
+1. activar KB MARKER SCOPE=true en el entorno controlado;
+2. repetir la pregunta de glucosa o LDL;
+3. revisar logs, por ejemplo mensajes como chat marker scope;
+4. comprobar qué documentos entran después del filtro;
+5. confirmar que el documento hepático no aparece;
+6. comprobar que la respuesta sigue teniendo fuentes útiles;
+7. revisar que las citas ya no incluyan el documento de hígado.
+
+También se debe validar ASSISTANTEDUGUIDE=true con LLMPROVIDER=external si se prueba contra Mistral. Ahí la comprobación no es solo retrieval. La comprobación es que la respuesta sea educativa, citada, sin interpretar el valor personal y respetando guardrails.
+
+Fijaos en la diferencia entre validar "funciona" y validar "funciona correctamente". No basta con que la ruta devuelva 200. Hay que mirar la calidad del contexto, las fuentes, las citas y los límites del producto.
+
+23. Recalibrar minScore: qué sí y qué no consigue
+
+Profesor:
+Volvamos un momento a minScore, porque es un buen aprendizaje técnico.
+
+Quitar o recalibrar minScore puede ser necesario. Si el score no es relevancia, no debemos usarlo como si fuera relevancia. Pero no debemos venderlo como solución completa.
+
+Si quitamos minScore y usamos limit, quizá recuperamos más resultados y luego filtramos mejor. Si bajamos o subimos minScore sin entender el score, solo movemos el corte de posición. Con score uno dividido entre posición:
+
+Punto: minScore 0.6 deja solo el puesto 1;
+Punto: minScore 0.35 deja puesto 1 y 2;
+Punto: minScore 0.2 deja hasta puesto 5;
+Punto: minScore 0.1 deja hasta puesto 10.
+
+Eso no es una puerta semántica. Es una tijera sobre el ranking.
+
+Por tanto, minScore puede participar en la estrategia, pero no puede ser el guardián de relevancia. El guardián aquí debe ser el filtro de marcador, y más adelante, si hay recursos, el reranker.
+
+24. Reranking: solución potente, pero no sustituto de todo
+
+Profesor:
+Cuando tengamos GPU o capacidad suficiente, activar Qwen3-Reranker puede mejorar mucho. Pero incluso con reranking, los filtros de negocio siguen teniendo sentido.
+
+¿Por qué? Porque un reranker evalúa relevancia textual, pero el filtro por marcador incorpora conocimiento estructurado del producto. Si sabemos que el usuario está en una conversación de LDL, esa información es valiosa. No hace falta que un modelo la redescubra cada vez leyendo documentos. Podemos usarla directamente.
+
+En sistemas profesionales se combinan ambas capas:
+
+Punto: filtros deterministas o de negocio para acotar el espacio;
+Punto: retrieval híbrido para encontrar candidatos;
+Punto: reranking para ordenar por relevancia fina;
+Punto: generación para redactar.
+
+Cada capa hace su trabajo. No carguemos todo sobre el modelo de chat.
+
+25. Resumen final para recordar
+
+Profesor:
+Vamos a cerrar con un resumen, pero lo voy a hacer repitiendo las ideas principales de varias formas para que se queden.
+
+Primera idea: en RAG hay dos fases separadas. Recuperar y generar. Buscar y escribir. Retrieval y chat. Si la búsqueda mete ruido, la respuesta puede salir contaminada.
+
+Segunda idea: el score observado, 1, 0.5, 0.3333, 0.25, 0.2, no es relevancia real. Es uno dividido entre posición. Por tanto, minScore no está filtrando por calidad semántica; está cortando por ranking.
+
+Tercera idea: el documento de hígado entra porque la consulta es vaga, el corpus es grande, hay solapamiento de palabras como "factores" o "medicamentos", no hay reranking y se busca en toda la KB.
+
+Cuarta idea: el reranker podría ayudar, pero está apagado por coste de CPU. En un VPS, los recursos condicionan la arquitectura.
+
+Quinta idea: QMD no ofrece un filtro directo por frontmatter en search. No podemos pasar un where marker igual a glucosa. Por eso la acotación por marcador debe hacerse en nuestro código como post-filtrado.
+
+Sexta idea: para filtrar bien necesitamos saber dos cosas: qué marcadores están en juego y qué marcador tiene cada documento. Lo primero se puede derivar de la memoria del usuario y la pregunta. Lo segundo se debe declarar con marker en el frontmatter del corpus.
+
+Séptima idea: impedir que el hígado se recupere arregla dos problemas a la vez. Evita que contamine el contexto y evita que aparezca como cita.
+
+Octava idea: activar cambios detrás de flags es una práctica segura. KB MARKER SCOPE controla el filtro por marcador. ASSISTANTEDUGUIDE controla la guía educativa.
+
+Novena idea: el corpus vivo en el VPS puede estar en un volumen Docker, no en el repo. Cambiar archivos en Git no garantiza cambiar lo que usa producción.
+
+Décima idea: una buena implementación de IA no consiste en pedirle al modelo que sea listo. Consiste en diseñar bien el pipeline: datos, índices, filtros, modelos, prompts, citas, pruebas y despliegue.
+
+Y con esto volvemos al ejemplo del principio. Si preguntamos por glucosa o LDL y aparece hígado, no respondemos "la IA se volvió loca". Respondemos como desarrolladores: miramos el retrieval, miramos los scores, miramos minScore, miramos reranking, miramos filtros, miramos corpus, miramos citas. Y entonces encontramos la causa: falta acotar la recuperación por marcador.
+
+Ese es el aprendizaje de hoy.
+
+26. Cierre de la clase: cómo explicarlo en una frase técnica y en una frase sencilla
+
+Profesor:
+Para terminar, quiero que sepáis decirlo de dos maneras.
+
+La frase técnica sería:
+
+"El fallo se produce porque QMD devuelve scores posicionales sin reranking y la búsqueda híbrida consulta todo el KB sin filtro por metadata; por tanto, minScore no actúa como umbral de relevancia y documentos fuera del marcador pueden entrar en el contexto y en las citas. La solución prioritaria es aplicar post-filtrado por marcador en queryMemoryAndKB, detrás de KB MARKER SCOPE, y robustecer el corpus con un campo marker normalizado en el frontmatter."
+
+La frase sencilla sería:
+
+"El chatbot no falló solo al escribir; antes le dimos documentos que no tocaban. Para que responda mejor, primero hay que hacer que busque en el sitio correcto."
+
+Quedaos con esa última frase. En RAG, buscar en el sitio correcto es media respuesta.
+
+FIN DE LA TRANSCRIPCIÓN

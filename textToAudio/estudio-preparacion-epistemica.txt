@@ -1,0 +1,359 @@
+ESTUDIO SOBRE LA PREPARACIÓN EPISTÉMICA DEL USUARIO
+Cómo comunicar la incertidumbre científica sin producir desconfianza:
+qué mensaje, en qué etapa, para qué perfil psicológico.
+
+Versión narrada del documento técnico.
+
+
+QUÉ RESUELVE ESTE ESTUDIO
+
+VitaMap responde con honestidad. Distingue lo firme de lo discutido,
+atribuye las fuentes y expresa sus límites.
+El problema es que esa honestidad, mal entregada,
+el usuario medio la lee como evasión, como inseguridad
+o como falta de autoridad. Un páramo de incertidumbre
+que erosiona la confianza justo cuando intenta ser fiable.
+
+Este documento no es copy literario ni un manifiesto.
+Es el diseño de cómo se prepara el marco interpretativo del usuario
+para que reciba la incertidumbre como señal de rigor, y no como defecto.
+
+El objetivo medible no es que confíe, sin más.
+Es lograr una confianza calibrada:
+que sepa distinguir cuándo apoyarse con fuerza
+y cuándo con cautela, sin caer ni en fe ciega ni en cinismo.
+
+
+PRIMERO. LOS MODOS DE FALLO QUE PREVENIMOS
+
+Hay cinco.
+
+El primero: que la cautela se lea como evasión.
+El usuario espera un veredicto, y cuando recibe matices
+siente que la herramienta esquiva. Abandona, o repregunta irritado.
+
+El segundo: la amplificación de la ansiedad.
+La incertidumbre sobre la propia salud se vive como amenaza,
+y lleva a un bucle de repreguntas angustiadas, o al abandono por angustia.
+
+El tercero: el vacío de autoridad.
+Por sesgo de autoridad, el usuario quiere que alguien le diga.
+Si nadie se lo dice, percibe la herramienta como inútil.
+
+El cuarto: la sobre-advertencia.
+Demasiada epistemología al principio satura.
+El usuario no lee, rebota en el onboarding y no vuelve.
+
+El quinto: el cinismo inducido.
+Si ni la ciencia sabe, piensa, nada vale.
+Y entonces descarta también lo que sí es firme,
+y deriva hacia la pseudociencia.
+
+Las dos puntas son el riesgo real.
+Decir poco produce desconfianza.
+Decir demasiado, demasiado pronto, produce abandono.
+Todo el diseño consiste en navegar entre ambas.
+
+
+SEGUNDO. EL MODELO DEL USUARIO
+
+El usuario medio es un adulto curioso por su salud,
+no especialista, que paga una cuota mensual
+y quiere tomar las riendas de su salud.
+
+Sus rasgos relevantes para el diseño son cinco.
+Baja tolerancia a la ambigüedad en contexto de salud:
+la ansiedad de salud es frecuente y sesga la lectura hacia la amenaza.
+Sesgo de autoridad, y deseo de una respuesta definitiva.
+Atención y memoria de trabajo limitadas:
+no leerá textos largos. Esa es, precisamente,
+la razón por la que un formato de pergamino fracasa.
+Calibración inicial dispar: unos sobre-confían en eso de que la ciencia dice;
+otros llegan ya cebados por la desinformación o la desconfianza.
+Y, por último, una alta necesidad de agencia y de control,
+que es el motor mismo del proyecto y conviene usar a favor.
+
+Conviene además pensar en cuatro perfiles,
+porque no todos reaccionan igual.
+
+El buscador ansioso. Su riesgo es la angustia ante la duda.
+Le funciona normalizar y contener:
+recordarle que un dato es una pregunta, no una sentencia,
+y que al final del camino hay un médico de carne y hueso.
+
+El escéptico empoderado. Su riesgo es el cinismo.
+Le funciona que se le muestre el mecanismo:
+por qué la revisión científica es una fortaleza, no un fallo.
+
+El optimizador pragmático. Su riesgo es la impaciencia con la cautela.
+Le funciona recibir primero lo accionable,
+y la incertidumbre como un matiz acotado.
+
+Y el inclinado a lo alternativo. Su riesgo es rechazar la evidencia.
+Le funciona la lógica de figura y fondo:
+respeto a la tradición sin igualar verdades,
+y sin convertir la ciencia en su adversario.
+
+En la primera fase no hace falta clasificar al usuario.
+Basta con que el encuadre por defecto sirva
+al ansioso y al pragmático, que son la mayoría,
+y que el lenguaje nunca empuje al escéptico
+ni al alternativo hacia el cinismo.
+
+
+TERCERO. LOS PRINCIPIOS DE DISEÑO
+
+Seis principios, tomados de la evidencia conductual.
+
+Divulgación progresiva, just in time.
+Enseñar cada concepto en el momento en que aparece,
+no como lección previa. La incertidumbre se explica
+la primera vez que uno se topa con ella, no en el umbral.
+
+Mostrar, no sermonear.
+El asistente modela la confianza calibrada
+con marcadores consistentes en cada respuesta.
+El usuario aprende el código por exposición, no por discurso.
+
+Expectativa antes de la fricción.
+Una sola frase de encuadre en el onboarding,
+no un tratado.
+
+Consistencia de la señal.
+Un vocabulario y una marca visual estables
+para distinguir lo firme de lo que está en estudio,
+de modo que se aprendan de forma implícita.
+
+Etiquetado del afecto y normalización,
+para desactivar la amenaza.
+Que un dato cambie es la ciencia funcionando,
+dicho en el momento en que ocurre.
+
+Y coste cognitivo mínimo.
+Una línea, descartable, expandible si se quiere.
+
+
+CUARTO. LA TAXONOMÍA DE MENSAJES. EL QUÉ.
+
+No son frases sueltas, sino clases de intervención,
+cada una con su disparador, su ubicación y su función.
+Son cinco.
+
+Clase A, el primer encuadre.
+Su función es fijar la expectativa:
+aquí verás cuán seguro es cada dato.
+Aparece en el onboarding, como una frase
+más un explicador opcional de veinte segundos.
+Se dispara una sola vez, en el registro.
+
+Clase B, el marcador de confianza.
+Es la señal continua de si algo es firme o está en estudio,
+junto con el tipo de fuente.
+Aparece en cada respuesta, al lado de la cita.
+Se dispara siempre, porque se deriva de los metadatos.
+
+Clase C, la microexplicación contextual.
+Explica la cautela la primera vez que aparece.
+Aparece bajo una respuesta cauta o contestada.
+Se dispara la primera vez que una respuesta es de baja certeza.
+
+Clase D, la normalización de la revisión.
+Reencuadra el cambio o el conflicto como honestidad.
+Aparece cuando un dato o una guía cambian,
+o cuando las fuentes discrepan.
+Se dispara la primera vez que hay una revisión o un conflicto.
+
+Clase E, el refuerzo espaciado.
+Afina la actitud sin saturar.
+Aparece al cierre ocasional de una consulta.
+Se dispara por evento, con un tope estricto.
+
+Aquí va la corrección de fondo
+respecto a una idea anterior, la de una frase por consulta.
+La entrega no debe ser un goteo mecánico por sesión.
+Debe ser contextual, dirigida por el evento.
+El mensaje cae cuando el usuario se encuentra
+con el fenómeno que explica.
+Una microexplicación sobre la revisión científica,
+entregada antes de que el usuario vea jamás una respuesta cauta,
+es ruido. Entregada en el momento exacto
+en que se topa con ella, es comprensión.
+
+
+QUINTO. LA SECUENCIA POR ETAPA. EL CUÁNDO.
+
+Etapa cero, el umbral, el onboarding.
+El usuario no sabe qué esperar.
+Interviene la clase A: una frase en el alta
+y un explicador opcional, saltable,
+titulado, por ejemplo, cómo lee VitaMap la ciencia.
+
+Etapa uno, las primeras respuestas.
+El usuario explora.
+Interviene la clase B: los marcadores de confianza
+ya son visibles, pero todavía sin teoría.
+
+Etapa dos, el primer encuentro con la baja certeza.
+El usuario se pregunta por qué no le responden claro.
+Interviene la clase C: una línea bajo la respuesta
+que explica por qué hay cautela, y que se puede expandir.
+
+Etapa tres, el primer conflicto o revisión.
+El usuario piensa: pero no era así.
+Interviene la clase D: una línea que normaliza la corrección.
+
+Etapa cuatro, el uso sostenido.
+El usuario ya conoce el código.
+Interviene la clase E: un refuerzo escaso, con tope,
+por ejemplo, como máximo uno por semana.
+
+El pergamino inicial se reduce, por tanto,
+a la intervención A: una frase y un explicador opcional.
+Todo el peso conceptual restante
+se reparte en las clases B a E,
+distribuido en el tiempo y anclado a eventos reales.
+
+
+SEXTO. LA IMPLEMENTACIÓN SOBRE LA ARQUITECTURA ACTUAL
+
+El marcador de confianza, la clase B, es determinista.
+No depende de la intuición del modelo.
+Se deriva de los metadatos de procedencia y de los límites
+que ya llegan al prompt y al resultado.
+La evidencia clínica con consenso se traduce como firme.
+La evidencia clínica emergente, o con fuentes que discrepan,
+como en estudio.
+El contexto de tradición lleva una etiqueta de tradición,
+no de evidencia.
+El marcador lo pone el servidor a partir de los metadatos,
+igual que ya hace con las citas.
+
+Las clases C y D se disparan
+reutilizando el guardrail, la segunda pasada.
+Esa pasada ya clasifica la respuesta;
+solo se le añade detectar si expresó incertidumbre
+o si las fuentes están en conflicto,
+y emitir una bandera que el cliente convierte en la microexplicación.
+Sin coste de inferencia adicional relevante.
+
+Hay un detalle de implementación no trivial:
+el estado de educación, persistente por usuario.
+Las intervenciones C, D y E deben dispararse una sola vez.
+Pero el historial de chat no se persiste en el servidor en la primera fase.
+Por eso hace falta un pequeño estado
+en el directorio del usuario:
+primer encuadre visto, microexplicación vista,
+revisión vista, contador de refuerzo.
+Es lo único nuevo de almacenamiento que requiere este sistema.
+
+También conviene modular según el modo de recuperación.
+La lectura clínica, la comparación y la perspectiva tradicional
+piden tonos distintos.
+En la comparación, la normalización es casi nativa:
+estas fuentes no responden lo mismo.
+En la perspectiva tradicional, el marcador etiqueta tradición
+sin añadir una refutación clínica ritual.
+
+Y, por último, el vínculo con el grounding.
+Cuando exista cita por afirmación,
+el marcador de confianza se ancla a cada afirmación,
+no a la respuesta entera.
+Esa es la máxima precisión de la señal de firme o en estudio.
+
+
+SÉPTIMO. LAS RESTRICCIONES DE REDACCIÓN
+
+Funcionan como un contrato de diseño.
+Cada intervención en contexto, como máximo una frase,
+unas veinte palabras. El explicador inicial puede ser algo más largo,
+pero saltable.
+Nivel de lectura llano, sin jerga.
+Se dice en estudio, no evidencia GRADE baja.
+Y, sobre todo, cada mensaje debe bajar la ansiedad, no subirla.
+La prueba interna es simple: si una variante
+deja al usuario más temeroso, se descarta.
+Sin veredicto clínico, sin consejo, sin objetivos individuales.
+Cada clase admite dos o tres variantes para poder compararlas.
+La metáfora del viaje puede teñir el tono de la microcopia,
+pero nunca a costa de la claridad ni de la brevedad.
+
+
+OCTAVO. LA VALIDACIÓN Y LAS MÉTRICAS
+
+A escala piloto, con tres usuarios, la validación es cualitativa,
+pero el diseño se instrumenta para poder escalar.
+
+Métricas de comportamiento, como proxy de la confianza:
+la tasa de abandono después de una respuesta cauta,
+comparada con la de una respuesta firme;
+el número de repreguntas, que es señal de un engagement sano,
+frente a la salida; y el uso del expandir.
+
+Métricas de comprensión:
+un micro chequeo opcional o una entrevista.
+Cuando viste que el dato podía cambiar, ¿cómo lo interpretaste?
+
+Conviene reutilizar la suite de regresión, las treinta a cincuenta preguntas,
+etiquetando cuáles son cautas o contestadas
+y observando la reacción ante ellas.
+
+Pruebas comparativas del encuadre inicial
+y de las variantes de las clases C y D.
+
+Y un monitor de riesgo:
+el rebote en el onboarding, que delata sobre-advertencia,
+y los reportes de angustia, que delatan amplificación de la ansiedad.
+
+El criterio de éxito calibrado es este:
+ante una respuesta en estudio, el usuario no abandona,
+y la trata como una invitación a repreguntar
+o a consultar a su médico,
+no como un fallo de la herramienta
+ni como un permiso para descartarlo todo.
+
+
+NOVENO. LOS RIESGOS Y SUS ANTÍDOTOS
+
+Sobre-educar, que lleva al rebote:
+el antídoto es la entrega por evento, no el goteo;
+los topes; y que todo sea saltable.
+
+Sub-educar, que produce la sensación de herramienta evasiva:
+el antídoto es que el marcador de confianza esté siempre presente,
+y la microexplicación, al primer contacto.
+
+La señal inconsistente:
+el antídoto es un vocabulario y una marca visual fijos,
+derivados de los metadatos.
+
+Amplificar la ansiedad en el perfil ansioso:
+el antídoto es la normalización, el puntero hacia el humano,
+y un lenguaje de contención.
+
+El tono paternalista:
+el antídoto es una sola frase, de compañía, nunca de lección.
+
+E inducir el cinismo en el perfil escéptico:
+el antídoto es separar siempre lo firme de lo que está en estudio.
+No todo es arena.
+
+
+DÉCIMO. LA RECOMENDACIÓN. EL PRODUCTO MÍNIMO PARA EL PILOTO.
+
+Construir solo esto primero, medir, y luego decidir el resto.
+
+Uno. La clase A: una frase de encuadre en el alta,
+y un explicador opcional de veinte segundos.
+Dos. La clase B: el marcador de firme, en estudio o tradición
+en cada respuesta, derivado de los metadatos que ya existen.
+Tres. La clase C: una microexplicación,
+disparada la primera vez que una respuesta es de baja certeza.
+Cuatro. La clase D: una normalización,
+disparada el primer conflicto o revisión.
+Cinco. El estado de educación por usuario,
+para que las clases C y D ocurran una sola vez.
+
+Se difieren el refuerzo y la modulación por perfil
+hasta tener señal de que las clases A a D funcionan.
+Es el mismo criterio que rige el resto del proyecto:
+materializar por necesidad medida, no por anticipación.
