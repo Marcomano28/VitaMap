@@ -157,6 +157,14 @@ marques `permitted` por el mero hecho de que una página sea pública.
 
 ## 5. Frontmatter compatible con VitaMap
 
+> **Contrato mínimo de evidencia (v0).** Aplica además el bloque `evidence` y el
+> `relacionado_con[].direccion` de `PROMPT-INVESTIGACION-RAG.md` §3 bis. El bloque
+> `evidence` (con `certeza`) es obligatorio en M3 (evidencia moderna) y M4
+> (seguridad); en M1 (identidad) y M2 (uso documentado) puede omitirse. Atención
+> aquí: `relacionado_con[].id` es un **marcador canónico**, nunca el nombre
+> científico ni la clave de topic (usa `huang-lian`, no `coptis-chinensis`;
+> `goldenseal`, no `hydrastis-canadensis`).
+
 El administrador actual conserva estos campos:
 
 ```yaml

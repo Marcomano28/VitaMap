@@ -58,6 +58,12 @@ marcador cubren la interpretación individual.
 
 ## 4. Frontmatter
 
+> **Contrato mínimo de evidencia (v0).** Incluye el bloque `evidence` (con
+> `certeza`) y el `relacionado_con[].direccion` de `PROMPT-INVESTIGACION-RAG.md`
+> §3 bis. En una tarjeta D la `certeza` describe lo establecido que está el
+> patrón de lectura conjunta; usa `direccion` solo si afirmas una asociación.
+> `relacionado_con[].id` es un **marcador canónico**.
+
 ```yaml
 ---
 title: "Panel hepático: cómo se leen juntos ALT, AST, GGT y fosfatasa alcalina"

@@ -45,35 +45,74 @@
   "marker_aliases": {
     "acido-folico": ["acido folico", "folato", "vitamina b9", "folsaure", "vitamin b9"],
     "acido-urico": ["acido urico", "urato"],
-    "albuminuria": ["albuminuria", "albumina en orina"],
+    "acth": ["acth", "corticotropina", "hormona adrenocorticotropa", "adrenocorticotropes hormon"],
+    "albumina": ["albumina", "albumin", "albumina serica", "alb"],
+    "albuminuria": ["albuminuria", "albumina en orina", "uacr", "acr", "cociente albumina creatinina", "microalbuminuria", "microalbumina en orina", "albumin-kreatinin-quotient"],
     "alt": ["alt", "alanina aminotransferasa"],
+    "anti-tiroglobulina": ["anti tiroglobulina", "antitiroglobulina", "anticuerpos antitiroglobulina", "anti tg", "tg ak"],
+    "anti-tpo": ["anti tpo", "antiperoxidasa", "anticuerpos antiperoxidasa", "peroxidasa tiroidea", "tpo ak"],
+    "apolipoproteina-b": ["apob", "apo b", "apo-b", "apolipoproteina b", "apolipoproteína b", "apob-100", "apolipoprotein b"],
     "ast": ["ast", "aspartato aminotransferasa"],
+    "beta-crosslaps": ["beta crosslaps", "beta-crosslaps", "beta ctx", "β-ctx", "ctx", "ctx-i", "c-telopeptido", "c-terminal telopeptide", "bone resorption marker"],
+    "berberina": ["berberina", "berberine", "clorhidrato de berberina", "berberina hcl", "bbr"],
+    "bilirrubina": ["bilirrubina", "bilirubina", "bilirubin", "bilirrubina total", "bilirrubina directa", "bilirrubina indirecta"],
+    "c-peptido": ["c-peptido", "c peptido", "peptido c", "c peptide", "insulina propia"],
     "calcio": ["calcio"],
+    "cardo-mariano": ["cardo mariano", "milk thistle", "mary thistle", "st mary's thistle", "silybum marianum", "carduus marianus"],
+    "alcachofa": ["alcachofa", "artichoke", "globe artichoke", "cynara scolymus", "cynara cardunculus", "cynarae folium", "hoja de alcachofera"],
+    "acido-clorogenico": ["acido clorogenico", "ácido clorogénico", "chlorogenic acid"],
+    "cinarina": ["cinarina", "cynarin", "1,5-dicafeoilquinico", "1,5-dicaffeoylquinic acid"],
     "colesterol-hdl": ["hdl", "colesterol hdl", "hdl cholesterol"],
     "colesterol-ldl": ["ldl", "colesterol ldl", "ldl cholesterol"],
+    "colesterol-no-hdl": ["no hdl", "no-hdl", "colesterol no hdl", "non-hdl cholesterol", "non hdl"],
     "colesterol-total": ["colesterol total"],
+    "cortisol": ["cortisol", "hidrocortisona", "kortisol", "hormona del estres", "stresshormon", "cortisol libre", "cortisol salival", "cortisol serico", "cortisol en orina 24h"],
+    "cistatina-c": ["cistatina c", "cystatin c", "cys-c", "cistatina", "egfr cistatina", "cystatin c egfr"],
     "creatinina": ["creatinina"],
+    "dhea-s": ["dhea-s", "dheas", "dhea", "sulfato de dhea", "dehidroepiandrosterona", "dehidroepiandrosterona sulfato", "dhea-so4", "dhea-sulfate"],
+    "daruharidra": ["daruharidra", "dāruharidrā", "berberis aristata", "indian barberry", "rasaut", "rasanjana"],
     "egfr": ["egfr", "filtrado glomerular"],
+    "urea-bun": ["urea", "bun", "nitrogeno ureico", "nitrogeno ureico en sangre", "blood urea nitrogen", "harnstoff", "harnstoff-stickstoff"],
     "eritrocitos": ["eritrocitos", "rbc", "globulos rojos"],
+    "estradiol": ["estradiol", "e2", "17 beta estradiol", "estrogenos", "estrogen", "oestradiol", "ostradiol"],
     "ferritina": ["ferritina", "ferritin"],
     "fosfatasa-alcalina": ["fosfatasa alcalina", "alp", "fa"],
     "fosfato": ["fosfato", "fosforo"],
+    "fsh": ["fsh", "hormona foliculoestimulante", "follicle stimulating hormone", "folitropina"],
     "ggt": ["ggt", "gamma glutamil"],
     "glucosa-en-ayunas": ["glucosa", "glucemia", "glucosa en ayunas", "glucose", "blutzucker", "nuchternglukose"],
     "hba1c": ["hba1c", "a1c", "hemoglobina glicosilada"],
     "hematocrito": ["hematocrito"],
     "hemoglobina": ["hemoglobina"],
     "hierro": ["hierro", "eisen"],
+    "homa-ir": ["homa", "homa ir", "homa-ir", "indice homa", "homa2"],
+    "homocisteina": ["homocisteina", "homocysteine", "homocisteina total", "thcy", "homocystein"],
+    "goldenseal": ["goldenseal", "hydrastis", "hydrastis canadensis", "yellow root", "orange root", "sello de oro"],
+    "huang-lian": ["huang lian", "huáng lián", "coptis chinensis", "coptidis rhizoma", "rhizoma coptidis", "goldthread"],
+    "insulina-en-ayunas": ["insulina", "insulina basal", "insulina serica", "insulina en ayunas", "nuchterninsulin", "fasting insulin"],
     "leucocitos": ["leucocitos", "leucocito"],
+    "lh": ["lh", "hormona luteinizante", "luteinizing hormone", "lutropina"],
+    "lipoproteina-a": ["lpa", "lp(a)", "lp a", "lipoproteina a", "lipoproteína a", "lipoprotein a"],
     "magnesio": ["magnesio"],
+    "osteocalcina": ["osteocalcina", "osteocalcin", "oc", "bone gla protein", "proteina gla osea"],
     "plaquetas": ["plaquetas"],
     "potasio": ["potasio"],
+    "progesterona": ["progesterona", "progesterone", "p4"],
+    "prolactina": ["prolactina", "prl", "prolactin", "hormona lactogena", "prolaktin"],
     "proteina-c-reactiva": ["proteina c reactiva", "pcr", "crp", "hscrp", "hs crp"],
+    "proteinas-totales": ["proteinas totales", "proteina total", "total protein", "relacion a g", "relacion albumina globulina", "a g ratio"],
     "pth": ["pth", "parathormona"],
     "reticulocitos": ["reticulocitos"],
+    "silibinina": ["silibinina", "silybin", "silybinin", "silibina"],
+    "silimarina": ["silimarina", "silymarin"],
+    "t3-libre": ["t3 libre", "t3l", "ft3", "triyodotironina libre", "triyodotironina", "freies t3"],
     "t4-libre": ["t4 libre", "tiroxina libre", "t4l", "freies t4"],
     "transferrina": ["transferrina", "transferrin"],
+    "saturacion-transferrina": ["saturacion de transferrina", "ist", "indice de saturacion de transferrina", "tsat", "transferrin saturation", "transferrinsattigung"],
+    "shbg": ["shbg", "globulina transportadora de hormonas sexuales", "globulina fijadora de hormonas sexuales", "sex hormone binding globulin", "tebg"],
+    "tibc": ["tibc", "capacidad total de fijacion del hierro", "capacidad total de fijacion de hierro", "total iron binding capacity", "gesamteisenbindungskapazitat"],
     "trigliceridos": ["trigliceridos", "triglicerido"],
+    "testosterona-total": ["testosterona", "testosterona total", "total testosterone", "testosteron", "testosterona serica", "testosterona libre", "testosterona biodisponible", "free testosterone", "freies testosteron"],
     "tsh": ["tsh"],
     "tp-inr": ["tp", "inr", "pt inr", "tp inr", "tiempo de protrombina", "prothrombin time"],
     "vsg": ["vsg", "velocidad de sedimentacion"],
@@ -92,11 +131,15 @@
     },
     "glucemia-insulina": {
       "aliases": ["azucar en sangre", "glucemia insulina", "control glucemico", "blutzucker", "zuckerstoffwechsel"],
-      "markers": ["glucosa-en-ayunas", "hba1c"]
+      "markers": ["glucosa-en-ayunas", "hba1c", "insulina-en-ayunas", "homa-ir", "c-peptido"]
     },
     "hematologia": {
       "aliases": ["hemograma", "hemograma completo", "blutbild", "grosses blutbild"],
       "markers": ["eritrocitos", "hemoglobina", "hematocrito", "leucocitos", "plaquetas"]
+    },
+    "metabolismo-oseo": {
+      "aliases": ["metabolismo oseo", "salud osea", "remodelado oseo", "vitamina d calcio pth", "knochenstoffwechsel", "knochenmarker"],
+      "markers": ["vitamina-d", "calcio", "fosfato", "pth", "beta-crosslaps", "osteocalcina", "magnesio"]
     },
     "inflamacion": {
       "aliases": ["inflamacion", "marcadores inflamatorios", "entzundung", "entzundungswerte"],
@@ -104,19 +147,27 @@
     },
     "perfil-hepatico": {
       "aliases": ["higado", "perfil hepatico", "pruebas hepaticas", "funcion hepatica", "transaminasas", "leber", "leberwerte"],
-      "markers": ["alt", "ast", "ggt", "fosfatasa-alcalina"]
+      "markers": ["alt", "ast", "ggt", "fosfatasa-alcalina", "bilirrubina", "albumina", "proteinas-totales", "tp-inr"]
     },
     "perfil-lipidico": {
       "aliases": ["perfil lipidico", "colesterol", "grasas en sangre", "blutfette", "cholesterinwerte"],
-      "markers": ["colesterol-total", "colesterol-ldl", "colesterol-hdl", "trigliceridos"]
+      "markers": ["colesterol-total", "colesterol-ldl", "colesterol-hdl", "colesterol-no-hdl", "trigliceridos", "apolipoproteina-b", "lipoproteina-a"]
+    },
+    "perfil-acidos-grasos": {
+      "aliases": ["acidos grasos", "perfil de acidos grasos", "indice omega-3", "omega-3 index", "fettsauren", "fettsaureprofil"],
+      "markers": ["omega-3-indice", "epa", "dha", "ala", "acido-arachidonico", "ratio-omega-6-omega-3"]
+    },
+    "marcadores-cardiovasculares-avanzados": {
+      "aliases": ["marcadores cardiovasculares avanzados", "panel cardiovascular avanzado", "riesgo cardiovascular avanzado", "erweiterte herz kreislauf marker"],
+      "markers": ["apolipoproteina-b", "lipoproteina-a", "homocisteina", "nt-probnp", "bnp"]
     },
     "perfil-renal": {
       "aliases": ["funcion renal", "perfil renal", "rinon", "rinones", "nierenwerte", "nierenfunktion"],
-      "markers": ["creatinina", "egfr", "albuminuria", "acido-urico"]
+      "markers": ["creatinina", "egfr", "albuminuria", "acido-urico", "cistatina-c", "urea-bun"]
     },
     "perfil-tiroideo": {
       "aliases": ["tiroides", "perfil tiroideo", "funcion tiroidea", "schilddruse", "schilddrusenwerte"],
-      "markers": ["tsh", "t4-libre"]
+      "markers": ["tsh", "t4-libre", "t3-libre", "anti-tpo", "anti-tiroglobulina"]
     }
   },
   "health_area_routes": {
@@ -167,6 +218,7 @@
         "innere unruhe"
       ],
       "seed_markers": [
+        "cortisol",
         "vitamina-b12",
         "vitamina-b6",
         "acupuntura",
@@ -174,6 +226,57 @@
         "flores-de-bach",
         "constelaciones-familiares",
         "terapia-craneosacral"
+      ]
+    },
+    "salud-osea": {
+      "aliases": [
+        "salud osea",
+        "huesos",
+        "osteoporosis",
+        "osteopenia",
+        "fragilidad osea",
+        "metabolismo oseo",
+        "remodelado oseo",
+        "knochengesundheit",
+        "knochenstoffwechsel",
+        "osteoporose"
+      ],
+      "seed_markers": [
+        "vitamina-d",
+        "calcio",
+        "fosfato",
+        "pth",
+        "magnesio",
+        "vitamina-k",
+        "beta-crosslaps",
+        "osteocalcina"
+      ]
+    },
+    "salud-hormonal": {
+      "aliases": [
+        "hormonas",
+        "hormonal",
+        "desequilibrio hormonal",
+        "libido",
+        "deseo sexual",
+        "fertilidad",
+        "menopausia",
+        "andropausia",
+        "hormone",
+        "hormonhaushalt",
+        "hormonstatus",
+        "libidoverlust",
+        "wechseljahre"
+      ],
+      "seed_markers": [
+        "testosterona-total",
+        "estradiol",
+        "shbg",
+        "lh",
+        "fsh",
+        "prolactina",
+        "progesterona",
+        "dhea-s"
       ]
     }
   },
@@ -276,6 +379,20 @@
     }
   },
   "topics": {
+    "albuminuria": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["albuminuria"],
+      "categoria": ["perfil-renal"],
+      "muestra": ["orina"],
+      "sistema": ["renal-urinario"],
+      "area_de_salud": ["salud-renal", "longevidad"],
+      "alias": ["albuminuria", "uacr", "cociente albumina creatinina", "microalbuminuria"],
+      "relacionado_con": [
+        { "id": "egfr", "relacion": "lectura_conjunta" },
+        { "id": "creatinina", "relacion": "se_calcula_con" }
+      ]
+    },
     "acido-folico": {
       "dominio": "laboratorio",
       "tipo": ["analito", "vitamina"],
@@ -313,6 +430,56 @@
       "area_de_salud": ["salud-cardiovascular", "control-glucemico", "antioxidante"],
       "alias": ["amla", "amalaki", "phyllanthus emblica"]
     },
+    "albumina": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["albumina"],
+      "categoria": ["perfil-hepatico"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["hepatobiliar", "renal-urinario"],
+      "area_de_salud": ["salud-hepatica", "salud-renal"],
+      "alias": ["albumin", "albumina serica", "alb"],
+      "relacionado_con": [
+        { "id": "proteinas-totales", "relacion": "lectura_conjunta" }
+      ]
+    },
+    "bilirrubina": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["bilirrubina"],
+      "categoria": ["perfil-hepatico"],
+      "muestra": ["suero", "plasma", "orina"],
+      "sistema": ["hepatobiliar", "hematologico"],
+      "area_de_salud": ["salud-hepatica"],
+      "alias": ["bilirubina", "bilirubin", "bilirrubina total", "bilirrubina directa", "bilirrubina indirecta"]
+    },
+    "proteinas-totales": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["proteinas-totales"],
+      "categoria": ["perfil-hepatico"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["hepatobiliar", "inmunologico"],
+      "area_de_salud": ["salud-hepatica", "inmunidad"],
+      "alias": ["proteina total", "total protein", "relacion a g", "relacion albumina globulina"],
+      "relacionado_con": [
+        { "id": "albumina", "relacion": "lectura_conjunta" }
+      ]
+    },
+    "tp-inr": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["tp-inr"],
+      "categoria": ["coagulacion", "perfil-hepatico"],
+      "muestra": ["plasma", "sangre-total"],
+      "sistema": ["hematologico", "hepatobiliar"],
+      "area_de_salud": ["salud-hepatica"],
+      "alias": ["tp", "inr", "tiempo de protrombina", "prothrombin time"],
+      "relacionado_con": [
+        { "id": "vitamina-k", "relacion": "modifica_interpretacion" },
+        { "id": "omega-3-indice", "relacion": "modifica_interpretacion" }
+      ]
+    },
     "ayuno": {
       "dominio": "metodologia-preanalitica",
       "tipo": ["metodologia"],
@@ -331,6 +498,80 @@
       "alias": ["ayurveda", "prakriti", "dosha"],
       "tradicion": "ayurveda"
     },
+    "beta-crosslaps": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["beta-crosslaps"],
+      "categoria": ["metabolismo-oseo"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["osteoarticular", "endocrino-metabolico"],
+      "area_de_salud": ["salud-osea", "longevidad"],
+      "alias": ["beta-crosslaps", "beta ctx", "β-CTX", "CTX", "CTX-I", "c-telopeptido"],
+      "relacionado_con": [
+        { "id": "osteocalcina", "relacion": "remodelado_oseo" },
+        { "id": "vitamina-d", "relacion": "modifica_interpretacion" },
+        { "id": "pth", "relacion": "modifica_interpretacion" },
+        { "id": "calcio", "relacion": "lectura_conjunta" }
+      ]
+    },
+    "berberina": {
+      "dominio": "sustancias-naturales",
+      "tipo": ["compuesto_aislado", "suplemento"],
+      "marker": ["berberina"],
+      "sistema": ["endocrino-metabolico", "cardiovascular", "hepatobiliar"],
+      "area_de_salud": ["control-glucemico", "salud-cardiovascular", "seguridad"],
+      "alias": ["berberina", "berberine", "clorhidrato de berberina", "berberina hcl", "bbr"],
+      "relacionado_con": [
+        { "id": "glucosa-en-ayunas", "relacion": "modifica_interpretacion_contextual" },
+        { "id": "hba1c", "relacion": "modifica_interpretacion_contextual" },
+        { "id": "colesterol-ldl", "relacion": "modifica_interpretacion_contextual" },
+        { "id": "trigliceridos", "relacion": "modifica_interpretacion_contextual" }
+      ]
+    },
+    "alcachofa": {
+      "dominio": "sustancias-naturales",
+      "tipo": ["especie_medicinal", "suplemento", "alimento"],
+      "marker": ["alcachofa"],
+      "sistema": ["hepatobiliar", "digestivo", "cardiovascular", "endocrino-metabolico"],
+      "area_de_salud": ["salud-hepatica", "salud-digestiva", "salud-cardiovascular", "control-glucemico", "seguridad", "tradicion-documentada"],
+      "alias": ["alcachofa", "artichoke", "globe artichoke", "Cynara scolymus", "Cynara cardunculus", "Cynarae folium", "extracto de hoja de alcachofa", "cinarina"],
+      "relacionado_con": [
+        { "id": "colesterol-ldl", "relacion": "modifica_interpretacion_contextual" },
+        { "id": "colesterol-total", "relacion": "modifica_interpretacion_contextual" },
+        { "id": "trigliceridos", "relacion": "modifica_interpretacion_contextual" },
+        { "id": "glucosa-en-ayunas", "relacion": "comparacion_contextual" },
+        { "id": "alt", "relacion": "modifica_interpretacion_contextual" },
+        { "id": "ast", "relacion": "modifica_interpretacion_contextual" },
+        { "id": "ggt", "relacion": "seguridad_contextual" },
+        { "id": "bilirrubina", "relacion": "seguridad_contextual" }
+      ]
+    },
+    "cinarina": {
+      "dominio": "sustancias-naturales",
+      "tipo": ["compuesto_marcador"],
+      "marker": ["cinarina"],
+      "sistema": ["hepatobiliar", "digestivo"],
+      "area_de_salud": ["salud-digestiva", "salud-hepatica"],
+      "alias": ["cinarina", "cynarin", "1,5-dicafeoilquinico"],
+      "relacionado_con": [
+        { "id": "alcachofa", "relacion": "marcador_quimico_de" },
+        { "id": "acido-clorogenico", "relacion": "familia_fitoquimica" }
+      ]
+    },
+    "cardo-mariano": {
+      "dominio": "sustancias-naturales",
+      "tipo": ["especie_medicinal", "suplemento"],
+      "marker": ["cardo-mariano", "silimarina", "silibinina"],
+      "sistema": ["hepatobiliar", "digestivo", "endocrino-metabolico"],
+      "area_de_salud": ["salud-hepatica", "salud-digestiva", "seguridad", "tradicion-documentada"],
+      "alias": ["cardo mariano", "milk thistle", "Silybum marianum", "silimarina", "silymarin", "silibinina", "silybin"],
+      "relacionado_con": [
+        { "id": "alt", "relacion": "modifica_interpretacion_contextual" },
+        { "id": "ast", "relacion": "modifica_interpretacion_contextual" },
+        { "id": "fosfatasa-alcalina", "relacion": "modifica_interpretacion_contextual" },
+        { "id": "glucosa-en-ayunas", "relacion": "comparacion_contextual" }
+      ]
+    },
     "chaga": {
       "dominio": "sustancias-naturales",
       "tipo": ["especie_medicinal", "suplemento"],
@@ -338,6 +579,22 @@
       "sistema": ["inmunologico", "renal-urinario"],
       "area_de_salud": ["inmunidad", "antioxidante"],
       "alias": ["chaga", "inonotus obliquus"]
+    },
+    "apolipoproteina-b": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["apolipoproteina-b"],
+      "categoria": ["perfil-lipidico", "marcadores-cardiovasculares-avanzados"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["cardiovascular", "endocrino-metabolico"],
+      "area_de_salud": ["salud-cardiovascular", "longevidad"],
+      "alias": ["apob", "apo b", "apo-b", "apolipoproteína b", "apob-100", "apolipoprotein b"],
+      "relacionado_con": [
+        { "id": "colesterol-ldl", "relacion": "lectura_conjunta" },
+        { "id": "colesterol-no-hdl", "relacion": "lectura_conjunta" },
+        { "id": "trigliceridos", "relacion": "mismo_panel" },
+        { "id": "lipoproteina-a", "relacion": "lectura_conjunta" }
+      ]
     },
     "colesterol-hdl": {
       "dominio": "laboratorio",
@@ -350,7 +607,8 @@
       "alias": ["hdl", "colesterol hdl"],
       "relacionado_con": [
         { "id": "colesterol-ldl", "relacion": "mismo_panel" },
-        { "id": "trigliceridos", "relacion": "mismo_panel" }
+        { "id": "trigliceridos", "relacion": "mismo_panel" },
+        { "id": "colesterol-no-hdl", "relacion": "mismo_panel" }
       ]
     },
     "colesterol-ldl": {
@@ -364,7 +622,25 @@
       "alias": ["ldl", "colesterol ldl", "colesterol total"],
       "relacionado_con": [
         { "id": "colesterol-hdl", "relacion": "mismo_panel" },
-        { "id": "trigliceridos", "relacion": "mismo_panel" }
+        { "id": "trigliceridos", "relacion": "mismo_panel" },
+        { "id": "colesterol-no-hdl", "relacion": "mismo_panel" },
+        { "id": "apolipoproteina-b", "relacion": "lectura_conjunta" }
+      ]
+    },
+    "colesterol-no-hdl": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["colesterol-no-hdl"],
+      "categoria": ["perfil-lipidico"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["cardiovascular", "endocrino-metabolico"],
+      "area_de_salud": ["salud-cardiovascular", "longevidad"],
+      "alias": ["no hdl", "no-hdl", "colesterol no hdl", "non-hdl cholesterol", "non hdl"],
+      "relacionado_con": [
+        { "id": "colesterol-ldl", "relacion": "mismo_panel" },
+        { "id": "colesterol-hdl", "relacion": "mismo_panel" },
+        { "id": "trigliceridos", "relacion": "mismo_panel" },
+        { "id": "apolipoproteina-b", "relacion": "lectura_conjunta" }
       ]
     },
     "constelaciones-familiares": {
@@ -374,6 +650,44 @@
       "sistema": ["neurologico-cognitivo"],
       "area_de_salud": ["estado-animo-estres"],
       "alias": ["constelaciones familiares"]
+    },
+    "coptis-chinensis": {
+      "dominio": "sustancias-naturales",
+      "tipo": ["especie_medicinal"],
+      "marker": ["huang-lian"],
+      "sistema": ["digestivo", "endocrino-metabolico"],
+      "area_de_salud": ["salud-digestiva", "tradicion-documentada"],
+      "alias": ["huang lian", "huáng lián", "coptis chinensis", "coptidis rhizoma", "goldthread"],
+      "tradicion": "medicina-china",
+      "relacionado_con": [
+        { "id": "berberina", "relacion": "contiene_compuesto" },
+        { "id": "glucosa-en-ayunas", "relacion": "comparacion_contextual" },
+        { "id": "hba1c", "relacion": "comparacion_contextual" }
+      ]
+    },
+    "cistatina-c": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["cistatina-c"],
+      "categoria": ["perfil-renal"],
+      "muestra": ["suero"],
+      "sistema": ["renal-urinario"],
+      "area_de_salud": ["salud-renal", "longevidad"],
+      "alias": ["cistatina c", "cystatin c", "egfr cistatina"],
+      "relacionado_con": [
+        { "id": "egfr", "relacion": "mismo_panel" },
+        { "id": "creatinina", "relacion": "modifica_interpretacion" }
+      ]
+    },
+    "cortisol": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "hormona"],
+      "marker": ["cortisol", "acth"],
+      "categoria": ["hormonas-suprarrenales"],
+      "muestra": ["suero", "plasma", "saliva", "orina"],
+      "sistema": ["endocrino-metabolico"],
+      "area_de_salud": ["estado-animo-estres", "energia-fatiga"],
+      "alias": ["cortisol", "kortisol", "hormona del estres", "acth", "eje hpa"]
     },
     "creatinina": {
       "dominio": "laboratorio",
@@ -387,6 +701,103 @@
         { "id": "egfr", "relacion": "calculo_derivado" },
         { "id": "albuminuria", "relacion": "lectura_conjunta" }
       ]
+    },
+    "dhea-s": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "hormona"],
+      "marker": ["dhea-s"],
+      "categoria": ["hormonas-suprarrenales", "androgenos"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["endocrino-metabolico"],
+      "area_de_salud": ["salud-hormonal", "energia-fatiga", "longevidad"],
+      "alias": ["dhea-s", "dheas", "dhea", "sulfato de dhea", "dehidroepiandrosterona"],
+      "relacionado_con": [
+        { "id": "cortisol", "relacion": "mismo_origen_suprarrenal" }
+      ]
+    },
+    "daruharidra": {
+      "dominio": "sustancias-naturales",
+      "tipo": ["especie_medicinal"],
+      "marker": ["daruharidra"],
+      "sistema": ["hepatobiliar", "tegumentario", "digestivo"],
+      "area_de_salud": ["tradicion-documentada", "salud-hepatica"],
+      "alias": ["daruharidra", "dāruharidrā", "berberis aristata", "indian barberry", "rasaut", "rasanjana"],
+      "tradicion": "ayurveda",
+      "relacionado_con": [
+        { "id": "berberina", "relacion": "contiene_compuesto" },
+        { "id": "glucosa-en-ayunas", "relacion": "comparacion_contextual" },
+        { "id": "hba1c", "relacion": "comparacion_contextual" }
+      ]
+    },
+    "testosterona": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "hormona"],
+      "marker": ["testosterona-total"],
+      "categoria": ["hormonas-sexuales", "perfil-gonadal"],
+      "muestra": ["suero", "plasma", "saliva"],
+      "sistema": ["endocrino-metabolico", "reproductivo", "osteoarticular"],
+      "area_de_salud": ["salud-hormonal", "fertilidad", "salud-sexual", "salud-osea", "energia-fatiga"],
+      "alias": ["testosterona", "testosterona total", "testosterona libre", "testosterona biodisponible"]
+    },
+    "estradiol": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "hormona"],
+      "marker": ["estradiol"],
+      "categoria": ["hormonas-sexuales", "perfil-gonadal"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["endocrino-metabolico", "reproductivo", "osteoarticular"],
+      "area_de_salud": ["salud-hormonal", "fertilidad", "salud-osea", "salud-sexual"],
+      "alias": ["estradiol", "e2", "estrogenos"]
+    },
+    "shbg": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "proteina-transportadora", "hormona"],
+      "marker": ["shbg"],
+      "categoria": ["hormonas-sexuales", "perfil-gonadal"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["endocrino-metabolico", "reproductivo"],
+      "area_de_salud": ["salud-hormonal", "salud-sexual", "fertilidad", "energia-fatiga"],
+      "alias": ["shbg", "globulina fijadora de hormonas sexuales", "sex hormone binding globulin"]
+    },
+    "prolactina": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "hormona"],
+      "marker": ["prolactina"],
+      "categoria": ["hormonas-hipofisarias", "perfil-gonadal"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["endocrino-metabolico", "reproductivo"],
+      "area_de_salud": ["salud-hormonal", "fertilidad", "salud-sexual"],
+      "alias": ["prolactina", "prl", "prolactin"]
+    },
+    "progesterona": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "hormona"],
+      "marker": ["progesterona"],
+      "categoria": ["hormonas-sexuales", "perfil-gonadal"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["endocrino-metabolico", "reproductivo"],
+      "area_de_salud": ["salud-hormonal", "fertilidad", "salud-sexual"],
+      "alias": ["progesterona", "progesterone", "p4"]
+    },
+    "lh-fsh": {
+      "dominio": "laboratorio",
+      "tipo": ["panel", "hormona"],
+      "marker": ["lh", "fsh"],
+      "categoria": ["hormonas-hipofisarias", "perfil-gonadal"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["endocrino-metabolico", "reproductivo"],
+      "area_de_salud": ["salud-hormonal", "fertilidad", "salud-sexual"],
+      "alias": ["lh", "fsh", "gonadotropinas", "hormona luteinizante", "hormona foliculoestimulante"]
+    },
+    "eje-gonadal": {
+      "dominio": "laboratorio",
+      "tipo": ["panel", "hormona"],
+      "marker": ["testosterona-total", "estradiol", "shbg", "lh", "fsh", "prolactina"],
+      "categoria": ["perfil-gonadal", "hormonas-sexuales", "hormonas-hipofisarias"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["endocrino-metabolico", "reproductivo"],
+      "area_de_salud": ["salud-hormonal", "fertilidad", "salud-sexual"],
+      "alias": ["eje gonadal", "eje hipotalamo hipofisis gonada", "perfil hormonal sexual", "hormonas sexuales"]
     },
     "curcuma": {
       "dominio": "sustancias-naturales",
@@ -417,7 +828,41 @@
       "alias": ["egfr", "filtrado glomerular"],
       "relacionado_con": [
         { "id": "creatinina", "relacion": "calculo_derivado" },
+        { "id": "albuminuria", "relacion": "lectura_conjunta" },
+        { "id": "homocisteina", "relacion": "modifica_interpretacion" },
+        { "id": "nt-probnp", "relacion": "modifica_interpretacion" },
+        { "id": "bnp", "relacion": "modifica_interpretacion" }
+      ]
+    },
+    "renal": {
+      "dominio": "laboratorio",
+      "tipo": ["panel"],
+      "marker": ["egfr", "creatinina", "cistatina-c", "urea-bun", "albuminuria"],
+      "categoria": ["perfil-renal"],
+      "muestra": ["suero", "orina"],
+      "sistema": ["renal-urinario"],
+      "area_de_salud": ["salud-renal", "longevidad"],
+      "alias": ["funcion renal", "perfil renal", "pruebas de rinon"],
+      "relacionado_con": [
+        { "id": "egfr", "relacion": "lectura_conjunta" },
+        { "id": "creatinina", "relacion": "lectura_conjunta" },
+        { "id": "cistatina-c", "relacion": "lectura_conjunta" },
+        { "id": "urea-bun", "relacion": "lectura_conjunta" },
         { "id": "albuminuria", "relacion": "lectura_conjunta" }
+      ]
+    },
+    "urea-bun": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["urea-bun"],
+      "categoria": ["perfil-renal"],
+      "muestra": ["suero"],
+      "sistema": ["renal-urinario"],
+      "area_de_salud": ["salud-renal", "longevidad"],
+      "alias": ["urea", "bun", "nitrogeno ureico"],
+      "relacionado_con": [
+        { "id": "creatinina", "relacion": "mismo_panel" },
+        { "id": "egfr", "relacion": "lectura_conjunta" }
       ]
     },
     "flores-de-bach": {
@@ -477,15 +922,57 @@
     "hierro": {
       "dominio": "laboratorio",
       "tipo": ["analito", "mineral", "panel"],
-      "marker": ["hierro", "ferritina", "transferrina"],
+      "marker": ["hierro", "ferritina", "transferrina", "tibc", "saturacion-transferrina"],
       "categoria": ["minerales-micronutrientes", "hematologia"],
       "muestra": ["suero", "plasma"],
       "sistema": ["hematologico"],
       "area_de_salud": ["energia-fatiga", "rendimiento-deportivo"],
-      "alias": ["hierro", "ferritina", "transferrina"],
+      "alias": ["hierro", "ferritina", "transferrina", "tibc", "saturacion de transferrina"],
       "relacionado_con": [
         { "id": "vitamina-c", "relacion": "afecta_absorcion" },
         { "id": "proteina-c-reactiva", "relacion": "modifica_interpretacion" }
+      ]
+    },
+    "homocisteina": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["homocisteina"],
+      "categoria": ["riesgo-cardiovascular", "marcadores-cardiovasculares-avanzados", "metabolismo-vitaminas-b"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["cardiovascular", "endocrino-metabolico", "renal-urinario"],
+      "area_de_salud": ["salud-cardiovascular"],
+      "alias": ["homocisteina", "homocysteine", "homocisteina total"],
+      "relacionado_con": [
+        { "id": "vitamina-b12", "relacion": "modifica_interpretacion" },
+        { "id": "acido-folico", "relacion": "modifica_interpretacion" },
+        { "id": "vitamina-b6", "relacion": "modifica_interpretacion" },
+        { "id": "egfr", "relacion": "modifica_interpretacion" }
+      ]
+    },
+    "hydrastis-canadensis": {
+      "dominio": "sustancias-naturales",
+      "tipo": ["especie_medicinal"],
+      "marker": ["goldenseal"],
+      "sistema": ["digestivo", "tegumentario"],
+      "area_de_salud": ["salud-digestiva", "tradicion-documentada", "seguridad"],
+      "alias": ["goldenseal", "hydrastis", "hydrastis canadensis", "yellow root", "sello de oro"],
+      "tradicion": "medicina-tradicional-norteamericana",
+      "relacionado_con": [
+        { "id": "berberina", "relacion": "contiene_compuesto" }
+      ]
+    },
+    "insulina": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "indice-calculado"],
+      "marker": ["insulina-en-ayunas", "homa-ir", "c-peptido"],
+      "categoria": ["glucemia-insulina"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["endocrino-metabolico"],
+      "area_de_salud": ["control-glucemico", "longevidad"],
+      "alias": ["insulina", "homa", "homa ir", "peptido c"],
+      "relacionado_con": [
+        { "id": "glucosa-en-ayunas", "relacion": "lectura_conjunta" },
+        { "id": "hba1c", "relacion": "lectura_conjunta" }
       ]
     },
     "interferencias-analiticas": {
@@ -503,6 +990,25 @@
       "sistema": ["digestivo", "reproductivo-hormonal"],
       "area_de_salud": ["salud-digestiva"],
       "alias": ["jengibre", "ginger", "zingiber officinale"]
+    },
+    "ashwagandha": {
+      "dominio": "sustancias-naturales",
+      "tipo": ["especie_medicinal", "suplemento"],
+      "marker": ["ashwagandha"],
+      "sistema": ["neurologico-cognitivo", "endocrino-metabolico", "hepatobiliar"],
+      "area_de_salud": ["estado-animo-estres", "longevidad", "seguridad", "tradicion-documentada"],
+      "alias": ["ashwagandha", "withania somnifera", "withania", "ginseng indio", "winter cherry", "oroval"],
+      "relacionado_con": [
+        { "id": "cortisol", "relacion": "modifica_interpretacion_contextual", "direccion": "dirigida" }
+      ]
+    },
+    "rhodiola": {
+      "dominio": "sustancias-naturales",
+      "tipo": ["especie_medicinal", "suplemento"],
+      "marker": ["rhodiola"],
+      "sistema": ["neurologico-cognitivo", "endocrino-metabolico"],
+      "area_de_salud": ["energia-fatiga", "rendimiento-deportivo", "estado-animo-estres", "tradicion-documentada"],
+      "alias": ["rhodiola", "rhodiola rosea", "raiz de oro", "golden root", "roseroot", "rosenwurz"]
     },
     "kinesiologia-aplicada": {
       "dominio": "tradiciones-practicas",
@@ -522,6 +1028,48 @@
       "area_de_salud": ["inmunidad", "antiinflamatorio"],
       "alias": ["leucocitos", "formula leucocitaria"]
     },
+    "lipoproteina-a": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["lipoproteina-a"],
+      "categoria": ["perfil-lipidico", "marcadores-cardiovasculares-avanzados"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["cardiovascular"],
+      "area_de_salud": ["salud-cardiovascular", "longevidad"],
+      "alias": ["lpa", "lp(a)", "lp a", "lipoproteína a", "lipoprotein a"],
+      "relacionado_con": [
+        { "id": "colesterol-ldl", "relacion": "lectura_conjunta" },
+        { "id": "apolipoproteina-b", "relacion": "lectura_conjunta" }
+      ]
+    },
+    "nt-probnp": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["nt-probnp"],
+      "categoria": ["marcadores-cardiovasculares-avanzados", "estres-cardiaco"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["cardiovascular", "renal-urinario", "respiratorio"],
+      "area_de_salud": ["salud-cardiovascular", "energia-fatiga"],
+      "alias": ["nt-probnp", "nt pro bnp", "peptido natriuretico", "péptido natriurético", "péptidos natriuréticos", "n-terminal pro b-type natriuretic peptide"],
+      "relacionado_con": [
+        { "id": "bnp", "relacion": "misma_familia_analitica" },
+        { "id": "egfr", "relacion": "modifica_interpretacion" }
+      ]
+    },
+    "bnp": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "hormona"],
+      "marker": ["bnp"],
+      "categoria": ["marcadores-cardiovasculares-avanzados", "estres-cardiaco"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["cardiovascular", "renal-urinario", "respiratorio"],
+      "area_de_salud": ["salud-cardiovascular", "energia-fatiga"],
+      "alias": ["bnp", "péptido natriurético cerebral", "peptido natriuretico cerebral", "brain natriuretic peptide", "péptido natriurético tipo b"],
+      "relacionado_con": [
+        { "id": "nt-probnp", "relacion": "misma_familia_analitica" },
+        { "id": "egfr", "relacion": "modifica_interpretacion" }
+      ]
+    },
     "magnesio": {
       "dominio": "laboratorio",
       "tipo": ["analito", "mineral"],
@@ -533,6 +1081,24 @@
       "relacionado_con": [
         { "id": "calcio", "relacion": "lectura_conjunta" },
         { "id": "potasio", "relacion": "lectura_conjunta" }
+      ]
+    },
+    "metabolismo-oseo": {
+      "dominio": "laboratorio",
+      "tipo": ["panel"],
+      "marker": ["vitamina-d", "calcio", "fosfato", "pth", "beta-crosslaps", "osteocalcina"],
+      "categoria": ["metabolismo-oseo", "vitaminas", "minerales-micronutrientes"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["osteoarticular", "endocrino-metabolico", "renal-urinario"],
+      "area_de_salud": ["salud-osea", "longevidad"],
+      "alias": ["metabolismo oseo", "remodelado oseo", "vitamina d calcio fosfato pth", "bone turnover markers", "knochenstoffwechsel"],
+      "relacionado_con": [
+        { "id": "vitamina-d", "relacion": "lectura_conjunta" },
+        { "id": "calcio", "relacion": "lectura_conjunta" },
+        { "id": "fosfato", "relacion": "lectura_conjunta" },
+        { "id": "pth", "relacion": "lectura_conjunta" },
+        { "id": "beta-crosslaps", "relacion": "remodelado_oseo" },
+        { "id": "osteocalcina", "relacion": "remodelado_oseo" }
       ]
     },
     "micronutrientes": {
@@ -559,6 +1125,22 @@
       ],
       "tradicion": "mtc"
     },
+    "osteocalcina": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["osteocalcina"],
+      "categoria": ["metabolismo-oseo"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["osteoarticular", "endocrino-metabolico"],
+      "area_de_salud": ["salud-osea", "longevidad"],
+      "alias": ["osteocalcina", "osteocalcin", "OC", "bone Gla protein", "proteina gla osea"],
+      "relacionado_con": [
+        { "id": "beta-crosslaps", "relacion": "remodelado_oseo" },
+        { "id": "vitamina-d", "relacion": "modifica_interpretacion" },
+        { "id": "pth", "relacion": "modifica_interpretacion" },
+        { "id": "calcio", "relacion": "lectura_conjunta" }
+      ]
+    },
     "plaquetas": {
       "dominio": "laboratorio",
       "tipo": ["analito"],
@@ -581,6 +1163,36 @@
       "relacionado_con": [
         { "id": "vsg", "relacion": "lectura_conjunta" },
         { "id": "ferritina", "relacion": "modifica_interpretacion" }
+      ]
+    },
+    "pth": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "hormona"],
+      "marker": ["pth"],
+      "categoria": ["metabolismo-oseo"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["endocrino-metabolico", "osteoarticular", "renal-urinario"],
+      "area_de_salud": ["salud-osea", "longevidad"],
+      "alias": ["PTH", "pth intacta", "parathormona", "hormona paratiroidea", "parathormon", "nebenschilddrüsenhormon"],
+      "relacionado_con": [
+        { "id": "calcio", "relacion": "lectura_conjunta" },
+        { "id": "fosfato", "relacion": "lectura_conjunta" },
+        { "id": "vitamina-d", "relacion": "modifica_interpretacion" },
+        { "id": "creatinina", "relacion": "modifica_interpretacion" },
+        { "id": "egfr", "relacion": "modifica_interpretacion" }
+      ]
+    },
+    "vsg": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["vsg"],
+      "categoria": ["inflamacion"],
+      "muestra": ["sangre-total"],
+      "sistema": ["inmunologico", "hematologico"],
+      "area_de_salud": ["inmunidad"],
+      "alias": ["vsg", "velocidad de sedimentacion globular", "esr", "bsg"],
+      "relacionado_con": [
+        { "id": "proteina-c-reactiva", "relacion": "lectura_conjunta" }
       ]
     },
     "reishi": {
@@ -612,6 +1224,34 @@
         { "id": "tsh", "relacion": "lectura_conjunta" }
       ]
     },
+    "triyodotironina libre": {
+      "dominio": "laboratorio",
+      "tipo": ["analito"],
+      "marker": ["t3-libre"],
+      "categoria": ["perfil-tiroideo"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["endocrino-metabolico", "reproductivo-hormonal"],
+      "area_de_salud": ["salud-tiroidea", "energia-fatiga", "salud-hormonal"],
+      "alias": ["t3 libre", "triyodotironina libre", "ft3"],
+      "relacionado_con": [
+        { "id": "tsh", "relacion": "lectura_conjunta" },
+        { "id": "t4-libre", "relacion": "lectura_conjunta" }
+      ]
+    },
+    "anticuerpos-tiroideos": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "panel"],
+      "marker": ["anti-tpo", "anti-tiroglobulina"],
+      "categoria": ["perfil-tiroideo"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["endocrino-metabolico", "inmunologico", "reproductivo-hormonal"],
+      "area_de_salud": ["salud-tiroidea", "energia-fatiga", "salud-hormonal"],
+      "alias": ["anticuerpos tiroideos", "anti tpo", "antiperoxidasa", "anti tiroglobulina"],
+      "relacionado_con": [
+        { "id": "tsh", "relacion": "modifica_interpretacion" },
+        { "id": "t4-libre", "relacion": "modifica_interpretacion" }
+      ]
+    },
     "trigliceridos": {
       "dominio": "laboratorio",
       "tipo": ["analito"],
@@ -622,7 +1262,102 @@
       "area_de_salud": ["salud-cardiovascular", "control-glucemico", "longevidad"],
       "relacionado_con": [
         { "id": "colesterol-ldl", "relacion": "mismo_panel" },
-        { "id": "colesterol-hdl", "relacion": "mismo_panel" }
+        { "id": "colesterol-hdl", "relacion": "mismo_panel" },
+        { "id": "colesterol-no-hdl", "relacion": "mismo_panel" },
+        { "id": "apolipoproteina-b", "relacion": "mismo_panel" },
+        { "id": "omega-3-indice", "relacion": "modifica_interpretacion_contextual" }
+      ]
+    },
+    "omega-3-indice": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "biomarcador-nutricional"],
+      "marker": ["omega-3-indice"],
+      "categoria": ["perfil-acidos-grasos"],
+      "muestra": ["sangre-total"],
+      "sistema": ["cardiovascular", "endocrino-metabolico", "inmunologico"],
+      "area_de_salud": ["salud-cardiovascular", "longevidad", "inmunidad"],
+      "alias": [
+        "omega-3 index", "índice omega-3", "omega 3 index", "O3I", "HS-Omega-3 Index",
+        "EPA+DHA en eritrocitos", "EPA DHA membrana eritrocitaria", "EPA+DHA en membrana",
+        "Omega-3-Fettsäure-Index", "Fettsäurestatus"
+      ],
+      "relacionado_con": [
+        { "id": "epa", "relacion": "componente_directo" },
+        { "id": "dha", "relacion": "componente_directo" },
+        { "id": "ala", "relacion": "precursor_dietetico" },
+        { "id": "acido-arachidonico", "relacion": "perfil_acidos_grasos" },
+        { "id": "ratio-omega-6-omega-3", "relacion": "perfil_acidos_grasos" },
+        { "id": "trigliceridos", "relacion": "modifica_interpretacion_contextual" },
+        { "id": "tp-inr", "relacion": "modifica_interpretacion" }
+      ]
+    },
+    "epa": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "acido-graso"],
+      "marker": ["epa"],
+      "categoria": ["perfil-acidos-grasos"],
+      "muestra": ["sangre-total"],
+      "sistema": ["cardiovascular", "endocrino-metabolico", "inmunologico"],
+      "area_de_salud": ["salud-cardiovascular", "longevidad", "inmunidad"],
+      "alias": ["ácido eicosapentaenoico", "eicosapentaenoic acid", "Eicosapentaensäure"],
+      "relacionado_con": [
+        { "id": "omega-3-indice", "relacion": "componente_directo" },
+        { "id": "dha", "relacion": "mismo_panel" }
+      ]
+    },
+    "dha": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "acido-graso"],
+      "marker": ["dha"],
+      "categoria": ["perfil-acidos-grasos"],
+      "muestra": ["sangre-total"],
+      "sistema": ["cardiovascular", "endocrino-metabolico", "inmunologico"],
+      "area_de_salud": ["salud-cardiovascular", "longevidad", "inmunidad"],
+      "alias": ["ácido docosahexaenoico", "docosahexaenoic acid", "Docosahexaensäure"],
+      "relacionado_con": [
+        { "id": "omega-3-indice", "relacion": "componente_directo" },
+        { "id": "epa", "relacion": "mismo_panel" }
+      ]
+    },
+    "ala": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "acido-graso"],
+      "marker": ["ala"],
+      "categoria": ["perfil-acidos-grasos"],
+      "muestra": ["sangre-total"],
+      "sistema": ["cardiovascular", "endocrino-metabolico"],
+      "area_de_salud": ["salud-cardiovascular", "longevidad"],
+      "alias": ["ácido alfa-linolénico", "alpha-linolenic acid", "Alpha-Linolensäure"],
+      "relacionado_con": [
+        { "id": "omega-3-indice", "relacion": "precursor_dietetico" }
+      ]
+    },
+    "acido-arachidonico": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "acido-graso"],
+      "marker": ["acido-arachidonico"],
+      "categoria": ["perfil-acidos-grasos"],
+      "muestra": ["sangre-total"],
+      "sistema": ["cardiovascular", "endocrino-metabolico", "inmunologico"],
+      "area_de_salud": ["salud-cardiovascular", "longevidad", "inmunidad"],
+      "alias": ["AA", "arachidonic acid", "Arachidonsäure"],
+      "relacionado_con": [
+        { "id": "omega-3-indice", "relacion": "perfil_acidos_grasos" },
+        { "id": "ratio-omega-6-omega-3", "relacion": "componente_directo" }
+      ]
+    },
+    "ratio-omega-6-omega-3": {
+      "dominio": "laboratorio",
+      "tipo": ["panel", "relacion"],
+      "marker": ["ratio-omega-6-omega-3"],
+      "categoria": ["perfil-acidos-grasos"],
+      "muestra": ["sangre-total"],
+      "sistema": ["cardiovascular", "endocrino-metabolico"],
+      "area_de_salud": ["salud-cardiovascular", "longevidad"],
+      "alias": ["omega-6/omega-3 ratio", "n-6/n-3 ratio", "Omega-6/Omega-3-Verhältnis"],
+      "relacionado_con": [
+        { "id": "omega-3-indice", "relacion": "perfil_acidos_grasos" },
+        { "id": "acido-arachidonico", "relacion": "componente_directo" }
       ]
     },
     "tsh": {
