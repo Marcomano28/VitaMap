@@ -43,7 +43,7 @@ const TEXT = {
     limitations: "Limitaciones, una por línea",
     markdownFile: "Markdown opcional",
     markdownHint:
-      "Si contiene frontmatter, se importan título, fuente, fecha, clasificación, derechos y limitaciones. Los campos escritos en el formulario tienen prioridad.",
+      "Si contiene frontmatter, se importan título, fuente, fecha, clasificación, derechos, limitaciones, facetas y evidencia. Los campos escritos en el formulario tienen prioridad.",
     selectOrImport: "Seleccionar o importar del Markdown",
     body: "Contenido revisado que recuperará el RAG",
     bodyHint:
@@ -95,7 +95,7 @@ const TEXT = {
     limitations: "Einschränkungen, eine pro Zeile",
     markdownFile: "Optionales Markdown",
     markdownHint:
-      "Frontmatter importiert Titel, Quelle, Datum, Klassifikation, Rechte und Einschränkungen. Im Formular eingegebene Werte haben Vorrang.",
+      "Frontmatter importiert Titel, Quelle, Datum, Klassifikation, Rechte, Einschränkungen, Facetten und Evidenz. Im Formular eingegebene Werte haben Vorrang.",
     selectOrImport: "Auswählen oder aus Markdown importieren",
     body: "Geprüfter Inhalt für den RAG-Abruf",
     bodyHint:

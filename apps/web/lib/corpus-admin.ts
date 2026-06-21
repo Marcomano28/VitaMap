@@ -36,6 +36,7 @@ export const FACET_FRONTMATTER_FIELDS = [
   "tradicion",
   "alias",
   "relacionado_con",
+  "evidence",
 ] as const;
 
 const optionalText = (max: number) =>
@@ -350,12 +351,19 @@ export async function updateCorpusDraft(
   const raw = await fs.readFile(file, "utf8");
   const existing = parseStoredDocument(raw, `${draftId}.md`, "draft");
   if (!existing) throw new Error("invalid corpus draft");
+  const merged = {
+    ...validated,
+    extraFrontmatter: {
+      ...(existing.extraFrontmatter ?? {}),
+      ...(validated.extraFrontmatter ?? {}),
+    },
+  };
   const updatedAt = new Date().toISOString();
   const temporary = `${file}.${crypto.randomUUID()}.tmp`;
 
   await fs.writeFile(
     temporary,
-    serializeDocument(validated, {
+    serializeDocument(merged, {
       id: draftId,
       status: "draft",
       created_at: existing.createdAt ?? updatedAt,
@@ -366,7 +374,7 @@ export async function updateCorpusDraft(
   await fs.rename(temporary, file);
 
   return {
-    ...validated,
+    ...merged,
     id: draftId,
     status: "draft",
     relativePath: `${draftId}.md`,
