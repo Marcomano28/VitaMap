@@ -337,7 +337,93 @@ source_alternates:
 La UI podría mostrar esas URLs en una pestaña o bloque "Lectura complementaria",
 sin mezclarlas con las fuentes realmente usadas por el RAG en esa respuesta.
 
-### 5.2 Taxonomía y vocabulario runtime
+### 5.2 Idioma del cuerpo y variantes localizadas
+
+`source_language` no resuelve por sí solo el problema multilingüe: describe la
+fuente, no el idioma del cuerpo redactado por VitaMap. Una tarjeta puede estar
+escrita en español a partir de una fuente inglesa, o en alemán a partir de una
+fuente alemana. Para evitar esa mezcla, la siguiente evolución debe separar:
+
+```yaml
+source_language: en      # idioma de la fuente citada
+content_language: es     # idioma del cuerpo VitaMap
+```
+
+La dirección recomendada es un **híbrido incremental**, no dos corpus
+independientes:
+
+1. **Cuerpo ES como capa base editorial.** La tarjeta canónica se redacta,
+   revisa y mantiene primero en español mientras el corpus nace y se estabiliza.
+2. **Variantes DE solo donde aporten.** Para los top-N marcadores esperables en
+   consultas alemanas, o cuando una fuente DE/EU cambie el encuadre práctico, se
+   crea una variante alemana revisada.
+3. **Fallback por traducción del LLM.** Si no existe cuerpo DE revisado, la
+   respuesta en alemán puede traducir o adaptar el cuerpo ES recuperado, dejando
+   claro qué fuente sostiene la afirmación. Esa traducción no se convierte en
+   tarjeta oficial salvo revisión editorial.
+4. **Preferencia por fuente local cuando mejora la trazabilidad.** Una variante
+   DE puede usar una fuente alemana o europea propia si es equivalente o mejor
+   para el usuario alemán. No se crea solo por traducir.
+
+Convención futura posible:
+
+```text
+fosforo/fosfato-interpretacion-medlineplus.es.md
+fosforo/fosfato-interpretacion-medlineplus.de.md
+```
+
+Con frontmatter mínimo para vincular variantes:
+
+```yaml
+canonical_card_id: fosforo-fosfato-interpretacion-medlineplus
+content_language: de
+locale_variant: de-DE
+localized_from: es
+localization_status: reviewed
+```
+
+Los campos conceptuales deben seguir compartidos o validados como equivalentes
+entre variantes: `marker`, `categoria`, `muestra`, `sistema`, `area_de_salud`,
+`seccion`, `relacionado_con` y `evidence`. Pueden variar `title`, `alias`,
+`limitations` si el idioma o la fuente local lo exige, y el cuerpo textual. Si
+la variante DE usa otra fuente principal, `source_url`, `source_language` y
+`source_jurisdiction` deben describir esa fuente exacta; el vínculo conceptual
+se conserva mediante `canonical_card_id`.
+
+La recuperación debe tratar el idioma como preferencia, no como partición dura:
+para `locale=de`, priorizar una variante `content_language: de`; si no existe,
+recuperar la tarjeta base y responder en alemán con traducción controlada. El
+grafo, la taxonomía y la cobertura de ángulos viven en la tarjeta conceptual, no
+en dos mundos paralelos.
+
+#### Por qué no crear dos corpus independientes
+
+Dos corpus físicos separados, uno ES y otro DE, parecen simples al principio,
+pero introducen riesgos de mantenimiento y calidad:
+
+- **Deriva editorial:** una corrección clínica, una retirada o una actualización
+  de fuente puede aplicarse en un idioma y olvidarse en el otro.
+- **Contradicciones invisibles:** dos tarjetas homólogas pueden terminar con
+  `evidence`, limitaciones o relaciones distintas sin que el usuario lo vea.
+- **Duplicación del grafo:** `marker`, `relacionado_con`, paneles y rutas de
+  salud se duplican, aumentando el coste de validación y los falsos huecos.
+- **Recuperación peor ante fallback:** una consulta alemana puede quedar sin
+  respuesta si el corpus DE no tiene variante, aunque el corpus ES sí tenga una
+  tarjeta sólida.
+- **Más coste operativo:** más embeddings, más índices, más revisión, más tests
+  y más decisiones de retirada/versionado.
+- **Trazabilidad más confusa:** cuesta saber si dos documentos son traducciones,
+  adaptaciones con fuente local, o piezas conceptualmente distintas.
+- **Medición fragmentada:** los benchmarks de recuperación se dividen por idioma
+  y dejan de medir la salud del dossier conceptual completo.
+
+La separación física solo tendría sentido si en el futuro los corpus tuvieran
+políticas, permisos, modelos de recuperación o gobernanza claramente distintos.
+Mientras el objetivo sea ofrecer el mismo conocimiento con variantes de
+presentación y localización, el modelo correcto es una tarjeta conceptual con
+cuerpos localizados.
+
+### 5.3 Taxonomía y vocabulario runtime
 
 `corpus-preparation/corpus-taxonomy.json` es la fuente de verdad para markers,
 aliases, relaciones y grupos de consulta. La app no mantiene una segunda lista
@@ -390,7 +476,7 @@ grupos de consulta apuntan a markers existentes, que `relacionado_con` no
 enlaza IDs desconocidos y que las tarjetas locales no usan markers fuera de la
 taxonomía.
 
-### 5.3 Metadatos futuros posibles
+### 5.4 Metadatos futuros posibles
 
 Cuando el volumen lo justifique pueden añadirse:
 

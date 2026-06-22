@@ -1,6 +1,6 @@
 # Cobertura del corpus · ángulos débiles por tema
 
-Versión viva · última actualización: 2026-06-18
+Versión viva · última actualización: 2026-06-22
 Estado: documento de seguimiento editorial (se actualiza con cada lote que se prepara para el RAG)
 
 > Propósito: rastrear, tema a tema, **qué ángulos están cubiertos y cuáles
@@ -36,11 +36,17 @@ Clasificación de huecos:
 
 ## 1. Huecos prioritarios (🔴 revisar pronto)
 
-| Tema | Qué falta | Por qué importa |
-|---|---|---|
-| **glucosa-en-ayunas** | Solo A + C. Falta **B (alimentación)**, **D (glucosa↔HbA1c)** y **E (seguimiento)** | Marcador metabólico central; hoy queda fino frente a su importancia |
+No hay huecos rojos activos tras el cierre de `glucosa-en-ayunas`. Mantener
+esta sección para subir aquí el próximo analito o eje central que quede sin
+ángulo esencial.
 
 **Cerrados:**
+- ~~**glucosa-en-ayunas** solo A+C~~ → resuelto 2026-06-21. Se añadieron
+  B (`glucosa-en-ayunas-alimentacion-factores-niddk.md`), D
+  (`glucosa-hba1c-lectura-conjunta-niddk.md`) y E
+  (`glucosa-en-ayunas-seguimiento-temporal-niddk.md`). El dossier queda con
+  A/B/C/D/E y la D se delimitó frente a la tarjeta ya existente de
+  insulina-glucosa-HOMA.
 - ~~**vitamina-k** sin interpretación (A)~~ → resuelto 2026-06-18. Se creó
   `vitamina-k-interpretacion-ods.md` con encuadre honesto: el test directo existe
   pero rara vez se usa; el estado funcional se valora vía TP/INR. Dossier ahora
@@ -59,6 +65,7 @@ Clasificación de huecos:
 | **albuminuria** | B, D/E | A+C; D/E ya cubiertos a nivel panel renal |
 | **tsh** | C, E | A+B+tradición; su D vive en "tiroxina libre" |
 | **trigliceridos** | D (panel lipídico), E | Falta una lectura conjunta del panel lipídico (LDL/HDL/TG) |
+| **electrolitos (panel)** | C, E | A+B por marcador y D de panel ya cubiertos; query_group `electrolitos` creado. C/E opcionales |
 | **plaquetas** | D, E | A+B+C |
 | **t3-tiroides** | B (no aplica), E | A+C+D; B sin intención dietética clara → ⚪ |
 | **cúrcuma** | uso-documentado (M2) | M1/M3/M4 presentes |
@@ -87,7 +94,7 @@ Secciones presentes hoy. `(n)` = nº de tarjetas.
 | colesterol-ldl (8) | ✅ | ✅ | ✅ | — | — | ✅ | falta D/E del panel lipídico |
 | colesterol-hdl (5) | ✅ | ✅ | ✅ | — | — | ✅ (mtc) | |
 | trigliceridos (4) | ✅ | ✅ | ✅ | — | — | — | 🟡 D/E |
-| glucosa-en-ayunas (2) | ✅ | — | ✅ | — | — | — | 🔴 B/D/E |
+| glucosa-en-ayunas (5) | ✅ | ✅ | ✅ | ✅ | ✅ | — | cerrado 2026-06-21 |
 | hba1c (6) | ✅ | ✅ | ✅ | — | — | ✅ | |
 | insulina (8) | ✅ | ✅ | ✅ | ✅ | ✅ | — | completo |
 | creatinina (10) | ✅ | ✅ | ✅ | — | ✅? | ✅ | dossier rico |
@@ -114,6 +121,11 @@ Secciones presentes hoy. `(n)` = nº de tarjetas.
 | acido-folico (3) | ✅ | ✅ | ✅ | — | — | — | |
 | acido-urico (3) | ✅ | ✅ | ✅ | — | — | — | |
 | magnesio (4) | ✅ | ✅ | ✅ | ✅ | — | — | |
+| calcio (3) | ✅ | ✅ | — | ✅ | — | — | A=calcio total/iónico; D acotada a calcio bajo↔magnesio; eje amplio vive en metabolismo óseo |
+| potasio (4) | ✅ | ✅ | — | ✅ | ✅ | — | D acotada a potasio bajo↔magnesio; sodio ya integrado como dossier propio |
+| sodio (2) | ✅ | ✅ | — | — | — | — | A+B; cierra el panel de electrolitos junto a potasio/cloruro/bicarbonato |
+| cloruro (2) | ✅ | ✅ | — | — | — | — | A+B; B en gran parte común con sodio (sal) |
+| bicarbonato (1) | ✅ | — | — | — | — | — | A; sin B (no es nutriente de la dieta) → ⚪; refleja equilibrio ácido-base |
 | bilirrubina (2) | ✅ | — | ✅ | — | — | — | D/E en panel |
 | albumina (1) | ✅ | — | — | — | — | — | 🟡 |
 | proteinas-totales (1) | ✅ | — | — | — | — | — | 🟡 |
@@ -128,6 +140,11 @@ Secciones presentes hoy. `(n)` = nº de tarjetas.
 | Dossier | A (por marcador) | B | C | D | E | Notas |
 |---|:--:|:--:|:--:|:--:|:--:|---|
 | renal (1) | ✅ (vía marcadores) | — | — | ✅ | — | Panel "función vs daño" (eGFR/creatinina/cistatina/urea ↔ albuminuria). E de eGFR vive en filtrado-glomerular-egfr/ |
+
+### Laboratorio — panel de electrolitos (nivel grupo)
+| Dossier | A (por marcador) | B | C | D | E | Notas |
+|---|:--:|:--:|:--:|:--:|:--:|---|
+| electrolitos (1) | ✅ (vía marcadores) | — | — | ✅ | — | Panel Na/K/Cl/HCO₃ leído junto (equilibrio hidroelectrolítico y ácido-base, hiato aniónico). A/B individuales viven en sodio/potasio/cloruro/bicarbonato |
 
 ### Laboratorio — hormonas suprarrenales y sexuales
 | Dossier | A | B | C | D | E | Trad. | Notas |
@@ -176,6 +193,11 @@ Secciones presentes hoy. `(n)` = nº de tarjetas.
 - **Idioma de fuente:** la inmensa mayoría son EN/US (MedlinePlus, NIDDK, CDC).
   Para público alemán conviene buscar equivalentes DE/EU (ver arquitectura §5.1).
   Es un eje de **calidad de fuente**, separado de la cobertura de ángulos.
+- **Idioma del cuerpo:** no crear dos corpus independientes ES/DE. La dirección
+  propuesta es híbrida e incremental: cuerpo ES como base editorial, variantes
+  DE revisadas para top-N marcadores o fuentes DE/EU especialmente útiles, y
+  traducción del LLM como fallback cuando no exista variante. Ver arquitectura
+  §5.2.
 - **Borradores bloqueados por derechos** (no publicables, en
   `source-material/borradores/`):
   - **ApoB** y **Lp(a)** (`metadata-only`): falta fuente DE/EU de paciente.
@@ -202,4 +224,9 @@ Al preparar un lote nuevo:
 La meta no es pintar todas las casillas: es que **ningún analito quede sin su A**,
 que los paneles tengan su D/E, y que las ausencias sean **decisiones conscientes**,
 no olvidos.
+
+> Integridad mecánica (facetas y `evidence`): la coherencia de cada tarjeta con la
+> taxonomía debería volverse un gate automático, no editorial. Ver la propuesta
+> [PROPUESTA-CORPUS-LINT.md](PROPUESTA-CORPUS-LINT.md) (`corpus:lint` hermano de
+> `taxonomy:check`).
 </content>
