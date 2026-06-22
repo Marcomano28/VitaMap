@@ -1,0 +1,39 @@
+# Auditoría de cobertura - fósforo/fosfato
+
+## Resultado de la revisión
+
+Se conservan como tarjetas activas solo las dos unidades que cubren intenciones
+propias de fosfato:
+
+| Archivo | Intención | Decisión |
+|---|---|---|
+| `fosfato-interpretacion-medlineplus.md` | A · interpretación | Mantener y alinear con taxonomía canónica. |
+| `fosfato-alimentacion-factores-ods.md` | B · alimentación/factores | Mantener; usar ODS profesional para distinguir fuentes, aditivos y biodisponibilidad. |
+
+## Tarjetas retiradas del flujo
+
+Se renombraron con sufijo `.retirada` para que no entren en la importación ni en
+los chequeos de Markdown:
+
+| Archivo retirado | Motivo |
+|---|---|
+| `sodio-interpretacion-medlineplus.md.retirada` | No pertenece a la carpeta de fósforo; queda cubierto por el dossier `sodio`. |
+| `sodio-alimentacion-factores-efsa-oms.md.retirada` | No pertenece a la carpeta de fósforo; queda cubierto por el dossier `sodio`. |
+| `electrolitos-lectura-conjunta-medlineplus.md.retirada` | No pertenece a la carpeta de fósforo; queda cubierto por el dossier `electrolitos`. |
+| `metabolismo-oseo-mineral-lectura-conjunta-medlineplus.md.retirada` | Duplica la tarjeta existente `metabolismo-oseo/vitamina-d-calcio-fosfato-pth-eje-metabolismo-oseo-lectura-conjunta-medlineplus-ods.md`. |
+
+## Solapamiento controlado
+
+La tarjeta de interpretación de fosfato menciona calcio, vitamina D, PTH y
+función renal solo como contexto mínimo. La explicación amplia del eje ya vive
+en la carpeta `metabolismo-oseo`.
+
+La tarjeta de alimentación no intenta corregir un resultado analítico con dieta:
+separa ingesta de fósforo, absorción/biodisponibilidad, aditivos alimentarios y
+fosfato sérico.
+
+## Estado posterior
+
+La taxonomía ya incluye `sodio`, `cloruro`, `bicarbonato` y el grupo
+`electrolitos`. Las tarjetas correspondientes viven fuera de `fosforo`, en sus
+carpetas propias, para evitar solapamiento y mantener la navegación por dossier.

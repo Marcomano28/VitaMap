@@ -1,0 +1,141 @@
+# Auditoría de cobertura - sustancias naturales y perfil lipídico
+
+> Revisión editorial del lote `bergamota`. El objetivo es que estas tarjetas no
+> repitan la interpretación del perfil lipídico ni el contenido de otras
+> sustancias naturales: solo deben cubrir la pregunta específica sobre cada
+> preparado y sus límites.
+
+## Alcance revisado
+
+```text
+Grupo: sustancias-naturales / perfil-lipidico
+Carpeta editada: bergamota
+Carpetas de contraste consultadas: colesterol-ldl, colesterol-hdl,
+  trigliceridos, berberina, alcachofa, amalaki, omega-3
+Tarjetas conservadas: bergamota, psyllium, ajo, levadura roja de arroz
+No se han editado tarjetas fuera de esta carpeta.
+```
+
+## Solapamientos detectados
+
+| Solapamiento | Dónde vive mejor | Decisión en este lote |
+|---|---|---|
+| Qué significan LDL, HDL, colesterol total y triglicéridos | Carpetas `colesterol-ldl`, `colesterol-hdl` y `trigliceridos` | No repetir interpretación ni rangos. |
+| Alimentación general para LDL | `colesterol-ldl-alimentacion-factores-cdc.md` | Psyllium no se convierte en tarjeta general de fibra o dieta. |
+| Comparación de nutracéuticos | `berberina`, `alcachofa`, `amalaki`, `omega-3` y futuras tarjetas | No crear ranking ni mezclar efectos de otras sustancias. |
+| Seguridad genérica de suplementos | Tarjetas de seguridad de cada sustancia | Mantener solo riesgos propios de ajo, psyllium, bergamota o levadura roja. |
+| Glucosa, presión arterial o regularidad intestinal | Carpetas metabólicas/digestivas correspondientes | Se retiran como foco principal si no son necesarios para perfil lipídico. |
+
+## Decisión de facetado
+
+La taxonomía actual ya tiene el dominio y la capa correctos:
+
+```text
+dominio: sustancias-naturales
+source_type M3: natural-product-evidence-summary
+source_type M4: natural-product-safety-summary
+seccion M3: evidencia
+seccion M4: seguridad
+tipo habitual: especie_medicinal / suplemento
+```
+
+Los topics `bergamota`, `psyllium`, `ajo`, `levadura-roja-de-arroz` y
+`monacolina-k` todavía no aparecen como markers canónicos en
+`corpus-taxonomy.json`. Para no romper el vocabulario vigente sin tocar otras
+carpetas, las tarjetas de este lote declaran en `marker` los marcadores
+analíticos canónicos que contextualizan la pregunta (LDL, colesterol total,
+triglicéridos, HDL, ALT/AST o creatinina cuando proceda) y conservan la sustancia
+en `title` y `alias`.
+
+## Propuesta futura de taxonomía
+
+Cuando se autorice ampliar `corpus-taxonomy.json`, estas entradas reducirían la
+dependencia de alias:
+
+```json
+{
+  "bergamota": {
+    "dominio": "sustancias-naturales",
+    "tipo": ["especie_medicinal", "suplemento"],
+    "marker": ["bergamota"],
+    "sistema": ["cardiovascular", "endocrino-metabolico"],
+    "area_de_salud": ["salud-cardiovascular", "seguridad"],
+    "alias": ["citrus bergamia", "bergamotte", "polifenoles de bergamota"],
+    "relacionado_con": [
+      { "id": "colesterol-ldl", "relacion": "modifica_interpretacion_contextual" },
+      { "id": "trigliceridos", "relacion": "modifica_interpretacion_contextual" }
+    ]
+  },
+  "psyllium": {
+    "dominio": "sustancias-naturales",
+    "tipo": ["suplemento", "fibra_dietetica"],
+    "marker": ["psyllium"],
+    "sistema": ["cardiovascular", "digestivo"],
+    "area_de_salud": ["salud-cardiovascular", "salud-digestiva"],
+    "alias": ["plantago ovata", "ispaghula", "zaragatona", "flohsamenschalen"],
+    "relacionado_con": [
+      { "id": "colesterol-ldl", "relacion": "modifica_interpretacion_contextual" }
+    ]
+  },
+  "ajo": {
+    "dominio": "sustancias-naturales",
+    "tipo": ["especie_medicinal", "suplemento", "alimento"],
+    "marker": ["ajo"],
+    "sistema": ["cardiovascular", "endocrino-metabolico", "hematologico"],
+    "area_de_salud": ["salud-cardiovascular", "seguridad"],
+    "alias": ["allium sativum", "knoblauch", "extracto de ajo envejecido"],
+    "relacionado_con": [
+      { "id": "colesterol-total", "relacion": "modifica_interpretacion_contextual" },
+      { "id": "colesterol-ldl", "relacion": "modifica_interpretacion_contextual" },
+      { "id": "tp-inr", "relacion": "seguridad_contextual" }
+    ]
+  },
+  "levadura-roja-de-arroz": {
+    "dominio": "sustancias-naturales",
+    "tipo": ["especie_medicinal", "suplemento"],
+    "marker": ["levadura-roja-de-arroz"],
+    "sistema": ["cardiovascular", "osteoarticular", "hepatobiliar", "renal-urinario"],
+    "area_de_salud": ["salud-cardiovascular", "seguridad"],
+    "alias": ["monascus purpureus", "rotschimmelreis", "red yeast rice"],
+    "relacionado_con": [
+      { "id": "colesterol-ldl", "relacion": "modifica_interpretacion_contextual" },
+      { "id": "alt", "relacion": "seguridad_contextual" },
+      { "id": "ast", "relacion": "seguridad_contextual" },
+      { "id": "creatinina", "relacion": "seguridad_contextual" }
+    ]
+  },
+  "monacolina-k": {
+    "dominio": "sustancias-naturales",
+    "tipo": ["compuesto_aislado"],
+    "marker": ["monacolina-k"],
+    "sistema": ["cardiovascular", "osteoarticular", "hepatobiliar"],
+    "area_de_salud": ["salud-cardiovascular", "seguridad"],
+    "alias": ["monacolin k", "lovastatina natural"],
+    "relacionado_con": [
+      { "id": "levadura-roja-de-arroz", "relacion": "compuesto_de" },
+      { "id": "colesterol-ldl", "relacion": "modifica_interpretacion_contextual" }
+    ]
+  }
+}
+```
+
+## Lote depurado
+
+| Tarjeta | Capa | Foco que queda |
+|---|---|---|
+| Bergamota y perfil lipídico | M3 evidencia | Señal limitada sobre LDL, colesterol total, triglicéridos y HDL; sin magnitud fiable. |
+| Psyllium y colesterol | M3 evidencia | Fibra soluble con declaración regulatoria para colesterol; no dieta general. |
+| Ajo y perfil lipídico | M3 evidencia | Efecto pequeño de suplementos sobre colesterol total/LDL y riesgo de sangrado. |
+| Levadura roja de arroz | M4 seguridad | El posible efecto depende de monacolina K, con riesgos tipo lovastatina. |
+
+## Control final
+
+- Se eliminaron explicaciones generales del perfil lipídico que deben recuperarse
+  desde las tarjetas de laboratorio.
+- Se retiraron relaciones secundarias a glucosa o presión arterial cuando
+  distraían del foco lipídico.
+- `relacionado_con` apunta solo a markers canónicos actuales.
+- `monacolina-k` queda en texto y alias, no como `marker` ni `relacionado_con`
+  hasta que exista en taxonomía.
+- Pendiente futuro: aprobar los topics de sustancias naturales anteriores en
+  `corpus-taxonomy.json`.

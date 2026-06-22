@@ -151,6 +151,14 @@ export const MARKER_ALIASES = {
     "β-ctx",
     "β-CTX"
   ],
+  "bicarbonato": [
+    "bicarb",
+    "bicarbonato",
+    "bikarbonat",
+    "co2 total",
+    "dioxido de carbono",
+    "hco3"
+  ],
   "bilirrubina": [
     "bilirrubina",
     "bilirrubina directa",
@@ -203,6 +211,15 @@ export const MARKER_ALIASES = {
     "cystatin c",
     "cystatin c egfr",
     "egfr cistatina"
+  ],
+  "cloruro": [
+    "chlorid",
+    "cl",
+    "cloro",
+    "cloruro",
+    "cloruro de sodio",
+    "cloruro serico",
+    "sal"
   ],
   "colesterol-hdl": [
     "colesterol hdl",
@@ -468,7 +485,16 @@ export const MARKER_ALIASES = {
     "plaquetas"
   ],
   "potasio": [
-    "potasio"
+    "hiperkalemia",
+    "hiperpotasemia",
+    "hipokalemia",
+    "hipopotasemia",
+    "k",
+    "kalium",
+    "potasio",
+    "potasio en sangre",
+    "potasio serico",
+    "potassium"
   ],
   "progesterona": [
     "p4",
@@ -554,6 +580,16 @@ export const MARKER_ALIASES = {
   "silimarina": [
     "silimarina",
     "silymarin"
+  ],
+  "sodio": [
+    "cloruro de sodio",
+    "hipernatremia",
+    "hiponatremia",
+    "na",
+    "natrium",
+    "sal",
+    "sodio",
+    "sodio serico"
   ],
   "t3-libre": [
     "freies t3",
@@ -703,6 +739,22 @@ export const QUERY_GROUPS = {
       "hierro",
       "transferrina",
       "vitamina-b12"
+    ]
+  },
+  "electrolitos": {
+    "aliases": [
+      "electrolitos",
+      "elektrolyte",
+      "elektrolytstatus",
+      "ionograma",
+      "panel de electrolitos",
+      "sodio potasio cloruro"
+    ],
+    "markers": [
+      "bicarbonato",
+      "cloruro",
+      "potasio",
+      "sodio"
     ]
   },
   "glucemia-insulina": {
@@ -1030,6 +1082,7 @@ export const CANONICAL_MARKERS = [
   "ayurveda",
   "berberina",
   "beta-crosslaps",
+  "bicarbonato",
   "bilirrubina",
   "bnp",
   "c-peptido",
@@ -1038,6 +1091,7 @@ export const CANONICAL_MARKERS = [
   "chaga",
   "cinarina",
   "cistatina-c",
+  "cloruro",
   "colesterol-hdl",
   "colesterol-ldl",
   "colesterol-no-hdl",
@@ -1095,6 +1149,7 @@ export const CANONICAL_MARKERS = [
   "shbg",
   "silibinina",
   "silimarina",
+  "sodio",
   "t3-libre",
   "t4-libre",
   "terapia-craneosacral",

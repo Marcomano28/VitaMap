@@ -40,6 +40,8 @@ alias:
 relacionado_con:
   - id: hba1c
     relacion: lectura_conjunta
+evidence:
+  certeza: alta
 source_language: en
 source_jurisdiction:
   - US

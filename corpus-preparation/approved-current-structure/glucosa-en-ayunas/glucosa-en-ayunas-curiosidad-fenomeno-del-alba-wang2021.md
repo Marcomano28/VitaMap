@@ -2,7 +2,7 @@
 title: 'Glucosa en ayunas: por qué sube de madrugada (el fenómeno del alba)'
 source_url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8361546/'
 publication_date: '2021'
-source_kind: institutional-education
+source_kind: clinical-evidence
 source_type: science-curiosity-summary
 rights_status: licensed
 limitations:
@@ -38,6 +38,8 @@ alias:
 relacionado_con:
   - id: hba1c
     relacion: lectura_conjunta
+evidence:
+  certeza: moderada
 source_language: en
 source_jurisdiction:
   - US
