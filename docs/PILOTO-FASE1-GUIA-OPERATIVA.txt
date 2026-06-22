@@ -1,6 +1,6 @@
 VITAMAP — GUÍA OPERATIVA DEL PILOTO FASE 1
 La semilla de trigo sarraceno: la primera triada de usuarios
-Versión 0.6 · 2026-06-09
+Versión 0.7 · 2026-06-23
 
 ════════════════════════════════════════════════════════════════════════
 
@@ -45,7 +45,7 @@ estar si los otros dos no existen. Los datos de uno no influyen en
 los de los otros: cada usuario vive en un directorio aislado, con su
 propio índice, sus propios archivos y su propia sesión.
 
-Esta guía utiliza cuatro estados:
+Esta guía utiliza cinco estados:
 
   [COMPLETADO]
     Existe y ha sido comprobado con el alcance indicado.
@@ -53,6 +53,10 @@ Esta guía utiliza cuatro estados:
   [VERIFICAR EN VPS]
     Puede estar configurado, pero falta confirmarlo directamente en el
     servidor antes de considerarlo una garantía del piloto.
+
+  [EN MAIN — VERIFICAR EN VPS]
+    El código ya está en la rama principal del repo, pero falta confirmar
+    que el VPS ejecuta esa versión y tiene las variables necesarias.
 
   [PENDIENTE — BLOQUEA EL PILOTO REAL]
     Debe resolverse antes de admitir datos médicos reales o invitar a
@@ -62,7 +66,7 @@ Esta guía utiliza cuatro estados:
     Instrucción que se usará después de abrir el piloto; no es una tarea
     que haya que repetir ahora.
 
-ESTADO CONOCIDO A 2026-06-09
+ESTADO CONOCIDO A 2026-06-23
 
   [COMPLETADO]
   - VPS contratado y disponible: 4 vCPU, 8 GB RAM, 160 GB de disco,
@@ -70,12 +74,13 @@ ESTADO CONOCIDO A 2026-06-09
   - Repositorio Git clonado desde main en /opt/vitamap-next. La
     instalación anterior /opt/vitamap se conserva temporalmente como
     referencia de rollback y no se actualiza con git.
-  - Versión actual desplegada mediante Docker Compose. Los servicios
-    web, Caddy, LLM y backup arrancaron correctamente; web y LLM
-    informaron estado healthy.
+  - En la última verificación documentada, la versión desplegada
+    mediante Docker Compose arrancó correctamente; web y LLM informaron
+    estado healthy.
   - HTTPS y endpoint público comprobados:
       https://vitamap.marcomano.org/api/health
-    respondió status=ok, service=vitamap-web, phase=0.
+    respondió status=ok, service=vitamap-web. La respuesta actual incluye
+    además version, phase, audit_chain y timestamp.
   - Registro restringido por invitación implementado y probado
     localmente. El alta directa de BetterAuth queda bloqueada.
   - Flujo de pago comprobado primero en TEST y después en LIVE:
@@ -98,14 +103,42 @@ ESTADO CONOCIDO A 2026-06-09
     Está marcado como sintético y no contiene datos de una persona real.
   - Exportación y eliminación de cuenta existen en la aplicación.
 
-  [IMPLEMENTADO Y VALIDADO LOCALMENTE — PENDIENTE DE DESPLIEGUE]
-  - La administración del corpus existe en la rama de trabajo bajo
-    /admin/corpus, pero todavía no está en main ni en el VPS.
-  - Antes de usarla en https://vitamap.marcomano.org falta fusionar el
-    cambio en main, configurar ADMIN_EMAILS en el infra/.env de producción
-    y reconstruir los contenedores.
+  [EN MAIN — VERIFICAR EN VPS]
+  - La administración del corpus ya existe en main bajo /admin/corpus.
+    Archivos relevantes:
+      apps/web/app/(app)/admin/corpus/page.tsx
+      apps/web/lib/corpus-admin.ts
+      apps/web/scripts/test-corpus-admin.mts
+  - La ruta exige una cuenta BetterAuth autenticada cuyo correo figure
+    en ADMIN_EMAILS dentro de /opt/vitamap-next/infra/.env. Un usuario
+    autenticado sin ese correo recibe 404.
+  - La verificación de email y la recuperación de contraseña existen en
+    código mediante Brevo. En producción requieren BREVO_API_KEY,
+    EMAIL_FROM y, opcionalmente, EMAIL_REPLY_TO.
+  - Los interruptores de módulos existen y deben mantenerse apagados
+    salvo validación expresa:
+      ASSESSMENTS_ENABLED=false
+      ASSISTANT_EDU_GUIDE=false
+      KB_MARKER_SCOPE=false
+      RETRIEVAL_DEBUG=false
+  - El LLM local se controla con el perfil compose local-llm. En el
+    blindaje final del piloto se recomienda:
+      COMPOSE_PROFILES=local-llm
+      LLM_PROVIDER=local
+    Existe modo API externa UE para pruebas controladas, pero no es el
+    modo de cierre del piloto.
 
   [VERIFICAR EN VPS]
+  - Que /opt/vitamap-next está en el commit esperado de main después del
+    despliegue y que no conserva cambios locales sin documentar.
+  - Que infra/.env de producción contiene las variables nuevas:
+    ADMIN_EMAILS, BREVO_API_KEY, EMAIL_FROM, EMAIL_REPLY_TO,
+    ASSESSMENTS_ENABLED, ASSISTANT_EDU_GUIDE, KB_MARKER_SCOPE,
+    RETRIEVAL_DEBUG, COMPOSE_PROFILES y LLM_PROVIDER.
+  - Que /admin/corpus abre para el administrador y no abre para una
+    cuenta normal.
+  - Que el envío de verificación de email y recuperación de contraseña
+    funciona con Brevo desde producción.
   - Firewall, acceso SSH restringido y política de actualización del
     sistema operativo.
   - Cifrado del disco y custodia de las claves.
@@ -118,8 +151,8 @@ ESTADO CONOCIDO A 2026-06-09
   - Confirmar en Stripe la fecha e importe neto de la primera
     transferencia al IBAN de Revolut. El pago ya está en Stripe, pero
     eso no demuestra todavía que el banco haya recibido el payout.
-  - Completar el reintento del PDF sintético después de desplegar la
-    corrección del worker de pdfjs-dist (main bb0d6b3).
+  - Completar el reintento del PDF sintético después de desplegar una
+    versión de main que incluya la corrección del worker de pdfjs-dist.
 
   [PENDIENTE — BLOQUEA EL PILOTO REAL]
   1. Desactivar mediante configuración los módulos todavía no aprobados,
@@ -129,8 +162,9 @@ ESTADO CONOCIDO A 2026-06-09
      mantener en "false" hasta la revisión por módulo. Su variante de
      "alimentación y factores" (Tarjetas B) no se publica en el RAG hasta
      validar el caso de regresión correspondiente.
-  2. Completar autenticación reforzada, recuperación segura de cuenta y
-     verificación de correo. Para el administrador, MFA es obligatoria.
+  2. Verificar en VPS la verificación de correo y recuperación segura de
+     cuenta. MFA sigue pendiente y es obligatoria para el administrador
+     antes del piloto real.
   3. Publicar privacidad, Impressum, condiciones del servicio,
      información de desistimiento y una cancelación de suscripción
      separada de la eliminación de datos.
@@ -149,14 +183,48 @@ ESTADO CONOCIDO A 2026-06-09
 
 PRÓXIMO PASO TÉCNICO INMEDIATO
 
-  Completar con el administrador el recorrido sintético:
-    reintentar PDF → revisar extracción → confirmar en memoria →
-    consultar en chat → exportar → comprobar auditoría → borrar.
+  Antes de subir cambios:
+    1. Separar mentalmente tres capas:
+         · código/infra/docs del repo;
+         · tarjetas preparadas en corpus-preparation/;
+         · KB publicada en /data/kb del VPS.
+       Hacer git push NO publica tarjetas en la KB. Las tarjetas nuevas
+       deben aprobarse/publicarse después desde /admin/corpus o mediante
+       el procedimiento administrativo equivalente.
+    2. Revisar `git status --short --untracked-files=all`.
+    3. Ejecutar los tests relevantes según el cambio:
+         npm run test:marker-taxonomy -w @vitamap/web
+         npm run test:source-locale -w @vitamap/web
+         npm run test:corpus-admin -w @vitamap/web
+       Si se ha tocado aplicación o auth, añadir build/test de producción
+       según corresponda.
+    4. Hacer commit y push a main.
 
-  La primera subida detectó un error de inicialización del worker de
-  pdfjs-dist. El documento quedó cifrado en el buzón; no se perdió ni
-  necesita subirse de nuevo. La corrección está fusionada en main
-  (bb0d6b3) y añade una prueba automática con ese mismo PDF.
+  En el VPS:
+    1. ssh root@<IP del VPS>
+    2. cd /opt/vitamap-next
+    3. git fetch origin main
+    4. git status --short
+       Debe estar limpio antes de `git pull`, salvo cambios locales
+       documentados en infra/.env, que no forma parte del repo.
+    5. git pull origin main
+    6. Revisar /opt/vitamap-next/infra/.env contra infra/.env.example.
+    7. cd infra
+    8. docker compose --env-file .env up -d --build
+    9. docker compose --env-file .env ps
+   10. curl -fsS https://vitamap.marcomano.org/api/health
+   11. Probar login, /settings/billing y /admin/corpus con la cuenta
+       administradora.
+
+  Después del despliegue:
+    - Si hay tarjetas nuevas, publicarlas desde /admin/corpus como
+      borrador, revisar metadatos, aprobar y comprobar que el índice KB
+      se actualiza.
+    - Ejecutar una consulta de prueba que deba recuperar una tarjeta
+      recién publicada.
+    - Completar con el administrador el recorrido sintético:
+        reintentar PDF → revisar extracción → confirmar en memoria →
+        consultar en chat → exportar → comprobar auditoría → borrar.
 
   Después deben verificarse backup y restauración y comenzar las
   48 horas de observación. No se invita todavía a los voluntarios 2 y 3.
@@ -233,10 +301,8 @@ Estado actual:
     .dockerignore.
 
 Para actualizar la instalación actual:
-  cd /opt/vitamap-next
-  git pull origin main
-  cd infra
-  docker compose --env-file .env up -d --build
+  Usar el procedimiento completo de F.1. No hacer `git pull` y rebuild
+  a ciegas si infra/.env.example añadió variables nuevas.
 
 Para una instalación nueva o una reconstrucción futura:
   cd /opt
@@ -252,6 +318,7 @@ Variables obligatorias que debes rellenar en infra/.env:
   PUBLIC_DOMAIN=vitamap.marcomano.org
   PUBLIC_URL=https://vitamap.marcomano.org
   NEXT_PUBLIC_APP_URL=https://vitamap.marcomano.org
+  CADDY_EMAIL=tu@correo.de
 
   # Genera con: openssl rand -hex 32
   MASTER_KEY=<64 caracteres hexadecimales>
@@ -260,6 +327,12 @@ Variables obligatorias que debes rellenar en infra/.env:
   BETTER_AUTH_SECRET=<mínimo 32 caracteres aleatorios>
   BETTER_AUTH_URL=https://vitamap.marcomano.org
 
+  # Administración del corpus
+  ADMIN_EMAILS=<correo exacto de la cuenta BetterAuth del administrador>
+
+  # LLM local en el VPS (modo recomendado para cierre del piloto)
+  COMPOSE_PROFILES=local-llm
+  LLM_PROVIDER=local
   LLM_BASE_URL=http://llm:8080/v1
   LLM_MODEL=qwen3-4b-instruct
   LLM_API_KEY=not-needed-for-local
@@ -267,6 +340,17 @@ Variables obligatorias que debes rellenar en infra/.env:
   LLM_THREADS=2
 
   QMD_EMBED_MODEL=hf:Qwen/Qwen3-Embedding-0.6B-GGUF/Qwen3-Embedding-0.6B-Q8_0.gguf
+
+  # Interruptores de módulo: mantener apagados salvo validación expresa
+  ASSESSMENTS_ENABLED=false
+  ASSISTANT_EDU_GUIDE=false
+  KB_MARKER_SCOPE=false
+  RETRIEVAL_DEBUG=false
+
+  # Email transaccional (Brevo, UE)
+  BREVO_API_KEY=xkeysib-...
+  EMAIL_FROM="VitaMap <no-reply@vitamap.marcomano.org>"
+  EMAIL_REPLY_TO=soporte@marcomano.org
 
   DATA_ROOT=/data
   KB_INDEX_PATH=/data/kb-index.sqlite
@@ -278,8 +362,15 @@ Variables obligatorias que debes rellenar en infra/.env:
   STRIPE_PRICE_ID=price_...
   STRIPE_WEBHOOK_SECRET=whsec_...
 
-  CADDY_EMAIL=tu@correo.de
   NODE_ENV=production
+
+Notas:
+  - En modo API externa UE para pruebas controladas, COMPOSE_PROFILES
+    queda vacío, LLM_PROVIDER=external y LLM_BASE_URL/LLM_API_KEY apuntan
+    al proveedor elegido. Antes del piloto real debe revisarse ADR-014 y
+    el consentimiento aplicable.
+  - En producción, BREVO_API_KEY y EMAIL_FROM son necesarios para
+    verificación de correo y recuperación de contraseña.
 
 Cómo generar MASTER_KEY y BETTER_AUTH_SECRET de forma segura:
   openssl rand -hex 32
@@ -317,12 +408,23 @@ El portal es independiente del borrado de cuenta. Cancelar detiene la
 renovación; borrar la cuenta revoca el consentimiento y purga la memoria.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-C.3  MODELO LLM — [ARRANQUE Y HEALTHCHECK COMPLETADOS]
+C.3  MODELO LLM — [LOCAL BAJO PERFIL local-llm]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-El volumen vitamap_llm_models existente se reutilizó y el servicio
-vitamap-llm-1 informó healthy. Falta verificar una conversación completa
-con el documento sintético antes de considerar validada la inferencia.
+El modo recomendado para cerrar el piloto es local:
+
+  COMPOSE_PROFILES=local-llm
+  LLM_PROVIDER=local
+
+Con ese perfil, Compose levanta el servicio `llm` con llama.cpp. El
+volumen vitamap_llm_models existente se reutilizó en el despliegue
+anterior y el servicio vitamap-llm-1 informó healthy. Debe verificarse
+una conversación completa con el documento sintético antes de considerar
+validada la inferencia en el VPS actual.
+
+Si COMPOSE_PROFILES está vacío y LLM_PROVIDER=external, el servicio llm
+no se levanta. Ese modo solo se contempla para pruebas controladas con
+proveedor UE, opt-out/ZDR cuando aplique y consentimiento compatible.
 
 En una instalación nueva, el modelo debe estar en disco antes de
 levantar los contenedores.
@@ -336,27 +438,34 @@ al volumen Docker llm_models. La descarga puede tardar 5-15 minutos
 según la conexión del VPS. No interrumpir.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-C.4  STACK DE SERVICIOS — [COMPLETADO EN FASE 0]
+C.4  STACK DE SERVICIOS — [COMPLETADO; REVISAR PERFIL LLM]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   cd /opt/vitamap-next/infra
   docker compose --env-file .env up -d --build
 
-Esto levanta cuatro servicios:
+Esto levanta los servicios permanentes:
   - caddy   → reverse proxy con TLS automático (Let's Encrypt)
   - web     → Next.js con QMD embebido
-  - llm     → llama.cpp server con Qwen3-4B
   - backup  → cron diario que cifra /data/ y sincroniza a Backblaze B2
+
+Y, si COMPOSE_PROFILES=local-llm:
+  - llm     → llama.cpp server con Qwen3-4B
+
+El servicio `admin` existe bajo el perfil `tools`; no queda corriendo.
+Se usa para invitaciones, seed/check de KB y tareas administrativas.
 
 Verificar que todo funciona:
   docker compose --env-file .env ps
   docker compose --env-file .env logs web --tail=50
-  docker compose --env-file .env logs llm --tail=20
+  docker compose --env-file .env logs llm --tail=20   # solo modo local-llm
 
 El endpoint de salud responde en:
   curl https://vitamap.marcomano.org/api/health
 
-Respuesta comprobada: status=ok, service=vitamap-web, phase=0.
+Respuesta esperada: status=ok, service=vitamap-web, version, phase,
+audit_chain y ts. Si audit_chain aparece como broken o error, el servicio
+puede seguir vivo, pero debe tratarse como alerta operativa.
 
 El aviso de que vitamap_llm_models ya existía y no fue creado por el
 Compose actual no bloqueó el despliegue: el volumen fue reutilizado y el
@@ -424,16 +533,24 @@ Paso 2 — Abrir el navegador y registrarse como cualquier voluntario:
   Rellenar: código, email (admin@tudominio.de), contraseña, checkboxes.
   Pulsar "Validar invitación y crear cuenta".
 
+Después del registro, BetterAuth exige verificar el correo. El sistema envía
+un enlace por Brevo y muestra /verify-email-pending. El usuario debe abrir el
+enlace de verificación antes del primer acceso normal. Si el email no llega,
+revisar BREVO_API_KEY, EMAIL_FROM, el remitente verificado en Brevo y los logs
+del servicio web.
+
 El administrador queda registrado también como usuario normal. La cuenta ya
-existente no necesita registrarse de nuevo. Cuando la función de corpus haya
-sido fusionada y desplegada, su mismo correo de BetterAuth deberá figurar en
-ADMIN_EMAILS dentro de /opt/vitamap-next/infra/.env. Entonces podrá abrir:
+existente no necesita registrarse de nuevo. Para administrar el corpus, su
+mismo correo de BetterAuth debe figurar en ADMIN_EMAILS dentro de
+/opt/vitamap-next/infra/.env. Si el VPS ya tiene desplegada una versión de
+main con /admin/corpus, entonces podrá abrir:
 
   https://vitamap.marcomano.org/admin/corpus
 
-Hasta ese despliegue la ruta devuelve 404, aunque el código exista en una copia
-local. Las operaciones de invitaciones (crear, revocar, listar) continúan
-haciéndose por SSH en el VPS y no se conceden por conocer la URL del panel.
+Un usuario autenticado que no figure en ADMIN_EMAILS recibe 404. Una persona
+no autenticada se redirige a login. Las operaciones de invitaciones (crear,
+revocar, listar) continúan haciéndose por SSH en el VPS y no se conceden por
+conocer la URL del panel.
 
 Prueba sintética actual:
   1. Archivo:
@@ -442,8 +559,9 @@ Prueba sintética actual:
      extracción falló por una ruta de worker vacía en pdfjs-dist.
   3. La corrección registra el worker incluido en el bundle standalone
      y conserva el fallback pdftoppm + Tesseract.
-  4. Tras desplegar main bb0d6b3, pulsar "Reintentar" sobre el mismo
-     elemento. No volver a subirlo.
+  4. Tras desplegar una versión de main que incluya la corrección del
+     worker PDF, pulsar "Reintentar" sobre el mismo elemento. No volver
+     a subirlo.
   5. Comprobar los 11 marcadores esperados. Glucosa, colesterol total y
      LDL deben quedar altos; vitamina D baja; los demás, normales.
   6. Corregir manualmente cualquier error antes de confirmar.
@@ -554,8 +672,10 @@ D.2  CREAR TU CUENTA
 
   5. Pulsa "Validar invitación y crear cuenta".
 
-Si todo es correcto, quedarás registrado e iniciado sesión
-automáticamente, y aterrizarás en Suscripción (/settings/billing).
+Si todo es correcto, quedarás registrado pero no entrarás directamente:
+VitaMap enviará un email de verificación y mostrará /verify-email-pending.
+Abre el enlace del correo. Tras verificarlo, podrás iniciar sesión y
+aterrizarás en Suscripción (/settings/billing).
 
 Errores frecuentes y soluciones:
   "La invitación no es válida para ese email"
@@ -569,14 +689,19 @@ Errores frecuentes y soluciones:
   → Alguien (o tú mismo) ya registró una cuenta con ese correo.
     Ve a /login e intenta acceder.
 
+  "Necesitas verificar tu correo"
+  → Revisa tu buzón y spam. Desde la pantalla de verificación puedes
+    pedir un nuevo enlace, con límite de frecuencia.
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 D.3  PRIMER ACCESO: POR DÓNDE EMPEZAR
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Tras registrarte aterrizas en /settings/billing. Hasta que Stripe confirme
-una suscripción activa, solo permanecen disponibles billing, ajustes,
-exportación y borrado. Las páginas, acciones y APIs de salud verifican el
-estado en el servidor; la URL de retorno de Checkout no concede acceso.
+Tras verificar el correo e iniciar sesión, aterrizas en /settings/billing.
+Hasta que Stripe confirme una suscripción activa, solo permanecen disponibles
+billing, ajustes, exportación y borrado. Las páginas, acciones y APIs de salud
+verifican el estado en el servidor; la URL de retorno de Checkout no concede
+acceso.
 
 Cuando la suscripción está activa, las secciones principales son:
 
@@ -743,9 +868,39 @@ F. PROCEDIMIENTOS POSTERIORES DE MANTENIMIENTO
 F.1  ACTUALIZAR EL CÓDIGO
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+Antes de desplegar, el cambio debe estar en main y haber pasado los tests
+locales aplicables. Si hay tarjetas en `corpus-preparation/`, recordar que
+siguen siendo material preparado: no se publican en `/data/kb` por el mero
+hecho de hacer push.
+
   ssh root@<IP del VPS>
   cd /opt/vitamap-next
+  git fetch origin main
+  git status --short
+
+El estado debe estar limpio. No editar ni versionar secretos en el repo; la
+configuración real vive en /opt/vitamap-next/infra/.env.
+
   git pull origin main
+
+Antes de reconstruir, revisar si infra/.env.example incorporó variables nuevas
+comparando solo nombres de claves, no valores secretos:
+  grep -E '^[A-Z0-9_]+=' infra/.env.example | cut -d= -f1 | sort > /tmp/vitamap-env-example.keys
+  grep -E '^[A-Z0-9_]+=' infra/.env | cut -d= -f1 | sort > /tmp/vitamap-env-prod.keys
+  comm -23 /tmp/vitamap-env-example.keys /tmp/vitamap-env-prod.keys
+
+No copiar el fichero completo encima de infra/.env: contiene secretos reales.
+Añadir solo las variables que falten y confirmar especialmente:
+  ADMIN_EMAILS
+  BREVO_API_KEY
+  EMAIL_FROM
+  ASSESSMENTS_ENABLED=false
+  ASSISTANT_EDU_GUIDE=false
+  KB_MARKER_SCOPE=false
+  RETRIEVAL_DEBUG=false
+  COMPOSE_PROFILES=local-llm
+  LLM_PROVIDER=local
+
   cd infra
   docker compose --env-file .env up -d --build
 
@@ -754,14 +909,19 @@ persistentes. Confirmar después:
   docker compose --env-file .env ps
   curl -fsS https://vitamap.marcomano.org/api/health
 
-Para la primera activación de /admin/corpus:
-  1. Confirmar que el cambio está fusionado en main.
-  2. Editar /opt/vitamap-next/infra/.env y añadir:
-       ADMIN_EMAILS=<correo exacto de la cuenta BetterAuth del administrador>
-  3. Ejecutar la reconstrucción indicada arriba.
-  4. Entrar con la cuenta habitual en:
+Comprobaciones posteriores mínimas:
+  1. Entrar en /login con la cuenta administradora.
+  2. Abrir:
        https://vitamap.marcomano.org/admin/corpus
-  5. Un usuario autenticado cuyo correo no esté en ADMIN_EMAILS recibe 404.
+  3. Confirmar que una cuenta no incluida en ADMIN_EMAILS recibe 404.
+  4. Probar envío de email de verificación o recuperación en un usuario
+     de prueba, sin exponer datos reales.
+  5. Revisar logs:
+       docker compose --env-file .env logs web --tail=100
+  6. Si se publican tarjetas nuevas, cargar cada `.md` desde /admin/corpus,
+     guardar como borrador, revisar metadatos, aprobar y ejecutar una
+     consulta de prueba. La publicación crea/actualiza archivos en /data/kb
+     y reindexa el KB; `corpus-preparation/` no se indexa directamente.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 F.2  VER LOGS EN TIEMPO REAL
@@ -773,7 +933,7 @@ F.2  VER LOGS EN TIEMPO REAL
   # Solo el servidor web
   docker compose --env-file .env logs web -f --tail=100
 
-  # Solo el modelo LLM
+  # Solo el modelo LLM local (si COMPOSE_PROFILES=local-llm)
   docker compose --env-file .env logs llm -f --tail=50
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -949,6 +1109,43 @@ Reiniciar un servicio concreto:
 
 Ver logs de un servicio:
   docker compose --env-file .env logs web -f --tail=100
+
+─────────────────────────────────────────────────────────────────────
+CORPUS Y KB
+─────────────────────────────────────────────────────────────────────
+
+Abrir interfaz administrativa:
+  https://vitamap.marcomano.org/admin/corpus
+
+Requisitos:
+  - sesión iniciada;
+  - correo de BetterAuth incluido en ADMIN_EMAILS;
+  - versión desplegada con /admin/corpus.
+
+Recordatorio:
+  corpus-preparation/approved-current-structure/ vive en el repo y sirve para
+  preparar tarjetas. QMD no lo indexa. La KB activa vive en /data/kb del VPS.
+
+Publicar una tarjeta preparada:
+  1. Abrir /admin/corpus.
+  2. Cargar el `.md`.
+  3. Revisar frontmatter importado, derechos y limitaciones.
+  4. Guardar como borrador.
+  5. Aprobar/publicar.
+  6. Probar una consulta que deba recuperar esa tarjeta.
+
+Reindexar KB compartida desde el contenedor administrativo:
+  docker compose --env-file .env --profile tools run --rm \
+    --entrypoint node admin --import tsx scripts/seed-kb.mts
+
+Forzar reembed completo:
+  docker compose --env-file .env --profile tools run --rm \
+    --entrypoint node admin --import tsx scripts/seed-kb.mts --force
+
+Comprobar que la KB contiene documentos reales y probar búsqueda:
+  docker compose --env-file .env --profile tools run --rm \
+    --entrypoint node admin --import tsx scripts/check-kb.mts \
+    "vitamina D valores bajos"
 
 ─────────────────────────────────────────────────────────────────────
 BASES DE DATOS
