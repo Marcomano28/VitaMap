@@ -55,9 +55,11 @@
     "ast": ["ast", "aspartato aminotransferasa"],
     "beta-crosslaps": ["beta crosslaps", "beta-crosslaps", "beta ctx", "β-ctx", "ctx", "ctx-i", "c-telopeptido", "c-terminal telopeptide", "bone resorption marker"],
     "berberina": ["berberina", "berberine", "clorhidrato de berberina", "berberina hcl", "bbr"],
+    "bicarbonato": ["bicarbonato", "co2 total", "dioxido de carbono", "hco3", "bicarb", "bikarbonat"],
     "bilirrubina": ["bilirrubina", "bilirubina", "bilirubin", "bilirrubina total", "bilirrubina directa", "bilirrubina indirecta"],
     "c-peptido": ["c-peptido", "c peptido", "peptido c", "c peptide", "insulina propia"],
     "calcio": ["calcio"],
+    "cloruro": ["cloruro", "cloro", "cl", "chlorid", "cloruro serico", "sal", "cloruro de sodio"],
     "cardo-mariano": ["cardo mariano", "milk thistle", "mary thistle", "st mary's thistle", "silybum marianum", "carduus marianus"],
     "alcachofa": ["alcachofa", "artichoke", "globe artichoke", "cynara scolymus", "cynara cardunculus", "cynarae folium", "hoja de alcachofera"],
     "acido-clorogenico": ["acido clorogenico", "ácido clorogénico", "chlorogenic acid"],
@@ -96,7 +98,7 @@
     "magnesio": ["magnesio"],
     "osteocalcina": ["osteocalcina", "osteocalcin", "oc", "bone gla protein", "proteina gla osea"],
     "plaquetas": ["plaquetas"],
-    "potasio": ["potasio"],
+    "potasio": ["potasio", "potasio serico", "potasio en sangre", "potassium", "kalium", "k", "hipopotasemia", "hiperpotasemia", "hipokalemia", "hiperkalemia"],
     "progesterona": ["progesterona", "progesterone", "p4"],
     "prolactina": ["prolactina", "prl", "prolactin", "hormona lactogena", "prolaktin"],
     "proteina-c-reactiva": ["proteina c reactiva", "pcr", "crp", "hscrp", "hs crp"],
@@ -110,6 +112,7 @@
     "transferrina": ["transferrina", "transferrin"],
     "saturacion-transferrina": ["saturacion de transferrina", "ist", "indice de saturacion de transferrina", "tsat", "transferrin saturation", "transferrinsattigung"],
     "shbg": ["shbg", "globulina transportadora de hormonas sexuales", "globulina fijadora de hormonas sexuales", "sex hormone binding globulin", "tebg"],
+    "sodio": ["sodio", "na", "natrium", "sodio serico", "sal", "cloruro de sodio", "hiponatremia", "hipernatremia"],
     "tibc": ["tibc", "capacidad total de fijacion del hierro", "capacidad total de fijacion de hierro", "total iron binding capacity", "gesamteisenbindungskapazitat"],
     "trigliceridos": ["trigliceridos", "triglicerido"],
     "testosterona-total": ["testosterona", "testosterona total", "total testosterone", "testosteron", "testosterona serica", "testosterona libre", "testosterona biodisponible", "free testosterone", "freies testosteron"],
@@ -136,6 +139,10 @@
     "hematologia": {
       "aliases": ["hemograma", "hemograma completo", "blutbild", "grosses blutbild"],
       "markers": ["eritrocitos", "hemoglobina", "hematocrito", "leucocitos", "plaquetas"]
+    },
+    "electrolitos": {
+      "aliases": ["electrolitos", "panel de electrolitos", "ionograma", "sodio potasio cloruro", "elektrolyte", "elektrolytstatus"],
+      "markers": ["sodio", "potasio", "cloruro", "bicarbonato"]
     },
     "metabolismo-oseo": {
       "aliases": ["metabolismo oseo", "salud osea", "remodelado oseo", "vitamina d calcio pth", "knochenstoffwechsel", "knochenmarker"],
@@ -1081,6 +1088,83 @@
       "relacionado_con": [
         { "id": "calcio", "relacion": "lectura_conjunta" },
         { "id": "potasio", "relacion": "lectura_conjunta" }
+      ]
+    },
+    "potasio": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "mineral", "electrolito"],
+      "marker": ["potasio"],
+      "categoria": ["electrolitos", "minerales-micronutrientes"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["cardiovascular", "renal-urinario", "endocrino-metabolico"],
+      "area_de_salud": ["salud-cardiovascular", "energia-fatiga", "rendimiento-deportivo"],
+      "alias": ["potasio", "potasio serico", "potasio en sangre", "k", "kalium", "hipopotasemia", "hiperpotasemia", "hipokalemia", "hiperkalemia"],
+      "relacionado_con": [
+        { "id": "creatinina", "relacion": "modifica_interpretacion" },
+        { "id": "egfr", "relacion": "modifica_interpretacion" },
+        { "id": "magnesio", "relacion": "modifica_interpretacion" }
+      ]
+    },
+    "sodio": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "mineral", "electrolito"],
+      "marker": ["sodio"],
+      "categoria": ["electrolitos", "minerales-micronutrientes"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["renal-urinario", "cardiovascular", "endocrino-metabolico"],
+      "area_de_salud": ["salud-renal", "salud-cardiovascular"],
+      "alias": ["sodio", "na", "natrium", "sodio serico", "sal", "cloruro de sodio", "hiponatremia", "hipernatremia"],
+      "relacionado_con": [
+        { "id": "cloruro", "relacion": "lectura_conjunta" },
+        { "id": "bicarbonato", "relacion": "lectura_conjunta" },
+        { "id": "potasio", "relacion": "mismo_panel" },
+        { "id": "creatinina", "relacion": "modifica_interpretacion" }
+      ]
+    },
+    "cloruro": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "mineral", "electrolito"],
+      "marker": ["cloruro"],
+      "categoria": ["electrolitos", "minerales-micronutrientes"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["renal-urinario", "cardiovascular", "endocrino-metabolico"],
+      "area_de_salud": ["salud-renal", "salud-cardiovascular"],
+      "alias": ["cloruro", "cloro", "cl", "chlorid", "cloruro serico", "sal", "cloruro de sodio"],
+      "relacionado_con": [
+        { "id": "sodio", "relacion": "lectura_conjunta" },
+        { "id": "bicarbonato", "relacion": "lectura_conjunta" },
+        { "id": "creatinina", "relacion": "modifica_interpretacion" }
+      ]
+    },
+    "bicarbonato": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "mineral", "electrolito"],
+      "marker": ["bicarbonato"],
+      "categoria": ["electrolitos"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["respiratorio", "renal-urinario", "endocrino-metabolico"],
+      "area_de_salud": ["salud-renal", "salud-cardiovascular"],
+      "alias": ["bicarbonato", "co2 total", "dioxido de carbono", "hco3", "bicarb", "bikarbonat"],
+      "relacionado_con": [
+        { "id": "cloruro", "relacion": "lectura_conjunta" },
+        { "id": "sodio", "relacion": "mismo_panel" },
+        { "id": "creatinina", "relacion": "modifica_interpretacion" }
+      ]
+    },
+    "electrolitos": {
+      "dominio": "laboratorio",
+      "tipo": ["panel"],
+      "marker": ["sodio", "potasio", "cloruro", "bicarbonato"],
+      "categoria": ["electrolitos", "minerales-micronutrientes"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["renal-urinario", "cardiovascular", "endocrino-metabolico"],
+      "area_de_salud": ["salud-renal", "salud-cardiovascular"],
+      "alias": ["panel de electrolitos", "ionograma", "electrolitos", "elektrolyte", "elektrolytstatus"],
+      "relacionado_con": [
+        { "id": "sodio", "relacion": "lectura_conjunta" },
+        { "id": "potasio", "relacion": "lectura_conjunta" },
+        { "id": "cloruro", "relacion": "lectura_conjunta" },
+        { "id": "bicarbonato", "relacion": "lectura_conjunta" }
       ]
     },
     "metabolismo-oseo": {
