@@ -25,7 +25,7 @@ export function LanguageSwitcher({ locale }: { locale: Locale }) {
 
   return (
     <div
-      className="inline-flex rounded-md border border-[var(--color-border)] overflow-hidden text-xs"
+      className="inline-flex shrink-0 rounded-md border border-[var(--color-border)] overflow-hidden text-xs"
       aria-label={locale === "de" ? "Sprache" : "Idioma"}
     >
       {(["es", "de"] as const).map((l) => (
@@ -35,7 +35,7 @@ export function LanguageSwitcher({ locale }: { locale: Locale }) {
           onClick={() => setLocale(l)}
           disabled={!!pending}
           className={[
-            "px-2 py-1 transition",
+            "whitespace-nowrap px-2 py-1 transition",
             locale === l
               ? "bg-[var(--color-foreground)] text-[var(--color-background)]"
               : "text-[var(--color-muted)] hover:bg-[var(--color-card)]",
