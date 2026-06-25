@@ -116,10 +116,10 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-200px)] min-h-[500px]">
+    <div className="vitamap-chat-panel flex flex-col">
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto space-y-6 pr-2"
+        className="flex-1 overflow-y-auto space-y-6 pr-1 sm:pr-2"
       >
         {messages.length === 0 && !loading && (
           <div className="text-sm text-[var(--color-muted)] rounded-md border border-dashed border-[var(--color-border)] p-4">
@@ -151,7 +151,7 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
 
       <form
         onSubmit={send}
-        className="mt-4 flex items-end gap-2 border-t border-[var(--color-border)] pt-4"
+        className="mt-4 flex flex-col items-stretch gap-2 border-t border-[var(--color-border)] pt-4 sm:flex-row sm:items-end"
       >
         <textarea
           value={input}
@@ -165,12 +165,12 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
           rows={2}
           maxLength={4000}
           placeholder={t.placeholder}
-          className="flex-1 rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-accent)] resize-none"
+          className="min-w-0 flex-1 rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-accent)] resize-none"
         />
         <button
           type="submit"
           disabled={loading || input.trim().length === 0}
-          className="rounded-md bg-[var(--color-foreground)] text-[var(--color-background)] px-4 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50"
+          className="rounded-md bg-[var(--color-foreground)] text-[var(--color-background)] px-4 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50 sm:w-auto"
         >
           {t.send}
         </button>
@@ -182,7 +182,7 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
 function UserBubble({ content }: { content: string }) {
   return (
     <div className="flex justify-end">
-      <div className="max-w-[80%] rounded-2xl rounded-br-sm bg-[var(--color-foreground)] text-[var(--color-background)] px-4 py-2 text-sm whitespace-pre-wrap">
+      <div className="max-w-[92%] rounded-2xl rounded-br-sm bg-[var(--color-foreground)] text-[var(--color-background)] px-4 py-2 text-sm whitespace-pre-wrap sm:max-w-[80%]">
         {content}
       </div>
     </div>
@@ -205,7 +205,7 @@ function AssistantBubble({
   // etiquetas de guardrail — es un mensaje del sistema, no del modelo.
   if (m.crisis) {
     return (
-      <div className="max-w-[90%] rounded-2xl rounded-bl-sm border-2 border-amber-400 bg-amber-50 dark:bg-amber-900/30 px-4 py-3 text-sm text-amber-900 dark:text-amber-100 whitespace-pre-wrap">
+      <div className="max-w-[96%] rounded-2xl rounded-bl-sm border-2 border-amber-400 bg-amber-50 dark:bg-amber-900/30 px-4 py-3 text-sm text-amber-900 dark:text-amber-100 whitespace-pre-wrap sm:max-w-[90%]">
         {m.content}
       </div>
     );
@@ -213,7 +213,7 @@ function AssistantBubble({
 
   return (
     <div className="space-y-2">
-      <div className="max-w-[90%] rounded-2xl rounded-bl-sm bg-[var(--color-card)] border border-[var(--color-border)] px-4 py-3">
+      <div className="max-w-[96%] rounded-2xl rounded-bl-sm bg-[var(--color-card)] border border-[var(--color-border)] px-4 py-3 sm:max-w-[90%]">
         {(blocked || rewritten) && (
           <p className="text-[10px] uppercase tracking-wide text-[var(--color-muted)] mb-2">
             {blocked ? t.blocked : t.rewritten}
@@ -224,7 +224,7 @@ function AssistantBubble({
       </div>
 
       {m.citations.length > 0 && (
-        <div className="max-w-[90%]">
+        <div className="max-w-[96%] sm:max-w-[90%]">
           <button
             onClick={() => setShowCitations((v) => !v)}
             className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-[var(--color-muted)] hover:text-[var(--color-foreground)] transition-colors"

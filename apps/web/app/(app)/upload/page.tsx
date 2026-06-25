@@ -99,8 +99,8 @@ export default async function UploadPage() {
         ) : (
           <ul className="divide-y divide-[var(--color-border)] rounded-md border border-[var(--color-border)]">
             {inbox.map((it) => (
-              <li key={it.id} className="flex items-center gap-3 p-3">
-                <div className="flex-1 min-w-0">
+              <li key={it.id} className="flex flex-col items-start gap-3 p-3 sm:flex-row sm:items-center">
+                <div className="w-full min-w-0 flex-1 sm:w-auto">
                   <p className="truncate font-medium text-sm">
                     {it.originalName}
                   </p>
@@ -110,55 +110,57 @@ export default async function UploadPage() {
                     {it.error ? ` · ${it.error.slice(0, 80)}` : ""}
                   </p>
                 </div>
-                <span
-                  title={it.status === "extracting" ? t.extractingHint : undefined}
-                  className={`text-xs px-2 py-1 rounded ${
-                    it.status === "extracted"
-                      ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200"
-                      : it.status === "failed"
-                        ? "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200"
-                        : it.status === "extracting"
-                          ? "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200"
-                          : "bg-[var(--color-card)] text-[var(--color-muted)]"
-                  }`}
-                >
-                  {it.status === "extracting" && (
-                    <span
-                      className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-current animate-pulse"
-                      aria-hidden="true"
-                    />
-                  )}
-                  {t.statuses[it.status as keyof typeof t.statuses] ?? it.status}
-                </span>
-                {it.status === "extracted" && (
-                  <Link
-                    href={`/inbox/${it.id}`}
-                    className="text-sm rounded-md border border-[var(--color-border)] px-3 py-1 hover:bg-[var(--color-card)]"
+                <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:justify-end">
+                  <span
+                    title={it.status === "extracting" ? t.extractingHint : undefined}
+                    className={`text-xs px-2 py-1 rounded ${
+                      it.status === "extracted"
+                        ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200"
+                        : it.status === "failed"
+                          ? "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200"
+                          : it.status === "extracting"
+                            ? "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200"
+                            : "bg-[var(--color-card)] text-[var(--color-muted)]"
+                    }`}
                   >
-                    {t.review}
-                  </Link>
-                )}
-                {it.status === "failed" && (
-                  <form action={retryInboxExtractionAction}>
+                    {it.status === "extracting" && (
+                      <span
+                        className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-current animate-pulse"
+                        aria-hidden="true"
+                      />
+                    )}
+                    {t.statuses[it.status as keyof typeof t.statuses] ?? it.status}
+                  </span>
+                  {it.status === "extracted" && (
+                    <Link
+                      href={`/inbox/${it.id}`}
+                      className="text-sm rounded-md border border-[var(--color-border)] px-3 py-1 hover:bg-[var(--color-card)]"
+                    >
+                      {t.review}
+                    </Link>
+                  )}
+                  {it.status === "failed" && (
+                    <form action={retryInboxExtractionAction}>
+                      <input type="hidden" name="id" value={it.id} />
+                      <button
+                        type="submit"
+                        className="text-sm rounded-md border border-[var(--color-border)] px-3 py-1 hover:bg-[var(--color-card)]"
+                      >
+                        {t.retry}
+                      </button>
+                    </form>
+                  )}
+                  <form action={discardInboxItemAction}>
                     <input type="hidden" name="id" value={it.id} />
                     <button
                       type="submit"
-                      className="text-sm rounded-md border border-[var(--color-border)] px-3 py-1 hover:bg-[var(--color-card)]"
+                      className="text-xs text-red-700 dark:text-red-400 hover:underline"
+                      aria-label={t.discard}
                     >
-                      {t.retry}
+                      {t.discard}
                     </button>
                   </form>
-                )}
-                <form action={discardInboxItemAction}>
-                  <input type="hidden" name="id" value={it.id} />
-                  <button
-                    type="submit"
-                    className="text-xs text-red-700 dark:text-red-400 hover:underline"
-                    aria-label={t.discard}
-                  >
-                    {t.discard}
-                  </button>
-                </form>
+                </div>
               </li>
             ))}
           </ul>

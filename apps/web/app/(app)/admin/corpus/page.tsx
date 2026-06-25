@@ -404,7 +404,7 @@ export default async function CorpusAdminPage({ searchParams }: PageProps) {
           <h2 className="text-xl font-medium">{t.retrievalTest}</h2>
           <p className="text-sm text-[var(--color-muted)]">{t.retrievalHint}</p>
         </div>
-        <form method="get" className="flex gap-2">
+        <form method="get" className="flex flex-col gap-2 sm:flex-row">
           <input
             className={inputCls}
             name="q"
@@ -428,7 +428,7 @@ export default async function CorpusAdminPage({ searchParams }: PageProps) {
                 className="rounded-md border border-[var(--color-border)] p-4"
               >
                 <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--color-muted)]">
-                  <strong className="text-[var(--color-foreground)]">
+                  <strong className="break-words text-[var(--color-foreground)]">
                     {result.title}
                   </strong>
                   <span>{result.sourceKind ?? "unknown"}</span>
@@ -438,7 +438,7 @@ export default async function CorpusAdminPage({ searchParams }: PageProps) {
                       href={result.sourceUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="underline"
+                      className="break-all underline"
                     >
                       {result.sourceUrl}
                     </a>
@@ -467,19 +467,19 @@ function DocumentCard({
   return (
     <article className="rounded-md border border-[var(--color-border)] bg-[var(--color-card)] p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
-          <h3 className="font-medium">{document.title}</h3>
-          <p className="text-xs text-[var(--color-muted)]">
+        <div className="min-w-0 flex-1 space-y-1">
+          <h3 className="break-words font-medium">{document.title}</h3>
+          <p className="break-words text-xs text-[var(--color-muted)]">
             {document.sourceKind} · {document.sourceType} · {document.rightsStatus}
             {date
               ? ` · ${new Date(date).toLocaleDateString(localeTag(locale))}`
               : ""}
           </p>
-          <p className="text-xs text-[var(--color-muted)]">
+          <p className="break-all text-xs text-[var(--color-muted)]">
             {document.sourceUrl ?? document.doi ?? document.pmid ?? document.relativePath}
           </p>
         </div>
-        <div className="flex flex-wrap items-center justify-end gap-2">{children}</div>
+        <div className="flex w-full flex-wrap items-center justify-start gap-2 sm:w-auto sm:justify-end">{children}</div>
       </div>
     </article>
   );
@@ -513,8 +513,8 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 const inputCls =
   "w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-accent)]";
 const primaryButtonCls =
-  "whitespace-nowrap rounded-md bg-[var(--color-foreground)] px-4 py-2 text-sm font-medium text-[var(--color-background)] hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40";
+  "w-full whitespace-nowrap rounded-md bg-[var(--color-foreground)] px-4 py-2 text-sm font-medium text-[var(--color-background)] hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto";
 const secondaryButtonCls =
-  "whitespace-nowrap rounded-md border border-[var(--color-border)] px-3 py-2 text-sm hover:bg-[var(--color-background)]";
+  "w-full whitespace-nowrap rounded-md border border-[var(--color-border)] px-3 py-2 text-sm hover:bg-[var(--color-background)] sm:w-auto";
 const dangerButtonCls =
-  "whitespace-nowrap rounded-md border border-red-300 px-3 py-2 text-sm text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-900/20";
+  "w-full whitespace-nowrap rounded-md border border-red-300 px-3 py-2 text-sm text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-900/20 sm:w-auto";

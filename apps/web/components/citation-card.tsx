@@ -62,8 +62,8 @@ export function CitationCard({ c, locale }: { c: Citation; locale: Locale }) {
         href={`/memory/view/${encodeURI(c.path)}`}
         className="block rounded border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-xs hover:border-[var(--color-accent)]"
       >
-        <div className="flex items-center justify-between gap-2">
-          <span className="font-medium truncate">{c.title}</span>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="min-w-0 flex-1 truncate font-medium">{c.title}</span>
           <span className="rounded bg-[var(--color-background)] px-2 py-0.5 text-[10px] uppercase tracking-wide text-[var(--color-muted)]">
             {locale === "de" ? "dein Speicher" : "tu memoria"}
           </span>
@@ -83,8 +83,8 @@ export function CitationCard({ c, locale }: { c: Citation; locale: Locale }) {
   ].filter(Boolean).join(" · ");
   const inner = (
     <div className="block rounded border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-xs hover:border-[var(--color-accent)]">
-      <div className="flex items-center justify-between gap-2">
-        <span className="font-medium truncate">{c.title}</span>
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="min-w-0 flex-1 truncate font-medium">{c.title}</span>
         {kindLabel && (
           <span className={`rounded px-2 py-0.5 text-[10px] uppercase tracking-wide ${kindColor}`}>
             {kindLabel}
