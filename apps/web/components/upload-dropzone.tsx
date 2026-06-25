@@ -152,8 +152,8 @@ export function UploadDropzone({ defaultCategory = "lab", locale }: Props) {
       {items.length > 0 && (
         <ul className="space-y-1 text-sm">
           {items.map((it, idx) => (
-            <li key={idx} className="flex items-center justify-between rounded border border-[var(--color-border)] px-3 py-2">
-              <span className="truncate flex-1">{it.name}</span>
+            <li key={idx} className="flex flex-col gap-1 rounded border border-[var(--color-border)] px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
+              <span className="min-w-0 flex-1 truncate">{it.name}</span>
               <span
                 className={
                   it.state === "ok"

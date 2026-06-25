@@ -33,7 +33,7 @@ export async function SiteHeader() {
 
   return (
     <header className="vitamap-header">
-      <div className="mx-auto max-w-4xl px-4 py-3 flex items-center justify-between gap-4">
+      <div className="vitamap-header-inner mx-auto max-w-4xl px-4 py-3 flex items-center justify-between gap-4">
         <Link
           href="/"
           className="vitamap-logo font-semibold tracking-tight whitespace-nowrap"
@@ -41,7 +41,7 @@ export async function SiteHeader() {
           VitaMap
         </Link>
 
-        <nav className="flex items-center gap-3 text-sm flex-wrap justify-end">
+        <nav className="vitamap-header-nav flex min-w-0 items-center gap-3 text-sm flex-wrap justify-end">
           {authed && (
             <>
               {visibleNav.map((n) => (
@@ -63,7 +63,7 @@ export async function SiteHeader() {
               )}
               <Link
                 href="/settings"
-                className="text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
+                className="vitamap-account-link text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
                 aria-label={t.settings}
               >
                 {session!.user.email}
