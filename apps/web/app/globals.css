@@ -117,6 +117,17 @@ body.vitamap-recinto {
   border-bottom: 1px solid oklch(0.7 0.06 80 / 0.1);
 }
 
+.vitamap-header-top {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.vitamap-mobile-tools,
+.vitamap-mobile-nav {
+  display: none;
+}
+
 .vitamap-header a,
 .vitamap-header button {
   color: oklch(0.76 0.05 80 / 0.55);
@@ -165,33 +176,42 @@ body.vitamap-recinto {
     gap: 0.55rem;
   }
 
-  .vitamap-header-nav {
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    padding-bottom: 0.2rem;
-    scrollbar-width: none;
+  .vitamap-header-top {
+    justify-content: space-between;
     width: 100%;
-    -webkit-overflow-scrolling: touch;
   }
 
-  .vitamap-header-nav::-webkit-scrollbar {
+  .vitamap-mobile-tools {
+    display: block;
+  }
+
+  .vitamap-desktop-nav {
     display: none;
   }
 
-  .vitamap-header-nav > * {
-    flex: 0 0 auto;
+  .vitamap-mobile-nav {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
   }
 
-  .vitamap-header-nav a,
-  .vitamap-header-nav button {
-    min-height: 2rem;
-    white-space: nowrap;
+  .vitamap-mobile-nav a {
+    align-items: center;
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    display: flex;
+    justify-content: center;
+    min-height: 2.5rem;
+    padding: 0.55rem 0.65rem;
+    text-align: center;
+    white-space: normal;
   }
 
-  .vitamap-account-link {
-    max-width: 11rem;
+  .vitamap-mobile-nav a:hover,
+  .vitamap-mobile-nav a:focus-visible {
+    background: color-mix(in oklch, var(--color-card) 82%, var(--color-accent));
   }
 }
 

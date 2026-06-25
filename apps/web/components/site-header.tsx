@@ -14,18 +14,31 @@ export async function SiteHeader() {
   const session = await getSession();
   const authed = !!session?.user;
   const admin = isAdminEmail(session?.user.email);
+  const assessEnabled = assessmentsEnabled();
   const subscribed = session?.user
     ? hasActiveSubscription(session.user.id)
     : false;
   const navAuthed = [
     { href: "/memory", label: t.memory },
     { href: "/upload", label: t.upload },
-    ...(assessmentsEnabled() ? [{ href: "/assess", label: t.assess }] : []),
+    ...(assessEnabled ? [{ href: "/assess", label: t.assess }] : []),
     { href: "/chat", label: t.chat },
     { href: "/guide", label: t.guide },
   ];
+  const mobileNavAuthed = [
+    ...(assessEnabled ? [{ href: "/assess", label: t.assess }] : []),
+    { href: "/guide", label: t.guide },
+    { href: "/chat", label: t.chat },
+    { href: "/settings", label: t.settings },
+  ];
   const visibleNav = subscribed
     ? navAuthed
+    : [
+        { href: "/guide", label: t.guide },
+        { href: "/settings/billing", label: t.subscription },
+      ];
+  const visibleMobileNav = subscribed
+    ? mobileNavAuthed
     : [
         { href: "/guide", label: t.guide },
         { href: "/settings/billing", label: t.subscription },
@@ -34,14 +47,19 @@ export async function SiteHeader() {
   return (
     <header className="vitamap-header">
       <div className="vitamap-header-inner mx-auto max-w-4xl px-4 py-3 flex items-center justify-between gap-4">
-        <Link
-          href="/"
-          className="vitamap-logo font-semibold tracking-tight whitespace-nowrap"
-        >
-          VitaMap
-        </Link>
+        <div className="vitamap-header-top">
+          <Link
+            href="/"
+            className="vitamap-logo font-semibold tracking-tight whitespace-nowrap"
+          >
+            VitaMap
+          </Link>
+          <div className="vitamap-mobile-tools">
+            <LanguageSwitcher locale={locale} />
+          </div>
+        </div>
 
-        <nav className="vitamap-header-nav flex min-w-0 items-center gap-3 text-sm flex-wrap justify-end">
+        <nav className="vitamap-header-nav vitamap-desktop-nav flex min-w-0 items-center gap-3 text-sm flex-wrap justify-end">
           {authed && (
             <>
               {visibleNav.map((n) => (
@@ -94,6 +112,25 @@ export async function SiteHeader() {
               >
                 {t.login}
               </Link>
+            </>
+          )}
+        </nav>
+
+        <nav
+          className="vitamap-mobile-nav"
+          aria-label={locale === "de" ? "Navigation" : "Navegación"}
+        >
+          {authed ? (
+            visibleMobileNav.map((n) => (
+              <Link key={n.href} href={n.href}>
+                {n.label}
+              </Link>
+            ))
+          ) : (
+            <>
+              <Link href="/guide">{t.guide}</Link>
+              <Link href="/register">{t.requestAccess}</Link>
+              <Link href="/login">{t.login}</Link>
             </>
           )}
         </nav>
