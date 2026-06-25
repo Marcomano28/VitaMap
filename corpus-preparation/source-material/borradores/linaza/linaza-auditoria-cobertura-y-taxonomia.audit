@@ -1,0 +1,108 @@
+# Linaza — Auditoría de cobertura y propuesta de taxonomía
+
+> Documento de trabajo previo a la redacción (brief principal §9 y módulo de
+> vitaminas/micronutrientes §18). No es una tarjeta del corpus: orienta qué
+> tarjetas se justifican y qué entrada de taxonomía habría que añadir antes de
+> publicarlas.
+
+## Identidad investigada
+
+- **Tema:** linaza (semilla de lino, *Linum usitatissimum*).
+- **Naturaleza:** alimento / semilla. **No es un analito de laboratorio**: no
+  existe una prueba clínica habitual llamada "linaza".
+- **Componentes relevantes:**
+  - Ácido alfa-linolénico (**ALA**, C18:3n-3), ácido graso omega-3 esencial de
+    origen vegetal.
+  - **Fibra** (soluble e insoluble) y **mucílago**.
+  - **Lignanos** (compuestos bioactivos / fitoestrógenos).
+  - Proteína y minerales.
+- **Marcador en analítica:** ninguno propio. Se relaciona, como factor dietético,
+  con el **perfil lipídico** y con el **estado de omega-3** (que se mide por
+  EPA+DHA en fosfolípidos plasmáticos o en eritrocitos, no por la linaza ni por
+  el ALA en sí).
+- **Estado en `corpus-taxonomy.json`:** se asume **falta entrada** (tema nuevo de
+  tipo alimento). Procede proponer la entrada antes de publicar.
+
+## Cobertura existente y decisión
+
+| Intención | Tarjeta | Estado | Decisión |
+|---|---|---|---|
+| A · Interpretación | — | No aplica | **No recomendada.** No hay un marcador de laboratorio "linaza" que interpretar. |
+| B · Alimentación y factores | `linaza-alimentacion-factores-ods.md` | Falta | **Crear.** Es la tarjeta natural para un alimento: composición, formas, absorción y factores de consumo (incl. seguridad BfR). |
+| C · Curiosidad científica (omega-3) | `linaza-curiosidad-omega3-conversion-ods.md` | Creada | Dato sólido y distinto de B: ALA y su conversión limitada a EPA/DHA. |
+| C · Curiosidad científica (lignanos) | `linaza-curiosidad-lignanos-microbiota-healthcare.md` | Creada | Segunda curiosidad, distinta: SDG → enterolignanos por la microbiota. Fuente CC BY. |
+| D · Lectura conjunta | — | No aplica | **No justificada.** D relaciona marcadores entre sí; la linaza no es un marcador. La relación linaza→lípidos es un factor dietético y vive en B. |
+| E · Seguimiento temporal | — | No aplica | **No justificada.** E describe la evolución de un marcador en el tiempo; la linaza no es un marcador. |
+| T3 · Evaluación científica | `linaza-evaluacion-cientifica-nccih.md` | Creada | Evaluación moderna de los usos de la linaza (NCCIH, dominio público). No atada a una sola tradición. |
+| T1 · Fuente clásica (Ayurveda) | `linaza-ayurveda-fuente-clasica-carakasamhita.md` | Creada (borrador) | Pasaje verificado: *Carakasaṃhitā* Sū. 27.292 (aceite de lino). `rights_status: unknown` porque no se confirman los derechos de la traducción de 1949: **no publicable** hasta cotejar el *mūla* y verificar derechos. |
+| T2 · Contexto histórico/filológico | — | Pendiente | Posible: cómo interpretan los estudiosos *atasī*/*umā* y sus variantes. Requiere un estudio filológico o histórico revisado por pares con derechos compatibles. |
+
+### Por qué no se fuerzan A, D ni E
+
+El corpus está organizado por marcadores de analítica. La linaza no produce un
+valor de laboratorio, de modo que las intenciones que dependen de "interpretar un
+número" (A), "leer varios números juntos" (D) o "seguir un número en el tiempo"
+(E) no tienen sustancia documentada. Crearlas obligaría a inventar relaciones, lo
+que el brief prohíbe expresamente.
+
+## Propuesta de entrada de taxonomía
+
+> Marcada como **propuesta**: faltan en el brief un `tipo: alimento`, un
+> `area_de_salud: salud-digestiva` y una `relacion: factor_dietetico`. Si la
+> taxonomía vigente ya define equivalentes, deben usarse esos valores canónicos.
+
+```json
+{
+  "linaza": {
+    "dominio": "laboratorio",
+    "tipo": ["alimento"],
+    "marker": ["general"],
+    "muestra": [],
+    "sistema": ["cardiovascular", "digestivo"],
+    "area_de_salud": ["salud-cardiovascular", "salud-digestiva"],
+    "alias": [
+      "linaza", "semillas de lino", "lino", "linaza molida",
+      "aceite de linaza", "Leinsamen", "flaxseed", "linseed"
+    ],
+    "relacionado_con": [
+      { "id": "colesterol-ldl",   "relacion": "factor_dietetico", "direccion": "dirigida" },
+      { "id": "colesterol-total", "relacion": "factor_dietetico", "direccion": "dirigida" },
+      { "id": "trigliceridos",    "relacion": "factor_dietetico", "direccion": "dirigida" }
+    ]
+  }
+}
+```
+
+Valores que requieren confirmación o alta en la taxonomía antes de publicar:
+`tipo: alimento`, `area_de_salud: salud-digestiva`, `relacion: factor_dietetico`.
+Los ids `colesterol-ldl`, `colesterol-total` y `trigliceridos` ya aparecen como
+marcadores canónicos en el brief principal, por lo que se usan tal cual.
+
+## Relaciones que NO se incluyen por falta de respaldo directo
+
+- No se declara una relación linaza↔"índice omega-3" porque no se ha confirmado
+  un id de marcador canónico para el estado de omega-3.
+- No se afirma que consumir linaza "normalice" el LDL ni ningún otro valor.
+
+## Candidatas a futuras tarjetas (no redactadas aquí)
+
+- **T1 / T2 tradicionales** (p. ej. el lino en textos ayurvédicos clásicos como
+  *Carakasaṃhitā* o *Suśrutasaṃhitā*): requieren abrir y verificar el pasaje
+  exacto en una edición identificable, distinguir texto base de comentario y
+  comprobar los derechos de esa edición digital. No se redactan por inferencia.
+
+## Control final
+
+- **Fuentes principales verificadas:** NIH Office of Dietary Supplements
+  (Omega-3, ficha para profesionales); USDA FoodData Central (FDC #169414);
+  USDA ARS ("The benefits of flaxseed"); BfR ("Blausäure und Cadmium in
+  Leinsamen").
+- **Derechos:** ODS y USDA → dominio público (uso permitido). BfR → contenido de
+  un organismo federal alemán; se usa como **fuente complementaria** y la síntesis
+  es propia de VitaMap; conviene confirmar derechos de reutilización antes de
+  publicar.
+- **Fecha de la fuente principal (ODS):** el campo `publication_date` usa
+  `2026-05` a partir del encabezado *Last-Modified* de la página; conviene
+  confirmarlo contra la línea "Updated" editorial de ODS en la revisión humana.
+- **Duplicados revisados:** sin solapamiento; cada idea vive en una sola tarjeta.
+- **Estado:** borradores listos para revisión humana.
