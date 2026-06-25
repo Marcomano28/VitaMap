@@ -184,6 +184,28 @@ export const MARKER_ALIASES = {
   "calcio": [
     "calcio"
   ],
+  "cannabis": [
+    "cannabidiol",
+    "cannabinoides",
+    "cannabinoids",
+    "cannabis",
+    "cannabis medicinal",
+    "cannabis sativa",
+    "cbd",
+    "dronabinol",
+    "endocannabinoide",
+    "epidiolex",
+    "epidyolex",
+    "hachis",
+    "marihuana",
+    "marijuana",
+    "nabilona",
+    "nabiximols",
+    "sativex",
+    "sistema endocannabinoide",
+    "tetrahidrocannabinol",
+    "thc"
+  ],
   "cardo-mariano": [
     "cardo mariano",
     "cardo-mariano",
@@ -431,6 +453,17 @@ export const MARKER_ALIASES = {
     "luteinizing hormone",
     "lutropina"
   ],
+  "linaza": [
+    "aceite de linaza",
+    "flaxseed",
+    "Leinsamen",
+    "linaza",
+    "linaza molida",
+    "lino",
+    "linseed",
+    "Linum usitatissimum",
+    "semillas de lino"
+  ],
   "lipoproteina-a": [
     "lipoprotein a",
     "lipoproteina a",
@@ -442,6 +475,19 @@ export const MARKER_ALIASES = {
   ],
   "magnesio": [
     "magnesio"
+  ],
+  "moringa": [
+    "arbol de la vida",
+    "árbol de la vida",
+    "ben oil tree",
+    "drumstick tree",
+    "hoja de moringa",
+    "malunggay",
+    "marango",
+    "moringa",
+    "moringa en polvo",
+    "moringa oleifera",
+    "shigru"
   ],
   "mtc": [
     "chinesische medizin",
@@ -563,6 +609,25 @@ export const MARKER_ALIASES = {
     "transferrin saturation",
     "transferrinsattigung",
     "tsat"
+  ],
+  "semillas-canamo": [
+    "aceite de semilla de cáñamo",
+    "corazones de cáñamo",
+    "hanfprotein",
+    "hanfsamen",
+    "harina de cáñamo",
+    "hemp hearts",
+    "hemp protein",
+    "hemp seed",
+    "hemp seed oil",
+    "hemp seeds",
+    "huo ma ren",
+    "proteina de cañamo",
+    "proteína de cáñamo",
+    "semilla de cáñamo",
+    "semillas de canamo",
+    "semillas de cáñamo",
+    "semillas-canamo"
   ],
   "shbg": [
     "globulina fijadora de hormonas sexuales",
@@ -1087,6 +1152,7 @@ export const CANONICAL_MARKERS = [
   "bnp",
   "c-peptido",
   "calcio",
+  "cannabis",
   "cardo-mariano",
   "chaga",
   "cinarina",
@@ -1128,8 +1194,10 @@ export const CANONICAL_MARKERS = [
   "kinesiologia-aplicada",
   "leucocitos",
   "lh",
+  "linaza",
   "lipoproteina-a",
   "magnesio",
+  "moringa",
   "mtc",
   "nt-probnp",
   "omega-3-indice",
@@ -1146,6 +1214,7 @@ export const CANONICAL_MARKERS = [
   "reticulocitos",
   "rhodiola",
   "saturacion-transferrina",
+  "semillas-canamo",
   "shbg",
   "silibinina",
   "silimarina",

@@ -61,6 +61,9 @@
     "calcio": ["calcio"],
     "cloruro": ["cloruro", "cloro", "cl", "chlorid", "cloruro serico", "sal", "cloruro de sodio"],
     "cardo-mariano": ["cardo mariano", "milk thistle", "mary thistle", "st mary's thistle", "silybum marianum", "carduus marianus"],
+    "cannabis": ["cannabis", "marihuana", "marijuana", "cannabis sativa", "cannabis medicinal", "cannabinoides", "cannabinoids", "cbd", "cannabidiol", "thc", "tetrahidrocannabinol", "nabiximols", "sativex", "epidiolex", "epidyolex", "dronabinol", "nabilona", "sistema endocannabinoide", "endocannabinoide", "hachis"],
+    "semillas-canamo": ["semillas de canamo", "semillas de cáñamo", "semilla de cáñamo", "hemp seed", "hemp seeds", "hemp hearts", "corazones de cáñamo", "aceite de semilla de cáñamo", "hemp seed oil", "proteina de cañamo", "proteína de cáñamo", "hemp protein", "harina de cáñamo", "huo ma ren", "hanfsamen", "hanfprotein"],
+    "moringa": ["moringa", "moringa oleifera", "árbol de la vida", "arbol de la vida", "malunggay", "drumstick tree", "ben oil tree", "marango", "shigru", "moringa en polvo", "hoja de moringa"],
     "alcachofa": ["alcachofa", "artichoke", "globe artichoke", "cynara scolymus", "cynara cardunculus", "cynarae folium", "hoja de alcachofera"],
     "acido-clorogenico": ["acido clorogenico", "ácido clorogénico", "chlorogenic acid"],
     "cinarina": ["cinarina", "cynarin", "1,5-dicafeoilquinico", "1,5-dicaffeoylquinic acid"],
@@ -386,6 +389,57 @@
     }
   },
   "topics": {
+    "cannabis": {
+      "dominio": "sustancias-naturales",
+      "tipo": ["especie_medicinal", "fitoterapia"],
+      "marker": ["cannabis"],
+      "sistema": ["neurologico-cognitivo", "inmunologico", "digestivo", "osteoarticular"],
+      "area_de_salud": ["dolor-cronico", "neurologia", "salud-mental", "antiinflamatorio"],
+      "alias": ["cannabis", "marihuana", "cannabis sativa", "cannabis medicinal", "cannabinoides", "cbd", "cannabidiol", "thc"],
+      "relacionado_con": [
+        { "id": "semillas-canamo", "relacion": "misma_especie_distinto_producto", "direccion": "simetrica" }
+      ]
+    },
+    "semillas-canamo": {
+      "dominio": "sustancias-naturales",
+      "tipo": ["alimento", "especie_medicinal"],
+      "marker": ["semillas-canamo"],
+      "sistema": ["cardiovascular", "digestivo", "osteoarticular"],
+      "area_de_salud": ["nutricion", "salud-cardiovascular"],
+      "alias": ["semillas de cáñamo", "hemp seed", "hemp hearts", "corazones de cáñamo", "aceite de semilla de cáñamo", "proteína de cáñamo"],
+      "relacionado_con": [
+        { "id": "cannabis", "relacion": "misma_especie_distinto_producto", "direccion": "simetrica" },
+        { "id": "ala", "relacion": "precursor_dietetico", "direccion": "dirigida" },
+        { "id": "ratio-omega-6-omega-3", "relacion": "perfil_acidos_grasos", "direccion": "simetrica" },
+        { "id": "magnesio", "relacion": "aporta_nutriente", "direccion": "dirigida" }
+      ]
+    },
+    "linaza": {
+      "dominio": "sustancias-naturales",
+      "tipo": ["alimento"],
+      "marker": ["linaza"],
+      "sistema": ["cardiovascular", "digestivo", "endocrino-metabolico"],
+      "area_de_salud": ["nutricion", "salud-cardiovascular", "salud-digestiva"],
+      "alias": ["linaza", "semillas de lino", "lino", "linaza molida", "aceite de linaza", "Leinsamen", "flaxseed", "linseed", "Linum usitatissimum"],
+      "relacionado_con": [
+        { "id": "ala", "relacion": "precursor_dietetico", "direccion": "dirigida" },
+        { "id": "colesterol-ldl", "relacion": "factor_dietetico", "direccion": "dirigida" },
+        { "id": "colesterol-total", "relacion": "factor_dietetico", "direccion": "dirigida" },
+        { "id": "trigliceridos", "relacion": "factor_dietetico", "direccion": "dirigida" }
+      ]
+    },
+    "moringa": {
+      "dominio": "sustancias-naturales",
+      "tipo": ["especie_medicinal", "alimento", "suplemento"],
+      "marker": ["moringa"],
+      "sistema": ["endocrino-metabolico", "hematologico", "digestivo"],
+      "area_de_salud": ["nutricion", "control-glucemico", "salud-cardiovascular"],
+      "alias": ["moringa", "moringa oleifera", "malunggay", "drumstick tree", "árbol de la vida", "shigru"],
+      "relacionado_con": [
+        { "id": "hierro", "relacion": "aporta_nutriente", "direccion": "dirigida" },
+        { "id": "vitamina-c", "relacion": "afecta_absorcion", "direccion": "dirigida" }
+      ]
+    },
     "albuminuria": {
       "dominio": "laboratorio",
       "tipo": ["analito"],
