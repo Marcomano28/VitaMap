@@ -128,6 +128,28 @@ body.vitamap-recinto {
   display: none;
 }
 
+.vitamap-desktop-nav {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.vitamap-desktop-nav-main,
+.vitamap-desktop-nav-session {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.vitamap-desktop-nav-session {
+  width: 100%;
+}
+
 .vitamap-header a,
 .vitamap-header button {
   color: oklch(0.76 0.05 80 / 0.55);

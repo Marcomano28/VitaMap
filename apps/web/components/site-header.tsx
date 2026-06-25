@@ -43,6 +43,7 @@ export async function SiteHeader() {
     : [
         { href: "/guide", label: t.guide },
         { href: "/settings/billing", label: t.subscription },
+        { href: "/settings", label: t.account },
       ];
 
   return (
@@ -60,46 +61,50 @@ export async function SiteHeader() {
           </div>
         </div>
 
-        <nav className="vitamap-header-nav vitamap-desktop-nav flex min-w-0 items-center gap-3 text-sm flex-wrap justify-end">
+        <nav className="vitamap-header-nav vitamap-desktop-nav text-sm">
           {authed && (
             <>
-              {visibleNav.map((n) => (
+              <div className="vitamap-desktop-nav-main">
+                {visibleNav.map((n) => (
+                  <Link
+                    key={n.href}
+                    href={n.href}
+                    className="text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
+                  >
+                    {n.label}
+                  </Link>
+                ))}
+                {admin && (
+                  <Link
+                    href="/admin/corpus"
+                    className="text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
+                  >
+                    {t.admin}
+                  </Link>
+                )}
                 <Link
-                  key={n.href}
-                  href={n.href}
-                  className="text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
+                  href="/settings"
+                  className="vitamap-account-link text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
+                  aria-label={t.settings}
                 >
-                  {n.label}
+                  {session!.user.email}
                 </Link>
-              ))}
-              {admin && (
-                <Link
-                  href="/admin/corpus"
-                  className="text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
-                >
-                  {t.admin}
-                </Link>
-              )}
-              <Link
-                href="/settings"
-                className="vitamap-account-link text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
-                aria-label={t.settings}
-              >
-                {session!.user.email}
-              </Link>
-              <LanguageSwitcher locale={locale} />
-              <form action={signOutAction}>
-                <button
-                  type="submit"
-                  className="rounded-md border border-[var(--color-border)] px-3 py-1 hover:bg-[var(--color-card)]"
-                >
-                  {t.logout}
-                </button>
-              </form>
+                <LanguageSwitcher locale={locale} />
+              </div>
+              <div className="vitamap-desktop-nav-session">
+                <form action={signOutAction}>
+                  <button
+                    type="submit"
+                    className="rounded-md border border-[var(--color-border)] px-3 py-1 hover:bg-[var(--color-card)]"
+                  >
+                    {t.logout}
+                  </button>
+                </form>
+              </div>
             </>
           )}
           {!authed && (
-            <>
+            <div className="vitamap-desktop-nav-main">
               <Link
                 href="/register"
                 className="text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
@@ -113,7 +118,7 @@ export async function SiteHeader() {
               >
                 {t.login}
               </Link>
-            </>
+            </div>
           )}
         </nav>
 
