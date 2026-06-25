@@ -29,13 +29,14 @@ export async function SiteHeader() {
     ...(assessEnabled ? [{ href: "/assess", label: t.assess }] : []),
     { href: "/guide", label: t.guide },
     { href: "/chat", label: t.chat },
-    { href: "/settings", label: t.settings },
+    { href: "/settings", label: t.account },
   ];
   const visibleNav = subscribed
     ? navAuthed
     : [
         { href: "/guide", label: t.guide },
         { href: "/settings/billing", label: t.subscription },
+        { href: "/settings", label: t.account },
       ];
   const visibleMobileNav = subscribed
     ? mobileNavAuthed
