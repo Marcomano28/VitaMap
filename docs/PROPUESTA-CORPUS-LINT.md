@@ -83,7 +83,7 @@ Mismo patrón que el generador de vocabulario (un script `tsx`, exit code, modo
 Salida ejemplo:
 
 ```
-corpus:lint — 301 tarjetas, 2 con problemas
+corpus:lint — 344 tarjetas, 2 con problemas
 
 ✖ cloruro/cloruro-interpretacion-medlineplus.md
     sistema: 'renal' no es vocabulario válido (¿'renal-urinario'?)
@@ -139,7 +139,7 @@ de ahí queda cerrada.)
 
 ## 8. Despliegue por fases (respetar lo heredado)
 
-271 de 299 tarjetas no tienen `evidence` hoy, y varias facetas legacy podrían
+280 de 344 tarjetas no tienen `evidence` hoy, y varias facetas legacy podrían
 no estar en el vocabulario inicial. Para no romper de golpe:
 
 1. **Fase 0 — modo aviso.** `corpus:lint --warn` no falla; solo lista. Se corre

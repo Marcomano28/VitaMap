@@ -462,8 +462,12 @@ query de KB con semillas curadas y reordena los documentos que ya declaran esa
 - `lens` reordena la perspectiva;
 - `area_de_salud` ensancha de forma curada.
 
-La primera activación cubre `energia-fatiga` y `estado-animo-estres`. `sueno`
-queda pendiente hasta que exista corpus etiquetado con esa área.
+Las rutas activas hoy son `energia-fatiga`, `estado-animo-estres`, `salud-osea`,
+`salud-hormonal`, `salud-piel-cabello-unas` (uñas/piel/cabello, siembra
+`ferritina`, `hierro`, `zinc`, `biotina`, `selenio`) y `embarazo-y-lactancia`
+(siembra `yodo`, `acido-folico`, `ferritina`, `vitamina-d`, `vitamina-b12`,
+`calcio`). `sueno` queda pendiente hasta que exista corpus etiquetado con esa
+área.
 
 Contrato de validación:
 
@@ -700,10 +704,12 @@ Cada resultado se envuelve como:
 <source type="evidence" kind="..." document_type="..." ...>
 ```
 
-Los fragmentos se limitan actualmente a 600 caracteres después de retirar el
-frontmatter YAML, cuyos metadatos relevantes ya se incorporan como atributos y
-limitaciones. Así el límite conserva contenido sustantivo sin aumentar el coste
-del prompt.
+Los fragmentos se truncan según su tipo, después de retirar el frontmatter YAML
+(cuyos metadatos relevantes ya se incorporan como atributos y limitaciones): la
+memoria personal a **600 caracteres** y las tarjetas de evidencia a **2000**,
+porque sus matices ("qué no permite concluir", "qué se sabe y qué no") viven al
+final del cuerpo y un corte a 600 los amputaba antes de llegar al modelo. Las
+`limitations` del frontmatter no se truncan.
 
 La respuesta usa un presupuesto progresivo: breve por defecto y más amplio
 cuando la persona pide detalle, comparación, una lista completa o una
