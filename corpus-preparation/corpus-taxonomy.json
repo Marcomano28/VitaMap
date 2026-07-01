@@ -288,6 +288,53 @@
         "progesterona",
         "dhea-s"
       ]
+    },
+    "salud-piel-cabello-unas": {
+      "aliases": [
+        "uñas quebradizas",
+        "uñas frágiles",
+        "uñas estriadas",
+        "uñas con surcos",
+        "uñas que se rompen",
+        "uñas débiles",
+        "uñas poco flexibles",
+        "caída del cabello",
+        "pelo frágil",
+        "piel seca",
+        "brüchige nägel",
+        "rillen in den nägeln",
+        "splitternde nägel",
+        "haarausfall",
+        "trockene haut"
+      ],
+      "seed_markers": [
+        "ferritina",
+        "hierro",
+        "zinc",
+        "biotina",
+        "selenio"
+      ]
+    },
+    "embarazo-y-lactancia": {
+      "aliases": [
+        "embarazo",
+        "estoy embarazada",
+        "embarazada",
+        "gestación",
+        "lactancia",
+        "dando el pecho",
+        "schwangerschaft",
+        "stillzeit",
+        "kinderwunsch"
+      ],
+      "seed_markers": [
+        "yodo",
+        "acido-folico",
+        "ferritina",
+        "vitamina-d",
+        "vitamina-b12",
+        "calcio"
+      ]
     }
   },
   "document_overrides": {
@@ -389,6 +436,68 @@
     }
   },
   "topics": {
+    "biotina": {
+      "dominio": "laboratorio",
+      "tipo": ["vitamina"],
+      "marker": ["biotina"],
+      "categoria": ["vitaminas"],
+      "muestra": ["suero"],
+      "sistema": ["endocrino-metabolico", "tegumentario"],
+      "area_de_salud": ["salud-piel-cabello-unas"],
+      "alias": ["biotina", "vitamina b7", "vitamina h", "biotin", "vitamin b7"],
+      "relacionado_con": []
+    },
+    "selenio": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "mineral"],
+      "marker": ["selenio"],
+      "categoria": ["minerales-micronutrientes"],
+      "muestra": ["suero", "plasma", "sangre-total"],
+      "sistema": ["endocrino-metabolico", "inmunologico", "tegumentario"],
+      "area_de_salud": ["salud-piel-cabello-unas", "salud-tiroidea", "antioxidante"],
+      "alias": ["selenio", "selenium", "selen"],
+      "relacionado_con": []
+    },
+    "zinc": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "mineral"],
+      "marker": ["zinc"],
+      "categoria": ["minerales-micronutrientes"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["inmunologico", "endocrino-metabolico", "tegumentario"],
+      "area_de_salud": ["salud-piel-cabello-unas", "inmunidad", "energia-fatiga"],
+      "alias": ["zinc", "cinc", "zink"],
+      "relacionado_con": [
+        { "id": "proteina-c-reactiva", "relacion": "modifica_interpretacion", "direccion": "dirigida", "contexto": "en inflamación" },
+        { "id": "albumina", "relacion": "modifica_interpretacion", "direccion": "dirigida" }
+      ]
+    },
+    "cobre": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "mineral"],
+      "marker": ["cobre"],
+      "categoria": ["minerales-micronutrientes"],
+      "muestra": ["suero", "plasma"],
+      "sistema": ["hematologico", "neurologico-cognitivo"],
+      "area_de_salud": ["energia-fatiga", "salud-cognitiva"],
+      "alias": ["cobre", "copper", "kupfer", "cu"],
+      "relacionado_con": [
+        { "id": "zinc", "relacion": "afecta_absorcion", "direccion": "dirigida", "contexto": "una ingesta alta y sostenida de zinc puede reducir el cobre" }
+      ]
+    },
+    "yodo": {
+      "dominio": "laboratorio",
+      "tipo": ["analito", "mineral"],
+      "marker": ["yodo"],
+      "categoria": ["minerales-micronutrientes", "perfil-tiroideo"],
+      "muestra": ["orina", "suero"],
+      "sistema": ["endocrino-metabolico"],
+      "area_de_salud": ["salud-tiroidea", "embarazo-y-lactancia"],
+      "alias": ["yodo", "iodo", "iodine", "jod", "yoduria"],
+      "relacionado_con": [
+        { "id": "tsh", "relacion": "modifica_interpretacion", "direccion": "dirigida" }
+      ]
+    },
     "cannabis": {
       "dominio": "sustancias-naturales",
       "tipo": ["especie_medicinal", "fitoterapia"],
@@ -461,7 +570,7 @@
       "categoria": ["vitaminas", "minerales-micronutrientes"],
       "muestra": ["suero", "sangre-total"],
       "sistema": ["hematologico", "reproductivo-hormonal"],
-      "area_de_salud": ["energia-fatiga", "fertilidad", "salud-hormonal"],
+      "area_de_salud": ["energia-fatiga", "fertilidad", "salud-hormonal", "embarazo-y-lactancia"],
       "alias": ["folato", "vitamina B9", "acido folico"]
     },
     "acido-urico": {
@@ -987,7 +1096,7 @@
       "categoria": ["minerales-micronutrientes", "hematologia"],
       "muestra": ["suero", "plasma"],
       "sistema": ["hematologico"],
-      "area_de_salud": ["energia-fatiga", "rendimiento-deportivo"],
+      "area_de_salud": ["energia-fatiga", "rendimiento-deportivo", "salud-piel-cabello-unas", "embarazo-y-lactancia"],
       "alias": ["hierro", "ferritina", "transferrina", "tibc", "saturacion de transferrina"],
       "relacionado_con": [
         { "id": "vitamina-c", "relacion": "afecta_absorcion" },
@@ -1228,7 +1337,7 @@
       "categoria": ["metabolismo-oseo", "vitaminas", "minerales-micronutrientes"],
       "muestra": ["suero", "plasma"],
       "sistema": ["osteoarticular", "endocrino-metabolico", "renal-urinario"],
-      "area_de_salud": ["salud-osea", "longevidad"],
+      "area_de_salud": ["salud-osea", "longevidad", "embarazo-y-lactancia"],
       "alias": ["metabolismo oseo", "remodelado oseo", "vitamina d calcio fosfato pth", "bone turnover markers", "knochenstoffwechsel"],
       "relacionado_con": [
         { "id": "vitamina-d", "relacion": "lectura_conjunta" },
@@ -1527,7 +1636,7 @@
       "categoria": ["vitaminas", "hematologia"],
       "muestra": ["suero", "plasma"],
       "sistema": ["hematologico", "neurologico-cognitivo"],
-      "area_de_salud": ["energia-fatiga", "salud-cognitiva", "estado-animo-estres"],
+      "area_de_salud": ["energia-fatiga", "salud-cognitiva", "estado-animo-estres", "embarazo-y-lactancia"],
       "alias": ["b12", "cobalamina"],
       "relacionado_con": [
         { "id": "acido-folico", "relacion": "lectura_conjunta" }
@@ -1563,7 +1672,7 @@
       "categoria": ["vitaminas", "metabolismo-oseo"],
       "muestra": ["suero", "plasma"],
       "sistema": ["osteoarticular", "endocrino-metabolico", "inmunologico"],
-      "area_de_salud": ["salud-osea", "inmunidad", "energia-fatiga"],
+      "area_de_salud": ["salud-osea", "inmunidad", "energia-fatiga", "embarazo-y-lactancia"],
       "alias": ["25-OH-D", "calcidiol", "colecalciferol"],
       "relacionado_con": [
         { "id": "calcio", "relacion": "lectura_conjunta" },

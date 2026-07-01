@@ -110,7 +110,14 @@ Valores habituales de `seccion` en este brief:
 - En hechos fisiológicos estables puede usarse una fuente institucional más
   antigua si sigue siendo la referencia oficial.
 - `publication_date` debe ser la fecha real de publicación o última revisión
-  indicada por la fuente, no el año de consulta.
+  indicada visiblemente por la página concreta de la fuente, no el año de
+  consulta ni el encabezado HTTP `Last-Modified`.
+- ODS/NIH no tiene una sola fecha global: cada ficha (`Zinc`, `Magnesium`,
+  `Iron`, etc.) puede tener su propio pie `Updated:`. Usa esa línea visible para
+  `publication_date`; dos tarjetas ODS solo deben compartir fecha si apuntan a
+  la misma ficha/URL o si ambas fichas muestran la misma fecha editorial.
+- En MedlinePlus usa la fecha visible de la página concreta de tema o prueba
+  médica. No la sustituyas por metadatos técnicos del servidor.
 - Evita titulares sensacionalistas, marketing de suplementos y conclusiones
   basadas en un único estudio pequeño.
 - Refleja la incertidumbre cuando la investigación sea preliminar o mixta.

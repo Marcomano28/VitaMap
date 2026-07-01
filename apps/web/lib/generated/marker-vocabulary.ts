@@ -167,6 +167,13 @@ export const MARKER_ALIASES = {
     "bilirubin",
     "bilirubina"
   ],
+  "biotina": [
+    "biotin",
+    "biotina",
+    "vitamin b7",
+    "vitamina b7",
+    "vitamina h"
+  ],
   "bnp": [
     "bnp",
     "brain natriuretic peptide",
@@ -242,6 +249,12 @@ export const MARKER_ALIASES = {
     "cloruro de sodio",
     "cloruro serico",
     "sal"
+  ],
+  "cobre": [
+    "cobre",
+    "copper",
+    "cu",
+    "kupfer"
   ],
   "colesterol-hdl": [
     "colesterol hdl",
@@ -610,6 +623,11 @@ export const MARKER_ALIASES = {
     "transferrinsattigung",
     "tsat"
   ],
+  "selenio": [
+    "selen",
+    "selenio",
+    "selenium"
+  ],
   "semillas-canamo": [
     "aceite de semilla de cáñamo",
     "corazones de cáñamo",
@@ -784,6 +802,18 @@ export const MARKER_ALIASES = {
     "velocidad de sedimentacion",
     "velocidad de sedimentacion globular",
     "vsg"
+  ],
+  "yodo": [
+    "iodine",
+    "iodo",
+    "jod",
+    "yodo",
+    "yoduria"
+  ],
+  "zinc": [
+    "cinc",
+    "zinc",
+    "zink"
   ]
 } as const satisfies Record<string, readonly string[]>;
 
@@ -1006,6 +1036,29 @@ export const QUERY_GROUPS = {
 >;
 
 export const HEALTH_AREAS = {
+  "embarazo-y-lactancia": {
+    "aliases": [
+      "dando el pecho",
+      "embarazada",
+      "embarazo",
+      "embarazo y lactancia",
+      "embarazo-y-lactancia",
+      "estoy embarazada",
+      "gestación",
+      "kinderwunsch",
+      "lactancia",
+      "schwangerschaft",
+      "stillzeit"
+    ],
+    "markers": [
+      "yodo",
+      "acido-folico",
+      "ferritina",
+      "vitamina-d",
+      "vitamina-b12",
+      "calcio"
+    ]
+  },
   "energia-fatiga": {
     "aliases": [
       "agotamiento",
@@ -1120,6 +1173,34 @@ export const HEALTH_AREAS = {
       "beta-crosslaps",
       "osteocalcina"
     ]
+  },
+  "salud-piel-cabello-unas": {
+    "aliases": [
+      "brüchige nägel",
+      "caída del cabello",
+      "haarausfall",
+      "pelo frágil",
+      "piel seca",
+      "rillen in den nägeln",
+      "salud piel cabello unas",
+      "salud-piel-cabello-unas",
+      "splitternde nägel",
+      "trockene haut",
+      "uñas con surcos",
+      "uñas débiles",
+      "uñas estriadas",
+      "uñas frágiles",
+      "uñas poco flexibles",
+      "uñas que se rompen",
+      "uñas quebradizas"
+    ],
+    "markers": [
+      "ferritina",
+      "hierro",
+      "zinc",
+      "biotina",
+      "selenio"
+    ]
   }
 } as const satisfies Record<
   string,
@@ -1149,6 +1230,7 @@ export const CANONICAL_MARKERS = [
   "beta-crosslaps",
   "bicarbonato",
   "bilirrubina",
+  "biotina",
   "bnp",
   "c-peptido",
   "calcio",
@@ -1158,6 +1240,7 @@ export const CANONICAL_MARKERS = [
   "cinarina",
   "cistatina-c",
   "cloruro",
+  "cobre",
   "colesterol-hdl",
   "colesterol-ldl",
   "colesterol-no-hdl",
@@ -1214,6 +1297,7 @@ export const CANONICAL_MARKERS = [
   "reticulocitos",
   "rhodiola",
   "saturacion-transferrina",
+  "selenio",
   "semillas-canamo",
   "shbg",
   "silibinina",
@@ -1236,7 +1320,9 @@ export const CANONICAL_MARKERS = [
   "vitamina-d",
   "vitamina-e",
   "vitamina-k",
-  "vsg"
+  "vsg",
+  "yodo",
+  "zinc"
 ] as const;
 
 export const LENS_MARKERS = [

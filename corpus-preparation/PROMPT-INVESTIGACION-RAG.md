@@ -131,7 +131,7 @@ limitations:
 | `source_url` | URL oficial de la fuente principal. Es obligatorio aportar `source_url`, `doi` o `pmid`. |
 | `source_language` | Idioma real de la fuente enlazada, no de la tarjeta. Usa código ISO breve: `de`, `en`, `es`, `zh`, etc. Para público alemán, prioriza `de` cuando exista una fuente equivalente y fiable. |
 | `source_jurisdiction` | País o marco institucional principal de la fuente: `DE`, `EU`, `US`, `GB`, `INT`, etc. Puede ser lista. |
-| `publication_date` | Fecha real de publicación o última revisión indicada por la fuente. Formato `AAAA`, `AAAA-MM` o `AAAA-MM-DD`. No la inventes. |
+| `publication_date` | Fecha real de publicación o última revisión indicada visiblemente por la página concreta de la fuente. Formato `AAAA`, `AAAA-MM` o `AAAA-MM-DD`. No la inventes y no uses el encabezado HTTP `Last-Modified` como sustituto de una fecha editorial visible. |
 | `source_kind` | Solo uno de los tres valores de la sección 8. |
 | `source_type` | Usa `lab-interpretation-summary` para A, `nutrition-lifestyle-summary` para B, `lab-pattern-interpretation-summary` para D o `lab-longitudinal-interpretation-summary` para E. |
 | `rights_status` | Solo `permitted`, `licensed`, `metadata-only` o `unknown`. No presupongas que acceso gratuito equivale a permiso. |
@@ -158,6 +158,17 @@ muestra al usuario en las tarjetas de cita.
 
 El modelo prepara un borrador. No declares que ha sido revisado o aprobado por
 una persona; ese estado lo registra VitaMap durante la revisión administrativa.
+
+### Fechas editoriales por fuente
+
+- ODS/NIH no es una fuente única con una fecha única: cada ficha concreta
+  (`Zinc`, `Magnesium`, `Iron`, etc.) puede tener su propio pie `Updated:`.
+  Para `publication_date`, usa siempre esa línea visible de la ficha enlazada,
+  no el encabezado HTTP `Last-Modified`, porque puede cambiar con redespliegues
+  del CMS. Dos tarjetas ODS pueden tener fechas distintas si apuntan a fichas
+  distintas; deben coincidir solo cuando apuntan a la misma URL.
+- En MedlinePlus usa la fecha visible de la propia página de tema o prueba
+  médica. No sustituyas esa fecha por metadatos técnicos del servidor.
 
 ## 3 bis. Contrato mínimo de evidencia (v0)
 
