@@ -66,6 +66,8 @@ body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
+  overflow-x: hidden;
+  overscroll-behavior: none;
 }
 
 *,
@@ -553,6 +555,8 @@ body:has(.vitawende-shell) .vitamap-lienzo {
   inset: 0;
   z-index: 50;
   overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: none;
   background:
     radial-gradient(ellipse 78% 76% at 74% 48%, rgba(21, 68, 84, 0.3), transparent 58%),
     radial-gradient(ellipse 62% 44% at 42% 48%, rgba(12, 47, 58, 0.25), transparent 68%),
@@ -1321,9 +1325,18 @@ html[data-palette="warm"] .vitawende-nav a:focus-visible {
   }
 
   .vitawende-crystal {
-    top: 7.8rem;
+    top: 5rem;
     left: 1.6rem;
     width: calc(100vw - 3.2rem);
+  }
+
+  .vitawende-crystal-title {
+    font-size: 2.15rem;
+  }
+
+  .vitawende-crystal-sub {
+    margin-top: 0.55rem;
+    font-size: 0.9rem;
   }
 
   .vitawende-orb {
@@ -1332,14 +1345,24 @@ html[data-palette="warm"] .vitawende-nav a:focus-visible {
     bottom: 10.2rem;
     width: min(64vw, 19rem);
     transform: translateX(50%);
-    opacity: 0.82;
+    opacity: 1;
   }
 
   .vitawende-readout {
     left: 1.6rem;
     bottom: 4.7rem;
-    width: calc(100vw - 3.2rem);
-    padding: 0.95rem 1rem;
+    width: min(56vw, 14.5rem);
+    padding: 0.55rem 0.7rem;
+    font-size: 0.82rem;
+  }
+
+  .vitawende-readout-title {
+    margin-bottom: 0.5rem;
+    font-size: 0.62rem;
+  }
+
+  .vitawende-readout dl {
+    gap: 0.35rem;
   }
 
   .vitawende-readout dl {
