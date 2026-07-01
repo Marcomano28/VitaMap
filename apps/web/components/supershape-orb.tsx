@@ -318,6 +318,10 @@ export function SupershapeOrb() {
     };
 
     const updatePointer = (event: PointerEvent) => {
+      // Movil (tactil): sin interaccion. El arrastre y la atraccion de nodos
+      // hacia el dedo resultan demasiado marcados en un telefono; se deja solo
+      // la rotacion automatica por frames.
+      if (event.pointerType === "touch") return;
       const rect = canvas.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
@@ -345,6 +349,7 @@ export function SupershapeOrb() {
     };
 
     const startDrag = (event: PointerEvent) => {
+      if (event.pointerType === "touch") return; // sin arrastre en movil
       const rect = canvas.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
