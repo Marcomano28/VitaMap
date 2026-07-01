@@ -12,7 +12,11 @@ function promptListAttribute(value: readonly string[] | undefined): string | und
   return value && value.length > 0 ? value.join(",") : undefined;
 }
 
-const SNIPPET_MAX_CHARS = 600;
+// Truncación diferenciada: la evidencia curada conserva sus matices finales
+// ("qué no permite concluir"), la memoria personal larga se recorta corta.
+// Ver ADR-017 (no bajar 2000 sin prueba de regresión) y test-qmd-prompt.mts.
+const SNIPPET_MAX_CHARS_PERSONAL = 600;
+const SNIPPET_MAX_CHARS_EVIDENCE = 2000;
 
 function truncateSnippet(text: string, max: number): string {
   if (text.length <= max) return text;
@@ -23,10 +27,11 @@ function truncateSnippet(text: string, max: number): string {
 export function wrapForPrompt(chunks: RetrievedChunk[]): string {
   return chunks
     .map((c) => {
-      const snippet = truncateSnippet(c.snippet, SNIPPET_MAX_CHARS);
       if (c.source === "personal") {
+        const snippet = truncateSnippet(c.snippet, SNIPPET_MAX_CHARS_PERSONAL);
         return `<source type="personal" observed_at="${promptAttribute(c.observedAt, "unknown")}" doc="${promptAttribute(c.path)}">\n${snippet}\n</source>`;
       }
+      const snippet = truncateSnippet(c.snippet, SNIPPET_MAX_CHARS_EVIDENCE);
       const limitations = c.limitations?.length
         ? `Limitaciones: ${c.limitations.join("; ")}\n`
         : "";
