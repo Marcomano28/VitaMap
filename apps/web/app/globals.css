@@ -47,16 +47,18 @@
   --color-accent-gold: #d7a857;
 }
 
+/* Calido + noche: recupera la combinacion original de VitaMap (frio, coherente),
+   la que existia antes del sistema de temas. Las demas paletas no cambian. */
 [data-palette="warm"][data-theme="dark"] {
-  --color-background: #100c0a;
-  --color-foreground: #ead6bd;
-  --color-muted: #a98a70;
-  --color-card: #18110f;
-  --color-border: #4e372b;
-  --color-accent: #cc8156;
-  --color-warning: #d5a95b;
-  --color-accent-cyan: #d18a5e;
-  --color-accent-gold: #d5a95b;
+  --color-background: oklch(0.16 0.02 250);
+  --color-foreground: oklch(0.95 0.01 95);
+  --color-muted: oklch(0.65 0.02 250);
+  --color-card: oklch(0.22 0.02 250);
+  --color-border: oklch(0.3 0.02 250);
+  --color-accent: oklch(0.55 0.13 200);
+  --color-warning: oklch(0.65 0.15 60);
+  --color-accent-cyan: oklch(0.55 0.13 200);
+  --color-accent-gold: oklch(0.65 0.15 60);
 }
 
 html,
@@ -220,11 +222,9 @@ body.vitamap-recinto {
   transition: background 0.5s ease, color 0.5s ease;
 }
 
-/* Calido + noche: equivalencia del recinto VitaMap actual. */
+/* Calido + noche: fondo plano frio, como la VitaMap original (sin penumbra calida). */
 html[data-palette="warm"][data-theme="dark"] body.vitamap-recinto {
-  background:
-    radial-gradient(ellipse 90% 55% at 25% 0%, oklch(0.62 0.09 80 / 0.07), transparent 60%),
-    oklch(0.11 0.016 75);
+  background: var(--color-background);
 }
 
 /* Frio + noche: penumbra azul tecnica. */
@@ -307,10 +307,10 @@ html[data-palette="cool"][data-theme="light"] body.vitamap-recinto::before {
 }
 
 html[data-palette="warm"][data-theme="dark"] .vitamap-lienzo {
-  border-color: oklch(0.7 0.06 80 / 0.12);
+  border-color: oklch(0.7 0.06 200 / 0.12);
   box-shadow:
-    -1px -1px 0 oklch(0.78 0.08 80 / 0.14),
-    20px 30px 70px oklch(0.04 0.01 75 / 0.5);
+    -1px -1px 0 oklch(0.78 0.08 200 / 0.14),
+    20px 30px 70px rgba(0, 0, 0, 0.45);
 }
 
 html[data-palette="cool"][data-theme="dark"] .vitamap-lienzo {
