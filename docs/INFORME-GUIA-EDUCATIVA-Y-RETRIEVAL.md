@@ -17,6 +17,11 @@ Ante *"¿qué me recomiendas?"* el asistente desviaba a una pregunta abierta sin
 ayudar a entender el valor ni preparar la consulta con un profesional. Era
 seguro (no diagnostica) pero **inútil**: el usuario se quedaba igual.
 
+> Actualización (2026-07-01): la **regla 13** del system prompt aborda esto —
+> ante "qué comer / qué me recomiendas", el asistente orienta con fuentes y
+> deriva la personalización a analítica + profesional, sin prescribir dieta. La
+> guía educativa opcional pasó a ser la regla 14.
+
 Restricción del producto (ADR-006/013): **no diagnostica, no prescribe, no fija
 objetivos individuales**. Y las funciones interpretativas deben poder
 desactivarse antes del piloto real (GUIA-OPERATIVA B-1). El consentimiento
@@ -51,7 +56,7 @@ Todo desactivable por configuración; nada cambia en producción hasta activarlo
 
 | Cambio | Dónde | Estado |
 |---|---|---|
-| **Regla 13** (guía educativa) tras flag `ASSISTANT_EDU_GUIDE` | `lib/llm.ts`, `app/api/chat/route.ts` | ✅ en `main` |
+| **Regla 14** (guía educativa) tras flag `ASSISTANT_EDU_GUIDE` | `lib/llm.ts`, `app/api/chat/route.ts` | ✅ en `main` |
 | Explica el marcador **en general** con fuentes citadas, sin interpretar el resultado personal; deriva al profesional | (prompt) | ✅ |
 | **Suite de regresión** del chat (2 casos) | `test-data/chat-regression-cases.json` | ✅ en `main` |
 | **ADR-016** + nota operativa B-1 | `docs/DECISIONS.md`, `GUIA-OPERATIVA` | ✅ en `main` |
@@ -60,7 +65,7 @@ Todo desactivable por configuración; nada cambia en producción hasta activarlo
 | Cableado del filtro en `queryMemoryAndKB` (default off) | `lib/qmd.ts` | ✅ en `main` |
 | **Taxonomía facetada del corpus** | `corpus-preparation/corpus-taxonomy.json` | ✅ local, sin commitear |
 | **Backfill facetado** (`marker`, `seccion`, `area_de_salud`, etc.) | `corpus-preparation/scripts/backfill-facets.mjs` | ✅ local, sin commitear |
-| Corpus local facetado | `corpus-preparation/approved-current-structure/` | ✅ 171 tarjetas, sin commitear |
+| Corpus local facetado | `corpus-preparation/approved-current-structure/` | ✅ 344 tarjetas, sin commitear |
 | Import/admin preservan facets | `lib/corpus-admin.ts`, `lib/corpus-import.ts`, `lib/frontmatter.ts` | ✅ local, sin commitear |
 | QMD expone facets al prompt | `lib/qmd.ts`, `lib/qmd-prompt.ts` | ✅ local, sin commitear |
 | `marker-scope` prefiere `marker` explícito del frontmatter | `lib/marker-scope.ts` | ✅ local, sin commitear |
@@ -227,7 +232,7 @@ adicional, no como evidencia principal de la respuesta.
       fuentes DE/EU para validar la preferencia real en chat.
 
 ### 4.2 Validación de comportamiento
-- [ ] Regla 13 contra Mistral: `ASSISTANT_EDU_GUIDE=true`, `LLM_PROVIDER=external`.
+- [ ] Regla 14 contra Mistral: `ASSISTANT_EDU_GUIDE=true`, `LLM_PROVIDER=external`.
       Verificar respuesta **citada**, **sin interpretar el valor personal**, guardrail `safe`.
 - [ ] Acotación por marcador: `KB_MARKER_SCOPE=true`. Repetir la pregunta de
       glucosa/LDL y comprobar que el doc hepático ya no aparece (logs `[chat] marker scope`).
@@ -322,7 +327,7 @@ Implementación inicial:
 
 | Flag | Default | Efecto |
 |---|---|---|
-| `ASSISTANT_EDU_GUIDE` | `false` | Activa la regla 13 (guía educativa) |
+| `ASSISTANT_EDU_GUIDE` | `false` | Activa la regla 14 (guía educativa) |
 | `KB_MARKER_SCOPE` | `false` | Activa el filtro de KB por marcador |
 
 Ambos se leen directamente de `process.env` (como el resto de módulos

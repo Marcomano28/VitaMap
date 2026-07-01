@@ -1,6 +1,6 @@
 # Cobertura del corpus · ángulos débiles por tema
 
-Versión viva · última actualización: 2026-06-22
+Versión viva · última actualización: 2026-07-01
 Estado: documento de seguimiento editorial (se actualiza con cada lote que se prepara para el RAG)
 
 > Propósito: rastrear, tema a tema, **qué ángulos están cubiertos y cuáles
@@ -84,7 +84,7 @@ esta sección para subir aquí el próximo analito o eje central que quede sin
 
 ---
 
-## 4. Mapa de cobertura por dossier (escaneo 2026-06-18)
+## 4. Mapa de cobertura por dossier (escaneo 2026-06-18; minerales/vitaminas ampliados 2026-07-01)
 
 Secciones presentes hoy. `(n)` = nº de tarjetas.
 
@@ -126,6 +126,11 @@ Secciones presentes hoy. `(n)` = nº de tarjetas.
 | sodio (2) | ✅ | ✅ | — | — | — | — | A+B; cierra el panel de electrolitos junto a potasio/cloruro/bicarbonato |
 | cloruro (2) | ✅ | ✅ | — | — | — | — | A+B; B en gran parte común con sodio (sal) |
 | bicarbonato (1) | ✅ | — | — | — | — | — | A; sin B (no es nutriente de la dieta) → ⚪; refleja equilibrio ácido-base |
+| zinc (5) | ✅ | ✅ | ✅ | — | ✅ | — | + 2ª C (reservas / fase aguda); su D zinc↔cobre se consolidó en cobre/ |
+| selenio (5) | ✅ | ✅ | ✅ | ✅ | ✅ | — | D=selenio↔tiroides; sembrado en ruta piel-cabello-uñas |
+| cobre (6) | ✅ | ✅ | ✅ | ✅ | ✅ | — | D×2 (cobre↔hierro; cobre↔zinc con AREDS); sin biomarcador fiable de estado |
+| yodo (5) | ✅ | ✅ | ✅ | ✅ | ✅ | — | yodo urinario; D=yodo↔tiroides; sembrado en ruta embarazo-y-lactancia |
+| biotina (2) | ⚪ | ✅ | ✅ | — | — | — | Sin A a propósito (no hay marcador rutinario); la interferencia con inmunoensayos vive en interferencias-analiticas/ |
 | bilirrubina (2) | ✅ | — | ✅ | — | — | — | D/E en panel |
 | albumina (1) | ✅ | — | — | — | — | — | 🟡 |
 | proteinas-totales (1) | ✅ | — | — | — | — | — | 🟡 |
@@ -209,6 +214,15 @@ Secciones presentes hoy. `(n)` = nº de tarjetas.
   `licensed`) y la de `renal/` (MedlinePlus, panel completo función-vs-daño,
   `permitted`). Si en el futuro convergen, fusionarlas con cuidado por el distinto
   `rights_status`.
+- **Rutas de salud nuevas (2026-07-01):** `salud-piel-cabello-unas`
+  (uñas/piel/cabello → ferritina, hierro, zinc, biotina, selenio) y
+  `embarazo-y-lactancia` (→ yodo, ácido fólico, ferritina, vitamina D, B12,
+  calcio). Cierran dos motivos de consulta difusos que antes no tenían ancla.
+- **Solape resuelto (zinc↔cobre):** la lectura conjunta zinc–cobre estaba
+  duplicada en `zinc/` y `cobre/`; se consolidó en
+  `cobre/cobre-zinc-lectura-conjunta` (con el ángulo AREDS) y se eliminó la del
+  lado zinc. Lleva `marker: [cobre, zinc]`, así que se recupera desde ambos
+  temas. No volver a crearla desde zinc.
 
 ---
 

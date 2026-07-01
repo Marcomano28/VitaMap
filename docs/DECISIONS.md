@@ -5,6 +5,47 @@ decisión; nunca se borran, solo se marcan como *superseded* si cambian.
 
 ---
 
+## ADR-017 · Preservar los matices de evidencia en la generación RAG
+**Estado:** aceptada · 2026-07-01
+
+**Contexto.** Los fragmentos de fuente se truncaban a 600 caracteres antes de
+entrar en el prompt (`SNIPPET_MAX_CHARS` en `lib/qmd-prompt.ts`). Las tarjetas de
+evidencia se redactan por diseño en 250–500 palabras con sus matices al final
+("qué no permite concluir", "qué se sabe y qué no", "los suplementos no ayudan
+sin déficit"). A 600 caracteres solo sobrevivía la primera sección, así que esos
+caveats se amputaban antes de llegar al modelo. Efecto observado: ante "¿qué como
+para las uñas?", el asistente reproducía la intro de la tarjeta de biotina y
+omitía el matiz "suplementar no ayuda sin déficit".
+
+**Decisión.** Truncación diferenciada por tipo de fuente en `wrapForPrompt`:
+evidencia (curada, acotada) a **2000** caracteres; memoria personal (larga, no
+curada) a **600**. Las `limitations` del frontmatter no se truncan (llegan
+siempre). En la misma dirección, el guardarraíl amplía
+`unsupported_factual_claim` a relaciones nutriente↔síntoma/tejido sin fuente.
+
+**Razón.** La memoria personal puede ser larga y no curada → recorte corto. La
+evidencia es curada y su valor honesto vive en los límites del final → hay que
+conservarla entera.
+
+**Advertencia.** No bajar el límite de evidencia (2000) por coste de tokens sin
+una prueba de regresión que demuestre que los caveats siguen llegando. La
+garantía del test es "no volvemos a truncar corto en `wrapForPrompt`", **no** "el
+caveat siempre llega al modelo": eso depende además de si QMD entrega el cuerpo o
+un sub-trozo (`bestChunk`), fuera del alcance de esta capa.
+
+**Implementación.** `SNIPPET_MAX_CHARS_EVIDENCE` / `SNIPPET_MAX_CHARS_PERSONAL` en
+`lib/qmd-prompt.ts`; guardarraíl en `lib/llm.ts` y `lib/guardrail.ts`. Regresión
+en `scripts/test-qmd-prompt.mts` (evidencia con caveat tras el carácter 600 debe
+aparecer; memoria personal larga debe truncarse).
+
+**Consecuencias.** Las respuestas conservan los límites de la evidencia; el coste
+de prompt sube algo (hasta ~2000×3 en evidencia), asumible con el modelo externo
+(ADR-014). Complementa a ADR-016 (frontera educativa) y a ADR-006/013 (no
+prescribe): la regla 13 alimentaria del system prompt evita que "¿qué como?" se
+convierta en receta.
+
+---
+
 ## ADR-016 · Guía educativa del asistente (opcional, desactivable)
 **Estado:** aceptada · 2026-06-15
 
@@ -16,7 +57,9 @@ producto no diagnostica, no prescribe y no fija objetivos individuales
 regulatorio que el piloto debe poder desactivar (GUIA-OPERATIVA B-1). El
 consentimiento posiciona VitaMap como herramienta educativa.
 
-**Decisión.** Regla opcional (regla 13) tras el flag `ASSISTANT_EDU_GUIDE`.
+**Decisión.** Regla opcional (regla 14; renumerada desde la 13 el 2026-07-01 al
+añadirse la regla 13 de orientación alimentaria — no prescribir dieta, ver
+ADR-017) tras el flag `ASSISTANT_EDU_GUIDE`.
 Cuando un valor cae fuera del intervalo de referencia del propio informe, o
 la persona pide consejo/veredicto, el asistente explica el marcador EN
 GENERAL con fuentes de educación institucional citadas, como preparación
