@@ -4,6 +4,7 @@ import { signOutAction } from "@/app/(auth)/login/actions";
 import { copy } from "@/lib/i18n";
 import { getLocale } from "@/lib/locale";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { hasActiveSubscription } from "@/lib/billing";
 import { isAdminEmail } from "@/lib/admin";
 import { assessmentsEnabled } from "@/lib/flags";
@@ -58,6 +59,8 @@ export async function SiteHeader() {
           </Link>
           <div className="vitamap-mobile-tools">
             <LanguageSwitcher locale={locale} />
+            <ThemeToggle intent="palette" />
+            <ThemeToggle />
           </div>
         </div>
 
@@ -90,6 +93,8 @@ export async function SiteHeader() {
                   {session!.user.email}
                 </Link>
                 <LanguageSwitcher locale={locale} />
+                <ThemeToggle intent="palette" />
+                <ThemeToggle />
               </div>
               <div className="vitamap-desktop-nav-session">
                 <form action={signOutAction}>
@@ -112,6 +117,8 @@ export async function SiteHeader() {
                 {t.requestAccess}
               </Link>
               <LanguageSwitcher locale={locale} />
+              <ThemeToggle intent="palette" />
+              <ThemeToggle />
               <Link
                 href="/login"
                 className="rounded-md border border-[var(--color-border)] px-3 py-1 hover:bg-[var(--color-card)]"
