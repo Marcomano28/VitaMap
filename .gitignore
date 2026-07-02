@@ -60,3 +60,8 @@ Thumbs.db
 # misc
 coverage/
 .turbo/
+
+# agent tooling (skills/agents instaladas + config local)
+.claude/
+.agents/
+skills-lock.json
