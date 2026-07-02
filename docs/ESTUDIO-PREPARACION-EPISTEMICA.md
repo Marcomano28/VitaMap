@@ -207,7 +207,7 @@ medida, no por anticipación.
 
 ### Nota sobre el material previo
 
-El documento `docs/PERGAMINO-DEL-VIAJERO.md` y sus audios son copy literario que
-no encaja como entregable; a lo sumo sirven como *cantera de microcopia* para las
-variantes de A/C/D (frases sueltas, recortadas a una línea). Si se prefiere, se
-retiran. No deben presentarse al usuario como un texto a leer.
+El formato literario largo queda retirado como entregable. Sus intuiciones útiles
+-- microfrases, metáfora ligera y cierre de sesión -- se integran en
+[EL-ATRIO-DE-LA-BRUJULA.md](EL-ATRIO-DE-LA-BRUJULA.md) como claves de orientación.
+No debe presentarse al usuario un texto ceremonial inicial para leer.

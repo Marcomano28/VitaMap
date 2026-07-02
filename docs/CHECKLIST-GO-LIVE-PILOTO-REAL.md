@@ -1,0 +1,191 @@
+# Checklist de autorización — piloto de 3 usuarios con datos reales
+
+Estado: documento vivo de seguimiento · creado 2026-07-02
+Deriva de: `AUDITORIA-2026-07-02.md` (anexo go-live), `GUIA-LEGAL-PILOTO-ALEMANIA.md`
+(§8-P0, §9) y `PILOTO-FASE1-GUIA-OPERATIVA.txt` (§B).
+
+> **Regla:** ninguna casilla se marca por intención. Cada una enlaza a una
+> **evidencia** concreta (test verde, captura, comando con su salida, documento
+> firmado). Ningún dato de salud real entra hasta cerrar A + B + C y cruzar la
+> Puerta 4 (autorización escrita).
+
+Leyenda de estado: `[ ]` pendiente · `[~]` en curso · `[x]` cerrado con evidencia.
+Prioridad: 🔴 bloqueante pre-dato-real · 🟡 antes de voluntarios 2/3 · 🟢 posterior.
+
+---
+
+## Frente A — Cierre técnico (código e infra)
+
+| ✔ | Pri | # | Tarea | Definición de hecho / evidencia | Estado |
+|:--:|:--:|:--:|---|---|---|
+| [ ] | 🔴 | 3 | MFA (TOTP/passkey) + recuperación | Alta, recuperación, dispositivo perdido y revocación probados | |
+| [ ] | 🔴 | 4 | Allowlist MIME + magic bytes en `/api/upload` | Fichero no permitido rechazado en el endpoint; test PDF/PNG/JPEG/WebP válidos e inválidos | |
+| [ ] | 🔴 | 1 | Parchear `next`/`better-auth`/`better-sqlite3` | `npm audit --omit=dev` sin altas/moderadas; build de producción verde | |
+| [ ] | 🔴 | 2 | Backup consistente de SQLite (`.backup`/`VACUUM INTO`) | Restauración de snapshot reciente abre sin corrupción; simulacro documentado | |
+| [ ] | 🔴 | — | Verificación de email + recuperación (Brevo) | Envío real desde producción sin revelar existencia de cuentas | |
+| [ ] | 🔴 | — | Módulos amarillos apagados por defecto | `ASSESSMENTS_ENABLED`/`ASSISTANT_EDU_GUIDE`/`KB_MARKER_SCOPE`/`RETRIEVAL_DEBUG`=`false` | |
+| [ ] | 🔴 | — | Anclaje externo del hash de auditoría | Hash final anclado periódicamente fuera del VPS | |
+| [ ] | 🔴 | — | Borrado cubre originales+derivados+índices+inbox+temporales OCR | Simulacro de borrado sin residuos verificado | |
+| [x] | 🟡 | 5 | `USER` no-root en `Dockerfile.web` | Contenedor `web` como usuario sin privilegios; `/data` con permisos ajustados | ✅ Ya resuelto vía `setpriv`→`node` en el entrypoint (falso positivo del audit) |
+| [ ] | 🟡 | 11 | Test de rutas protegidas sin sesión | Suite recorre rutas protegidas y espera 401/redirect | |
+| [ ] | 🟡 | 9 | Semáforo global de generaciones LLM | Límite de concurrencia (1–2) + cola; probado bajo carga | |
+| [ ] | 🟡 | 6 | CI mínima (GitHub Actions) | Workflow install→typecheck→lint→tests→`npm audit` en cada push | |
+| [ ] | 🟢 | 8 | Envelope encryption (rotación de clave) | Clave por usuario cifrada con MASTER_KEY; rotación probada | |
+| [ ] | 🟢 | 7 | Migrar tests a vitest/`node:test` | Runner unificado con assertions y cobertura | |
+| [ ] | 🟢 | 10 | Higiene del repo (media/docs fuera) | `textToAudio/`, `videos/`, `.DS_Store` fuera del árbol; `docs/` separado | |
+| [ ] | 🟢 | 12–15 | Majors, CSP nonce, LICENSE, logging pino | Anotados en `DECISIONS.md`; logger estructurado con requestId | |
+
+---
+
+## Frente B — Verificación en el VPS
+
+Cada punto se cierra con la salida del comando correspondiente (ver
+`AUDITORIA-2026-07-02.md` → "Comandos de verificación del VPS").
+
+| ✔ | Tarea | Evidencia (comando/salida) | Estado |
+|:--:|---|---|---|
+| [x] | `/opt/vitamap-next` en el commit esperado de `main`, árbol limpio | `git rev-parse --short HEAD` + `git status --short` | ✅ 07-02: 9914e0d == origin/main, 0/0, limpio |
+| [ ] | `infra/.env` con todas las variables nuevas | `grep '^[A-Z0-9_]\+=' infra/.env \| cut -d= -f1` | |
+| ❌ | Flags de módulo cerrados en producción | `grep -E '^(ASSESSMENTS_ENABLED\|ASSISTANT_EDU_GUIDE\|KB_MARKER_SCOPE\|RETRIEVAL_DEBUG)=' infra/.env` | 🔴 07-02: ASSESSMENTS_ENABLED=true, KB_MARKER_SCOPE=true |
+| [~] | `/admin/corpus` abre para admin y da 404 a cuenta normal | Prueba manual con dos cuentas | 07-02: sin sesión → 307 (OK); ADMIN_EMAILS=2 correos; falta test cuenta no-admin |
+| [x] | Email de verificación y recuperación funcionan desde producción | Prueba con usuario de test | ✅ 07-02: no-enumeración OK; Brevo Enviado→Entregado→Abierto 13:31. Nota P1: log ERROR registra el email consultado |
+| [x] | Autenticar dominio de correo en Brevo (SPF/DKIM/DMARC) | Dominio "Authenticated" en Brevo + registros en Cloudflare | ✅ 07-02: DKIM 1/2 y DMARC (p=none) publicados y verificados con `dig`. Pendiente opcional: SPF explícito + subir DMARC a quarantine |
+| [~] | Entrega a bandeja de entrada (no spam) | Reputación de remitente / warm-up | 07-02: primer correo cayó en spam (Yahoo, dominio nuevo). Marcar "no spam" + calentamiento; desactivar tracking de apertura (RGPD) |
+| [~] | Firewall, SSH restringido y política de actualización del SO | `ufw status` + `sshd_config` (PermitRootLogin/PasswordAuthentication) | 07-02: UFW OK (22/80/443); SSH sin endurecer (defaults) |
+| ❌ | Cifrado de disco (LUKS) verificado con reinicio real | `lsblk -o NAME,FSTYPE,MOUNTPOINT` (tipo `crypt`) + acta de reinicio | 🔴 07-02: sin capa crypt, sda1 ext4 plano |
+| [~] | Backups cifrados UE **y restauración real comprobada** | `restic snapshots` + `restic check` + simulacro de restore | 07-02: 58 snapshots, check OK; falta restore real + audit #2 |
+| [ ] | Aislamiento, logs de auditoría y borrado probados extremo a extremo (sintéticos) | Tests de acceso cruzado + `audit_event` + simulacro de borrado | 07-02: audit_event coherente; falta test aislamiento y borrado |
+| [ ] | Credenciales GitHub CLI en `root` sustituidas por despliegue de solo lectura | Sesión cerrada / deploy key de solo lectura | |
+| [ ] | Primer payout Stripe → IBAN confirmado (fecha e importe neto) | Captura del dashboard de Stripe | |
+| [ ] | Reintento del PDF sintético tras corrección del worker `pdfjs-dist` | 11 marcadores extraídos correctamente | |
+| ❌ | `next` en versión parcheada en el contenedor desplegado | salida de versión de `next` en `web` | 🔴 07-02: 15.5.19 → objetivo 15.5.20 (solo bump de lockfile; package.json ya `^15.0.0`) |
+| [x] | Contenedor `web` NO corre como root | `docker compose top web` | ✅ 07-02: Dockerfile baja a usuario `node` (uid 1000) vía `setpriv` en el entrypoint (no usa directiva USER). El audit #5 fue falso positivo. Confirmar con `docker top` |
+| [x] | Solo cuentas sintéticas en la BD antes de la Puerta 4 | `SELECT id,email FROM user;` | ✅ 07-02: solo admin (igorcapote@yahoo.com) |
+
+---
+
+## Frente C — Puerta legal y regulatoria (bloqueante, fuera de código)
+
+Requiere las revisiones profesionales de `GUIA-LEGAL-PILOTO-ALEMANIA.md` §7.
+Este documento no es asesoría jurídica.
+
+### Legal y organización
+
+- [ ] Operador, dirección, contacto y forma jurídica definidos
+- [ ] Alta comercial/fiscal resuelta antes del primer cobro (`Gewerbeamt`/`Finanzamt`, §19 UStG)
+- [ ] Seguro de responsabilidad/ciber evaluado
+- [ ] Finalidad prevista de VitaMap firmada (módulo a módulo)
+- [ ] Informe MDR revisado por especialista (escalas, crisis, interpretación de analíticas)
+- [ ] DSFA/DPIA terminada y riesgo residual aceptado
+- [ ] Necesidad de DPO resuelta por escrito (§38 BDSG)
+- [ ] Registro Art. 30 terminado
+- [ ] Contratos de encargo Art. 28 y proveedores revisados (Hetzner, Backblaze, Stripe, Revolut, DNS/correo)
+- [ ] Privacidad, consentimiento, Impressum y condiciones publicados
+- [ ] Consentimiento con responsable y proveedores reales + mecanismo de reconsentimiento
+- [ ] Botón de cancelación §312k BGB separado del borrado, con confirmación en soporte duradero
+- [ ] Derecho de desistimiento (§355 BGB) probado
+- [ ] Procedimiento de brechas de 72 h con simulacro y contactos
+- [ ] Nota de alfabetización en IA (Art. 4 Reglamento de IA)
+
+---
+
+## Frente D — Con los tres participantes (Puerta 5)
+
+- [ ] Invitación individual nominativa y sesión informativa
+- [ ] Explicación de límites y posibles errores de IA
+- [ ] Consentimiento libre, explícito y versionado por persona
+- [ ] Canal humano para dudas, retirada e incidentes
+- [ ] Confirmación contractual y recibo
+- [ ] Recordatorio de no usar VitaMap para urgencias
+- [ ] Fecha de inicio y fin del piloto acordadas
+- [ ] Entrevista final y borrado/exportación elegidos por cada persona
+
+---
+
+## Puertas (resumen de avance)
+
+- [ ] **Puerta 0** — Solo datos sintéticos; Frente A bloqueante en `main` + tests verdes
+- [ ] **Puerta 1** — Despliegue al VPS + bloque Frente B verificado
+- [ ] **Puerta 2** — Backup/restauración, aislamiento, borrado, MFA y email probados en VPS
+- [ ] **Puerta 3** — Paquete legal completo con firmas profesionales (Frente C)
+- [ ] **Puerta 4** — 48 h de observación sin errores + **autorización por escrito**
+- [ ] **Puerta 5** — Invitaciones de voluntarios 2 y 3 → entran datos reales
+
+> Progreso técnico rápido: A-bloqueantes ▢▢▢▢▢▢▢▢ · B ▢▢▢▢▢▢▢▢▢▢▢▢▢▢▢ · C ▢▢…
+> (actualizar los recuadros al cerrar cada fila).
+
+---
+
+## Log de verificación del VPS
+
+### 2026-07-02 — bloque 1 (despliegue y salud)
+
+Confirmado:
+- Contenedores `caddy` (Up 12 d), `web` (Up 19 h, **healthy**) y `backup`
+  (Up 19 h) en marcha.
+- `/api/health` → `status:ok`, `version:0.1.0`, `phase:0`, **`audit_chain:ok`**,
+  ts actual. La cadena de auditoría está íntegra.
+
+⚠️ Hallazgos abiertos:
+- **Falta el contenedor `llm`** (`vitamap-llm-1`). Con `COMPOSE_PROFILES=local-llm`
+  debería estar arriba. Verificar bloque 2: si `LLM_PROVIDER=external`, el chat
+  usa un proveedor fuera del VPS → bandera regulatoria (ADR-014/consentimiento).
+  Si es `local`, el servicio no arrancó y el chat no tiene motor.
+- **`phase:0`** en el health: confirmar que es el valor esperado para el piloto.
+
+Pendiente de recibir: bloques 2 (flags/env), 3 (versiones/USER), 4 (backups),
+5 (datos/aislamiento), 6 (sistema/red/cifrado).
+
+### 2026-07-02 — bloques 2–6 (verificación completa)
+
+**🔴 Bloqueantes detectados (impiden datos reales):**
+
+1. **Módulos amarillos ABIERTOS.** `ASSESSMENTS_ENABLED=true` y
+   `KB_MARKER_SCOPE=true`. Deben estar en `false` (guía operativa §B-1, guía
+   legal §8-P0 "desactivar módulos amarillos"). Las escalas PHQ/GAD son zona
+   amarilla: no pueden estar activas sin evaluación MDR firmada.
+2. **LLM externo.** `LLM_PROVIDER=external` y `COMPOSE_PROFILES=` (vacío) → no hay
+   `llm` local; el chat envía contenido a un proveedor **fuera del VPS**. Para
+   el cierre del piloto debe ser `local` (guía operativa §C.3), o requiere
+   ADR-014 + consentimiento explícito de transferencia. Incompatible con "sin
+   APIs externas con datos reales" (guía legal §9).
+3. **`next` sin parchear:** versión desplegada **15.5.19** (audit #1; parcheado
+   en 15.5.20+). Vulnerabilidad alta aún presente en producción.
+4. **Disco SIN cifrar.** `lsblk` no muestra capa `crypt`: `sda1` es `ext4` plano.
+   No hay LUKS. Datos Art. 9 en reposo sin cifrado de disco (guía operativa §B,
+   guía legal §9 "cifrado de disco verificado"). El cifrado `age` por usuario
+   protege los originales subidos, pero los markdown derivados e índices QMD
+   quedan en claro en disco.
+5. **`billing_subscription` con filas heredadas.** Hay 3 filas para el admin, una
+   **con `user_id` vacío** (`|active||…`) y `current_period_end` obsoleto
+   (2026-06-08). Reconciliar como incidente (guía operativa §F.6): copiar
+   `auth.sqlite` primero, nunca marcar `active` a mano, documentar la reparación.
+
+**🟡 Recomendados antes de abrir:**
+
+6. **`web` corre como root** (`Dockerfile.web SIN USER`) — audit #5, confirmado.
+7. **SSH sin endurecer:** `PermitRootLogin`/`PasswordAuthentication` sin línea
+   explícita en `sshd_config` (aplican defaults). Fijar `PermitRootLogin
+   prohibit-password` y `PasswordAuthentication no`. UFW sí está activo y correcto.
+8. **Sin swap** (`Swap: 0B`): si se vuelve a LLM local (~4 GB), añadir swap de
+   seguridad. RAM libre hoy 5.6 GB con LLM externo.
+
+**✅ Confirmado en orden:**
+
+- **Backups sólidos:** 58 snapshots + `restic check` → *no errors were found*.
+  Repositorio íntegro. (Falta aún: **prueba de restauración real** y el backup
+  consistente de SQLite en caliente del audit #2.)
+- **Firewall UFW activo:** default deny incoming; solo 22/80/443 abiertos.
+- **Solo cuenta admin en la BD** (`igorcapote@yahoo.com`, creada 2026-06-07). No
+  hay datos de terceros todavía. `audit_chain: ok` y cadena de auditoría con
+  eventos coherentes (kb.publish, chat.query, auth.logout).
+- **Holgura de recursos:** disco 23% (33/150 GB), RAM 5.6 GB libre, uptime 23 d,
+  carga 0.00.
+- **Secretos presentes en `.env`:** ADMIN_EMAILS, BREVO_API_KEY, EMAIL_FROM,
+  STRIPE_*, B2_*, RESTIC_*, MASTER_KEY, BETTER_AUTH_SECRET, QMD_EMBED_MODEL.
+  (No aparece `EMAIL_REPLY_TO`, opcional; confirmar `BETTER_AUTH_URL`/
+  `NEXT_PUBLIC_APP_URL`/`NODE_ENV` si no estaban en el grep.)
+
+**Aún sin verificar:** commit desplegado y árbol limpio (bloque 1 git),
+`/admin/corpus` 404 para cuenta normal, envío real de email Brevo desde
+producción, payout de Stripe al IBAN, reintento del PDF sintético.
