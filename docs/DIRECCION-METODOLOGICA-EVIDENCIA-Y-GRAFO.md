@@ -211,8 +211,8 @@ Empezar por los ~30 markers más frecuentes del piloto, no por los 99.
 completo. No "FHIR-izar" las tarjetas explicativas. Se toma *el vocabulario de
 códigos y dos semánticas de relación*, no la infraestructura.
 
-**Vínculo con la filosofía.** La hoja del Atrio dice que "una referencia ayuda a
-comparar": para que esa comparación sea verdad necesita una unidad y un código,
+**Vínculo con la filosofía.** Una clave del Atrio dice que "una referencia ayuda
+a comparar": para que esa comparación sea verdad necesita una unidad y un código,
 no una intuición.
 
 ### Tramo 4 · Despertar el mapa — *pesos, direcciones y señales*
