@@ -86,12 +86,16 @@ const SECCION_INTENT_PATTERNS: Array<{ seccion: string; needles: string[] }> = [
   { seccion: "seguridad", needles: ["riesgo", "es seguro", "seguridad", "interacc", "efectos adversos", "contraindic", "nebenwirkung", "risiko", "ist es sicher"] },
   { seccion: "seguimiento", needles: ["ha cambiado", "con el tiempo", "a lo largo del tiempo", "evolucion", "comparar con", "tendencia", "seguimiento", "verlauf", "im laufe der zeit", "verandert"] },
   { seccion: "alimentacion-factores", needles: ["que factores", "factores que", "factores", "influye", "que puedo comer", "que como", "alimentos", "dieta", "habitos", "estilo de vida", "como mejorar", "como bajar", "como subir", "welche faktoren", "ernahrung", "lebensstil"] },
-  { seccion: "interpretacion", needles: ["que significa", "significa", "dentro de la norma", "en la norma", "es normal", "esta normal", "rango de referencia", "como se interpreta", "interpreta", "que mide", "que es", "para que sirve", "was bedeutet", "normalbereich", "referenzbereich"] },
+  { seccion: "interpretacion", needles: ["que significa", "dentro de la norma", "en la norma", "es normal", "esta normal", "rango de referencia", "como se interpreta", "interpreta", "que mide", "que es", "para que sirve", "was bedeutet", "normalbereich", "referenzbereich"] },
   { seccion: "curiosidad", needles: ["por que", "como funciona", "explicame mas", "explicame", "cuentame", "mas sobre", "curios", "warum", "wie funktioniert", "erzahl"] },
 ];
 
 /** Sección de tarjeta que pide la intención de la pregunta, si es reconocible. */
 export function seccionIntentIn(text: string): string | undefined {
+  // Si el mensaje menciona DOS o más mediciones, es una pregunta de leerlas
+  // juntas (lectura-conjunta), aunque el fraseo use "significa" o "por qué".
+  // Tiene prioridad: evita mandar comparaciones al ángulo de un solo valor.
+  if (markersIn(text).size >= 2) return "lectura-conjunta";
   const padded = ` ${fold(text)} `;
   for (const { seccion, needles } of SECCION_INTENT_PATTERNS) {
     if (needles.some((n) => padded.includes(n))) return seccion;
