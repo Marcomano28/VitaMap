@@ -1,0 +1,29 @@
+# Banco de evaluación · Inflamación y cardiovascular avanzado (PCR, VSG, homocisteína)
+
+- query: "¿qué significa la PCR alta?"
+  locale: es
+  expected: [proteina-c-reactiva-interpretacion-medlineplus]
+
+- query: "¿cómo se leen juntas la PCR y la VSG?"
+  locale: es
+  expected: [pcr-vsg-lectura-conjunta-medlineplus]
+  note: lectura conjunta de marcadores de inflamación
+
+- query: "me han pedido homocisteína, ¿con qué otros valores se lee?"
+  locale: es
+  expected: [homocisteina-vitaminas-b-lectura-conjunta-medlineplus]
+  must_not_prioritize: [homocisteina-interpretacion-medlineplus]
+  note: prueba del mapa -> la homocisteína se lee con B12, folato y B6
+
+- query: "¿qué significa la homocisteína alta?"
+  locale: es
+  expected: [homocisteina-interpretacion-medlineplus]
+
+- query: "la vitamina B6 sale baja, ¿puede ser por inflamación?"
+  locale: es
+  expected: [vitamina-b6-inflamacion-lectura-conjunta-ods]
+  note: prueba del mapa -> confounder inflamación->B6 recién dibujado
+
+- query: "¿para qué sirve la PCR ultrasensible en riesgo cardiovascular?"
+  locale: es
+  expected: [hscrp-riesgo-cardiovascular-interpretacion-uspstf]
