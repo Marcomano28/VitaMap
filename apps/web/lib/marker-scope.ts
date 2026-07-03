@@ -65,6 +65,21 @@ export function markersIn(text: string): Set<string> {
   return found;
 }
 
+/**
+ * Marcadores mencionados DIRECTAMENTE por su alias, SIN expandir grupos de
+ * consulta. Para contar cuántas mediciones nombra la pregunta: un grupo como
+ * "colesterol" expande a 7 markers y falsearía un "¿qué significa el LDL?" como
+ * multi-marcador. Aquí solo cuentan las menciones explícitas.
+ */
+function directMarkersIn(text: string): Set<string> {
+  const padded = ` ${fold(text)} `;
+  const found = new Set<string>();
+  for (const { marker, aliases } of MARKER_MATCHERS) {
+    if (aliases.some((alias) => padded.includes(alias))) found.add(marker);
+  }
+  return found;
+}
+
 /** Motivos de consulta mencionados como `area_de_salud` canónica. */
 export function healthAreasIn(text: string): Set<string> {
   const padded = ` ${fold(text)} `;
@@ -95,7 +110,7 @@ export function seccionIntentIn(text: string): string | undefined {
   // Si el mensaje menciona DOS o más mediciones, es una pregunta de leerlas
   // juntas (lectura-conjunta), aunque el fraseo use "significa" o "por qué".
   // Tiene prioridad: evita mandar comparaciones al ángulo de un solo valor.
-  if (markersIn(text).size >= 2) return "lectura-conjunta";
+  if (directMarkersIn(text).size >= 2) return "lectura-conjunta";
   const padded = ` ${fold(text)} `;
   for (const { seccion, needles } of SECCION_INTENT_PATTERNS) {
     if (needles.some((n) => padded.includes(n))) return seccion;
