@@ -50,6 +50,7 @@ const kFlag = argv.indexOf("--k");
 const K = kFlag >= 0 ? Number(argv[kFlag + 1]) : 5;
 const forceValidate = argv.includes("--validate");
 const forceRun = argv.includes("--run");
+const listKb = argv.includes("--list"); // vuelca la KB publicada (ruta + título)
 
 // ---------------------------------------------------------------------------
 // Utilidades
@@ -159,7 +160,13 @@ async function runAgainstKb(): Promise<void> {
     const hitTitle = norm(hit.title ?? "");
     if (meta) {
       if (hitTitle && hitTitle === norm(meta.title)) return true;
-      if (meta.titleSlug && relN.includes(meta.titleSlug)) return true;
+      if (meta.titleSlug) {
+        if (relN.includes(meta.titleSlug)) return true;
+        // Al publicar, el slug del título se trunca (~72 chars) y a veces se
+        // edita el título ("por qué"->"cómo"). Casar por un prefijo distintivo.
+        const prefix = meta.titleSlug.slice(0, 40);
+        if (prefix.length >= 16 && relN.includes(prefix)) return true;
+      }
       if (relN.includes(norm(meta.tarjetaId))) return true;
     }
     return relN.includes(norm(expectedBase));
@@ -239,6 +246,23 @@ async function runAgainstKb(): Promise<void> {
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
+
+// Modo --list: volcar la KB publicada (ruta + título) para realinear el banco.
+if (listKb) {
+  const files = walkMd(kbDir);
+  console.log(`\nKB publicada en ${kbDir} — ${files.length} documentos (ruta | título):\n`);
+  const rows = files
+    .map((f) => {
+      let title = "";
+      try {
+        title = String((matter(fs.readFileSync(f, "utf8")).data as Record<string, unknown>).title ?? "");
+      } catch {}
+      return { rel: path.relative(kbDir, f), title };
+    })
+    .sort((a, b) => a.rel.localeCompare(b.rel));
+  for (const r of rows) console.log(`  ${r.rel}\n      → ${r.title}`);
+  process.exit(0);
+}
 
 const kbDocCount = walkMd(kbDir).filter((f) => path.basename(f) !== "example-seed.md").length;
 const dangling = validateReferences();
