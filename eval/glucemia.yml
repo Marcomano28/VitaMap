@@ -30,3 +30,8 @@
 - query: "¿qué puedo cambiar en la dieta si tengo el azúcar alto?"
   locale: es
   expected: [glucosa-en-ayunas-alimentacion-factores-niddk, glucosa-y-hba1c-alimentacion-factores-niddk]
+
+- query: "¿por qué sube la glucosa por la mañana aunque no haya comido?"
+  locale: es
+  expected: [glucosa-en-ayunas-curiosidad-fenomeno-del-alba-wang2021]
+  note: enrutador de intención -> pregunta de "por qué/curiosidad" debe traer la tarjeta de curiosidad, no la de interpretación
