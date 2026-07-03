@@ -172,52 +172,118 @@ async function runAgainstKb(): Promise<void> {
     return relN.includes(norm(expectedBase));
   }
 
+  // Pipeline del filtro (marker-scope), el mismo que el chat con KB_MARKER_SCOPE
+  // encendido. Se importa vía .default por la interoperabilidad CJS de apps/web.
+  const scope = ((await import("../lib/marker-scope.ts")) as unknown as {
+    default: {
+      deriveScope: (q: string, prior?: string[]) => { markers: Set<string>; lens: Set<string>; healthAreas: Set<string> };
+      filterByMarkers: <T extends { path: string; title: string; marker?: unknown }>(d: readonly T[], a: ReadonlySet<string>) => T[];
+      applyLensPreference: <T extends { tradicion?: string; seccion?: string }>(d: readonly T[], l: ReadonlySet<string>) => T[];
+      applyHealthAreaPreference: <T extends { areaDeSalud?: readonly string[] }>(d: readonly T[], a: ReadonlySet<string>) => T[];
+    };
+  }).default;
+
+  // Facetas de un hit (marker/tradición/sección/área) desde su fichero publicado,
+  // necesarias para el filtro. Cacheado por ruta.
+  interface Chunk { path: string; title: string; marker?: string[]; tradicion?: string; seccion?: string; areaDeSalud?: string[] }
+  const facetCache = new Map<string, Chunk>();
+  const strArr = (v: unknown): string[] | undefined =>
+    Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : typeof v === "string" ? [v] : undefined;
+  function chunkFor(hit: { title?: string; displayPath?: string; path?: string }): Chunk {
+    const rel = hitPath(hit);
+    let ch = facetCache.get(rel);
+    if (!ch) {
+      let data: Record<string, unknown> = {};
+      try { data = matter(fs.readFileSync(path.join(kbDir, rel), "utf8")).data as Record<string, unknown>; } catch {}
+      ch = {
+        path: rel,
+        title: hit.title ?? (typeof data.title === "string" ? data.title : ""),
+        marker: strArr(data.marker),
+        tradicion: typeof data.tradicion === "string" ? data.tradicion : undefined,
+        seccion: typeof data.seccion === "string" ? data.seccion : undefined,
+        areaDeSalud: strArr(data.area_de_salud),
+      };
+      facetCache.set(rel, ch);
+    }
+    return ch;
+  }
+
   const store = await createStore({
     dbPath: indexPath,
     config: { collections: { kb: { path: kbDir, pattern: "**/*.md" } } },
   });
 
-  const byTheme = new Map<string, { total: number; r1: number; r3: number; r5: number; mustNot: number }>();
-  const fails: string[] = [];
+  interface Stat { total: number; r1: number; r3: number; mustNot: number }
+  const mkStat = (): Stat => ({ total: 0, r1: 0, r3: 0, mustNot: 0 });
+  const rawByTheme = new Map<string, Stat>();
+  const scopedByTheme = new Map<string, Stat>();
+  const changed: string[] = [];
+  let rawOff = 0, scopedOff = 0; // intrusiones de otro tema en top-3
+
+  type Hit = { title?: string; displayPath?: string; path?: string };
+  const locate = (ranked: Array<Hit | Chunk>, keys: string[]): number =>
+    ranked.findIndex((h) => keys.some((k) => matches(h, k)));
+  function tally(m: Map<string, Stat>, theme: string, expected: string[], fe: number, mn: boolean): void {
+    const s = m.get(theme) ?? mkStat();
+    s.total += 1;
+    if (expected.length > 0 && fe >= 0) { if (fe === 0) s.r1 += 1; if (fe < 3) s.r3 += 1; }
+    if (mn) s.mustNot += 1;
+    m.set(theme, s);
+  }
+  const passed = (expected: string[], fe: number, mn: boolean) =>
+    expected.length === 0 ? !mn : fe >= 0 && fe < 3 && !mn;
 
   try {
     for (const c of cases) {
       const q = c.query.replace(/\s+/g, " ").trim();
-      const hits = await store.search({
-        queries: [
-          { type: "lex", query: q },
-          { type: "vec", query: q },
-        ],
+      const hits: Hit[] = await store.search({
+        queries: [{ type: "lex", query: q }, { type: "vec", query: q }],
         rerank: false,
-        limit: K,
-        candidateLimit: Math.max(10, K * 2),
+        limit: 20,
+        candidateLimit: 30,
       });
-
       const expected = c.expected ?? [];
       const forbidden = c.must_not_prioritize ?? [];
-      const firstExpected = hits.findIndex((h) => expected.some((e) => matches(h, e)));
-      const firstForbidden = hits.findIndex((h) => forbidden.some((e) => matches(h, e)));
 
-      const s = byTheme.get(c.theme!) ?? { total: 0, r1: 0, r3: 0, r5: 0, mustNot: 0 };
-      s.total += 1;
-      if (expected.length > 0 && firstExpected >= 0) {
-        if (firstExpected === 0) s.r1 += 1;
-        if (firstExpected < 3) s.r3 += 1;
-        if (firstExpected < 5) s.r5 += 1;
+      // CRUDO: orden de QMD tal cual (lo que hace producción hoy).
+      const raw = hits.slice(0, K);
+      const rFe = locate(raw, expected);
+      const rFf = locate(raw, forbidden);
+      const rMn = rFf >= 0 && rFf < 3 && (rFe < 0 || rFf < rFe);
+
+      // FILTRADO: pipeline marker-scope (filtro fuerte por marcador + lente + área).
+      const sc = scope.deriveScope(q, []);
+      const chunks = hits.map(chunkFor);
+      const filtered = scope
+        .applyHealthAreaPreference(
+          scope.applyLensPreference(scope.filterByMarkers(chunks, sc.markers), sc.lens),
+          sc.healthAreas,
+        )
+        .slice(0, K);
+      const sFe = locate(filtered, expected);
+      const sFf = locate(filtered, forbidden);
+      const sMn = sFf >= 0 && sFf < 3 && (sFe < 0 || sFf < sFe);
+
+      tally(rawByTheme, c.theme!, expected, rFe, rMn);
+      tally(scopedByTheme, c.theme!, expected, sFe, sMn);
+
+      // Intrusiones de otro tema en el top-3 (lo que el filtro debe limpiar).
+      if (sc.markers.size > 0) {
+        const offCount = (list: Chunk[]) =>
+          list.slice(0, 3).filter((ch) => {
+            const mk = ch.marker ?? [];
+            if (mk.length === 0 || mk.includes("general")) return false;
+            return !mk.some((x) => sc.markers.has(x));
+          }).length;
+        rawOff += offCount(raw.map(chunkFor));
+        scopedOff += offCount(filtered);
       }
-      const mustNotViolated =
-        firstForbidden >= 0 && firstForbidden < 3 && (firstExpected < 0 || firstForbidden < firstExpected);
-      if (mustNotViolated) s.mustNot += 1;
-      byTheme.set(c.theme!, s);
 
-      const ok = expected.length === 0 ? !mustNotViolated : firstExpected >= 0 && firstExpected < 3 && !mustNotViolated;
-      if (!ok) {
-        const shown = hits.slice(0, K).map((h) => `${(h.title ?? "?").slice(0, 45)} [${hitPath(h)}]`);
-        fails.push(
-          `  ✗ [${c.theme}] (${c.locale ?? "es"}) "${c.query}"\n` +
-            `      esperado: ${expected.join(", ") || "—"}\n` +
-            `      recuperado:\n        ${shown.join("\n        ") || "(nada)"}` +
-            (mustNotViolated ? `\n      ⚠ prohibida priorizada` : ""),
+      const rawOk = passed(expected, rFe, rMn);
+      const scopedOk = passed(expected, sFe, sMn);
+      if (rawOk !== scopedOk) {
+        changed.push(
+          `  ${scopedOk ? "✅ mejora" : "⚠ empeora"} [${c.theme}] "${c.query}"  (marcadores del filtro: ${[...sc.markers].join(", ") || "—"})`,
         );
       }
     }
@@ -225,22 +291,28 @@ async function runAgainstKb(): Promise<void> {
     await store.close();
   }
 
-  console.log(`\nResultados de recuperación (top-${K}, recall por tema):`);
-  console.log(`  tema                         casos  R@1   R@3   R@5   must-not✗`);
-  let T = 0, R1 = 0, R3 = 0, R5 = 0, MN = 0;
-  for (const [theme, s] of [...byTheme.entries()].sort()) {
-    T += s.total; R1 += s.r1; R3 += s.r3; R5 += s.r5; MN += s.mustNot;
-    const pct = (n: number) => `${Math.round((100 * n) / s.total)}%`.padStart(4);
-    console.log(`  ${theme.padEnd(28)} ${String(s.total).padStart(4)}  ${pct(s.r1)}  ${pct(s.r3)}  ${pct(s.r5)}   ${s.mustNot}`);
+  console.log(`\nComparativa CRUDO vs FILTRADO (marker-scope), recall@3 por tema:`);
+  console.log(`  tema                         casos  R@3 crudo  R@3 filtrado   must-not (crudo/filtrado)`);
+  let T = 0, rR3 = 0, sR3 = 0, rMN = 0, sMN = 0;
+  for (const theme of [...rawByTheme.keys()].sort()) {
+    const r = rawByTheme.get(theme)!;
+    const s = scopedByTheme.get(theme)!;
+    T += r.total; rR3 += r.r3; sR3 += s.r3; rMN += r.mustNot; sMN += s.mustNot;
+    const p = (n: number, tot: number) => `${Math.round((100 * n) / tot)}%`.padStart(4);
+    console.log(`  ${theme.padEnd(28)} ${String(r.total).padStart(4)}     ${p(r.r3, r.total)}       ${p(s.r3, s.total)}            ${r.mustNot} / ${s.mustNot}`);
   }
   const g = (n: number) => `${Math.round((100 * n) / T)}%`.padStart(4);
-  console.log(`  ${"TOTAL".padEnd(28)} ${String(T).padStart(4)}  ${g(R1)}  ${g(R3)}  ${g(R5)}   ${MN}`);
+  console.log(`  ${"TOTAL".padEnd(28)} ${String(T).padStart(4)}     ${g(rR3)}       ${g(sR3)}            ${rMN} / ${sMN}`);
 
-  if (fails.length) {
-    console.log(`\nCasos que fallan (esperada no en top-3, o prohibida por encima):`);
-    for (const f of fails) console.log(f);
+  console.log(`\nIntrusiones de otro tema en el top-3 (fugas):  crudo ${rawOff}  →  filtrado ${scopedOff}`);
+  if (changed.length) {
+    console.log(`\nCasos donde el filtro cambia el resultado:`);
+    for (const n of changed) console.log(n);
+  } else {
+    console.log(`\n(El filtro no volteó ningún caso pasa/falla; mira el R@3 y las fugas para su efecto.)`);
   }
-  console.log(`\n(Recall@3 = la tarjeta correcta aparece entre las 3 primeras. Sube minScore/afinaciones solo si estos números mejoran.)`);
+  console.log(`\nCRUDO = búsqueda tal cual (producción hoy). FILTRADO = con KB_MARKER_SCOPE encendido.`);
+  console.log(`Regla: encender el filtro solo si el R@3 filtrado IGUALA o SUPERA al crudo y baja las fugas.`);
 }
 
 // ---------------------------------------------------------------------------
