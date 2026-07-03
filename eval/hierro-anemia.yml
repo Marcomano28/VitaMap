@@ -2,7 +2,7 @@
 
 - query: "¿qué significa la ferritina baja?"
   locale: es
-  expected: [hierro-interpretacion-medlineplus]
+  expected: [hierro-interpretacion-medlineplus, ferritina-curiosidad-primera-en-caer-ods]
 
 - query: "tengo la ferritina alta y también la PCR alta, ¿significa que tengo mucho hierro?"
   locale: es
