@@ -75,6 +75,30 @@ export function healthAreasIn(text: string): Set<string> {
   return found;
 }
 
+/**
+ * Intención de la pregunta traducida a la SECCION de tarjeta que la responde
+ * (el "ángulo" A/B/C/D/E del dossier). Es una preferencia suave: reordena para
+ * que la tarjeta del ángulo pedido suba, sin descartar nada. Patrones ordenados
+ * de más específico a más genérico; el primero que casa gana. ES + DE.
+ */
+const SECCION_INTENT_PATTERNS: Array<{ seccion: string; needles: string[] }> = [
+  { seccion: "lectura-conjunta", needles: ["se leen juntos", "se lee con", "con que se lee", "otros valores", "con que valores", "que valores se", "leer juntos", "en conjunto", "relacion entre", "me pidieron varios", "varios marcadores", "varios valores", "zusammen gelesen", "zusammenhang zwischen"] },
+  { seccion: "seguridad", needles: ["riesgo", "es seguro", "seguridad", "interacc", "efectos adversos", "contraindic", "nebenwirkung", "risiko", "ist es sicher"] },
+  { seccion: "seguimiento", needles: ["ha cambiado", "con el tiempo", "a lo largo del tiempo", "evolucion", "comparar con", "tendencia", "seguimiento", "verlauf", "im laufe der zeit", "verandert"] },
+  { seccion: "alimentacion-factores", needles: ["que factores", "factores que", "factores", "influye", "que puedo comer", "que como", "alimentos", "dieta", "habitos", "estilo de vida", "como mejorar", "como bajar", "como subir", "welche faktoren", "ernahrung", "lebensstil"] },
+  { seccion: "interpretacion", needles: ["que significa", "significa", "dentro de la norma", "en la norma", "es normal", "esta normal", "rango de referencia", "como se interpreta", "interpreta", "que mide", "que es", "para que sirve", "was bedeutet", "normalbereich", "referenzbereich"] },
+  { seccion: "curiosidad", needles: ["por que", "como funciona", "explicame mas", "explicame", "cuentame", "mas sobre", "curios", "warum", "wie funktioniert", "erzahl"] },
+];
+
+/** Sección de tarjeta que pide la intención de la pregunta, si es reconocible. */
+export function seccionIntentIn(text: string): string | undefined {
+  const padded = ` ${fold(text)} `;
+  for (const { seccion, needles } of SECCION_INTENT_PATTERNS) {
+    if (needles.some((n) => padded.includes(n))) return seccion;
+  }
+  return undefined;
+}
+
 /** Términos de búsqueda derivados de areas amplias, sin usarlos como filtro duro. */
 export function healthAreaSearchTerms(
   areas: ReadonlySet<string>,
@@ -255,6 +279,8 @@ export interface Scope {
   lens: Set<string>;
   /** Motivos amplios por area_de_salud: expanden y reordenan, no filtran duro. */
   healthAreas: Set<string>;
+  /** Sección/ángulo de tarjeta que pide la intención (A/B/C/D/E). Reordena suave. */
+  seccion?: string;
 }
 
 export function deriveScope(
@@ -299,10 +325,13 @@ export function deriveScope(
     if (markers.size === 0) healthAreas = inheritHealthAreasFromWindow(priorUserMessages);
   }
 
+  // Ángulo pedido (interpretar / factores / curiosidad / lectura-conjunta…). Es
+  // independiente del filtro por marcador: aplica aunque el scope se vacíe.
+  const seccion = seccionIntentIn(currentMessage);
   if (markers.size > MAX_SCOPE_MARKERS) {
-    return { markers: new Set<string>(), lens: new Set<string>(), healthAreas: new Set<string>() };
+    return { markers: new Set<string>(), lens: new Set<string>(), healthAreas: new Set<string>(), seccion };
   }
-  return { markers, lens, healthAreas };
+  return { markers, lens, healthAreas, seccion };
 }
 
 /**
@@ -333,5 +362,23 @@ export function applyHealthAreaPreference<T extends { areaDeSalud?: readonly str
   const matchesArea = (d: T) => d.areaDeSalud?.some((area) => areas.has(area)) ?? false;
   const preferred = docs.filter(matchesArea);
   const rest = docs.filter((d) => !matchesArea(d));
+  return [...preferred, ...rest];
+}
+
+/**
+ * Reordena para que suba la tarjeta del ÁNGULO que pide la intención (`seccion`:
+ * interpretacion / alimentacion-factores / curiosidad / lectura-conjunta /
+ * seguimiento…), sin descartar nada. Así una repregunta distinta ("¿qué factores
+ * influyen?", "explícame más", "¿con qué se lee?") trae una tarjeta distinta del
+ * dossier en vez de repetir la de interpretación. Estable dentro de cada grupo.
+ */
+export function applySeccionPreference<T extends { seccion?: string }>(
+  docs: readonly T[],
+  seccion: string | undefined,
+): T[] {
+  if (!seccion) return [...docs];
+  const matchesSeccion = (d: T) => d.seccion === seccion;
+  const preferred = docs.filter(matchesSeccion);
+  const rest = docs.filter((d) => !matchesSeccion(d));
   return [...preferred, ...rest];
 }
