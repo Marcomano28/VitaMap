@@ -143,6 +143,7 @@ export async function POST(req: Request) {
       markers: [...scope.markers],
       lens: [...scope.lens],
       healthAreas: [...scope.healthAreas],
+      seccion: scope.seccion,
     });
     personal = result.personal;
     evidence = result.evidence;
