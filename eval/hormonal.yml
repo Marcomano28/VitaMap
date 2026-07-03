@@ -1,0 +1,23 @@
+# Banco de evaluación · Eje hormonal (testosterona, SHBG, estradiol, LH/FSH)
+
+- query: "¿qué significa la testosterona baja?"
+  locale: es
+  expected: [testosterona-total-interpretacion-medlineplus]
+
+- query: "mi testosterona total es normal, ¿por qué el médico pidió también la SHBG?"
+  locale: es
+  expected: [testosterona-shbg-estradiol-lectura-conjunta-medlineplus, testosterona-curiosidad-total-libre-shbg-medlineplus]
+  must_not_prioritize: [testosterona-total-interpretacion-medlineplus]
+  note: prueba clave del mapa -> la testosterona total engaña sin la SHBG; debe salir la lectura conjunta
+
+- query: "normaler Gesamttestosteronwert, warum auch SHBG messen?"
+  locale: de
+  expected: [testosterona-shbg-estradiol-lectura-conjunta-medlineplus, testosterona-curiosidad-total-libre-shbg-medlineplus]
+
+- query: "¿qué es la SHBG y para qué sirve?"
+  locale: es
+  expected: [shbg-interpretacion-medlineplus]
+
+- query: "¿a qué hora conviene medir la testosterona?"
+  locale: es
+  expected: [testosterona-curiosidad-hora-extraccion-medlineplus]

@@ -1,0 +1,40 @@
+# Banco de evaluación · Perfil lipídico (colesterol, ApoB, Lp(a))
+# Formato por caso:
+#   query: pregunta tal como la escribiría una persona
+#   locale: es | de
+#   expected: tarjeta(s) que DEBERÍAN salir en el top-3 (basta con una)
+#   must_not_prioritize: tarjeta(s) que NO deben salir por encima de la esperada
+#   note: por qué este caso importa (opcional)
+
+- query: "¿Qué significa el colesterol LDL alto?"
+  locale: es
+  expected: [colesterol-ldl-interpretacion-medlineplus]
+  must_not_prioritize: [colesterol-ldl-ayurveda-fuente-clasica-susrutasamhita]
+  note: pregunta clínica -> debe primar la interpretación, no la fuente tradicional
+
+- query: "Was bedeutet ein hoher LDL-Cholesterinwert?"
+  locale: de
+  expected: [colesterol-ldl-interpretacion-medlineplus]
+
+- query: "¿qué alimentos suben el colesterol LDL?"
+  locale: es
+  expected: [colesterol-ldl-alimentacion-factores-cdc]
+
+- query: "¿por qué el LDL y el HDL transportan el mismo colesterol?"
+  locale: es
+  expected: [colesterol-curiosidad-ldl-hdl-transportadores-nhlbi]
+
+- query: "me han pedido ApoB y lipoproteína a, ¿cómo se leen juntas?"
+  locale: es
+  expected: [apob-lpa-lectura-conjunta-mdpi]
+  note: pregunta de lectura conjunta -> debe salir la tarjeta de relación, no una simple
+
+- query: "¿qué es la lipoproteína a y por qué es importante?"
+  locale: es
+  expected: [lipoproteina-a-interpretacion-medlineplus]
+
+- query: "¿qué dice el Ayurveda sobre el colesterol?"
+  locale: es
+  expected: [colesterol-ldl-ayurveda-fuente-clasica-susrutasamhita, colesterol-ldl-ayurveda-evaluacion-cientifica-gyawali]
+  must_not_prioritize: [colesterol-ldl-interpretacion-medlineplus]
+  note: pregunta en modo tradición -> debe primar la tarjeta tradicional, no la clínica

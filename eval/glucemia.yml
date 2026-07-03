@@ -1,0 +1,32 @@
+# Banco de evaluación · Glucemia e insulina (glucosa, HbA1c)
+
+- query: "¿qué significa la glucosa en ayunas alta?"
+  locale: es
+  expected: [glucosa-en-ayunas-interpretacion-niddk]
+
+- query: "Was bedeutet ein hoher Nüchternblutzucker?"
+  locale: de
+  expected: [glucosa-en-ayunas-interpretacion-niddk]
+
+- query: "¿qué es la hemoglobina glicosilada?"
+  locale: es
+  expected: [hemoglobina-glicosilada-hba1c-interpretacion-niddk]
+
+- query: "¿cómo se leen juntas la glucosa en ayunas y la HbA1c?"
+  locale: es
+  expected: [glucosa-hba1c-lectura-conjunta-niddk]
+  note: lectura conjunta -> tarjeta de relación
+
+- query: "tengo la glucosa en ayunas normal pero la HbA1c alta, ¿qué significa?"
+  locale: es
+  expected: [glucosa-hba1c-lectura-conjunta-niddk]
+  must_not_prioritize: [glucosa-en-ayunas-interpretacion-niddk]
+  note: prueba clave del mapa -> leer dos valores juntos debe ganar a la interpretación de uno solo
+
+- query: "¿la HbA1c es un promedio de cuántos meses?"
+  locale: es
+  expected: [hba1c-curiosidad-promedio-tres-meses-niddk]
+
+- query: "¿qué puedo cambiar en la dieta si tengo el azúcar alto?"
+  locale: es
+  expected: [glucosa-en-ayunas-alimentacion-factores-niddk, glucosa-y-hba1c-alimentacion-factores-niddk]

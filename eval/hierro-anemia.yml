@@ -1,0 +1,28 @@
+# Banco de evaluación · Hierro y anemia (ferritina, transferrina, saturación)
+
+- query: "¿qué significa la ferritina baja?"
+  locale: es
+  expected: [hierro-interpretacion-medlineplus]
+
+- query: "tengo la ferritina alta y también la PCR alta, ¿significa que tengo mucho hierro?"
+  locale: es
+  expected: [pcr-ferritina-lectura-conjunta-ods, ferritina-curiosidad-reactante-fase-aguda-ods]
+  must_not_prioritize: [hierro-interpretacion-medlineplus]
+  note: prueba clave del mapa -> la ferritina sube con la inflamación; debe salir el confounder, no la lectura simple
+
+- query: "hohe Ferritinwerte bei erhöhtem CRP, habe ich zu viel Eisen?"
+  locale: de
+  expected: [pcr-ferritina-lectura-conjunta-ods, ferritina-curiosidad-reactante-fase-aguda-ods]
+
+- query: "¿cómo se lee el panel de hierro completo (ferritina, transferrina, saturación)?"
+  locale: es
+  expected: [panel-hierro-lectura-conjunta-medlineplus]
+
+- query: "¿qué alimentos ayudan a absorber mejor el hierro?"
+  locale: es
+  expected: [hierro-alimentacion-biodisponibilidad-ods, hierro-curiosidad-vitamina-c-absorcion-ods]
+
+- query: "el cobre bajo, ¿puede causar anemia aunque el hierro esté bien?"
+  locale: es
+  expected: [cobre-hierro-lectura-conjunta-ods]
+  note: prueba del mapa -> conexión cobre-hierro recién dibujada

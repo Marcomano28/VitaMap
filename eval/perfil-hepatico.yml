@@ -1,0 +1,28 @@
+# Banco de evaluación · Perfil hepático (ALT, AST, GGT, fosfatasa alcalina)
+
+- query: "¿qué significa la GGT alta?"
+  locale: es
+  expected: [ggt-interpretacion-medlineplus]
+  must_not_prioritize: [hierro-interpretacion-medlineplus]
+  note: pregunta de hígado -> no debe colarse una tarjeta de hierro (fuga de tema)
+
+- query: "Was bedeutet ein erhöhter GGT-Wert?"
+  locale: de
+  expected: [ggt-interpretacion-medlineplus]
+
+- query: "¿qué son las transaminasas ALT y AST?"
+  locale: es
+  expected: [transaminasas-alt-ast-interpretacion-medlineplus]
+
+- query: "me han pedido varias pruebas del hígado, ¿cómo se leen juntas?"
+  locale: es
+  expected: [panel-hepatico-lectura-conjunta-medlineplus]
+  note: lectura conjunta del panel hepático
+
+- query: "tengo la fosfatasa alcalina alta, ¿es del hígado o del hueso?"
+  locale: es
+  expected: [fosfatasa-alcalina-interpretacion-medlineplus, fosfatasa-alcalina-curiosidad-isoenzimas-medlineplus]
+
+- query: "una transaminasa muy alta, ¿significa que el daño es grave?"
+  locale: es
+  expected: [transaminasas-curiosidad-cifra-no-mide-gravedad-medlineplus]
