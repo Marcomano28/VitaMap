@@ -19,7 +19,7 @@
 
 - query: "¿el yodo y el selenio afectan a la interpretación de la tiroides?"
   locale: es
-  expected: [t4-libre-yodo-selenio-factores-ods]
+  expected: [selenio-tiroides-lectura-conjunta-ods, yodo-tiroides-lectura-conjunta-ods, t4-libre-yodo-selenio-factores-ods]
   note: prueba del mapa -> micronutrientes conectados al eje tiroideo
 
 - query: "¿qué son los anticuerpos antitiroideos?"
