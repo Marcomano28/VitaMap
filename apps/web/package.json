@@ -24,6 +24,8 @@
     "test:corpus-admin": "node --import tsx scripts/test-corpus-admin.mts",
     "test:qmd-hit": "node --import tsx scripts/test-qmd-hit.ts",
     "test:qmd-prompt": "node --import tsx scripts/test-qmd-prompt.mts",
+    "eval": "node --import tsx scripts/run-eval.mts",
+    "eval:validate": "node --import tsx scripts/run-eval.mts --validate",
     "taxonomy:generate": "node --import tsx scripts/generate-marker-vocabulary.ts",
     "taxonomy:check": "node --import tsx scripts/generate-marker-vocabulary.ts --check",
     "kb:check": "node --import tsx scripts/check-kb.mts",
