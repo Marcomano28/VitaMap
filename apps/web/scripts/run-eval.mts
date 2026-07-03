@@ -173,15 +173,23 @@ async function runAgainstKb(): Promise<void> {
   }
 
   // Pipeline del filtro (marker-scope), el mismo que el chat con KB_MARKER_SCOPE
-  // encendido. Se importa vía .default por la interoperabilidad CJS de apps/web.
-  const scope = ((await import("../lib/marker-scope.ts")) as unknown as {
-    default: {
-      deriveScope: (q: string, prior?: string[]) => { markers: Set<string>; lens: Set<string>; healthAreas: Set<string> };
-      filterByMarkers: <T extends { path: string; title: string; marker?: unknown }>(d: readonly T[], a: ReadonlySet<string>) => T[];
-      applyLensPreference: <T extends { tradicion?: string; seccion?: string }>(d: readonly T[], l: ReadonlySet<string>) => T[];
-      applyHealthAreaPreference: <T extends { areaDeSalud?: readonly string[] }>(d: readonly T[], a: ReadonlySet<string>) => T[];
-    };
-  }).default;
+  // encendido. La forma del namespace varía según la versión de tsx (a veces las
+  // funciones quedan bajo .default, a veces al nivel superior); tomar la que tenga
+  // la API, para no depender del entorno.
+  const scopeMod = (await import("../lib/marker-scope.ts")) as Record<string, unknown> & {
+    default?: Record<string, unknown>;
+  };
+  const scope = ((scopeMod.default && typeof scopeMod.default.deriveScope === "function"
+    ? scopeMod.default
+    : scopeMod) as unknown) as {
+    deriveScope: (q: string, prior?: string[]) => { markers: Set<string>; lens: Set<string>; healthAreas: Set<string> };
+    filterByMarkers: <T extends { path: string; title: string; marker?: unknown }>(d: readonly T[], a: ReadonlySet<string>) => T[];
+    applyLensPreference: <T extends { tradicion?: string; seccion?: string }>(d: readonly T[], l: ReadonlySet<string>) => T[];
+    applyHealthAreaPreference: <T extends { areaDeSalud?: readonly string[] }>(d: readonly T[], a: ReadonlySet<string>) => T[];
+  };
+  if (typeof scope.deriveScope !== "function") {
+    throw new Error("No se pudo cargar marker-scope (deriveScope ausente); revisa la interop de tsx.");
+  }
 
   // Facetas de un hit (marker/tradición/sección/área) desde su fichero publicado,
   // necesarias para el filtro. Cacheado por ruta.
