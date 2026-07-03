@@ -182,10 +182,11 @@ async function runAgainstKb(): Promise<void> {
   const scope = ((scopeMod.default && typeof scopeMod.default.deriveScope === "function"
     ? scopeMod.default
     : scopeMod) as unknown) as {
-    deriveScope: (q: string, prior?: string[]) => { markers: Set<string>; lens: Set<string>; healthAreas: Set<string> };
+    deriveScope: (q: string, prior?: string[]) => { markers: Set<string>; lens: Set<string>; healthAreas: Set<string>; seccion?: string };
     filterByMarkers: <T extends { path: string; title: string; marker?: unknown }>(d: readonly T[], a: ReadonlySet<string>) => T[];
     applyLensPreference: <T extends { tradicion?: string; seccion?: string }>(d: readonly T[], l: ReadonlySet<string>) => T[];
     applyHealthAreaPreference: <T extends { areaDeSalud?: readonly string[] }>(d: readonly T[], a: ReadonlySet<string>) => T[];
+    applySeccionPreference: <T extends { seccion?: string }>(d: readonly T[], s: string | undefined) => T[];
   };
   if (typeof scope.deriveScope !== "function") {
     throw new Error("No se pudo cargar marker-scope (deriveScope ausente); revisa la interop de tsx.");
@@ -263,9 +264,12 @@ async function runAgainstKb(): Promise<void> {
       const sc = scope.deriveScope(q, []);
       const chunks = hits.map(chunkFor);
       const filtered = scope
-        .applyHealthAreaPreference(
-          scope.applyLensPreference(scope.filterByMarkers(chunks, sc.markers), sc.lens),
-          sc.healthAreas,
+        .applySeccionPreference(
+          scope.applyHealthAreaPreference(
+            scope.applyLensPreference(scope.filterByMarkers(chunks, sc.markers), sc.lens),
+            sc.healthAreas,
+          ),
+          sc.seccion,
         )
         .slice(0, K);
       const sFe = locate(filtered, expected);

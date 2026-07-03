@@ -21,6 +21,7 @@ import { qmdHitSnippet, qmdRelativePath } from "./qmd-hit";
 import {
   applyHealthAreaPreference,
   applyLensPreference,
+  applySeccionPreference,
   expandQueryForHealthAreas,
   filterByMarkers,
 } from "./marker-scope";
@@ -330,6 +331,12 @@ export interface QueryOptions {
    * expande la query de KB y reordena candidatos por `areaDeSalud`.
    */
   healthAreas?: readonly string[];
+  /**
+   * Preferencia por ÁNGULO (`seccion`): la intención de la pregunta (interpretar,
+   * factores, curiosidad, lectura-conjunta…) sube la tarjeta de ese ángulo del
+   * dossier. No filtra; reordena (ver `applySeccionPreference`).
+   */
+  seccion?: string;
 }
 
 function normalizedSearchQueries(query: string) {
@@ -429,7 +436,10 @@ export async function queryMemoryAndKB(
   // genéricos, sin descartar nada.
   const localizedEvidence = preferEvidenceForLocale(markerFilteredEvidence, opts.locale);
   const lensPreferredEvidence = applyLensPreference(localizedEvidence, lens);
-  const scopedEvidence = applyHealthAreaPreference(lensPreferredEvidence, healthAreas).slice(0, limit);
+  const areaPreferredEvidence = applyHealthAreaPreference(lensPreferredEvidence, healthAreas);
+  // Última preferencia (la más específica): el ÁNGULO que pide la intención, para
+  // que una repregunta distinta traiga otra tarjeta del dossier en vez de repetir.
+  const scopedEvidence = applySeccionPreference(areaPreferredEvidence, opts.seccion).slice(0, limit);
   console.info("[chat] marker scope", {
     before: evidence.length,
     after: scopedEvidence.length,
