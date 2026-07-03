@@ -456,7 +456,11 @@
       "sistema": ["endocrino-metabolico", "inmunologico", "tegumentario"],
       "area_de_salud": ["salud-piel-cabello-unas", "salud-tiroidea", "antioxidante"],
       "alias": ["selenio", "selenium", "selen"],
-      "relacionado_con": []
+      "relacionado_con": [
+        { "id": "tsh", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "selenio-tiroides-lectura-conjunta-ods", "revisado_pro": false },
+        { "id": "t4-libre", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "selenio-tiroides-lectura-conjunta-ods", "revisado_pro": false },
+        { "id": "yodo", "relacion": "modifica_interpretacion", "direccion": "dirigida", "contexto": "una deficiencia de selenio puede agravar una deficiencia de yodo", "fuente": "selenio-tiroides-lectura-conjunta-ods", "revisado_pro": false }
+      ]
     },
     "zinc": {
       "dominio": "laboratorio",
@@ -482,7 +486,8 @@
       "area_de_salud": ["energia-fatiga", "salud-cognitiva"],
       "alias": ["cobre", "copper", "kupfer", "cu"],
       "relacionado_con": [
-        { "id": "zinc", "relacion": "afecta_absorcion", "direccion": "dirigida", "contexto": "una ingesta alta y sostenida de zinc puede reducir el cobre" }
+        { "id": "zinc", "relacion": "afecta_absorcion", "direccion": "dirigida", "contexto": "una ingesta alta y sostenida de zinc puede reducir el cobre" },
+        { "id": "hierro", "relacion": "modifica_interpretacion", "direccion": "dirigida", "contexto": "la ceruloplasmina actúa como ferroxidasa y ayuda a movilizar el hierro; una deficiencia de cobre puede cursar con anemia", "fuente": "cobre-hierro-lectura-conjunta-ods", "revisado_pro": false }
       ]
     },
     "yodo": {
@@ -495,7 +500,9 @@
       "area_de_salud": ["salud-tiroidea", "embarazo-y-lactancia"],
       "alias": ["yodo", "iodo", "iodine", "jod", "yoduria"],
       "relacionado_con": [
-        { "id": "tsh", "relacion": "modifica_interpretacion", "direccion": "dirigida" }
+        { "id": "tsh", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "yodo-tiroides-lectura-conjunta-ods", "revisado_pro": false },
+        { "id": "t4-libre", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "yodo-tiroides-lectura-conjunta-ods", "revisado_pro": false },
+        { "id": "selenio", "relacion": "modifica_interpretacion", "direccion": "dirigida", "contexto": "una deficiencia de selenio puede agravar una deficiencia de yodo", "fuente": "yodo-tiroides-lectura-conjunta-ods", "revisado_pro": false }
       ]
     },
     "cannabis": {
@@ -571,7 +578,11 @@
       "muestra": ["suero", "sangre-total"],
       "sistema": ["hematologico", "reproductivo-hormonal"],
       "area_de_salud": ["energia-fatiga", "fertilidad", "salud-hormonal", "embarazo-y-lactancia"],
-      "alias": ["folato", "vitamina B9", "acido folico"]
+      "alias": ["folato", "vitamina B9", "acido folico"],
+      "relacionado_con": [
+        { "id": "vitamina-b12", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "homocisteina-vitaminas-b-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "homocisteina", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "homocisteina-vitaminas-b-lectura-conjunta-medlineplus", "revisado_pro": false }
+      ]
     },
     "acido-urico": {
       "dominio": "laboratorio",
@@ -610,7 +621,9 @@
       "area_de_salud": ["salud-hepatica", "salud-renal"],
       "alias": ["albumin", "albumina serica", "alb"],
       "relacionado_con": [
-        { "id": "proteinas-totales", "relacion": "lectura_conjunta" }
+        { "id": "proteinas-totales", "relacion": "lectura_conjunta" },
+        { "id": "alt", "relacion": "lectura_conjunta", "fuente": "panel-hepatico-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "calcio", "relacion": "modifica_interpretacion", "direccion": "dirigida", "contexto": "el calcio total se corrige por la albúmina; una albúmina baja baja el calcio medido sin que el calcio real cambie", "fuente": "vitamina-d-calcio-fosfato-pth-eje-metabolismo-oseo-lectura-conjunta-medlineplus-ods", "revisado_pro": false }
       ]
     },
     "bilirrubina": {
@@ -621,7 +634,10 @@
       "muestra": ["suero", "plasma", "orina"],
       "sistema": ["hepatobiliar", "hematologico"],
       "area_de_salud": ["salud-hepatica"],
-      "alias": ["bilirubina", "bilirubin", "bilirrubina total", "bilirrubina directa", "bilirrubina indirecta"]
+      "alias": ["bilirubina", "bilirubin", "bilirrubina total", "bilirrubina directa", "bilirrubina indirecta"],
+      "relacionado_con": [
+        { "id": "alt", "relacion": "lectura_conjunta", "fuente": "panel-hepatico-lectura-conjunta-medlineplus", "revisado_pro": false }
+      ]
     },
     "proteinas-totales": {
       "dominio": "laboratorio",
@@ -633,7 +649,8 @@
       "area_de_salud": ["salud-hepatica", "inmunidad"],
       "alias": ["proteina total", "total protein", "relacion a g", "relacion albumina globulina"],
       "relacionado_con": [
-        { "id": "albumina", "relacion": "lectura_conjunta" }
+        { "id": "albumina", "relacion": "lectura_conjunta" },
+        { "id": "alt", "relacion": "lectura_conjunta", "fuente": "panel-hepatico-lectura-conjunta-medlineplus", "revisado_pro": false }
       ]
     },
     "tp-inr": {
@@ -647,7 +664,8 @@
       "alias": ["tp", "inr", "tiempo de protrombina", "prothrombin time"],
       "relacionado_con": [
         { "id": "vitamina-k", "relacion": "modifica_interpretacion" },
-        { "id": "omega-3-indice", "relacion": "modifica_interpretacion" }
+        { "id": "omega-3-indice", "relacion": "modifica_interpretacion" },
+        { "id": "alt", "relacion": "lectura_conjunta", "fuente": "panel-hepatico-lectura-conjunta-medlineplus", "revisado_pro": false }
       ]
     },
     "ayuno": {
@@ -810,7 +828,8 @@
         { "id": "colesterol-ldl", "relacion": "mismo_panel" },
         { "id": "colesterol-hdl", "relacion": "mismo_panel" },
         { "id": "trigliceridos", "relacion": "mismo_panel" },
-        { "id": "apolipoproteina-b", "relacion": "lectura_conjunta" }
+        { "id": "apolipoproteina-b", "relacion": "lectura_conjunta" },
+        { "id": "lipoproteina-a", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "apob-lpa-lectura-conjunta-mdpi", "revisado_pro": false }
       ]
     },
     "constelaciones-familiares": {
@@ -882,7 +901,8 @@
       "area_de_salud": ["salud-hormonal", "energia-fatiga", "longevidad"],
       "alias": ["dhea-s", "dheas", "dhea", "sulfato de dhea", "dehidroepiandrosterona"],
       "relacionado_con": [
-        { "id": "cortisol", "relacion": "mismo_origen_suprarrenal" }
+        { "id": "cortisol", "relacion": "mismo_origen_suprarrenal" },
+        { "id": "testosterona-total", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "eje-gonadal-lectura-conjunta-medlineplus", "revisado_pro": false }
       ]
     },
     "daruharidra": {
@@ -907,7 +927,14 @@
       "muestra": ["suero", "plasma", "saliva"],
       "sistema": ["endocrino-metabolico", "reproductivo", "osteoarticular"],
       "area_de_salud": ["salud-hormonal", "fertilidad", "salud-sexual", "salud-osea", "energia-fatiga"],
-      "alias": ["testosterona", "testosterona total", "testosterona libre", "testosterona biodisponible"]
+      "alias": ["testosterona", "testosterona total", "testosterona libre", "testosterona biodisponible"],
+      "relacionado_con": [
+        { "id": "shbg", "relacion": "lectura_conjunta", "direccion": "simetrica", "contexto": "la testosterona total puede malinterpretarse sin la SHBG, que determina la fracción libre", "fuente": "testosterona-shbg-estradiol-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "estradiol", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "testosterona-shbg-estradiol-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "lh", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "testosterona-shbg-estradiol-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "fsh", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "testosterona-shbg-estradiol-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "dhea-s", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "eje-gonadal-lectura-conjunta-medlineplus", "revisado_pro": false }
+      ]
     },
     "estradiol": {
       "dominio": "laboratorio",
@@ -917,7 +944,13 @@
       "muestra": ["suero", "plasma"],
       "sistema": ["endocrino-metabolico", "reproductivo", "osteoarticular"],
       "area_de_salud": ["salud-hormonal", "fertilidad", "salud-osea", "salud-sexual"],
-      "alias": ["estradiol", "e2", "estrogenos"]
+      "alias": ["estradiol", "e2", "estrogenos"],
+      "relacionado_con": [
+        { "id": "testosterona-total", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "testosterona-shbg-estradiol-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "progesterona", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "progesterona-estradiol-ciclo-menstrual-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "lh", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "progesterona-estradiol-ciclo-menstrual-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "fsh", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "progesterona-estradiol-ciclo-menstrual-lectura-conjunta-medlineplus", "revisado_pro": false }
+      ]
     },
     "shbg": {
       "dominio": "laboratorio",
@@ -927,7 +960,10 @@
       "muestra": ["suero", "plasma"],
       "sistema": ["endocrino-metabolico", "reproductivo"],
       "area_de_salud": ["salud-hormonal", "salud-sexual", "fertilidad", "energia-fatiga"],
-      "alias": ["shbg", "globulina fijadora de hormonas sexuales", "sex hormone binding globulin"]
+      "alias": ["shbg", "globulina fijadora de hormonas sexuales", "sex hormone binding globulin"],
+      "relacionado_con": [
+        { "id": "testosterona-total", "relacion": "lectura_conjunta", "direccion": "simetrica", "contexto": "la SHBG determina la fracción de testosterona libre; ambas se leen juntas", "fuente": "testosterona-shbg-estradiol-lectura-conjunta-medlineplus", "revisado_pro": false }
+      ]
     },
     "prolactina": {
       "dominio": "laboratorio",
@@ -937,7 +973,13 @@
       "muestra": ["suero", "plasma"],
       "sistema": ["endocrino-metabolico", "reproductivo"],
       "area_de_salud": ["salud-hormonal", "fertilidad", "salud-sexual"],
-      "alias": ["prolactina", "prl", "prolactin"]
+      "alias": ["prolactina", "prl", "prolactin"],
+      "relacionado_con": [
+        { "id": "lh", "relacion": "modifica_interpretacion", "direccion": "dirigida", "contexto": "una prolactina elevada puede suprimir las gonadotropinas y alterar el eje", "fuente": "lh-fsh-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "fsh", "relacion": "modifica_interpretacion", "direccion": "dirigida", "contexto": "una prolactina elevada puede suprimir las gonadotropinas y alterar el eje", "fuente": "lh-fsh-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "estradiol", "relacion": "modifica_interpretacion", "direccion": "dirigida", "contexto": "una prolactina elevada puede alterar el ciclo y los estrógenos", "fuente": "progesterona-estradiol-ciclo-menstrual-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "progesterona", "relacion": "modifica_interpretacion", "direccion": "dirigida", "contexto": "una prolactina elevada puede alterar la ovulación y el ciclo", "fuente": "progesterona-estradiol-ciclo-menstrual-lectura-conjunta-medlineplus", "revisado_pro": false }
+      ]
     },
     "progesterona": {
       "dominio": "laboratorio",
@@ -947,7 +989,13 @@
       "muestra": ["suero", "plasma"],
       "sistema": ["endocrino-metabolico", "reproductivo"],
       "area_de_salud": ["salud-hormonal", "fertilidad", "salud-sexual"],
-      "alias": ["progesterona", "progesterone", "p4"]
+      "alias": ["progesterona", "progesterone", "p4"],
+      "relacionado_con": [
+        { "id": "estradiol", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "progesterona-estradiol-ciclo-menstrual-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "lh", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "progesterona-lh-fsh-ovulacion-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "fsh", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "progesterona-lh-fsh-ovulacion-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "prolactina", "relacion": "modifica_interpretacion", "direccion": "dirigida", "contexto": "una prolactina elevada puede alterar la ovulación y el ciclo", "fuente": "progesterona-estradiol-ciclo-menstrual-lectura-conjunta-medlineplus", "revisado_pro": false }
+      ]
     },
     "lh-fsh": {
       "dominio": "laboratorio",
@@ -957,7 +1005,13 @@
       "muestra": ["suero", "plasma"],
       "sistema": ["endocrino-metabolico", "reproductivo"],
       "area_de_salud": ["salud-hormonal", "fertilidad", "salud-sexual"],
-      "alias": ["lh", "fsh", "gonadotropinas", "hormona luteinizante", "hormona foliculoestimulante"]
+      "alias": ["lh", "fsh", "gonadotropinas", "hormona luteinizante", "hormona foliculoestimulante"],
+      "relacionado_con": [
+        { "id": "testosterona-total", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "lh-fsh-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "estradiol", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "lh-fsh-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "progesterona", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "lh-fsh-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "prolactina", "relacion": "modifica_interpretacion", "fuente": "lh-fsh-lectura-conjunta-medlineplus", "revisado_pro": false }
+      ]
     },
     "eje-gonadal": {
       "dominio": "laboratorio",
@@ -985,7 +1039,11 @@
       "muestra": ["sangre-total"],
       "sistema": ["hematologico"],
       "area_de_salud": ["energia-fatiga", "rendimiento-deportivo"],
-      "alias": ["rbc", "globulos rojos", "indices eritrocitarios"]
+      "alias": ["rbc", "globulos rojos", "indices eritrocitarios"],
+      "relacionado_con": [
+        { "id": "hemoglobina", "relacion": "lectura_conjunta", "fuente": "hemograma-rojo-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "hematocrito", "relacion": "lectura_conjunta", "fuente": "hemograma-rojo-lectura-conjunta-medlineplus", "revisado_pro": false }
+      ]
     },
     "filtrado-glomerular-egfr": {
       "dominio": "laboratorio",
@@ -1001,7 +1059,9 @@
         { "id": "albuminuria", "relacion": "lectura_conjunta" },
         { "id": "homocisteina", "relacion": "modifica_interpretacion" },
         { "id": "nt-probnp", "relacion": "modifica_interpretacion" },
-        { "id": "bnp", "relacion": "modifica_interpretacion" }
+        { "id": "bnp", "relacion": "modifica_interpretacion" },
+        { "id": "pth", "relacion": "modifica_interpretacion", "direccion": "dirigida", "contexto": "la función renal modifica la interpretación de la PTH (eje mineral-óseo)", "fuente": "vitamina-d-calcio-fosfato-pth-eje-metabolismo-oseo-lectura-conjunta-medlineplus-ods", "revisado_pro": false },
+        { "id": "fosfato", "relacion": "modifica_interpretacion", "direccion": "dirigida", "contexto": "la función renal modifica la interpretación del fosfato", "fuente": "vitamina-d-calcio-fosfato-pth-eje-metabolismo-oseo-lectura-conjunta-medlineplus-ods", "revisado_pro": false }
       ]
     },
     "renal": {
@@ -1051,7 +1111,13 @@
       "muestra": ["suero", "plasma"],
       "sistema": ["hepatobiliar"],
       "area_de_salud": ["salud-hepatica"],
-      "alias": ["perfil hepatico", "pruebas hepaticas", "transaminasas"]
+      "alias": ["perfil hepatico", "pruebas hepaticas", "transaminasas"],
+      "relacionado_con": [
+        { "id": "bilirrubina", "relacion": "lectura_conjunta", "fuente": "panel-hepatico-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "albumina", "relacion": "lectura_conjunta", "fuente": "panel-hepatico-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "proteinas-totales", "relacion": "lectura_conjunta", "fuente": "panel-hepatico-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "tp-inr", "relacion": "lectura_conjunta", "fuente": "panel-hepatico-lectura-conjunta-medlineplus", "revisado_pro": false }
+      ]
     },
     "glucosa-en-ayunas": {
       "dominio": "laboratorio",
@@ -1087,7 +1153,10 @@
       "muestra": ["sangre-total"],
       "sistema": ["hematologico"],
       "area_de_salud": ["energia-fatiga", "rendimiento-deportivo"],
-      "alias": ["hemoglobina", "hematocrito", "hemograma rojo"]
+      "alias": ["hemoglobina", "hematocrito", "hemograma rojo"],
+      "relacionado_con": [
+        { "id": "eritrocitos", "relacion": "lectura_conjunta", "fuente": "hemograma-rojo-lectura-conjunta-medlineplus", "revisado_pro": false }
+      ]
     },
     "hierro": {
       "dominio": "laboratorio",
@@ -1209,7 +1278,9 @@
       "alias": ["lpa", "lp(a)", "lp a", "lipoproteína a", "lipoprotein a"],
       "relacionado_con": [
         { "id": "colesterol-ldl", "relacion": "lectura_conjunta" },
-        { "id": "apolipoproteina-b", "relacion": "lectura_conjunta" }
+        { "id": "apolipoproteina-b", "relacion": "lectura_conjunta" },
+        { "id": "colesterol-no-hdl", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "apob-lpa-lectura-conjunta-mdpi", "revisado_pro": false },
+        { "id": "trigliceridos", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "apob-lpa-lectura-conjunta-mdpi", "revisado_pro": false }
       ]
     },
     "nt-probnp": {
@@ -1250,7 +1321,9 @@
       "area_de_salud": ["energia-fatiga", "salud-osea", "salud-cognitiva", "rendimiento-deportivo"],
       "relacionado_con": [
         { "id": "calcio", "relacion": "lectura_conjunta" },
-        { "id": "potasio", "relacion": "lectura_conjunta" }
+        { "id": "potasio", "relacion": "lectura_conjunta" },
+        { "id": "vitamina-d", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "calcio-magnesio-lectura-conjunta-medlineplus-ods", "revisado_pro": false },
+        { "id": "pth", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "calcio-magnesio-lectura-conjunta-medlineplus-ods", "revisado_pro": false }
       ]
     },
     "potasio": {
@@ -1426,7 +1499,8 @@
         { "id": "fosfato", "relacion": "lectura_conjunta" },
         { "id": "vitamina-d", "relacion": "modifica_interpretacion" },
         { "id": "creatinina", "relacion": "modifica_interpretacion" },
-        { "id": "egfr", "relacion": "modifica_interpretacion" }
+        { "id": "egfr", "relacion": "modifica_interpretacion" },
+        { "id": "magnesio", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "calcio-magnesio-lectura-conjunta-medlineplus-ods", "revisado_pro": false }
       ]
     },
     "vsg": {
@@ -1468,7 +1542,12 @@
       "area_de_salud": ["salud-tiroidea", "energia-fatiga", "salud-hormonal"],
       "alias": ["t4 libre", "tiroxina libre"],
       "relacionado_con": [
-        { "id": "tsh", "relacion": "lectura_conjunta" }
+        { "id": "tsh", "relacion": "lectura_conjunta" },
+        { "id": "t3-libre", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "perfil-tiroideo-lectura-conjunta-niddk", "revisado_pro": false },
+        { "id": "anti-tpo", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "perfil-tiroideo-lectura-conjunta-niddk", "revisado_pro": false },
+        { "id": "anti-tiroglobulina", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "perfil-tiroideo-lectura-conjunta-niddk", "revisado_pro": false },
+        { "id": "selenio", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "selenio-tiroides-lectura-conjunta-ods", "revisado_pro": false },
+        { "id": "yodo", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "yodo-tiroides-lectura-conjunta-ods", "revisado_pro": false }
       ]
     },
     "triyodotironina libre": {
@@ -1482,7 +1561,9 @@
       "alias": ["t3 libre", "triyodotironina libre", "ft3"],
       "relacionado_con": [
         { "id": "tsh", "relacion": "lectura_conjunta" },
-        { "id": "t4-libre", "relacion": "lectura_conjunta" }
+        { "id": "t4-libre", "relacion": "lectura_conjunta" },
+        { "id": "anti-tpo", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "perfil-tiroideo-lectura-conjunta-niddk", "revisado_pro": false },
+        { "id": "anti-tiroglobulina", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "perfil-tiroideo-lectura-conjunta-niddk", "revisado_pro": false }
       ]
     },
     "anticuerpos-tiroideos": {
@@ -1496,7 +1577,8 @@
       "alias": ["anticuerpos tiroideos", "anti tpo", "antiperoxidasa", "anti tiroglobulina"],
       "relacionado_con": [
         { "id": "tsh", "relacion": "modifica_interpretacion" },
-        { "id": "t4-libre", "relacion": "modifica_interpretacion" }
+        { "id": "t4-libre", "relacion": "modifica_interpretacion" },
+        { "id": "t3-libre", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "perfil-tiroideo-lectura-conjunta-niddk", "revisado_pro": false }
       ]
     },
     "trigliceridos": {
@@ -1512,7 +1594,8 @@
         { "id": "colesterol-hdl", "relacion": "mismo_panel" },
         { "id": "colesterol-no-hdl", "relacion": "mismo_panel" },
         { "id": "apolipoproteina-b", "relacion": "mismo_panel" },
-        { "id": "omega-3-indice", "relacion": "modifica_interpretacion_contextual" }
+        { "id": "omega-3-indice", "relacion": "modifica_interpretacion_contextual" },
+        { "id": "lipoproteina-a", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "apob-lpa-lectura-conjunta-mdpi", "revisado_pro": false }
       ]
     },
     "omega-3-indice": {
@@ -1604,7 +1687,8 @@
       "alias": ["omega-6/omega-3 ratio", "n-6/n-3 ratio", "Omega-6/Omega-3-Verhältnis"],
       "relacionado_con": [
         { "id": "omega-3-indice", "relacion": "perfil_acidos_grasos" },
-        { "id": "acido-arachidonico", "relacion": "componente_directo" }
+        { "id": "acido-arachidonico", "relacion": "componente_directo" },
+        { "id": "semillas-canamo", "relacion": "perfil_acidos_grasos", "direccion": "simetrica" }
       ]
     },
     "tsh": {
@@ -1616,7 +1700,12 @@
       "sistema": ["endocrino-metabolico", "reproductivo-hormonal"],
       "area_de_salud": ["salud-tiroidea", "energia-fatiga", "salud-hormonal"],
       "relacionado_con": [
-        { "id": "t4-libre", "relacion": "lectura_conjunta" }
+        { "id": "t4-libre", "relacion": "lectura_conjunta" },
+        { "id": "t3-libre", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "perfil-tiroideo-lectura-conjunta-niddk", "revisado_pro": false },
+        { "id": "anti-tpo", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "perfil-tiroideo-lectura-conjunta-niddk", "revisado_pro": false },
+        { "id": "anti-tiroglobulina", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "perfil-tiroideo-lectura-conjunta-niddk", "revisado_pro": false },
+        { "id": "selenio", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "selenio-tiroides-lectura-conjunta-ods", "revisado_pro": false },
+        { "id": "yodo", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "yodo-tiroides-lectura-conjunta-ods", "revisado_pro": false }
       ]
     },
     "vitamina-a": {
@@ -1627,7 +1716,10 @@
       "muestra": ["suero", "plasma"],
       "sistema": ["dermatologico", "inmunologico", "reproductivo-hormonal"],
       "area_de_salud": ["inmunidad", "fertilidad", "antioxidante"],
-      "alias": ["retinol", "vitamina a", "betacaroteno"]
+      "alias": ["retinol", "vitamina a", "betacaroteno"],
+      "relacionado_con": [
+        { "id": "proteina-c-reactiva", "relacion": "modifica_interpretacion", "direccion": "dirigida", "contexto": "en inflamación (PCR elevada) el retinol sérico baja y puede infravalorar el estado real", "fuente": "retinol-inflamacion-lectura-conjunta-brinda", "revisado_pro": false }
+      ]
     },
     "vitamina-b12": {
       "dominio": "laboratorio",
@@ -1639,7 +1731,8 @@
       "area_de_salud": ["energia-fatiga", "salud-cognitiva", "estado-animo-estres", "embarazo-y-lactancia"],
       "alias": ["b12", "cobalamina"],
       "relacionado_con": [
-        { "id": "acido-folico", "relacion": "lectura_conjunta" }
+        { "id": "acido-folico", "relacion": "lectura_conjunta" },
+        { "id": "homocisteina", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "homocisteina-vitaminas-b-lectura-conjunta-medlineplus", "revisado_pro": false }
       ]
     },
     "vitamina-b6": {
@@ -1650,7 +1743,11 @@
       "muestra": ["suero", "plasma"],
       "sistema": ["neurologico-cognitivo", "inmunologico"],
       "area_de_salud": ["energia-fatiga", "salud-cognitiva", "estado-animo-estres"],
-      "alias": ["b6", "plp", "piridoxal"]
+      "alias": ["b6", "plp", "piridoxal"],
+      "relacionado_con": [
+        { "id": "homocisteina", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "homocisteina-vitaminas-b-lectura-conjunta-medlineplus", "revisado_pro": false },
+        { "id": "proteina-c-reactiva", "relacion": "modifica_interpretacion", "direccion": "dirigida", "contexto": "en inflamación (PCR elevada) el PLP baja y puede infravalorar el estado real de B6", "fuente": "vitamina-b6-inflamacion-lectura-conjunta-ods", "revisado_pro": false }
+      ]
     },
     "vitamina-c": {
       "dominio": "laboratorio",
@@ -1677,7 +1774,8 @@
       "relacionado_con": [
         { "id": "calcio", "relacion": "lectura_conjunta" },
         { "id": "fosfato", "relacion": "lectura_conjunta" },
-        { "id": "pth", "relacion": "lectura_conjunta" }
+        { "id": "pth", "relacion": "lectura_conjunta" },
+        { "id": "magnesio", "relacion": "lectura_conjunta", "direccion": "simetrica", "fuente": "calcio-magnesio-lectura-conjunta-medlineplus-ods", "revisado_pro": false }
       ]
     },
     "vitamina-e": {
