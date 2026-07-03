@@ -1,0 +1,27 @@
+# Banco de evaluación · Tiroides (TSH, T4, T3, anticuerpos, yodo, selenio)
+
+- query: "¿qué significa la TSH alta?"
+  locale: es
+  expected: [tsh-interpretacion-medlineplus]
+
+- query: "Was bedeutet ein hoher TSH-Wert?"
+  locale: de
+  expected: [tsh-interpretacion-medlineplus]
+
+- query: "¿cómo se leen juntas la TSH y la T4 libre?"
+  locale: es
+  expected: [tsh-t4-libre-lectura-conjunta-medlineplus]
+  note: lectura conjunta del eje tiroideo básico
+
+- query: "me han pedido TSH, T4, T3 y anticuerpos, ¿cómo se interpretan en conjunto?"
+  locale: es
+  expected: [perfil-tiroideo-lectura-conjunta-niddk]
+
+- query: "¿el yodo y el selenio afectan a la interpretación de la tiroides?"
+  locale: es
+  expected: [t4-libre-yodo-selenio-factores-ods]
+  note: prueba del mapa -> micronutrientes conectados al eje tiroideo
+
+- query: "¿qué son los anticuerpos antitiroideos?"
+  locale: es
+  expected: [anticuerpos-tiroideos-interpretacion-medlineplus]
