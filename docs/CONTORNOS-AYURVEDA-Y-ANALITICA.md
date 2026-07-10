@@ -166,7 +166,9 @@ Ayurveda que mida si las aristas mejoran la recuperación. Entonces la vía natu
 es promover un conjunto mínimo de conceptos (shukra, ojas, …) a marcadores
 canónicos bajo `dominio: tradiciones-practicas`, mover sus alias desde `ayurveda`,
 y recién ahí dibujar shukra → ojas (`nutre_a`, `dirigida`), rasa → rakta
-(`se_transforma_en`), dhatu → srotas (`circula_por`).
+(`se_transforma_en`), dhatu → srotas (`circula_por`). El plan priorizado de esa
+promoción (nodos, aristas tipadas con `layer`, y el orden medido) vive en
+[PRIORIDADES-ESTRUCTURA-RAG-FIGURA-FONDO.md](PRIORIDADES-ESTRUCTURA-RAG-FIGURA-FONDO.md).
 
 ### 4.2 Regla permanente
 
