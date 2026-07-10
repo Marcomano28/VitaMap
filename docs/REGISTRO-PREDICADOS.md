@@ -1,8 +1,9 @@
 # Registro de predicados y contrato de aristas · VitaMap
 
-Versión 0.3 · 2026-07-10
+Versión 0.4 · 2026-07-10
 Estado: borrador de arquitectura para revisión
 Cambios v0.3: §7 ciclo de vida con comportamiento por estado + `schema_version`.
+Cambios v0.4: §8 orden canónico de IDs simétricos + deduplicación por clave (§11).
 Implementación: ninguna; este documento define el contrato objetivo.
 Implementa R6 de [PRIORIDADES-ESTRUCTURA-RAG-FIGURA-FONDO.md](PRIORIDADES-ESTRUCTURA-RAG-FIGURA-FONDO.md) (§2.7).
 
@@ -315,10 +316,12 @@ heredada".
 ## 8. Reglas de almacenamiento
 
 - **Inversas**: se guarda solo la arista canónica; la inversa se genera en lectura.
-- **Simétricas**: una sola arista, IDs ordenados de forma determinista; no se
-  permiten `A↔B` y `B↔A`.
-- **Clave de deduplicación**: `source + predicate + target + layer + scope`. Con
-  `scope` realmente distinto, pueden coexistir.
+- **Simétricas**: una sola arista, con **orden canónico** de IDs — `source` <
+  `target` por `concept_id` (lexicográfico). No se permiten `A↔B` y `B↔A`. Ej.: se
+  guarda `colesterol-hdl → colesterol-ldl`; el inverso queda prohibido.
+- **Clave de deduplicación**: `source + predicate + target + layer + scope`. Dos
+  aristas con la misma clave y distinto `edge_id` son un **duplicado** (se rechaza);
+  con `scope` realmente distinto, pueden coexistir.
 - **Self-loops**: prohibidos por defecto; excepción solo con `allow_self_loop:
   true` + `justification`.
 
@@ -348,7 +351,8 @@ el nombre del predicado; siempre una frase comprensible.
 
 El validador rechaza: predicado inexistente; capa no permitida; nodo origen/destino
 inexistente; incompatibilidad de tipos; arista sin `edge_id`; arista sin
-procedencia; fuente inexistente; dirección incompatible; duplicado simétrico;
+procedencia; fuente inexistente; dirección incompatible; duplicado por clave de
+deduplicación (§8.3); duplicado simétrico; orden no canónico en arista simétrica;
 inversa almacenada como duplicado; self-loop no autorizado; predicado deprecado;
 relación sin estado; relación clínica `draft` usada en retrieval; tangencia no
 revisada; tangencia sin `does_not_support`; tangencia con `equivalent: true`;
