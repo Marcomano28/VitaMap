@@ -1,7 +1,8 @@
 # Registro de predicados y contrato de aristas · VitaMap
 
-Versión 0.2 · 2026-07-10
+Versión 0.3 · 2026-07-10
 Estado: borrador de arquitectura para revisión
+Cambios v0.3: §7 ciclo de vida con comportamiento por estado + `schema_version`.
 Implementación: ninguna; este documento define el contrato objetivo.
 Implementa R6 de [PRIORIDADES-ESTRUCTURA-RAG-FIGURA-FONDO.md](PRIORIDADES-ESTRUCTURA-RAG-FIGURA-FONDO.md) (§2.7).
 
@@ -273,10 +274,43 @@ Regla: `retrieval-heuristic` nunca respalda una afirmación clínica o tradicion
 
 ## 7. Estado y ciclo de vida
 
-Valores: `draft`, `review-pending`, `reviewed`, `disputed`, `deprecated`,
-`rejected`. Una arista solo participa en expansión automática con `status =
-reviewed` (salvo entornos de prueba). Campos: `reviewed_by`, `reviewed_at`,
-`valid_from`, `deprecated_at`, `superseded_by`.
+Una arista **no es solo válida o inválida**: tiene un ciclo de vida. Importa cuando
+cambian fuentes, interpretaciones, taxonomía, predicados o arquitectura heredada.
+
+Cada estado define un **comportamiento**, no solo una etiqueta:
+
+| Estado | Retrieval | GPS | Uso |
+|---|---|---|---|
+| `draft` | no | no (solo dev) | recién creada, sin revisar |
+| `review-pending` | no expande | opcional, marcada | en cola de revisión |
+| `reviewed` | expande (§9) | sí | operativa |
+| `disputed` | no expande; recuperable **con aviso** | sí, marcada "en discusión" | fuentes/expertos discrepan |
+| `deprecated` | no para respuestas nuevas | histórico | reemplazada; ver `superseded_by` |
+| `rejected` | nunca | no | descartada; se conserva como traza para no re-crearla |
+
+Regla (§9): solo `reviewed` participa en expansión automática (salvo entornos de
+prueba). El validador (§11) rechaza además que una arista `deprecated`/`rejected`
+respalde una respuesta nueva.
+
+Campos de ciclo de vida:
+
+```json
+{
+  "status": "reviewed",
+  "schema_version": 1,
+  "reviewed_by": "editor-id",
+  "reviewed_at": "2026-07-10",
+  "valid_from": "2026-07-10",
+  "deprecated_at": null,
+  "superseded_by": null
+}
+```
+
+`schema_version` registra bajo qué versión del contrato se escribió la arista (o el
+nodo). Permite **migrar gradualmente** cuando cambian predicados, tipos o
+arquitectura: una arista `schema_version: 1` se sigue leyendo mientras se migra al
+2, sin reescribir todo de golpe. Es lo que hace manejable la "arquitectura
+heredada".
 
 ## 8. Reglas de almacenamiento
 
@@ -320,7 +354,9 @@ relación sin estado; relación clínica `draft` usada en retrieval; tangencia n
 revisada; tangencia sin `does_not_support`; tangencia con `equivalent: true`;
 tangencia con transferencia de evidencia; tangencia con expansión por defecto;
 relación de seguridad convertida en interpretación clínica; relación taxonómica
-usada como causalidad; ruta editorial almacenada como relación científica.
+usada como causalidad; ruta editorial almacenada como relación científica; arista
+`deprecated` o `rejected` usada como respaldo de una respuesta nueva; `schema_version`
+ausente o desconocida.
 
 ## 12. Migración de predicados existentes
 
