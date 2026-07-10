@@ -168,24 +168,34 @@ expansión se gobierna por una política explícita (acordada 2026-07-10):
 ```json
 {
   "max_hops": 1,
-  "edge_allowlist": ["se_lee_junto_a", "modifica_interpretacion", "se_relaciona_con_srotas"],
-  "edge_budget": 4,
+  "edge_allowlist": ["se_lee_junto_a", "modifica_interpretacion_de", "se_relaciona_con_srotas"],
+  "max_neighbors": 4,
+  "requires_status": "reviewed",
   "tangency_expansion": false,
   "explain_path": true
 }
 ```
 
+Vocabulario **unificado** con [REGISTRO-PREDICADOS.md §9](REGISTRO-PREDICADOS.md)
+y [ARQUITECTURA-CORPUS-TEMATICO-Y-RECUPERACION.md §Etapa E3.5](ARQUITECTURA-CORPUS-TEMATICO-Y-RECUPERACION.md):
+`max_neighbors` (no `edge_budget`), `requires_status` como campo propio. Esta es
+la **política global de tiempo de consulta**; REGISTRO-PREDICADOS §9 declara la
+capacidad **por predicado** (`expand`, `allowed_intents`) de la que `edge_allowlist`
+se deriva en tiempo de ejecución — no son documentos que compitan, son dos niveles
+del mismo contrato.
+
 | Knob | Def. | Qué controla |
 |---|---|---|
 | `max_hops` | 1 | 2+ saltos derivan semánticamente. Contar **por capa**. |
-| `edge_allowlist` | por intención | Solo estos `predicate` expanden (subconjunto del vocab §2.3). Depende del ÁNGULO: lectura-conjunta habilita `se_lee_junto_a`; interpretación simple puede no expandir. Se engancha con el enrutador de intención existente. |
-| `edge_budget` | 4 | Tope de docs añadidos; se gasta **en las aristas de mayor peso primero** (no arbitrario). Evita que un hub inunde. |
+| `edge_allowlist` | por intención | Solo estos `predicate` expanden (derivado de qué predicados declaran `expand:true` para la intención activa, REGISTRO-PREDICADOS §9). Depende del ÁNGULO: lectura-conjunta habilita `se_lee_junto_a`; interpretación simple puede no expandir. Se engancha con el enrutador de intención existente. |
+| `max_neighbors` | 4 | Tope de docs añadidos; se gasta **en las aristas de mayor peso primero** (no arbitrario). Evita que un hub inunde. |
+| `requires_status` | `reviewed` | Solo aristas revisadas expanden (salvo entornos de prueba); ver ciclo de vida en REGISTRO-PREDICADOS §7. |
 | `tangency_expansion` | false (fail-closed) | **Guardarraíl (I8)**: una arista `tangency` no expande por defecto. Se activa solo bajo precondición + disparador (§2.6). |
 | `explain_path` | true | Cada doc expandido registra su procedencia (abajo). |
 
 Refinamientos:
 - **Expansión = reordenar/boost** de lo ya recuperado, con inyección de un vecino
-  directo solo bajo `edge_budget`. No rellenar con docs que la búsqueda base no
+  directo solo bajo `max_neighbors`. No rellenar con docs que la búsqueda base no
   halló.
 - **Peso de arista + `revisado_pro`**: el presupuesto prioriza aristas de mayor
   peso y **revisadas por profesional**; las no revisadas se degradan o excluyen.
