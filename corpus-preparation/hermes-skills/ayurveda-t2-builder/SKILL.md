@@ -43,7 +43,11 @@ bloqueada o cuando el tema necesita contexto academico.
   cuando la fuente sostenga un punto de contacto tematico honesto.
 - Las relaciones entre conceptos Ayurveda no canonicos van en el cuerpo, en
   "Conexiones internas del marco ayurvedico"; no inventes markers como `rakta`,
-  `rasa`, `agni`, `ama`, `ojas`, `pitta` o `dhatu`.
+  `rasa`, `agni`, `ama`, `ojas`, `pitta` o `dhatu`. Escribe cada conexion como
+  `concepto-A -> predicado -> concepto-B` con los verbos canonicos de
+  `docs/REGISTRO-PREDICADOS.md` (`es_un_tipo_de`, `se_transforma_en`,
+  `se_relaciona_con_srotas`, `nutre`, `deriva_de`, `se_expresa_por`), para poder
+  convertirlas luego en aristas del grafo. Hoy van solo en el cuerpo.
 - No crees tarjetas de indice o enumeracion si no aportan una intencion
   recuperable distinta. Integra listas breves de subtipos o sinonimos en
   `alias` y en el cuerpo del hub.

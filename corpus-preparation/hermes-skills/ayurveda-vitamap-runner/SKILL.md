@@ -181,9 +181,18 @@ Toda T2 hub de concepto ayurvedico debe incluir, si la fuente lo permite:
 - definicion y variantes terminologicas;
 - lugar dentro del sistema Ayurveda;
 - **Conexiones internas del marco ayurvedico**: conceptos vecinos y tipo de
-  relacion, escritos en el cuerpo de la tarjeta sin inventar markers;
+  relacion, escritos en el cuerpo de la tarjeta sin inventar markers. Escribe
+  cada conexion en forma casi-estructurada `concepto-A -> predicado ->
+  concepto-B` usando los verbos canonicos del registro de predicados
+  (`es_un_tipo_de`, `se_transforma_en`, `se_relaciona_con_srotas`, `nutre`,
+  `deriva_de`, `se_expresa_por`). Asi se podran convertir luego en aristas del
+  grafo sin reescribir. Vocabulario en `docs/REGISTRO-PREDICADOS.md`. Hoy van
+  SOLO en el cuerpo: el validador aun no acepta estos conceptos como
+  `relacionado_con.id`, no los declares en frontmatter.
 - **Lo que no permite concluir**: biomarcadores, diagnosticos modernos,
-  eficacia, seguridad o tratamiento si la fuente no lo sostiene.
+  eficacia, seguridad o tratamiento si la fuente no lo sostiene. Escribe cada
+  limite como una linea afirmativa breve ("no equivale a X", "no autoriza Y"),
+  para poder migrarla luego al campo `does_not_support` de una tangencia.
 
 No crees una tarjeta "lista" separada si solo enumera terminos ya cubiertos por
 otra T2. Integra esa lista como alias y seccion breve dentro de la tarjeta
@@ -488,6 +497,11 @@ La tarjeta pasa solo si:
   `marker: [ayurveda]` para hubs de conceptos Ayurveda;
 - si la funcion editorial es `hub` o `relacion-interna`, no contiene `sistema`,
   `area_de_salud`, `categoria` ni `muestra`;
+- el cuerpo NO es solo una lista o enumeracion de terminos sin intencion
+  recuperable propia. Si lo es, es una tarjeta indice y se BLOQUEA (sus terminos
+  van a `alias` de otra tarjeta y a una seccion breve del hub), no se genera.
+  Ejemplo de lo que se bloquea: una tarjeta cuyo cuerpo es solo "madhura, amla,
+  lavana, katu, tikta, kashaya" ya cubierto por otra T2;
 - si usa una fuente PMC con DOI/PMCID conocidos, esos campos se incluyen;
 - `source_type` mapea a `seccion` segun `corpus-taxonomy.json`;
 - las frases sobre metabolismo, fisiologia moderna o biomarcadores incluyen
