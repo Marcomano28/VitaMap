@@ -1,0 +1,110 @@
+# Banco de evaluación · Ayurveda (figura-fondo)
+#
+# E0 del plan docs/PRIORIDADES-ESTRUCTURA-RAG-FIGURA-FONDO.md. Mide no solo recall,
+# sino FUGAS entre planos: que una pregunta clínica no traiga Ayurveda y que una
+# tradicional no sea invadida por la analítica. Cada caso verifica una categoría
+# del banco de aceptación (PRIORIDADES §P1 · E0).
+#
+# PRERREQUISITO para E1 (baseline): `--validate` y la medición exigen que las
+# tarjetas citadas vivan en corpus-preparation/approved-current-structure/ y estén
+# publicadas en la KB. Hoy SOLO están aprobadas las 2 de prakriti; las de
+# shukra/rasa/rakta siguen en previously-uploaded/ → hay que promoverlas primero.
+# Por eso este banco falla `--validate` a propósito mientras no se promuevan: es la
+# señal de que el prerrequisito no está cumplido, no un error del banco.
+#
+# Huecos aspiracionales (piden tarjeta nueva): pitta propio, un puente-editorial
+# prakriti↔fenotipo, y una de bilirrubina para el ancla de pitta.
+
+# ── A · Definición directa ───────────────────────────────────────────────
+- query: "¿qué es prakriti en el Ayurveda?"
+  locale: es
+  expected: [prakriti-doshas-ayurveda-contexto-historico-frontiers]
+
+- query: "was bedeutet Prakriti in der Ayurveda?"
+  locale: de
+  expected: [prakriti-doshas-ayurveda-contexto-historico-frontiers]
+
+- query: "¿qué es el shukra dhatu?"
+  locale: es
+  expected: [shukra-definicion-dos-formas-t2]
+
+- query: "¿qué es el rasa dhatu?"
+  locale: es
+  expected: [rasa-definicion-significados-t2]
+
+- query: "¿qué es el rakta dhatu en Ayurveda?"
+  locale: es
+  expected: [rakta-dhatu-definicion-funcion-t2]
+
+# ── B · Sinónimos / alias ────────────────────────────────────────────────
+- query: "cualidades del shukra sara (el semen en su forma más pura) según Ayurveda"
+  locale: es
+  expected: [shukra-cualidades-shukra-sara-t2]
+
+- query: "las seis rasas y su relación con los doshas"
+  locale: es
+  expected: [rasa-seis-rasas-doshas-t2]
+
+- query: "yonivyapat y los defectos del semen (shukra) en Ayurveda"
+  locale: es
+  expected: [shukra-dushti-contexto-yonivyapat-t2]
+
+# ── C · Relaciones de dos pasos (prueban el grafo interno) ────────────────
+- query: "¿qué relación tiene el shukra con el ojas?"
+  locale: es
+  expected: [shukra-ojas-relacion-atraves-rasayana-t2]
+  note: arista interna shukra→(rasayana)→ojas; prueba la continuidad del cuerpo propio
+
+- query: "¿por qué canal (srotas) circula el shukra?"
+  locale: es
+  expected: [shukra-formacion-metabolismo-circulacion-t2]
+
+- query: "welcher Srotas ist mit Rakta verbunden?"
+  locale: de
+  expected: [rakta-dhatu-srotas-pitta-relacion-t2]
+
+- query: "¿en cuánto tiempo y en qué cantidad se forma el shukra?"
+  locale: es
+  expected: [shukra-cantidad-tiempo-formacion-t2]
+
+# ── D · Comparativa donde SÍ se permite una tangencia ─────────────────────
+- query: "¿hay estudios modernos que relacionen la prakriti con perfiles genéticos o fenotípicos?"
+  locale: es
+  expected: [prakriti-doshas-evaluacion-cientifica-ayurgenomica]
+  note: tangencia permitida (pregunta comparativa); debe salir la evaluación científica, no como equivalencia
+
+# ── E · Pregunta clínica: Ayurveda NO debe aparecer (fuga fondo→figura) ────
+- query: "¿qué significa la testosterona total baja?"
+  locale: es
+  expected: [testosterona-total-interpretacion-medlineplus]
+  must_not_prioritize: [shukra-definicion-dos-formas-t2, shukra-cualidades-shukra-sara-t2]
+  note: pregunta clínica de andrología; shukra no debe subir por parecido temático
+
+- query: "¿cómo se interpreta la PCR elevada?"
+  locale: es
+  expected: [proteina-c-reactiva-interpretacion-medlineplus]
+  must_not_prioritize: [rakta-dhatu-definicion-funcion-t2]
+  note: rakta≈sangre no debe invadir una pregunta clínica de inflamación
+
+# ── F · Pregunta tradicional: la biomedicina NO debe invadir (fuga figura→fondo) ─
+- query: "¿qué dice el Ayurveda sobre el shukra?"
+  locale: es
+  expected: [shukra-definicion-dos-formas-t2]
+  must_not_prioritize: [testosterona-total-interpretacion-medlineplus, shbg-interpretacion-medlineplus]
+  note: pregunta tradicional; la analítica no debe fiscalizar el concepto
+
+- query: "desde el Ayurveda, ¿qué es el rakta (la sangre)?"
+  locale: es
+  expected: [rakta-dhatu-definicion-funcion-t2]
+  must_not_prioritize: [proteina-c-reactiva-interpretacion-medlineplus]
+  note: el marco tradicional en primer plano; el hemograma/inflamación no debe invadir
+
+# ── G · Ancla de no-equivalencia (pitta) ─────────────────────────────────
+- query: "¿qué es el pitta?"
+  locale: es
+  expected: [rasa-seis-rasas-doshas-t2]
+  must_not_prioritize: [proteina-c-reactiva-interpretacion-medlineplus]
+  note: >-
+    caso ancla (§I8): pitta NO debe recuperar bilirrubina/inflamación/hepático como
+    equivalencia. `expected` es débil (menciona doshas); idealmente pide una tarjeta
+    pitta propia y una de bilirrubina para el must_not.
