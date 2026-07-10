@@ -1,7 +1,7 @@
 # Arquitectura del corpus temático y evolución de la recuperación
 
-Versión 0.2 · 2026-06-12
-Estado: documento editorial y técnico activo
+Versión 0.3 · 2026-07-11
+Estado: documento editorial y técnico activo · revisión figura-fondo y grafo
 
 ## 1. Propósito
 
@@ -24,6 +24,37 @@ No sustituye a:
 - los briefs de `corpus-preparation/`, que sirven para producir las tarjetas.
 
 Su función es conectar esas piezas en un modelo editorial común.
+
+## 1.1 Principio de producto: GPS de analíticas
+
+VitaMap nace para ayudar a una persona común a comprender un conjunto de
+analíticas sin perderse entre indicadores aislados. La metáfora operativa es un
+**GPS de salud** o una **cabina de instrumentos explicada**:
+
+- los valores son señales medibles;
+- los paneles organizan instrumentos que conviene leer juntos;
+- las relaciones muestran qué añade contexto, qué modifica una interpretación y
+  qué pertenece al mismo sistema;
+- la memoria personal permite situar la evolución y el contexto;
+- el RAG recupera explicaciones, límites y fuentes;
+- la interfaz muestra primero lo necesario para dar el siguiente paso, no todo el
+  grafo a la vez.
+
+La **analítica biomédica es la figura por defecto** porque el punto de partida
+del producto son datos medibles y preguntas clínicas o educativas sobre esos
+datos.
+
+Las tradiciones constituyen un **fondo complementario con identidad y
+continuidad propias**. No son una traducción antigua de la analítica ni una
+capa decorativa. Pueden adquirir foco local cuando la persona pide explícitamente
+una perspectiva tradicional o una comparación, pero no desplazan la prioridad
+clínica del producto ni heredan el nivel de evidencia de la biomedicina.
+
+Fórmula de diseño:
+
+> **Prioridad estable, foco adaptable.**  
+> Analítica como figura por defecto; tradiciones como fondo autónomo y opcional;
+> comparación sin equivalencia.
 
 ## 2. Decisión central
 
@@ -147,39 +178,62 @@ Las cuatro capas no son obligatorias. Una especie puede necesitar solo identidad
 y seguridad; una M3 puede existir sin M2 si la investigación moderna no parte de
 una práctica tradicional verificable.
 
-### 3.6 Figura y fondo
+### 3.6 Figura y fondo: prioridad estable, foco adaptable
 
-Las capas de un dossier no tienen el mismo peso ni cumplen la misma función.
-Conviene pensarlas como una composición de figura y fondo.
+Las capas del dossier no tienen el mismo papel en el producto.
 
-Las tarjetas biomédicas —interpretación, alimentación y estilo de vida,
-curiosidad científica, evidencia moderna— son la figura. Ocupan el primer
-plano: aportan el contorno nítido, lo que puede medirse y lo que una fuente
-institucional sostiene con autoridad.
+VitaMap parte de analíticas, resultados y relaciones entre indicadores. Por eso,
+ante una consulta clínica, educativa o ambigua sobre salud, la **biomedicina
+medible ocupa la figura por defecto**. Es el plano que organiza la lectura
+principal, las cautelas clínicas, la evidencia moderna y la seguridad.
 
-Las tarjetas tradicionales —fuente clásica, contexto histórico o filológico,
-evaluación científica de una práctica— son el fondo. No compiten con la figura
-ni la sustituyen: la rodean, le dan profundidad histórica y cultural, y muestran
-cómo otras formas de conocimiento han nombrado un territorio cercano.
+Las tradiciones —Ayurveda, medicina china y otras— forman un **fondo
+complementario**. Ese fondo no es una sombra ni una traducción imperfecta de la
+figura. Conserva:
 
-Como en un dibujo, algunos trazos del contorno son cortantes y otros se
-difuminan. Hay puntos donde figura y fondo coinciden —un concepto tradicional
-que roza lo que hoy llamamos metabolismo lipídico— y zonas donde el límite se
-vuelve incierto y debe dejarse incierto. La relación entre ambos planos es una
-danza, no una disputa ni una única escala aplicable a todas las preguntas: la
-ciencia no necesita negar la tradición para conservar su rigor, y la tradición
-no necesita disfrazarse de ciencia para conservar su valor. Cuando ambos planos
-formulan la misma afirmación clínica, sí se aplica el estándar de evidencia
-clínica correspondiente.
+- lenguaje propio;
+- fuentes propias;
+- relaciones internas propias;
+- límites explícitos frente a la biomedicina.
 
-Este es el esquema que gobierna la construcción del corpus. Cada tarjeta sabe si
-es figura o fondo, con qué autoridad habla y dónde están sus fronteras de
-incertidumbre. La recuperación traduce esa misma composición en modos (ver §10,
-etapa E1): la intención decide qué ocupa el primer plano. Una pregunta clínica
-activa la Lectura clínica; una pregunta histórica o tradicional acerca ese
-fondo hasta convertirlo en figura; y una Comparación observa ambos planos lado
-a lado, sin que ninguno borre al otro.
+La asignación de figura y fondo no es totalmente simétrica ni completamente
+intercambiable. La prioridad estructural del producto sigue siendo clínica. Sin
+embargo, el **foco de una consulta concreta puede adaptarse**:
 
+| Intención | Figura | Fondo |
+|---|---|---|
+| Resultado, analítica, seguridad o eficacia | Analítica y evidencia moderna | Tradición opcional o ausente |
+| Pregunta tradicional explícita | Red interna de la tradición | Analítica como referencia separada cuando sea pertinente |
+| Comparación explícita | Ambos planos lado a lado | Ninguno se fusiona con el otro |
+
+Una tarjeta no tiene `figura` o `fondo` como propiedad permanente. Declara:
+
+- plano epistemológico;
+- tradición, si aplica;
+- función editorial;
+- procedencia;
+- límites.
+
+La recuperación y la interfaz deciden la prominencia según la intención.
+
+Las tangencias entre planos son contactos limitados, no equivalencias. Una
+coincidencia temática, una traducción aproximada o una asociación de
+investigación no transfieren:
+
+- identidad;
+- causalidad;
+- capacidad diagnóstica;
+- autoridad clínica;
+- grado de evidencia.
+
+Cuando ambos planos formulan una afirmación clínica comprobable, la afirmación
+se evalúa con el estándar clínico correspondiente. La tradición no se convierte
+por ello en biomarcador, y una fuente clásica no demuestra eficacia moderna.
+
+Esta regla gobierna tanto el corpus como la recuperación y el GPS visual:
+
+> El grafo técnico puede contener todos los planos; el mapa del usuario muestra
+> primero lo que ayuda a comprender su pregunta sin perder el contexto.
 ### 3.7 Ejemplo: dossier LDL
 
 Un dossier razonable puede contener:
@@ -425,8 +479,29 @@ cuerpos localizados.
 
 ### 5.3 Taxonomía y vocabulario runtime
 
-`corpus-preparation/corpus-taxonomy.json` es la fuente de verdad para markers,
-aliases, relaciones y grupos de consulta. La app no mantiene una segunda lista
+La arquitectura separa fuentes de verdad por responsabilidad:
+
+- los Markdown son la fuente de verdad editorial y documental;
+- `corpus-taxonomy.json` gobierna identidad de conceptos, markers, aliases y
+  grupos de consulta durante la migración;
+- el registro de predicados gobierna la gramática de las relaciones — vive en
+  [REGISTRO-PREDICADOS.md](REGISTRO-PREDICADOS.md), que hoy cubre además el
+  contrato de arista (nodo, procedencia, ciclo de vida, validaciones): no son
+  todavía dos artefactos separados, sino uno con ambas responsabilidades;
+- el registro de aristas gobierna conexiones concretas y su procedencia — mismo
+  documento, §2 (Modelo base) y §6-8;
+- las rutas de consulta gobiernan heurísticas de recuperación y no se consideran
+  relaciones científicas.
+
+El plan priorizado para construir este grafo (qué falta, en qué orden, y por qué
+—incluida la política de expansión de la Etapa E3.5 más abajo—) vive en
+[PRIORIDADES-ESTRUCTURA-RAG-FIGURA-FONDO.md](PRIORIDADES-ESTRUCTURA-RAG-FIGURA-FONDO.md).
+
+Mientras el registro de aristas no exista como artefacto separado,
+`relacionado_con` sigue siendo el contenedor de compatibilidad. Toda evolución
+debe evitar mezclar una ruta editorial —por ejemplo, `fatiga → explorar
+ferritina`— con una relación de conocimiento —por ejemplo, `PCR → modifica la
+interpretación de ferritina`. La app no mantiene una segunda lista
 manual de markers en `marker-scope.ts`; consume
 `apps/web/lib/generated/marker-vocabulary.ts`, generado desde la taxonomía con:
 
@@ -835,8 +910,9 @@ La evolución debe contemplar tres modos de recuperación y respuesta:
 | **Comparación** | carriles biomédicos y tradicionales recuperados por separado | Expone coincidencias, diferencias, lenguaje propio, tipo de autoridad y nivel de evidencia sin forzar equivalencias entre sistemas. |
 | **Perspectiva tradicional** | fuente clásica + contexto histórico o filológico; evidencia moderna y seguridad cuando sean pertinentes | Da protagonismo al sistema solicitado, con atribución clara. No traduce automáticamente sus conceptos a diagnósticos modernos ni añade una refutación clínica ritual. |
 
-Si la persona no selecciona un modo, el router infiere la intención. Una
-pregunta ambigua sobre un resultado o efecto de salud usa **Lectura clínica**;
+Si la persona no selecciona un modo, el router infiere la intención. La
+**Lectura clínica es el modo por defecto** para preguntas ambiguas sobre un
+resultado, un síntoma, un efecto de salud, eficacia o seguridad;
 una petición como "desde Ayurveda", "según la medicina china" o "compáralos"
 activa el modo correspondiente para esa consulta.
 
@@ -931,6 +1007,43 @@ Los filtros pueden aplicarse:
 No conviene filtrar después de recuperar solo tres candidatos: podría eliminar
 todos los resultados relevantes.
 
+### Etapa E3.5 · Expansión controlada por grafo
+
+Desarrollo completo de esta política (knobs, refinamientos, activación de
+tangencias con precondición + disparador) en
+[PRIORIDADES-ESTRUCTURA-RAG-FIGURA-FONDO.md §2.5-2.6](PRIORIDADES-ESTRUCTURA-RAG-FIGURA-FONDO.md).
+
+La expansión por relaciones solo se activa después de disponer de:
+
+- banco de evaluación y baseline previo;
+- conceptos canónicos estables;
+- predicados tipados;
+- aristas con procedencia;
+- estado de revisión;
+- validadores de dirección, tipos y duplicados.
+
+Primera política recomendada:
+
+```yaml
+max_hops: 1
+max_neighbors: 4
+requires_status: reviewed
+explain_path: true
+```
+
+Solo se expanden predicados incluidos en una allowlist. Las relaciones de
+tangencia permanecen cerradas por defecto y solo pueden participar ante una
+intención comparativa o tradicional explícita.
+
+La aplicación registra por qué se recuperó cada vecino. Ejemplo:
+
+> Se recuperó esta tarjeta porque la proteína C reactiva puede modificar cómo se
+> interpreta la ferritina en un contexto inflamatorio.
+
+Las rutas de consulta (`health_area_route`, `query_group`) pueden orientar la
+búsqueda, pero no se presentan como relaciones clínicas ni se mezclan con el
+grafo epistemológico.
+
 ### Etapa E4 · Grounding y citas
 
 La respuesta debe evolucionar hacia citas comprobables por afirmación:
@@ -1019,9 +1132,13 @@ Las mejoras deben responder a métricas y problemas observados:
 - Un tema se modela como dossier lógico de tarjetas.
 - Una tarjeta tiene una intención principal, no una pregunta literal única.
 - A/B/C/D/E y T1/T2/T3 son funciones distintas, no cuotas.
-- Las tarjetas biomédicas suelen ser la figura ante preguntas clínicas y las
-  tradicionales el fondo, pero la intención puede acercar el fondo hasta el
-  primer plano. Conviven sin antagonismo ni equivalencia forzada.
+- VitaMap es un GPS de analíticas: la biomedicina medible es la figura por
+  defecto y conserva la prioridad estructural del producto.
+- Las tradiciones son un fondo complementario con lenguaje, fuentes y
+  relaciones internas propias; no son decoración ni traducción automática.
+- El foco puede adaptarse ante una petición tradicional o comparativa explícita,
+  pero la adaptación no vuelve simétricos los regímenes de evidencia ni
+  transfiere autoridad entre planos.
 - La acupuntura usa un brief especializado.
 - Las especies con uso medicinal usan un brief especializado y una puerta de
   identidad antes de evaluar evidencia o seguridad.
