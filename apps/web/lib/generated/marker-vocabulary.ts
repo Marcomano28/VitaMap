@@ -126,9 +126,31 @@ export const MARKER_ALIASES = {
     "ast"
   ],
   "ayurveda": [
+    "agni",
+    "ama ayurveda",
     "ayurveda",
+    "bhutagni",
+    "dhatu",
+    "dhatvagni",
     "dosha",
-    "prakriti"
+    "jatharagni",
+    "ojas",
+    "prakriti",
+    "prakrti",
+    "rakta",
+    "rakta dhatu",
+    "raktadhatu",
+    "raktavaha srotas",
+    "rasa",
+    "rasa dhatu",
+    "rasayana",
+    "shukra",
+    "shukra dhatu",
+    "shukra sara",
+    "shukravaha srotas",
+    "srotas",
+    "tridosha",
+    "yonivyapat"
   ],
   "berberina": [
     "bbr",
