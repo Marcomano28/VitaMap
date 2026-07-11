@@ -8,7 +8,11 @@ import {
   EDU_GUIDE_RULE,
   type ChatMessage,
 } from "@/lib/llm";
-import { checkResponse, rewriteSocratic } from "@/lib/guardrail";
+import {
+  checkResponse,
+  deterministicResponseFlags,
+  rewriteSocratic,
+} from "@/lib/guardrail";
 import { logAuditEventSafe } from "@/lib/audit";
 import { UnauthorizedError } from "@/lib/session";
 import {
@@ -256,8 +260,18 @@ export async function POST(req: Request) {
       const rewritten = prepareAssistantText(
         await rewriteSocratic(draft, body.locale, contextBlock, deadline),
       );
-      if (hasVisibleAssistantText(rewritten)) {
+      const remainingPolicyFlags = deterministicResponseFlags(rewritten);
+      if (hasVisibleAssistantText(rewritten) && remainingPolicyFlags.length === 0) {
         finalText = rewritten;
+      } else if (remainingPolicyFlags.length > 0) {
+        // Una reescritura no se presume segura: si repite conversión,
+        // normalidad u otra inferencia prohibida, no llega al usuario.
+        verdict = "block";
+        flags = [...new Set([...flags, ...remainingPolicyFlags])];
+        finalText = localize(body.locale, {
+          es: "No pude comparar esos resultados con suficiente fidelidad sin introducir una interpretación no respaldada. Puedo mostrarlos por fecha y en sus unidades originales.",
+          de: "Ich konnte diese Ergebnisse nicht zuverlässig vergleichen, ohne eine unbelegte Interpretation einzuführen. Ich kann sie nach Datum und in ihren Originaleinheiten anzeigen.",
+        });
       } else if (
         canRecoverMissingCitation(
           decision.flags,
