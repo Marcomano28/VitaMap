@@ -1,7 +1,27 @@
 # Propuesta · Visualización de analíticas (comparativa temporal y con la norma)
 
-Versión 0.1 · 2026-06-13
-Estado: propuesta para discusión
+Versión 0.2 · 2026-07-11
+Estado: dirección aprobada · fundamento técnico inicial en implementación
+
+## 0. Estado de implementación
+
+La primera base ya existe en el repositorio:
+
+- el modelo de marcador personal conserva los campos originales y admite
+  `marker_id`, unidad UCUM, rango estructurado y estado de normalización;
+- la normalización inicial es determinista y conservadora: propone identidad y
+  unidad solo ante coincidencias exactas conocidas y no convierte unidades;
+- `getLabSeries` construye series desde la memoria autorizada, conserva la
+  procedencia y declara si los puntos son comparables;
+- `LabValueBand` representa un valor frente al intervalo del propio informe sin
+  semáforo ni veredicto cromático;
+- `LabTimeline` dibuja el sendero solo cuando las unidades son comparables; si
+  no lo son, conserva la cronología pero interrumpe la lectura como tendencia;
+- `/guide/visualization` permite revisar el primer componente con datos
+  sintéticos antes de conectarlo al chat o a datos personales.
+
+Todavía no están implementados el contrato visual de la API de chat ni la
+selección de visualizaciones desde el RAG.
 
 ## 1. Qué se pide
 

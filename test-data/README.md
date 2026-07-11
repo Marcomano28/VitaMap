@@ -22,6 +22,13 @@ Valores esperados:
 - Altos: glucosa, colesterol total y LDL.
 - Bajo: vitamina D.
 
+## Serie longitudinal para visualizaciones
+
+`longitudinal/` contiene cuatro informes de una misma persona ficticia. Los
+tres primeros forman una serie comparable; el cuarto cambia LDL de mg/dL a
+mmol/L para comprobar que VitaMap interrumpe la linea y no inventa una
+conversion. Ver `longitudinal/README.md` para el recorrido de prueba completo.
+
 ## Suite de regresión del chat
 
 `chat-regression-cases.json` recoge casos de comportamiento del asistente

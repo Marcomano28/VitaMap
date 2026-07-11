@@ -14,6 +14,7 @@ import { writeLabResult } from "@/lib/memory";
 import { logAuditEventSafe } from "@/lib/audit";
 import { requireSubscribedUserId } from "@/lib/subscription-access";
 import { getLocale } from "@/lib/locale";
+import { normalizeLabMarker } from "@/lib/lab-visualization";
 
 /**
  * Lee de FormData los markers editados y construye el LabResultExtraction
@@ -39,13 +40,17 @@ function parseMarkersFromForm(fd: FormData): LabMarker[] {
     )
       ? (flagRaw as LabMarker["flag"])
       : "unknown";
-    markers.push({
+    markers.push(normalizeLabMarker({
       name,
       value: Number.isFinite(value as number) ? (value as number) : null,
       unit,
       reference_range,
       flag,
-    });
+      marker_id: null,
+      unit_ucum: null,
+      reference_range_structured: null,
+      normalization_status: "raw",
+    }));
   }
   return markers;
 }

@@ -1,0 +1,24 @@
+VITAMAP - DOCUMENTO SINTETICO LONGITUDINAL
+FICTICIO - NO CORRESPONDE A UNA PERSONA REAL
+NO USAR PARA DECISIONES MEDICAS
+
+Laboratorio: Laboratorio Ficticio Norte
+Fecha de muestra: 2026-05-12
+
+ANALITICA DE SEGUIMIENTO
+
+Parametro                     Resultado       Unidad            Rango      Indicador
+Glucosa en ayunas                   101        mg/dL          70 - 99           ALTO
+HbA1c                               5.7            %        4.0 - 5.6           ALTO
+Colesterol total                    218        mg/dL          0 - 200           ALTO
+HDL                                  62        mg/dL         40 - 100         DENTRO
+LDL                                 139        mg/dL            < 116           ALTO
+Trigliceridos                        86        mg/dL          0 - 150         DENTRO
+Ferritina                            31        ng/mL         15 - 150         DENTRO
+PCR                                 0.7         mg/L            0 - 5         DENTRO
+TSH                                 2.1        mIU/L      0.40 - 4.00         DENTRO
+Vitamina D                           26        ng/mL         30 - 100           BAJO
+
+Observacion:
+Documento creado exclusivamente para verificar el flujo tecnico de VitaMap.
+Todos los datos, fechas, valores y nombres de laboratorio son ficticios.

@@ -1,0 +1,22 @@
+VITAMAP - DOCUMENTO SINTETICO LONGITUDINAL
+FICTICIO - NO CORRESPONDE A UNA PERSONA REAL
+NO USAR PARA DECISIONES MEDICAS
+
+Laboratorio: Beispiel Labor Berlin
+Fecha de muestra: 2026-07-03
+
+ANALITICA DE SEGUIMIENTO
+
+Parametro                     Resultado       Unidad            Rango      Indicador
+Glukose nuechtern                   5.5       mmol/L        3.9 - 5.5         DENTRO
+HbA1c                               5.7            %        4.0 - 5.6           ALTO
+LDL Cholesterin                     3.4       mmol/L            < 3.0           ALTO
+HDL Cholesterin                     1.6       mmol/L            > 1.0         DENTRO
+Ferritin                             29        ng/mL         20 - 170         DENTRO
+CRP                                 0.9         mg/L            0 - 5         DENTRO
+TSH                                 2.0        mIU/L      0.27 - 4.20         DENTRO
+Vitamin D                            28        ng/mL         30 - 100           BAJO
+
+Observacion:
+Documento creado exclusivamente para verificar el flujo tecnico de VitaMap.
+Todos los datos, fechas, valores y nombres de laboratorio son ficticios.

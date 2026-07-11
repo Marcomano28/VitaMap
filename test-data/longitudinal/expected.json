@@ -1,0 +1,73 @@
+{
+  "fixture_version": 1,
+  "synthetic": true,
+  "person_id": "vitamap-fixture-longitudinal-a",
+  "reports": [
+    {
+      "id": "analitica-longitudinal-01",
+      "lab_name": "Laboratorio Ficticio Norte",
+      "observed_at": "2025-10-14",
+      "markers": [
+        { "name": "Glucosa en ayunas", "value": 108, "unit": "mg/dL", "reference_range": "70 - 99", "flag": "high" },
+        { "name": "HbA1c", "value": 5.9, "unit": "%", "reference_range": "4.0 - 5.6", "flag": "high" },
+        { "name": "Colesterol total", "value": 231, "unit": "mg/dL", "reference_range": "0 - 200", "flag": "high" },
+        { "name": "HDL", "value": 58, "unit": "mg/dL", "reference_range": "40 - 100", "flag": "normal" },
+        { "name": "LDL", "value": 151, "unit": "mg/dL", "reference_range": "< 116", "flag": "high" },
+        { "name": "Trigliceridos", "value": 109, "unit": "mg/dL", "reference_range": "0 - 150", "flag": "normal" },
+        { "name": "Ferritina", "value": 42, "unit": "ng/mL", "reference_range": "15 - 150", "flag": "normal" },
+        { "name": "PCR", "value": 0.8, "unit": "mg/L", "reference_range": "0 - 5", "flag": "normal" },
+        { "name": "TSH", "value": 2.6, "unit": "mIU/L", "reference_range": "0.40 - 4.00", "flag": "normal" },
+        { "name": "Vitamina D", "value": 17, "unit": "ng/mL", "reference_range": "30 - 100", "flag": "low" }
+      ]
+    },
+    {
+      "id": "analitica-longitudinal-02",
+      "lab_name": "Laboratorio Ficticio Norte",
+      "observed_at": "2026-01-22",
+      "markers": [
+        { "name": "Glucosa en ayunas", "value": 105, "unit": "mg/dL", "reference_range": "70 - 99", "flag": "high" },
+        { "name": "HbA1c", "value": 5.8, "unit": "%", "reference_range": "4.0 - 5.6", "flag": "high" },
+        { "name": "Colesterol total", "value": 224, "unit": "mg/dL", "reference_range": "0 - 200", "flag": "high" },
+        { "name": "HDL", "value": 60, "unit": "mg/dL", "reference_range": "40 - 100", "flag": "normal" },
+        { "name": "LDL", "value": 145, "unit": "mg/dL", "reference_range": "< 116", "flag": "high" },
+        { "name": "Trigliceridos", "value": 96, "unit": "mg/dL", "reference_range": "0 - 150", "flag": "normal" },
+        { "name": "Ferritina", "value": 38, "unit": "ng/mL", "reference_range": "15 - 150", "flag": "normal" },
+        { "name": "PCR", "value": 4.8, "unit": "mg/L", "reference_range": "0 - 5", "flag": "normal" },
+        { "name": "TSH", "value": 2.4, "unit": "mIU/L", "reference_range": "0.40 - 4.00", "flag": "normal" },
+        { "name": "Vitamina D", "value": 21, "unit": "ng/mL", "reference_range": "30 - 100", "flag": "low" }
+      ]
+    },
+    {
+      "id": "analitica-longitudinal-03",
+      "lab_name": "Laboratorio Ficticio Norte",
+      "observed_at": "2026-05-12",
+      "markers": [
+        { "name": "Glucosa en ayunas", "value": 101, "unit": "mg/dL", "reference_range": "70 - 99", "flag": "high" },
+        { "name": "HbA1c", "value": 5.7, "unit": "%", "reference_range": "4.0 - 5.6", "flag": "high" },
+        { "name": "Colesterol total", "value": 218, "unit": "mg/dL", "reference_range": "0 - 200", "flag": "high" },
+        { "name": "HDL", "value": 62, "unit": "mg/dL", "reference_range": "40 - 100", "flag": "normal" },
+        { "name": "LDL", "value": 139, "unit": "mg/dL", "reference_range": "< 116", "flag": "high" },
+        { "name": "Trigliceridos", "value": 86, "unit": "mg/dL", "reference_range": "0 - 150", "flag": "normal" },
+        { "name": "Ferritina", "value": 31, "unit": "ng/mL", "reference_range": "15 - 150", "flag": "normal" },
+        { "name": "PCR", "value": 0.7, "unit": "mg/L", "reference_range": "0 - 5", "flag": "normal" },
+        { "name": "TSH", "value": 2.1, "unit": "mIU/L", "reference_range": "0.40 - 4.00", "flag": "normal" },
+        { "name": "Vitamina D", "value": 26, "unit": "ng/mL", "reference_range": "30 - 100", "flag": "low" }
+      ]
+    },
+    {
+      "id": "analitica-longitudinal-04-unidad-distinta",
+      "lab_name": "Beispiel Labor Berlin",
+      "observed_at": "2026-07-03",
+      "markers": [
+        { "name": "Glukose nuechtern", "value": 5.5, "unit": "mmol/L", "reference_range": "3.9 - 5.5", "flag": "normal" },
+        { "name": "HbA1c", "value": 5.7, "unit": "%", "reference_range": "4.0 - 5.6", "flag": "high" },
+        { "name": "LDL Cholesterin", "value": 3.4, "unit": "mmol/L", "reference_range": "< 3.0", "flag": "high" },
+        { "name": "HDL Cholesterin", "value": 1.6, "unit": "mmol/L", "reference_range": "> 1.0", "flag": "normal" },
+        { "name": "Ferritin", "value": 29, "unit": "ng/mL", "reference_range": "20 - 170", "flag": "normal" },
+        { "name": "CRP", "value": 0.9, "unit": "mg/L", "reference_range": "0 - 5", "flag": "normal" },
+        { "name": "TSH", "value": 2.0, "unit": "mIU/L", "reference_range": "0.27 - 4.20", "flag": "normal" },
+        { "name": "Vitamin D", "value": 28, "unit": "ng/mL", "reference_range": "30 - 100", "flag": "low" }
+      ]
+    }
+  ]
+}
