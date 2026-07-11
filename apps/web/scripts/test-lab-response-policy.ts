@@ -61,5 +61,27 @@ assert.deepEqual(
   ),
   [],
 );
+assert.deepEqual(
+  deterministicResponseFlags(
+    "En mayo tenías 101 mg/dL y en julio 99 mg/dL.",
+    `<source type="personal" observed_at="2026-05-12">Glucosa: 101 mg/dL</source>
+<source type="personal" observed_at="2026-07-03">Glucosa: 5.5 mmol/L</source>`,
+  ),
+  ["unsupported_factual_claim", "unit_conversion_without_rule"],
+);
+assert.deepEqual(
+  deterministicResponseFlags(
+    "En julio el LDL fue 131 mg/dL.",
+    `<source type="personal" observed_at="2026-07-03">LDL: 3.4 mmol/L</source>`,
+  ),
+  ["unsupported_factual_claim", "unit_conversion_without_rule"],
+);
+assert.deepEqual(
+  deterministicResponseFlags(
+    "En julio la glucosa fue 5.5 mmol/L.",
+    `<source type="personal" observed_at="2026-07-03">Glucosa: 5.5 mmol/L</source>`,
+  ),
+  [],
+);
 
 console.log("Lab response policy: todas las pruebas pasaron.");
