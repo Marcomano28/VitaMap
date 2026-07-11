@@ -29,8 +29,11 @@ import { responseTokenBudget } from "@/lib/conversation-policy";
 import { resolveRetrievalQuery } from "@/lib/query-rewrite";
 import { detectCrisis, crisisResourcesText } from "@/lib/crisis";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { getLabSeries } from "@/lib/memory-reader";
+import { buildLabMarkerAnswer } from "@/lib/lab-chat-fallback";
 import {
   isLatestLabRequest,
+  isPersonalLabValueRequest,
   latestLabContext,
 } from "@/lib/personal-context-policy";
 
@@ -130,6 +133,7 @@ export async function POST(req: Request) {
   // -- Retrieval dual -----------------------------------------------------
   let personal: RetrievedChunk[] = [];
   let evidence: RetrievedChunk[] = [];
+  let scopedMarkers: string[] = [];
   const retrievalStartedAt = Date.now();
   console.info("[chat] retrieval started");
   try {
@@ -144,6 +148,7 @@ export async function POST(req: Request) {
       .filter((m) => m.role === "user")
       .map((m) => m.content);
     const scope = deriveScope(body.message, priorUserMessages);
+    scopedMarkers = [...scope.markers];
     const result = await queryMemoryAndKB(userId, retrievalQuery, {
       limit: 3,
       minScore: 0.35,
@@ -257,67 +262,85 @@ export async function POST(req: Request) {
     verdict = decision.verdict;
     flags = decision.flags;
     if (decision.verdict === "rewrite") {
-      const rewritten = prepareAssistantText(
-        await rewriteSocratic(draft, body.locale, contextBlock, deadline),
-      );
-      const remainingPolicyFlags = deterministicResponseFlags(
-        rewritten,
-        contextBlock,
-      );
-      if (hasVisibleAssistantText(rewritten) && remainingPolicyFlags.length === 0) {
-        finalText = rewritten;
-      } else if (remainingPolicyFlags.length > 0) {
-        flags = [...new Set([...flags, ...remainingPolicyFlags])];
-        console.info("[chat] targeted lab rewrite", {
-          flags: remainingPolicyFlags,
+      const directStructuredAnswer =
+        scopedMarkers.length === 1 && isPersonalLabValueRequest(body.message)
+          ? buildLabMarkerAnswer(
+              await getLabSeries(userId, scopedMarkers[0]),
+              body.locale,
+              isLatestLabRequest(body.message),
+            )
+          : null;
+      if (directStructuredAnswer) {
+        finalText = directStructuredAnswer;
+        console.info("[chat] structured lab answer used", {
+          marker: scopedMarkers[0],
         });
-        const corrected = prepareAssistantText(
-          await rewriteSocratic(
-            rewritten,
-            body.locale,
-            contextBlock,
-            deadline,
-            remainingPolicyFlags,
-          ),
+      } else {
+        const rewritten = prepareAssistantText(
+          await rewriteSocratic(draft, body.locale, contextBlock, deadline),
         );
-        const correctedPolicyFlags = deterministicResponseFlags(
-          corrected,
+        const remainingPolicyFlags = deterministicResponseFlags(
+          rewritten,
           contextBlock,
         );
         if (
-          hasVisibleAssistantText(corrected) &&
-          correctedPolicyFlags.length === 0
+          hasVisibleAssistantText(rewritten) &&
+          remainingPolicyFlags.length === 0
         ) {
-          finalText = corrected;
-        } else {
-          // Dos reescrituras fallidas: fail-closed, sin exponer el borrador.
-          verdict = "block";
-          flags = [...new Set([...flags, ...correctedPolicyFlags])];
-          console.warn("[chat] targeted lab rewrite blocked", {
-            flags: correctedPolicyFlags,
+          finalText = rewritten;
+        } else if (remainingPolicyFlags.length > 0) {
+          flags = [...new Set([...flags, ...remainingPolicyFlags])];
+          console.info("[chat] targeted lab rewrite", {
+            flags: remainingPolicyFlags,
           });
+          const corrected = prepareAssistantText(
+            await rewriteSocratic(
+              rewritten,
+              body.locale,
+              contextBlock,
+              deadline,
+              remainingPolicyFlags,
+            ),
+          );
+          const correctedPolicyFlags = deterministicResponseFlags(
+            corrected,
+            contextBlock,
+          );
+          if (
+            hasVisibleAssistantText(corrected) &&
+            correctedPolicyFlags.length === 0
+          ) {
+            finalText = corrected;
+          } else {
+            // Dos reescrituras fallidas: fail-closed, sin exponer el borrador.
+            verdict = "block";
+            flags = [...new Set([...flags, ...correctedPolicyFlags])];
+            console.warn("[chat] targeted lab rewrite blocked", {
+              flags: correctedPolicyFlags,
+            });
+            finalText = localize(body.locale, {
+              es: "No pude formular una respuesta suficientemente fiel a los informes recuperados. Inténtalo de nuevo pidiendo que muestre los valores por fecha y en sus unidades originales.",
+              de: "Ich konnte keine ausreichend quellentreue Antwort formulieren. Bitte frage erneut nach den Werten nach Datum und in ihren Originaleinheiten.",
+            });
+          }
+        } else if (
+          canRecoverMissingCitation(
+            decision.flags,
+            decision.reliable,
+            personal.length + evidence.length > 0,
+          )
+        ) {
           finalText = localize(body.locale, {
-            es: "No pude formular una respuesta suficientemente fiel a los informes recuperados. Inténtalo de nuevo pidiendo que muestre los valores por fecha y en sus unidades originales.",
-            de: "Ich konnte keine ausreichend quellentreue Antwort formulieren. Bitte frage erneut nach den Werten nach Datum und in ihren Originaleinheiten.",
+            es: `Según la fuente consultada:\n\n${prepareAssistantText(draft)}`,
+            de: `Laut der herangezogenen Quelle:\n\n${prepareAssistantText(draft)}`,
+          });
+        } else {
+          verdict = "block";
+          finalText = localize(body.locale, {
+            es: "La revisión de seguridad no pudo producir una respuesta completa. No mostramos el borrador sin revisar.",
+            de: "Die Sicherheitsprüfung konnte keine vollständige Antwort erzeugen. Der ungeprüfte Entwurf wird nicht angezeigt.",
           });
         }
-      } else if (
-        canRecoverMissingCitation(
-          decision.flags,
-          decision.reliable,
-          personal.length + evidence.length > 0,
-        )
-      ) {
-        finalText = localize(body.locale, {
-          es: `Según la fuente consultada:\n\n${prepareAssistantText(draft)}`,
-          de: `Laut der herangezogenen Quelle:\n\n${prepareAssistantText(draft)}`,
-        });
-      } else {
-        verdict = "block";
-        finalText = localize(body.locale, {
-          es: "La revisión de seguridad no pudo producir una respuesta completa. No mostramos el borrador sin revisar.",
-          de: "Die Sicherheitsprüfung konnte keine vollständige Antwort erzeugen. Der ungeprüfte Entwurf wird nicht angezeigt.",
-        });
       }
     } else if (decision.verdict === "block") {
       finalText = localize(body.locale, {

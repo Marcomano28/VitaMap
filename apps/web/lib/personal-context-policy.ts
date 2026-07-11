@@ -34,6 +34,13 @@ export function isLatestLabRequest(message: string): boolean {
   return latest;
 }
 
+/** Pregunta sobre el valor personal, no sobre conocimiento general del marcador. */
+export function isPersonalLabValueRequest(message: string): boolean {
+  return /\b(mi|mis|anal[ií]tica|an[aá]lisis|resultado|valor(?:es)?|c[oó]mo est[aá]|c[oó]mo sali[oó]|compar\w*|evoluci[oó]n|tendencia|mein\w*|laborbefund|messwert\w*|vergleich\w*|verlauf)\b/i.test(
+    message,
+  );
+}
+
 export function selectLatestLabItem(items: readonly MemoryItem[]): MemoryItem | null {
   const dated = items.filter((item) => item.type === "lab_result" && item.observedAt);
   if (dated.length === 0) return null;
