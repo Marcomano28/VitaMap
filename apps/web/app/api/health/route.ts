@@ -43,7 +43,7 @@ export async function GET() {
     status: "ok",
     service: "vitamap-web",
     version: "0.1.0",
-    response_policy: "lab-v5",
+    response_policy: "lab-v6",
     phase: "0",
     audit_chain: auditChain,
     ts: new Date().toISOString(),

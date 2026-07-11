@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
-import { buildLabMarkerAnswer } from "../lib/lab-chat-fallback";
+import {
+  buildLabMarkerAnswer,
+  buildLabSeriesAnswer,
+} from "../lib/lab-chat-fallback";
 import type { LabSeries } from "../lib/lab-visualization";
 
 const series: LabSeries = {
@@ -41,5 +44,30 @@ assert.doesNotMatch(answer ?? "", /131 mg\/dL|equivale|rango normal|saludable/i)
 const latest = buildLabMarkerAnswer(series, "es", true);
 assert.doesNotMatch(latest ?? "", /139 mg\/dL/);
 assert.match(latest ?? "", /3,4 mmol\/L/);
+
+const multi = buildLabSeriesAnswer(
+  [
+    series,
+    {
+      ...series,
+      markerId: "proteina-c-reactiva",
+      points: series.points.map((point, index) => ({
+        ...point,
+        markerId: "proteina-c-reactiva",
+        value: index === 0 ? 0.7 : 0.9,
+        unitOriginal: "mg/L",
+        unitUcum: "mg/L",
+        reference: { low: 0, high: 5, unitUcum: "mg/L" },
+      })),
+    },
+  ],
+  "es",
+);
+assert.match(multi ?? "", /colesterol LDL/);
+assert.match(multi ?? "", /proteina c reactiva/);
+
+const latestReport = buildLabSeriesAnswer([series], "es", true);
+assert.doesNotMatch(latestReport ?? "", /139 mg\/dL/);
+assert.match(latestReport ?? "", /3 de julio de 2026/);
 
 console.log("Lab chat fallback: todas las pruebas pasaron.");

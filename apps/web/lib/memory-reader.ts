@@ -11,6 +11,8 @@ import fs from "node:fs/promises";
 import matter from "gray-matter";
 import { userMemoryDir } from "./qmd";
 import { buildLabSeries, type LabSeries } from "./lab-visualization";
+import { normalizeLabMarker } from "./lab-visualization";
+import { LabMarker } from "./extraction";
 
 export interface MemoryItem {
   relPath: string; // "labs/2026-05-15-foo.md" relativo a userMemoryDir
@@ -152,4 +154,34 @@ export async function getLabSeries(userId: string, markerId: string): Promise<La
     items.map((item) => ({ relPath: item.relPath, frontmatter: item.frontmatter })),
     markerId,
   );
+}
+
+/** Construye varias series; sin ids explícitos descubre los markers del frontmatter. */
+export async function getLabSeriesSet(
+  userId: string,
+  markerIds: readonly string[] = [],
+): Promise<LabSeries[]> {
+  const items = await listMemory(userId, { type: "lab_result" });
+  const documents = items.map((item) => ({
+    relPath: item.relPath,
+    frontmatter: item.frontmatter,
+  }));
+  const ids = new Set(markerIds);
+  if (ids.size === 0) {
+    for (const item of items) {
+      const markers = Array.isArray(item.frontmatter.markers)
+        ? item.frontmatter.markers
+        : [];
+      for (const raw of markers) {
+        const parsed = LabMarker.safeParse(raw);
+        if (!parsed.success) continue;
+        const markerId = normalizeLabMarker(parsed.data).marker_id;
+        if (markerId) ids.add(markerId);
+      }
+    }
+  }
+  return [...ids]
+    .sort()
+    .map((markerId) => buildLabSeries(documents, markerId))
+    .filter((series) => series.points.length > 0);
 }

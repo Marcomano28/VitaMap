@@ -93,3 +93,39 @@ export function buildLabMarkerAnswer(
 
   return `${intro}\n\n${lines.join("\n")}${unitNote}`;
 }
+
+export function buildLabSeriesAnswer(
+  seriesSet: readonly LabSeries[],
+  locale: Locale,
+  latestOnly = false,
+): string | null {
+  if (seriesSet.length === 0) return null;
+  let selected = seriesSet;
+  let latestDate: string | null = null;
+  if (latestOnly) {
+    latestDate = seriesSet
+      .flatMap((series) => series.points.map((point) => point.observedAt))
+      .sort()
+      .at(-1) ?? null;
+    selected = latestDate
+      ? seriesSet
+          .map((series) => ({
+            ...series,
+            points: series.points.filter((point) => point.observedAt === latestDate),
+          }))
+          .filter((series) => series.points.length > 0)
+      : [];
+  }
+  const answers = selected
+    .map((series) => buildLabMarkerAnswer(series, locale, false))
+    .filter((answer): answer is string => Boolean(answer));
+  if (answers.length === 0) return null;
+  const heading = latestDate
+    ? locale === "de"
+      ? `Im Laborbefund vom **${date(latestDate, locale)}** stehen:`
+      : `En la analítica del **${date(latestDate, locale)}** aparecen:`
+    : locale === "de"
+      ? "Die strukturierten Laborwerte sind:"
+      : "Los valores estructurados de las analíticas son:";
+  return `${heading}\n\n${answers.join("\n\n")}`;
+}
