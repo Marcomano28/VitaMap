@@ -49,7 +49,28 @@ const ALL_FLAGS: GuardrailFlag[] = [
  * sustituyen al clasificador: garantizan que estas formas concretas siempre
  * pasen por reescritura aunque el segundo LLM sea permisivo.
  */
-export function deterministicResponseFlags(text: string): GuardrailFlag[] {
+interface Measurement {
+  value: string;
+  unit: string;
+}
+
+function measurements(text: string): Measurement[] {
+  return [...text.matchAll(/(-?\d+(?:[.,]\d+)?)\s*(mmol\s*\/\s*l|mg\s*\/\s*dL|ng\s*\/\s*mL|mg\s*\/\s*L|mIU\s*\/\s*L|%)/gi)].map(
+    (match) => ({
+      value: String(Number(match[1].replace(",", "."))),
+      unit: match[2].replace(/\s+/g, "").toLocaleLowerCase("en"),
+    }),
+  );
+}
+
+function measurementKey(item: Measurement): string {
+  return `${item.value}|${item.unit}`;
+}
+
+export function deterministicResponseFlags(
+  text: string,
+  sourceContext = "",
+): GuardrailFlag[] {
   const flags = new Set<GuardrailFlag>();
   const hasBothUnits = /\bmmol\s*\/\s*l\b/i.test(text) && /\bmg\s*\/\s*dL\b/i.test(text);
   const claimsConversion =
@@ -62,6 +83,26 @@ export function deterministicResponseFlags(text: string): GuardrailFlag[] {
     );
   if (hasBothUnits && (claimsConversion || claimsCrossUnitComparison)) {
     flags.add("unit_conversion_without_rule");
+  }
+
+  if (sourceContext) {
+    const sourceMeasurements = measurements(sourceContext);
+    const sourceKeys = new Set(sourceMeasurements.map(measurementKey));
+    const responseMeasurements = measurements(text);
+    const unsupported = responseMeasurements.filter(
+      (item) => !sourceKeys.has(measurementKey(item)),
+    );
+
+    if (unsupported.length > 0) {
+      flags.add("unsupported_factual_claim");
+      const sourceUnits = new Set(sourceMeasurements.map((item) => item.unit));
+      const hidesUnitChange = unsupported.some(
+        (item) =>
+          (item.unit === "mg/dl" && sourceUnits.has("mmol/l")) ||
+          (item.unit === "mmol/l" && sourceUnits.has("mg/dl")),
+      );
+      if (hidesUnitChange) flags.add("unit_conversion_without_rule");
+    }
   }
 
   if (
@@ -109,7 +150,7 @@ export async function checkResponse(
   sourceContext = "",
   signal?: AbortSignal,
 ): Promise<GuardrailDecision> {
-  const deterministicFlags = deterministicResponseFlags(text);
+  const deterministicFlags = deterministicResponseFlags(text, sourceContext);
   const reviewInput = sourceContext
     ? `FUENTES PROPORCIONADAS:\n${sourceContext}\n\nRESPUESTA A REVISAR:\n${text}`
     : text;

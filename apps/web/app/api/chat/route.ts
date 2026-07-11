@@ -260,7 +260,10 @@ export async function POST(req: Request) {
       const rewritten = prepareAssistantText(
         await rewriteSocratic(draft, body.locale, contextBlock, deadline),
       );
-      const remainingPolicyFlags = deterministicResponseFlags(rewritten);
+      const remainingPolicyFlags = deterministicResponseFlags(
+        rewritten,
+        contextBlock,
+      );
       if (hasVisibleAssistantText(rewritten) && remainingPolicyFlags.length === 0) {
         finalText = rewritten;
       } else if (remainingPolicyFlags.length > 0) {
