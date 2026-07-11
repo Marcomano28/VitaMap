@@ -1,9 +1,19 @@
-# Contornos: autonomía del corpus Ayurveda y su relación figura-fondo con la analítica
+# Contornos: Ayurveda como fondo autónomo dentro de un GPS de analíticas
 
-Versión 0.1 · 2026-07-10
-Estado: documento metodológico / investigación de contornos
+Versión 0.2 · 2026-07-11
+Estado: documento metodológico / contrato de contornos
+Cambios v0.2: adopta el encuadre de producto (GPS de analíticas, prioridad
+estable) alineado con ARQUITECTURA §1.1/§3.6, e injerta la tabla figura/fondo por
+consulta, los modos de retrieval y las métricas de salud del corpus; conserva las
+fuentes, el mapeo al skill, el bloqueo honesto del grafo y el ejemplo real.
 
 ## 0. Qué resuelve este documento (y qué no es)
+
+**VitaMap es un GPS de analíticas.** Su **figura por defecto es la biomedicina
+medible**. Las tradiciones pueden aparecer como capas de **contexto, comparación o
+exploración**, pero **no sustituyen ni reinterpretan automáticamente la lectura
+clínica**. Ese encuadre de producto lo fija [ARQUITECTURA §1.1](ARQUITECTURA-CORPUS-TEMATICO-Y-RECUPERACION.md);
+aquí se desarrolla el lado del **fondo** (Ayurveda) sin tocar esa prioridad.
 
 VitaMap ya fija la relación entre biomedicina y tradiciones como una composición
 de **figura y fondo** ([ADR-013](DECISIONS.md#adr-013--figura-fondo-y-procedencia-del-corpus-compartido),
@@ -24,17 +34,20 @@ corpus Ayurveda y *dónde* la línea con la analítica debe ser cortante, difusa
 tangente. Se apoya en dos fuentes externas que trabajan exactamente esa frontera
 (§3).
 
-## 1. La tesis: figura-fondo es una relación, no una jerarquía fija
+## 1. La tesis: prioridad estable, foco adaptable
 
-ADR-013 ya dice que la intención de la pregunta decide qué carril ocupa la
-figura, y que "una pregunta tradicional acerca ese fondo hasta convertirlo en
-figura". De ahí se sigue algo que conviene decir sin rodeos:
+La fórmula es **prioridad estable, foco adaptable** (ARQUITECTURA §1.1). No es una
+jerarquía que se invierte: la **analítica conserva la prioridad estructural** del
+producto; lo que se adapta es el **foco** de una consulta concreta. ADR-013 ya
+dice que la intención de la pregunta decide qué carril ocupa el primer plano. De
+ahí se sigue:
 
-- **La asignación figura/fondo es relativa a la pregunta, no una propiedad del
-  contenido.** Una tarjeta Ayurveda es fondo ante una pregunta clínica y figura
-  ante una pregunta sobre el propio marco. Por eso debe estar escrita para poder
-  ocupar el primer plano: legible desde sus propios términos, no como nota al pie
-  de un análisis de sangre.
+- **El foco figura/fondo es relativo a la pregunta; la prioridad no.** Una tarjeta
+  Ayurveda es fondo ante una pregunta clínica y puede ganar **foco local** ante una
+  pregunta sobre el propio marco —pero no reinterpreta ni sustituye la lectura
+  clínica—. Por eso debe estar escrita para poder ocupar el primer plano cuando se
+  la pide: legible desde sus propios términos, no como nota al pie de un análisis
+  de sangre.
 - **Autonomía no es aislamiento.** El corpus Ayurveda tiene que poder recorrerse
   entero por sus propias aristas internas (shukra ↔ ojas ↔ rasayana, rasa →
   rakta, dhatu → srotas) sin pasar nunca por un facet biomédico. Esa red interna
@@ -47,6 +60,33 @@ figura". De ahí se sigue algo que conviene decir sin rodeos:
 Esto es lo que ya operacionaliza la skill de Hermes con sus tres salidas
 editoriales (`hub`, `relacion-interna`, `puente-editorial`) y la regla
 figura-fondo para facets. Este documento le da el fundamento y las fuentes.
+
+### 1.1 Figura y fondo en el producto (por consulta)
+
+La prominencia depende de la intención; la prioridad no desaparece.
+
+| Consulta | Figura | Fondo |
+|---|---|---|
+| "¿Qué significa mi ferritina?" | Analítica | Tradición opcional o ausente |
+| "¿Cómo se leen ferritina y PCR?" | Analítica relacional | Sin tradición salvo petición |
+| "¿Qué es shukra?" | Ayurveda (foco local) | Analítica separada, solo si es pertinente |
+| "Compárame ambas perspectivas" | Vista paralela | Ningún plano se fusiona |
+
+Una tarjeta declara su plano y procedencia; la interfaz decide su prominencia. No
+se almacena `figura: true` / `fondo: true` como propiedad permanente del contenido.
+
+### 1.2 Modos de retrieval
+
+- **Lectura clínica (por defecto):** prioriza memoria personal pertinente,
+  interpretación, lectura conjunta, seguimiento, seguridad y evidencia moderna.
+  Ayurveda **no** aparece por simple proximidad léxica.
+- **Perspectiva tradicional (explícito):** prioriza conceptos internos, fuentes
+  tradicionales, contexto histórico/filológico y relaciones internas; la evidencia
+  moderna puede aparecer como bloque separado.
+- **Comparación (explícito o inequívoco):** recupera ambos carriles por separado;
+  **no** usa tangencias para transferir evidencia ni crear diagnósticos.
+
+Son los tres modos de [ARQUITECTURA §10 Etapa E1](ARQUITECTURA-CORPUS-TEMATICO-Y-RECUPERACION.md).
 
 ## 2. Dos modos de tangencia (y uno de corte)
 
@@ -253,9 +293,12 @@ señal de que la regla de contorno ya está operando bien en el generador.
   `relacionado_con` debe corresponder a una relación que la fuente sostenga, con
   su `direccion` y, si aplica, `contexto`.
 - **Riesgo de autonomía decorativa.** Si el corpus Ayurveda crece en tarjetas pero
-  no en aristas, tendremos "cuerpo" nominal sin continuidad real. La métrica de
-  salud del corpus autónomo es la densidad de aristas internas válidas, no el
-  número de tarjetas.
+  no en aristas, tendremos "cuerpo" nominal sin continuidad real.
+
+**Métricas de salud del corpus Ayurveda** (no usar la densidad bruta de aristas
+como objetivo): cobertura de conceptos nucleares · % de aristas con procedencia ·
+% revisado · nodos huérfanos · preguntas internas respondibles · precisión de
+recorridos · fugas biomédicas no solicitadas · tangencias sin límites explícitos.
 
 ## 8. Referencias
 
