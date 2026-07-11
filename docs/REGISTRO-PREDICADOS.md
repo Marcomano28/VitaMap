@@ -1,9 +1,11 @@
 # Registro de predicados y contrato de aristas · VitaMap
 
-Versión 0.4 · 2026-07-10
+Versión 0.5 · 2026-07-11
 Estado: borrador de arquitectura para revisión
 Cambios v0.3: §7 ciclo de vida con comportamiento por estado + `schema_version`.
 Cambios v0.4: §8 orden canónico de IDs simétricos + deduplicación por clave (§11).
+Cambios v0.5: §1.0 encuadre de producto (prioridad estable, foco adaptable),
+alineado con ARQUITECTURA §1.1 y CONTORNOS.
 Implementación: ninguna; este documento define el contrato objetivo.
 Implementa R6 de [PRIORIDADES-ESTRUCTURA-RAG-FIGURA-FONDO.md](PRIORIDADES-ESTRUCTURA-RAG-FIGURA-FONDO.md) (§2.7).
 
@@ -24,6 +26,12 @@ editoriales del RAG, las instrucciones de generación ni el banco de evaluación
 conecta con ellos mediante identificadores estables.
 
 ## 1. Principios del modelo
+
+**1.0 Prioridad estable, foco adaptable.** La analítica biomédica es la **figura
+por defecto** del producto (GPS de analíticas, ARQUITECTURA §1.1); las tradiciones
+conservan autonomía y pueden adquirir **foco local** por intención, pero no
+sustituyen ni reinterpretan la lectura clínica. El grafo puede contener todos los
+planos; la prioridad de recuperación no es simétrica.
 
 **1.1 Un concepto no es un marker.** Cada nodo tiene un `concept_id` canónico
 (`ayurveda.shukra-dhatu`) y, aparte, `retrieval_markers`. En la migración inicial
