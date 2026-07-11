@@ -1,244 +1,420 @@
-# Módulo de brief — Tarjeta D · Lectura conjunta (relación entre marcadores)
+# Módulo de brief · Tarjeta D · Lectura conjunta
 
-> Este módulo desarrolla la tarjeta D ya integrada en el brief principal
-> (`PROMPT-INVESTIGACION-RAG.md`). Se conserva como referencia detallada para
-> investigar relaciones entre marcadores.
+Versión 0.2 · 2026-07-11  
+Estado: referencia editorial activa para revisión
+
+> **Módulo subordinado.** Desarrolla la tarjeta D del brief principal
+> `PROMPT-INVESTIGACION-RAG.md`. Si ambos difieren, **prevalece el brief
+> principal** y este módulo se actualiza para recuperar la coherencia. El contrato
+> del grafo (predicados, aristas, procedencia) vive en
+> [`docs/REGISTRO-PREDICADOS.md`](../docs/REGISTRO-PREDICADOS.md); el plan de
+> construcción, en
+> [`docs/PRIORIDADES-ESTRUCTURA-RAG-FIGURA-FONDO.md`](../docs/PRIORIDADES-ESTRUCTURA-RAG-FIGURA-FONDO.md).
 
 ## 1. Función
 
-Las tarjetas A y B responden "¿qué significa mi valor?" y "¿qué factores se
-relacionan con él?". Pero la interpretación de una analítica es, en buena parte,
-**relacional**: muchos marcadores solo cobran sentido leídos junto a otros, como
-patrón, no como cifra suelta. La tarjeta D responde a esa intención.
+Las tarjetas A explican un marcador individual. La tarjeta D explica una
+**unidad interpretativa relacional**:
 
-**Principio rector:**
+- un panel;
+- un eje;
+- una relación explícita entre dos o más marcadores;
+- una pregunta como “¿qué añade este marcador a la lectura del otro?”.
 
-> Un patrón acota el terreno; no nombra la enfermedad. La tarjeta D enseña a leer
-> varios marcadores en conjunto como educación, nunca como diagnóstico del caso
-> de una persona concreta. Solo describe relaciones que una fuente declarada
-> presente de forma expresa; no infiere patrones, cocientes ni umbrales de
-> memoria.
+Principio rector:
 
-## 2. Preguntas que pretende responder
+> Un patrón organiza información y puede orientar la evaluación; no identifica
+> por sí solo una enfermedad ni una causa.
 
-- "¿Por qué me han pedido varios marcadores a la vez?"
-- "¿Cómo se leen juntos estos valores?"
-- "Uno está alto y otro normal, ¿qué orienta esa combinación?"
-- "¿Qué añade un marcador a la interpretación de otro?"
-
-No responde "¿qué enfermedad tengo?" ni "¿qué debo hacer?".
+La tarjeta D enseña relaciones generales respaldadas por una fuente. No
+interpreta automáticamente el caso concreto de una persona.
 
 ---
 
-## 3. Cuándo crearla y cuándo no
+## 2. Preguntas que pretende responder
 
-Crea una tarjeta D **solo** cuando una fuente oficial describa de forma expresa
-la lectura conjunta o el patrón. Esta condición es la salvaguarda central:
-impide convertir una tarjeta relacional en un árbol de decisión diagnóstico
-construido con conocimiento de memoria.
+- ¿Por qué me han pedido varios marcadores?
+- ¿Cómo se leen juntos estos valores?
+- ¿Qué añade un marcador a la interpretación de otro?
+- ¿Qué información aporta el conjunto que no aporta una cifra aislada?
+- ¿Por qué un resultado necesita contexto de otro?
 
-No la crees si:
+No responde:
 
-- la relación procede de tu inferencia y no de una fuente declarada;
-- exige introducir cocientes o umbrales numéricos que la fuente no publica;
-- la combinación solo tiene sentido como criterio diagnóstico (eso pertenece a la
-  consulta médica, no al corpus educativo);
-- duplicaría una tarjeta A sin añadir una relación nueva.
+- ¿Qué enfermedad tengo?
+- ¿Cuál es la causa exacta?
+- ¿Qué tratamiento necesito?
+- ¿Qué debo cambiar sin valoración profesional?
 
-Si no hay fuente que respalde el patrón, entrega:
+---
+
+## 3. Cuándo crearla
+
+Crear una tarjeta D solo cuando una fuente adecuada describa de forma expresa:
+
+- la lectura conjunta;
+- el papel de cada componente;
+- el patrón general;
+- o la forma en que un marcador modifica el contexto de otro.
+
+No crearla cuando:
+
+- la relación sea una inferencia editorial;
+- solo exista pertenencia al mismo panel;
+- requiera inventar ratios o umbrales;
+- dependa de un algoritmo diagnóstico no reproducido;
+- duplique tarjetas A sin añadir una relación;
+- mezcle paneles sin una pregunta interpretativa común.
+
+Si no existe soporte suficiente:
 
 ```text
-No se recomienda una tarjeta de lectura conjunta para este grupo.
-Motivo: ninguna fuente declarada describe el patrón de forma expresa; la
-relación disponible sería una inferencia editorial. Las tarjetas A de cada
-marcador cubren la interpretación individual.
+No se recomienda una tarjeta D para este grupo.
+
+Motivo:
+la fuente disponible no describe una unidad interpretativa explícita. Las
+tarjetas individuales cubren la información respaldada.
 ```
 
 ---
 
-## 4. Frontmatter
+## 4. Una unidad interpretativa por tarjeta
 
-> **Contrato mínimo de evidencia (v0).** Incluye el bloque `evidence` (con
-> `certeza`) y el `relacionado_con[].direccion` de `PROMPT-INVESTIGACION-RAG.md`
-> §3 bis. En una tarjeta D la `certeza` describe lo establecido que está el
-> patrón de lectura conjunta; usa `direccion` solo si afirmas una asociación.
-> `relacionado_con[].id` es un **marcador canónico**.
+Regla anterior:
+
+```text
+una relación por tarjeta
+```
+
+Regla revisada:
+
+> Una tarjeta D aborda un único panel, eje o problema interpretativo coherente.
+
+Puede contener varias relaciones cuando:
+
+- pertenecen a la misma unidad;
+- la fuente las presenta;
+- cada una conserva su procedencia;
+- no se convierte el panel en una red completa artificial.
+
+Ejemplo correcto:
+
+```text
+Panel hepático
+├── ALT y AST: información sobre lesión celular
+├── GGT y fosfatasa alcalina: contexto hepatobiliar
+└── bilirrubina: otra dimensión de la evaluación
+```
+
+No generar automáticamente:
+
+```text
+ALT ↔ AST
+ALT ↔ GGT
+ALT ↔ fosfatasa alcalina
+AST ↔ GGT
+...
+```
+
+Que varios marcadores pertenezcan a un panel no demuestra una relación clínica
+directa entre cada pareja.
+
+---
+
+## 5. Frontmatter mínimo
 
 ```yaml
 ---
 title: "Panel hepático: cómo se leen juntos ALT, AST, GGT y fosfatasa alcalina"
-source_url: "https://medlineplus.gov/lab-tests/liver-function-tests/"
+
+source_url: "https://..."
 source_language: en
 source_jurisdiction:
   - US
 publication_date: "2023-12-05"
+
 source_kind: institutional-education
 source_type: lab-pattern-interpretation-summary
 rights_status: permitted
+
 facets_version: 1
-tarjeta_id: fosfatasa-alcalina-alt-ast-ggt-panel-hepatico-lectura-conjunta-medlineplus
+tarjeta_id: panel-hepatico-lectura-conjunta-fuente
+
 dominio: laboratorio
+
 tipo:
-  - analito
   - panel
+
 marker:
-  - fosfatasa-alcalina
   - alt
   - ast
   - ggt
+  - fosfatasa-alcalina
+
 categoria:
   - perfil-hepatico
+
 muestra:
   - suero
   - plasma
+
 sistema:
   - hepatobiliar
+
 area_de_salud:
   - salud-hepatica
+
 seccion: lectura-conjunta
+
 alias:
   - perfil hepático
   - pruebas hepáticas
-  - transaminasas
+
 limitations:
-  - "Síntesis editorial de VitaMap basada en una fuente institucional; no es una copia de la página original."
-  - "Explica cómo se relacionan los marcadores; no interpreta el patrón de una persona concreta."
-  - "Un patrón orienta hacia un tipo de problema, pero no nombra la enfermedad ni sustituye al criterio del profesional."
-  - "Cada valor se compara con el intervalo de referencia del laboratorio."
+  - "Síntesis educativa basada en la fuente declarada."
+  - "Describe relaciones generales; no interpreta el patrón concreto de una persona."
+  - "El conjunto no identifica por sí solo una enfermedad ni una causa."
+  - "Los resultados se interpretan con los intervalos, métodos y contexto clínico pertinentes."
   - "No ofrece diagnóstico, tratamiento ni dosis."
+evidence:
+  certeza: alta            # alta | moderada | baja | muy-baja (siempre)
 ---
 ```
 
-`source_type` usa `lab-pattern-interpretation-summary` y `seccion` usa
-`lectura-conjunta`. El resto de campos siguen las reglas del brief principal
-(sección 3) y `corpus-preparation/corpus-taxonomy.json`.
+Durante la migración, `marker` continúa identificando los marcadores cubiertos
+por la tarjeta.
+
+**Contrato mínimo de evidencia (v0):** incluye el bloque `evidence` con `certeza`
+(en una tarjeta D, cuán establecido está el patrón de lectura conjunta) y, si
+afirmas una asociación dirigida, `relacionado_con[].direccion`. Ver
+`PROMPT-INVESTIGACION-RAG.md` §3 bis. Está inerte hasta el Tramo 2, pero se
+captura al redactar para no backfillearlo después.
+
+El modelo objetivo separa:
+
+- conceptos;
+- paneles;
+- aristas;
+- procedencia.
 
 ---
 
-## 5. Estructura
+## 6. Aristas opcionales
+
+Una tarjeta D no tiene obligación de crear una arista entre todos sus markers.
+
+Solo declarar aristas cuando la fuente sostenga una relación específica.
+
+**Serialización (migración 1):** hoy la relación se declara como `relacionado_con`
+(`id`=target, `relacion`=predicate, `direccion`, `layer`; `source` implícito = la
+tarjeta) y el grafo se transcribe a `corpus-taxonomy.json`
+([REGISTRO-PREDICADOS.md](../docs/REGISTRO-PREDICADOS.md) §2.4). El bloque `edges:`
+de abajo es el **modelo objetivo** (Opción B, registros de arista explícitos con
+`edge_id`), aún no exigido por el validador:
+
+```yaml
+edges:
+  - edge_id: edge-fal-ggt-001
+
+    source: clinical.fosfatasa-alcalina
+    predicate: se_lee_junto_a
+    target: clinical.ggt
+
+    layer: clinical-internal
+
+    provenance_refs:
+      - source-panel-hepatico-001
+
+    support_kind: institutional-reference
+    status: reviewed
+
+    context: >
+      La GGT puede aportar contexto cuando se interpreta una elevación
+      de fosfatasa alcalina.
+```
+
+Reglas:
+
+- no crear cliques de panel;
+- no confundir `es_componente_de` con `se_lee_junto_a`;
+- no usar `modifica_interpretacion_de` si la relación solo es co-lectura;
+- declarar dirección cuando la relación sea asimétrica;
+- conservar procedencia por arista.
+
+---
+
+## 7. Estructura del cuerpo
 
 ```markdown
 # [Panel o relación]: cómo se leen juntos [marcadores]
 
-## Qué marcadores forman el grupo
-Nombra todos los marcadores que la tarjeta relaciona. La tarjeta debe entenderse
-sin leer las tarjetas A individuales.
+## Qué forma esta unidad interpretativa
 
-## Por qué se leen juntos
-Explica, de forma atribuida, por qué la información está en el patrón y no en una
-cifra aislada.
+Nombra los componentes y explica por qué se agrupan.
 
-## Qué patrones generales ayudan a orientar
-Describe únicamente las combinaciones que la fuente presenta de forma expresa.
-Formúlalas como orientación ("apunta más a…", "hace más probable…"), nunca como
-conclusión ("indica enfermedad X").
+## Qué aporta cada marcador
 
-## Qué no permite concluir el conjunto
-Explica el límite del patrón: acota, pero no diagnostica; depende de síntomas,
-antecedentes, riesgo y medicación; no añade umbrales que la fuente no publique.
+Describe la información diferencial de cada componente.
+
+## Cómo se complementan
+
+Explica solo relaciones respaldadas.
+
+## Qué patrones generales pueden aportar contexto
+
+Usa lenguaje prudente:
+
+- “puede aportar contexto”;
+- “puede orientar qué aspecto valorar”;
+- “es compatible con varias situaciones”;
+- “ayuda a distinguir posibilidades”.
+
+Evita afirmaciones diagnósticas.
+
+## Qué no permite concluir
+
+Explica:
+
+- que el patrón no identifica una causa;
+- que varias situaciones pueden producir un dibujo parecido;
+- que síntomas, antecedentes, medicación, método y evolución importan;
+- que puede ser necesario repetir o ampliar pruebas.
 
 ## Fuente principal
-Cita completa y URL oficial.
+
+Referencia completa y URL.
 
 ## Fuentes complementarias
-Las páginas de cada marcador cuando aporten una relación concreta, con su URL.
+
+Solo las que sostienen una relación concreta.
 ```
 
 ---
 
-## 6. Reglas propias
+## 8. Lenguaje permitido y lenguaje restringido
 
-Se suman a las reglas inviolables del brief principal (sección 6):
+### Preferido
 
-1. **Relacional, no personalizada.** Nunca interpretes el patrón de un caso
-   concreto. Describe cómo los marcadores se informan entre sí en general.
-2. **Solo patrones respaldados.** Cada relación debe estar descrita de forma
-   expresa por una fuente declarada. No infieras combinaciones.
-3. **Sin umbrales ni cocientes inventados.** No introduzcas ratios ni puntos de
-   corte numéricos salvo que la fuente los publique y estén atribuidos.
-4. **Orientar, no nombrar.** El patrón acota el origen probable; no concluye una
-   enfermedad.
-5. **Una relación por tarjeta.** No mezcles paneles distintos (p. ej., hepático y
-   lipídico) en un mismo documento.
-6. **Autosuficiencia al nivel del grupo.** Nombra todos los marcadores
-   implicados; evita referencias vagas como "estos valores".
-7. **Longitud orientativa: 300–550 palabras.** Algo mayor que una tarjeta A,
-   porque sintetiza varios marcadores.
+> Estos marcadores aportan información complementaria.
 
----
+> La combinación puede ayudar a orientar qué aspecto conviene valorar.
 
-## 7. Cómo representar el patrón sin convertirlo en diagnóstico
+> El patrón es compatible con varias situaciones y no identifica por sí solo una
+> causa.
 
-Aplica la lógica de frontera del brief principal (sección 7). Distingue con
-claridad:
+> La PCR puede cambiar cómo se interpreta la ferritina cuando existe un contexto
+> inflamatorio.
 
-- lo **bien establecido**: que ciertos marcadores se leen en conjunto y qué
-  aporta cada uno (p. ej., que solo una de dos enzimas sube también en hueso);
-- lo **dependiente del contexto**: que el mismo patrón puede tener causas
-  distintas según síntomas, antecedentes, medicación o el momento (un valor
-  alterado tras una enfermedad reciente puede ser pasajero y repetirse el
-  análisis);
-- lo que **queda fuera**: la causa concreta, que necesita más pruebas y criterio
-  profesional.
+### Usar solo si la fuente lo sostiene de forma explícita
 
-Una formulación útil:
+> Hace más probable…
 
-> Sabemos que estos marcadores se leen juntos y que su combinación orienta hacia
-> un tipo de problema. Lo que el patrón no dice por sí solo es la causa exacta,
-> porque varias situaciones pueden producir el mismo dibujo.
+> Apunta más a…
+
+> Sugiere origen…
+
+Estas expresiones exigen contexto, población y alternativas relevantes.
+
+### Prohibido
+
+> Confirma…
+
+> Demuestra que tienes…
+
+> Significa que la causa es…
+
+> Diagnostica…
 
 ---
 
-## 8. Recuperación (nota para VitaMap)
+## 9. Reglas editoriales
 
-Una tarjeta D rinde sobre todo cuando la consulta menciona **dos o más
-marcadores del mismo grupo** o pregunta por qué se han pedido varios a la vez. Si
-la recuperación prioriza siempre el marcador único, esta tarjeta puede no salir
-nunca. Conviene que el sistema la priorice ante consultas multi-marcador o de
-tipo "¿por qué me pidieron tantos?".
-
----
-
-## 9. `source_kind` y `source_type`
-
-| Campo | Valor |
-|---|---|
-| `source_kind` | `institutional-education` (como A y B) |
-| `source_type` | `lab-pattern-interpretation-summary` |
-| `seccion` | `lectura-conjunta` |
-| `marker` | lista con todos los marcadores que la tarjeta relaciona |
+1. Relacional, no personalizada.
+2. Solo relaciones expresas en una fuente.
+3. Sin ratios ni puntos de corte inventados.
+4. Una unidad interpretativa por tarjeta.
+5. No convertir un panel en una clique.
+6. Diferenciar pertenencia de cointerpretación.
+7. Autosuficiencia al nivel del grupo.
+8. Procedencia por relación cuando existan varias.
+9. Longitud orientativa: 350–650 palabras.
+10. Explicar límites con el mismo cuidado que el patrón.
 
 ---
 
-## 10. Nombre del archivo
+## 10. Recuperación
+
+Una tarjeta D gana prioridad cuando:
+
+- la consulta menciona dos o más marcadores relacionados;
+- pregunta por un panel;
+- pregunta “¿cómo se leen juntos?”;
+- pregunta qué añade un marcador al contexto de otro.
+
+El router puede priorizar:
 
 ```text
-[panel-o-grupo]-lectura-conjunta-[fuente].md
+pattern-interpretation
 ```
 
-Minúsculas, sin tildes y con guiones. Ejemplo:
-`panel-hepatico-lectura-conjunta-medlineplus.md`.
+La expansión por grafo solo se activa con:
+
+- arista revisada;
+- procedencia;
+- predicado permitido;
+- máximo un salto inicialmente.
+
+El sistema debe poder explicar:
+
+> Esta tarjeta aparece porque los marcadores mencionados forman una unidad de
+> lectura respaldada por la fuente.
 
 ---
 
-## 11. Checklist de calidad (añadidos a la sección 11 del brief principal)
+## 11. Relación con el GPS
 
-- [ ] La relación entre marcadores está descrita de forma expresa por una fuente
-      declarada, no inferida.
-- [ ] La tarjeta orienta ("apunta a…") y no diagnostica ("indica enfermedad X").
-- [ ] No introduce cocientes ni umbrales numéricos que la fuente no publique.
-- [ ] Nombra todos los marcadores que relaciona y se entiende sin las tarjetas A.
-- [ ] `marker` incluye todos los marcadores del panel o relación.
-- [ ] `relacionado_con` declara relaciones explícitas cuando la fuente las sostiene.
-- [ ] Aborda una sola relación o panel; no mezcla grupos distintos.
-- [ ] Explica qué acota el patrón y qué sigue necesitando contexto o más pruebas.
+En el mapa del usuario:
+
+- el centro es su pregunta, panel o conjunto de resultados;
+- se muestran inicialmente 3–5 conexiones;
+- cada línea usa lenguaje cotidiano;
+- el usuario puede abrir “¿por qué aparece?”;
+- pertenecer a un panel se muestra distinto de modificar una interpretación;
+- la evidencia y los límites están disponibles sin saturar la primera vista.
+
+Ejemplo:
+
+```text
+                    GGT
+                     │
+       “ayuda a contextualizar”
+                     │
+Fosfatasa alcalina ──┼── Panel hepático
+```
+
+---
+
+## 12. Checklist
+
+- [ ] La tarjeta responde una pregunta relacional real.
+- [ ] La fuente describe la unidad o relación de forma expresa.
+- [ ] No interpreta un caso individual.
+- [ ] No crea relaciones entre todos los miembros por pertenecer al mismo panel.
+- [ ] Distingue `es_componente_de` de `se_lee_junto_a`.
+- [ ] Las relaciones asimétricas tienen dirección correcta.
+- [ ] Cada arista tiene procedencia.
+- [ ] No introduce ratios ni umbrales no publicados.
+- [ ] Usa lenguaje orientativo prudente.
+- [ ] Explica qué no permite concluir.
+- [ ] Nombra todos los componentes.
+- [ ] Se entiende sin leer las tarjetas A.
 - [ ] `source_type` es `lab-pattern-interpretation-summary`.
+- [ ] `seccion` es `lectura-conjunta`.
 
 ---
 
-## Estado de integración
+## 13. Regla final
 
-La tabla de tarjetas, `source_type`, checklist y patrón de nombre de la tarjeta D
-ya forman parte de `PROMPT-INVESTIGACION-RAG.md`. Si ambos documentos difieren,
-prevalece el brief principal y este módulo debe actualizarse para recuperar la
-coherencia.
+> La tarjeta D no es un diagnóstico comprimido ni una red automática de
+> biomarcadores. Es una explicación documentada de cómo una unidad de datos
+> adquiere sentido cuando sus componentes se leen en contexto.
