@@ -158,5 +158,8 @@ export function responseTokenBudget(message: string): number {
   // etiquetas <source> consumen presupuesto, con lo que 180 cortaba
   // respuestas a media frase. La brevedad la gobierna el system prompt
   // (regla 11: 3-5 frases); este límite es solo la red de seguridad.
-  return EXPANSION_REQUEST.test(message) ? 560 : 320;
+  // Las comparaciones longitudinales con varios marcadores superaban 320 y
+  // podían terminar a mitad de palabra. El prompt sigue gobernando la
+  // brevedad; este techo solo evita respuestas materialmente truncadas.
+  return EXPANSION_REQUEST.test(message) ? 720 : 480;
 }

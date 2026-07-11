@@ -53,22 +53,34 @@ export function deterministicResponseFlags(text: string): GuardrailFlag[] {
   const flags = new Set<GuardrailFlag>();
   const hasBothUnits = /\bmmol\s*\/\s*l\b/i.test(text) && /\bmg\s*\/\s*dL\b/i.test(text);
   const claimsConversion =
-    /\b(equivale(?:nte)?|equivalent|entspricht|umgerechnet|convertid[oa]|aproximadamente|aprox\.?|unos?)\b/i.test(
+    /\b(equival\w*|entspricht|umgerechnet|convert\w*|aproximadamente|aprox\.?|unos?)\b/i.test(
       text,
     );
-  if (hasBothUnits && claimsConversion) flags.add("unit_conversion_without_rule");
+  const claimsCrossUnitComparison =
+    /(?:muy parecid\w*|casi id[eé]ntic\w*|similares?|pequeña diferencia de unidades|baj[oó]|subi[oó]|aument\w*|descend\w*|reduj\w*|m[aá]s alt\w*|m[aá]s baj\w*)/i.test(
+      text,
+    );
+  if (hasBothUnits && (claimsConversion || claimsCrossUnitComparison)) {
+    flags.add("unit_conversion_without_rule");
+  }
 
   if (
-    /\b(rango habitual|rango saludable|objetivo habitual|el objetivo (?:suele|es|sería)|pers[oö]nlicher zielwert|[uü]blicher zielbereich|gesunder bereich)\b/i.test(
+    /\b(rango habitual|rango saludable|rango normal|rango deseable|valores? normales?|niveles? normales?|umbral saludable|objetivo habitual|el objetivo (?:suele|es|sería)|pers[oö]nlicher zielwert|[uü]blicher zielbereich|gesunder bereich|normbereich)\b/i.test(
       text,
     )
   ) {
     flags.add("personal_target_without_source");
   }
 
+  // "No permite descartar inflamación" es precisamente la cautela válida;
+  // se retira antes de buscar conclusiones que sí la descartan.
+  const inferenceText = text.replace(
+    /no (?:permite|sirve para|basta para)\s+descartar\w*.{0,80}(?:inflamaci\w*|enfermedad)/gis,
+    "",
+  );
   if (
-    /\b(no (?:hab[ií]a|hay|parece haber|se observa)\b.{0,60}\binflamaci[oó]n|descarta\w*\b.{0,60}\b(?:inflamaci[oó]n|enfermedad)|keine\b.{0,60}\bentz[uü]ndung)\b/is.test(
-      text,
+    /\b(no (?:hab[ií]a|hay|parece haber|se observa|existe)\b.{0,100}\b(?:inflamaci\w*|proceso inflamatorio)|no (?:est[aá]|estaba|est[eé]) siendo alterad\w*.{0,100}\b(?:inflamaci\w*|proceso inflamatorio)|ausencia de\b.{0,80}\b(?:inflamaci\w*|enfermedad)|sin (?:signos? de )?(?:inflamaci\w*|proceso inflamatorio)|descarta\w*\b.{0,80}\b(?:inflamaci\w*|enfermedad)|sugiere que no\b.{0,100}\b(?:inflamaci\w*|proceso inflamatorio)|keine\b.{0,100}\bentz[uü]ndung)\b/is.test(
+      inferenceText,
     )
   ) {
     flags.add("unsupported_lab_inference");

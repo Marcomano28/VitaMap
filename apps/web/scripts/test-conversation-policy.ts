@@ -95,7 +95,7 @@ assert.match(
   /TSH/,
 );
 
-assert.equal(responseTokenBudget("¿Qué es el chaga?"), 320);
-assert.equal(responseTokenBudget("Explícamelo con todos los detalles"), 560);
+assert.equal(responseTokenBudget("¿Qué es el chaga?"), 480);
+assert.equal(responseTokenBudget("Explícamelo con todos los detalles"), 720);
 
 console.log("Política conversacional: todas las pruebas pasaron.");
