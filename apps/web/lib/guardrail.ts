@@ -26,7 +26,10 @@ export type GuardrailFlag =
   | "medication_name_without_evidence"
   | "absolute_certainty"
   | "missing_evidence_tag"
-  | "unsupported_factual_claim";
+  | "unsupported_factual_claim"
+  | "unit_conversion_without_rule"
+  | "personal_target_without_source"
+  | "unsupported_lab_inference";
 
 const ALL_FLAGS: GuardrailFlag[] = [
   "diagnostic_statement",
@@ -36,7 +39,43 @@ const ALL_FLAGS: GuardrailFlag[] = [
   "absolute_certainty",
   "missing_evidence_tag",
   "unsupported_factual_claim",
+  "unit_conversion_without_rule",
+  "personal_target_without_source",
+  "unsupported_lab_inference",
 ];
+
+/**
+ * Comprobaciones deterministas para errores observados en el piloto. No
+ * sustituyen al clasificador: garantizan que estas formas concretas siempre
+ * pasen por reescritura aunque el segundo LLM sea permisivo.
+ */
+export function deterministicResponseFlags(text: string): GuardrailFlag[] {
+  const flags = new Set<GuardrailFlag>();
+  const hasBothUnits = /\bmmol\s*\/\s*l\b/i.test(text) && /\bmg\s*\/\s*dL\b/i.test(text);
+  const claimsConversion =
+    /\b(equivale(?:nte)?|equivalent|entspricht|umgerechnet|convertid[oa]|aproximadamente|aprox\.?|unos?)\b/i.test(
+      text,
+    );
+  if (hasBothUnits && claimsConversion) flags.add("unit_conversion_without_rule");
+
+  if (
+    /\b(rango habitual|rango saludable|objetivo habitual|el objetivo (?:suele|es|sería)|pers[oö]nlicher zielwert|[uü]blicher zielbereich|gesunder bereich)\b/i.test(
+      text,
+    )
+  ) {
+    flags.add("personal_target_without_source");
+  }
+
+  if (
+    /\b(no (?:hab[ií]a|hay|parece haber|se observa)\b.{0,60}\binflamaci[oó]n|descarta\w*\b.{0,60}\b(?:inflamaci[oó]n|enfermedad)|keine\b.{0,60}\bentz[uü]ndung)\b/is.test(
+      text,
+    )
+  ) {
+    flags.add("unsupported_lab_inference");
+  }
+
+  return [...flags];
+}
 
 function extractJson(raw: string): { verdict: string; flags: string[] } | null {
   const m = raw.match(/\{[\s\S]*\}/);
@@ -58,6 +97,7 @@ export async function checkResponse(
   sourceContext = "",
   signal?: AbortSignal,
 ): Promise<GuardrailDecision> {
+  const deterministicFlags = deterministicResponseFlags(text);
   const reviewInput = sourceContext
     ? `FUENTES PROPORCIONADAS:\n${sourceContext}\n\nRESPUESTA A REVISAR:\n${text}`
     : text;
@@ -99,16 +139,24 @@ export async function checkResponse(
       ? parsed.verdict
       : "rewrite";
 
-  const flags = parsed.flags.filter((f): f is GuardrailFlag =>
-    (ALL_FLAGS as string[]).includes(f),
-  );
+  const flags = [
+    ...new Set([
+      ...parsed.flags.filter((f): f is GuardrailFlag =>
+        (ALL_FLAGS as string[]).includes(f),
+      ),
+      ...deterministicFlags,
+    ]),
+  ];
 
-  return { verdict, flags, reliable: true };
+  const effectiveVerdict: GuardrailVerdict =
+    verdict === "safe" && flags.length > 0 ? "rewrite" : verdict;
+
+  return { verdict: effectiveVerdict, flags, reliable: true };
 }
 
 const REWRITE_PROMPT: Record<Locale, string> = {
-  es: `Reescribe el texto en español usando únicamente las fuentes proporcionadas. Elimina o corrige cualquier afirmación factual que las fuentes no respalden o contradigan, especialmente sobre identidad, taxonomía, hábitat, preparación, eficacia, seguridad, o la relación entre un nutriente y un síntoma o parte del cuerpo. No emitas diagnósticos, no recomiendes tratamientos ni pautas dietéticas personalizadas. Convierte afirmaciones clínicas directas en observaciones acompañadas de su nivel de evidencia citado. Mantén las etiquetas <source>...</source> que ya aparezcan. Si las fuentes no permiten confirmar algo, dilo brevemente. Responde solo con el texto reescrito.`,
-  de: `Formuliere den Text auf Deutsch neu und verwende ausschließlich die bereitgestellten Quellen. Entferne oder korrigiere Tatsachenbehauptungen, die von den Quellen nicht gestützt werden oder ihnen widersprechen, besonders zu Identität, Taxonomie, Lebensraum, Zubereitung, Wirksamkeit, Sicherheit oder dem Zusammenhang zwischen einem Nährstoff und einem Symptom oder Körperteil. Stelle keine Diagnosen, empfehle keine Behandlungen und keine personalisierten Ernährungspläne. Behalte vorhandene <source>...</source>-Tags bei. Wenn die Quellen etwas nicht bestätigen, sage das kurz. Antworte ausschließlich mit dem neu formulierten Text.`,
+  es: `Reescribe el texto en español usando únicamente las fuentes proporcionadas. Elimina o corrige cualquier afirmación factual que las fuentes no respalden o contradigan, especialmente sobre identidad, taxonomía, hábitat, preparación, eficacia, seguridad, o la relación entre un nutriente y un síntoma o parte del cuerpo. No emitas diagnósticos, no recomiendes tratamientos ni pautas dietéticas personalizadas. Conserva las unidades originales sin convertirlas. Llama a los límites del laboratorio "intervalo de referencia indicado en el informe", nunca objetivo personal ni rango habitual/saludable. Un valor dentro del intervalo no demuestra ausencia de inflamación o enfermedad. Convierte afirmaciones clínicas directas en observaciones acompañadas de su fuente. Mantén solo las etiquetas <source>...</source> necesarias alrededor de las afirmaciones citadas y no copies bloques de fuente ni metadatos. Si las fuentes no permiten confirmar algo, dilo brevemente. Responde solo con el texto reescrito.`,
+  de: `Formuliere den Text auf Deutsch neu und verwende ausschließlich die bereitgestellten Quellen. Entferne oder korrigiere Tatsachenbehauptungen, die von den Quellen nicht gestützt werden oder ihnen widersprechen, besonders zu Identität, Taxonomie, Lebensraum, Zubereitung, Wirksamkeit, Sicherheit oder dem Zusammenhang zwischen einem Nährstoff und einem Symptom oder Körperteil. Stelle keine Diagnosen, empfehle keine Behandlungen und keine personalisierten Ernährungspläne. Behalte die Originaleinheiten bei und rechne sie nicht um. Nenne Laborgrenzen den im Befund angegebenen Referenzbereich, nicht persönliches Ziel oder gesunden/üblichen Bereich. Ein Wert im Referenzbereich beweist nicht, dass keine Entzündung oder Erkrankung vorliegt. Behalte nur notwendige <source>...</source>-Tags um belegte Aussagen und kopiere keine Quellenblöcke oder Metadaten. Wenn die Quellen etwas nicht bestätigen, sage das kurz. Antworte ausschließlich mit dem neu formulierten Text.`,
 };
 
 export async function rewriteSocratic(

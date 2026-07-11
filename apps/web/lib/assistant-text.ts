@@ -1,4 +1,7 @@
-const SOURCE_TAG = /<\/?source\b[^>]*>/gi;
+// El cierre alternativo `$` es importante: una respuesta cortada por el
+// límite de tokens puede terminar a mitad de `<source ...` y esa parte del
+// protocolo interno tampoco debe llegar al navegador.
+const SOURCE_TAG = /<\/?source\b[^>]*(?:>|$)/gi;
 
 /**
  * Las etiquetas <source> forman parte del protocolo interno con el LLM.

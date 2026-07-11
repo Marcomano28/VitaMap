@@ -25,6 +25,10 @@ import { responseTokenBudget } from "@/lib/conversation-policy";
 import { resolveRetrievalQuery } from "@/lib/query-rewrite";
 import { detectCrisis, crisisResourcesText } from "@/lib/crisis";
 import { checkRateLimit } from "@/lib/rate-limit";
+import {
+  isLatestLabRequest,
+  latestLabContext,
+} from "@/lib/personal-context-policy";
 
 export const runtime = "nodejs"; // @tobilu/qmd y better-sqlite3 son nativos
 
@@ -147,6 +151,14 @@ export async function POST(req: Request) {
     });
     personal = result.personal;
     evidence = result.evidence;
+
+    // QMD ordena por relevancia. Para una petición singular de "última
+    // analítica", la fecha es el contrato: sustituimos el ranking semántico
+    // por el único informe lab_result con observed_at más reciente.
+    if (isLatestLabRequest(body.message)) {
+      const latest = await latestLabContext(userId);
+      if (latest.length > 0) personal = latest;
+    }
     console.info("[chat] retrieval complete", {
       durationMs: Date.now() - retrievalStartedAt,
       queryMethod,

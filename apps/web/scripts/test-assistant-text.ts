@@ -20,6 +20,16 @@ assert.equal(
   ),
   "Según tu analítica:\n\nValor elevado.",
 );
+assert.equal(
+  prepareAssistantText(
+    'La ferritina figura en 31 ng/mL. <source type="personal" observed_at="202',
+  ),
+  "La ferritina figura en 31 ng/mL.",
+);
+assert.equal(
+  prepareAssistantText("Respuesta visible. </source"),
+  "Respuesta visible.",
+);
 assert.equal(hasVisibleAssistantText(prepareAssistantText("<source></source>")), false);
 assert.equal(hasVisibleAssistantText("**Dato:** 112"), true);
 assert.equal(

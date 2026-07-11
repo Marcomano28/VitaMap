@@ -15,6 +15,8 @@
     "test:billing": "tsx scripts/test-billing.ts",
     "test:ocr": "node --import tsx scripts/test-ocr.ts",
     "test:assistant-text": "node --import tsx scripts/test-assistant-text.ts",
+    "test:personal-context-policy": "node --import tsx scripts/test-personal-context-policy.ts",
+    "test:lab-response-policy": "node --import tsx scripts/test-lab-response-policy.ts",
     "test:conversation-policy": "node --import tsx scripts/test-conversation-policy.ts",
     "test:marker-scope": "node --import tsx scripts/test-marker-scope.ts",
     "test:marker-taxonomy": "npm run taxonomy:check && node --import tsx scripts/test-marker-taxonomy.ts",
