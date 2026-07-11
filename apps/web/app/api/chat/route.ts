@@ -267,14 +267,40 @@ export async function POST(req: Request) {
       if (hasVisibleAssistantText(rewritten) && remainingPolicyFlags.length === 0) {
         finalText = rewritten;
       } else if (remainingPolicyFlags.length > 0) {
-        // Una reescritura no se presume segura: si repite conversión,
-        // normalidad u otra inferencia prohibida, no llega al usuario.
-        verdict = "block";
         flags = [...new Set([...flags, ...remainingPolicyFlags])];
-        finalText = localize(body.locale, {
-          es: "No pude comparar esos resultados con suficiente fidelidad sin introducir una interpretación no respaldada. Puedo mostrarlos por fecha y en sus unidades originales.",
-          de: "Ich konnte diese Ergebnisse nicht zuverlässig vergleichen, ohne eine unbelegte Interpretation einzuführen. Ich kann sie nach Datum und in ihren Originaleinheiten anzeigen.",
+        console.info("[chat] targeted lab rewrite", {
+          flags: remainingPolicyFlags,
         });
+        const corrected = prepareAssistantText(
+          await rewriteSocratic(
+            rewritten,
+            body.locale,
+            contextBlock,
+            deadline,
+            remainingPolicyFlags,
+          ),
+        );
+        const correctedPolicyFlags = deterministicResponseFlags(
+          corrected,
+          contextBlock,
+        );
+        if (
+          hasVisibleAssistantText(corrected) &&
+          correctedPolicyFlags.length === 0
+        ) {
+          finalText = corrected;
+        } else {
+          // Dos reescrituras fallidas: fail-closed, sin exponer el borrador.
+          verdict = "block";
+          flags = [...new Set([...flags, ...correctedPolicyFlags])];
+          console.warn("[chat] targeted lab rewrite blocked", {
+            flags: correctedPolicyFlags,
+          });
+          finalText = localize(body.locale, {
+            es: "No pude formular una respuesta suficientemente fiel a los informes recuperados. Inténtalo de nuevo pidiendo que muestre los valores por fecha y en sus unidades originales.",
+            de: "Ich konnte keine ausreichend quellentreue Antwort formulieren. Bitte frage erneut nach den Werten nach Datum und in ihren Originaleinheiten.",
+          });
+        }
       } else if (
         canRecoverMissingCitation(
           decision.flags,

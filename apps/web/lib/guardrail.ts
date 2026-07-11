@@ -217,16 +217,24 @@ export async function rewriteSocratic(
   locale: Locale,
   sourceContext = "",
   signal?: AbortSignal,
+  policyFlags: readonly GuardrailFlag[] = [],
 ): Promise<string> {
+  const targetedCorrection = policyFlags.length
+    ? `\n\nLA REESCRITURA ANTERIOR TODAVÍA INCUMPLE: ${policyFlags.join(", ")}. ` +
+      `Corrígelo de forma explícita. Usa solamente pares cifra+unidad que aparezcan literalmente en las fuentes. ` +
+      `Si dos resultados tienen unidades distintas, muestra cada valor original por fecha y di que aquí no se comparan directamente; no conviertas, no calcules y no afirmes si subió o bajó. ` +
+      `Sustituye normal/saludable/deseable por "dentro/fuera del intervalo de referencia indicado en ese informe". ` +
+      `Elimina cualquier conclusión sobre ausencia de inflamación o enfermedad.`
+    : "";
   const rewriteInput = sourceContext
-    ? `FUENTES PROPORCIONADAS:\n${sourceContext}\n\nTEXTO A REESCRIBIR:\n${text}`
-    : text;
+    ? `FUENTES PROPORCIONADAS:\n${sourceContext}\n\nTEXTO A REESCRIBIR:\n${text}${targetedCorrection}`
+    : `${text}${targetedCorrection}`;
   return chat({
     messages: [
       { role: "system", content: REWRITE_PROMPT[locale] },
       { role: "user", content: rewriteInput },
     ],
-    temperature: 0.3,
+    temperature: policyFlags.length > 0 ? 0 : 0.3,
     maxTokens: 512,
     signal,
   });
