@@ -282,12 +282,14 @@ export const MARKER_ALIASES = {
     "colesterol hdl",
     "colesterol-hdl",
     "hdl",
+    "hdl cholesterin",
     "hdl cholesterol"
   ],
   "colesterol-ldl": [
     "colesterol ldl",
     "colesterol-ldl",
     "ldl",
+    "ldl cholesterin",
     "ldl cholesterol"
   ],
   "colesterol-no-hdl": [
@@ -411,6 +413,8 @@ export const MARKER_ALIASES = {
     "glucosa en ayunas",
     "glucosa-en-ayunas",
     "glucose",
+    "glukose nüchtern",
+    "glukose nuechtern",
     "nuchternglukose"
   ],
   "goldenseal": [

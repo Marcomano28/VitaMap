@@ -10,6 +10,7 @@ import path from "node:path";
 import fs from "node:fs/promises";
 import matter from "gray-matter";
 import { userMemoryDir } from "./qmd";
+import { buildLabSeries, type LabSeries } from "./lab-visualization";
 
 export interface MemoryItem {
   relPath: string; // "labs/2026-05-15-foo.md" relativo a userMemoryDir
@@ -138,4 +139,17 @@ export async function listAllTags(userId: string): Promise<string[]> {
     for (const t of it.tags ?? []) set.add(t);
   }
   return [...set].sort();
+}
+
+/**
+ * Construye una serie de laboratorio desde la memoria autorizada del usuario.
+ * La función no convierte unidades: solo declara comparables los puntos que ya
+ * comparten una unidad canónica reconocida.
+ */
+export async function getLabSeries(userId: string, markerId: string): Promise<LabSeries> {
+  const items = await listMemory(userId, { type: "lab_result" });
+  return buildLabSeries(
+    items.map((item) => ({ relPath: item.relPath, frontmatter: item.frontmatter })),
+    markerId,
+  );
 }

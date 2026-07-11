@@ -20,6 +20,20 @@ export const LabMarker = z.object({
   unit: z.string().nullable().default(null),
   reference_range: z.string().nullable().default(null),
   flag: z.enum(["low", "normal", "high", "unknown"]).default("unknown"),
+  /** Identidad y unidad canónicas añadidas de forma determinista tras revisar el OCR. */
+  marker_id: z.string().nullable().default(null),
+  unit_ucum: z.string().nullable().default(null),
+  reference_range_structured: z
+    .object({
+      low: z.number().nullable().default(null),
+      high: z.number().nullable().default(null),
+      unit_ucum: z.string().nullable().default(null),
+    })
+    .nullable()
+    .default(null),
+  normalization_status: z
+    .enum(["raw", "candidate", "reviewed", "unresolved"])
+    .default("raw"),
 });
 export type LabMarker = z.infer<typeof LabMarker>;
 
@@ -48,7 +62,11 @@ const EXTRACTION_PROMPT = `Eres un extractor de datos clínicos. Recibirás el t
       "value": number | null,
       "unit": string | null,
       "reference_range": string | null,
-      "flag": "low" | "normal" | "high" | "unknown"
+      "flag": "low" | "normal" | "high" | "unknown",
+      "marker_id": null,
+      "unit_ucum": null,
+      "reference_range_structured": null,
+      "normalization_status": "raw"
     }
   ],
   "notes": string | null
@@ -58,6 +76,7 @@ Reglas:
 - NO inventes valores. Si un dato no aparece, usa null.
 - "observed_at" es la fecha de extracción de la muestra o de emisión del informe en formato ISO YYYY-MM-DD. Si solo hay año y mes, usa el día 01.
 - Si hay rango de referencia, marca "flag" comparando el valor; si no hay rango, deja "unknown".
+- No normalices nombres, unidades ni rangos: los campos canónicos deben quedar en null y normalization_status en "raw".
 - IMPORTANTE: NO incluyas nombre del paciente, DNI, número de seguridad social, dirección ni teléfono. Si aparecen, ignóralos.
 - Responde SOLO el JSON, sin explicación, sin markdown, sin código entre backticks.`;
 
