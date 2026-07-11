@@ -29,8 +29,8 @@ import { responseTokenBudget } from "@/lib/conversation-policy";
 import { resolveRetrievalQuery } from "@/lib/query-rewrite";
 import { detectCrisis, crisisResourcesText } from "@/lib/crisis";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { getLabSeries } from "@/lib/memory-reader";
-import { buildLabMarkerAnswer } from "@/lib/lab-chat-fallback";
+import { getLabSeriesSet } from "@/lib/memory-reader";
+import { buildLabSeriesAnswer } from "@/lib/lab-chat-fallback";
 import {
   isLatestLabRequest,
   isPersonalLabValueRequest,
@@ -134,6 +134,7 @@ export async function POST(req: Request) {
   let personal: RetrievedChunk[] = [];
   let evidence: RetrievedChunk[] = [];
   let scopedMarkers: string[] = [];
+  let structuredLabSources: Array<{ path: string; observedAt: string }> = [];
   const retrievalStartedAt = Date.now();
   console.info("[chat] retrieval started");
   try {
@@ -262,18 +263,28 @@ export async function POST(req: Request) {
     verdict = decision.verdict;
     flags = decision.flags;
     if (decision.verdict === "rewrite") {
-      const directStructuredAnswer =
-        scopedMarkers.length === 1 && isPersonalLabValueRequest(body.message)
-          ? buildLabMarkerAnswer(
-              await getLabSeries(userId, scopedMarkers[0]),
-              body.locale,
-              isLatestLabRequest(body.message),
-            )
-          : null;
-      if (directStructuredAnswer) {
-        finalText = directStructuredAnswer;
+      const structuredSeries = isPersonalLabValueRequest(body.message)
+        ? await getLabSeriesSet(userId, scopedMarkers)
+        : [];
+      const groundedAnswer = buildLabSeriesAnswer(
+        structuredSeries,
+        body.locale,
+        isLatestLabRequest(body.message),
+      );
+      if (groundedAnswer) {
+        finalText = groundedAnswer;
+        structuredLabSources = [
+          ...new Map(
+            structuredSeries
+              .flatMap((series) => series.points)
+              .map((point) => [
+                point.sourcePath,
+                { path: point.sourcePath, observedAt: point.observedAt },
+              ]),
+          ).values(),
+        ];
         console.info("[chat] structured lab answer used", {
-          marker: scopedMarkers[0],
+          markerCount: structuredSeries.length,
         });
       } else {
         const rewritten = prepareAssistantText(
@@ -386,6 +397,21 @@ export async function POST(req: Request) {
     sourceJurisdiction: c.sourceJurisdiction,
     observedAt: c.observedAt,
   }));
+  for (const source of structuredLabSources) {
+    if (citations.some((citation) => citation.path === source.path)) continue;
+    citations.push({
+      source: "personal",
+      title: `Analítica ${source.observedAt}`,
+      path: source.path,
+      score: 1,
+      sourceKind: undefined,
+      sourceDocumentType: undefined,
+      sourceUrl: undefined,
+      sourceLanguage: undefined,
+      sourceJurisdiction: undefined,
+      observedAt: source.observedAt,
+    });
+  }
 
   await logAuditEventSafe({
     actor: userId,
