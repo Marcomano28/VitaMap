@@ -69,6 +69,7 @@ export interface RetrievedChunk {
   sourceLanguage?: string;
   sourceJurisdiction?: string[];
   observedAt?: string;
+  memoryType?: string;
   editorialDepth?: "discover" | "understand" | "deep";
 }
 
@@ -256,6 +257,7 @@ async function mapPersonalHit(userId: string, hit: RawHit): Promise<RetrievedChu
     context: hit.context ?? "",
     snippet: qmdHitSnippet(hit),
     score: hit.score,
+    memoryType: typeof fm.type === "string" ? fm.type : undefined,
     observedAt: typeof fm.observed_at === "string" ? fm.observed_at : undefined,
   };
 }

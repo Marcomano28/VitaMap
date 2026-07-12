@@ -14,6 +14,7 @@ La base multinivel ya está implementada en el repositorio:
 - límites de tamaño por documento y por bloque;
 - enriquecimiento máximo de una tarjeta por respuesta, con fallback al chunk
   clásico para tarjetas antiguas;
+- exclusión de informes personales en preguntas conceptuales sobre marcadores;
 - selector de profundidad y recomposición de una respuesta sin repetir la
   pregunta;
 - sustitución administrativa explícita por `tarjeta_id`, con retiro de la

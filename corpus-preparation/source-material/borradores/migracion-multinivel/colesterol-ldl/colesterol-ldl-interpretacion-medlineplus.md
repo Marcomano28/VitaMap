@@ -49,7 +49,7 @@ source_jurisdiction:
 
 ## En una frase
 
-El LDL es un tipo de lipoproteína: una partícula que transporta colesterol y
+LDL designa una clase de lipoproteínas: partículas que transportan colesterol y
 otros lípidos por la sangre. La analítica informa de la cantidad de colesterol
 transportada en esas partículas, expresada habitualmente como LDL-C.
 
