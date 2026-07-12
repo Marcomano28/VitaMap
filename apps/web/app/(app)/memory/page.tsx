@@ -32,6 +32,11 @@ export default async function MemoryPage() {
             {t.timeline} →
           </Link>
         </p>
+        <p className="text-sm">
+          <Link href="/memory/map" className="underline">
+            {locale === "de" ? "Meine Gesundheitskarte" : "Ver mi mapa de salud"} →
+          </Link>
+        </p>
       </header>
 
       <section>

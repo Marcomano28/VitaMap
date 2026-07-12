@@ -141,6 +141,55 @@ export function expandQueryForHealthAreas(query: string, areas: ReadonlySet<stri
   return `${query} ${terms.join(" ")}`;
 }
 
+const LENS_SEARCH_TERMS: Record<string, string[]> = {
+  ayurveda: [
+    "ayurveda",
+    "agni",
+    "ama",
+    "ojas",
+    "rasa",
+    "rakta",
+    "vata",
+    "pitta",
+    "kapha",
+    "dosha",
+    "dhatu",
+    "srotas",
+    "raktavaha srotas",
+    "shukra",
+    "shukra dhatu",
+    "shukravaha srotas",
+    "rasayana",
+    "prakriti",
+    "ahara",
+    "jatharagni",
+  ],
+  mtc: [
+    "mtc",
+    "medicina china",
+    "medicina tradicional china",
+    "qi",
+    "yin",
+    "yang",
+    "meridiano",
+    "zang fu",
+  ],
+  acupuntura: ["acupuntura", "puntos", "meridianos", "aguja", "acupuncture"],
+};
+
+/** Terminos para una segunda busqueda lateral cuando el usuario pide un lente. */
+export function lensSearchTerms(lens: ReadonlySet<string>): string[] {
+  const terms: string[] = [];
+  for (const marker of lens) terms.push(...(LENS_SEARCH_TERMS[marker] ?? [marker]));
+  return [...new Set(terms)];
+}
+
+export function expandQueryForLens(query: string, lens: ReadonlySet<string>): string {
+  const terms = lensSearchTerms(lens);
+  if (terms.length === 0) return query;
+  return `${query} ${terms.join(" ")}`;
+}
+
 /**
  * ¿Conservar este documento de KB dado el conjunto de marcadores permitidos?
  *
@@ -163,6 +212,20 @@ function declaredMarkers(value: unknown): Set<string> {
       .filter((item): item is string => typeof item === "string" && item.trim().length > 0)
       .map((item) => item.trim()),
   );
+}
+
+/** ¿El documento pertenece al lente pedido (Ayurveda, MTC, acupuntura...)? */
+export function matchesLens<T extends { tradicion?: string; seccion?: string; marker?: unknown }>(
+  doc: T,
+  lens: ReadonlySet<string>,
+): boolean {
+  if (lens.size === 0) return false;
+  if (typeof doc.tradicion === "string" && lens.has(doc.tradicion)) return true;
+  const markers = declaredMarkers(doc.marker);
+  for (const marker of markers) if (lens.has(marker)) return true;
+
+  // Fallback historico: algunas tarjetas antiguas solo declaran `seccion`.
+  return typeof doc.tradicion !== "string" && doc.seccion === "tradicion";
 }
 
 export function keepDoc(
@@ -365,10 +428,8 @@ export function applyLensPreference<T extends { tradicion?: string; seccion?: st
   lens: ReadonlySet<string>,
 ): T[] {
   if (lens.size === 0) return [...docs];
-  const matchesLens = (d: T) =>
-    typeof d.tradicion === "string" ? lens.has(d.tradicion) : d.seccion === "tradicion";
-  const preferred = docs.filter(matchesLens);
-  const rest = docs.filter((d) => !matchesLens(d));
+  const preferred = docs.filter((d) => matchesLens(d, lens));
+  const rest = docs.filter((d) => !matchesLens(d, lens));
   return [...preferred, ...rest];
 }
 

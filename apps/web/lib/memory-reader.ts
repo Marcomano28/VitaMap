@@ -13,6 +13,7 @@ import { userMemoryDir } from "./qmd";
 import { buildLabSeries, type LabSeries } from "./lab-visualization";
 import { normalizeLabMarker } from "./lab-visualization";
 import { LabMarker } from "./extraction";
+import { isPathInside, isSafeRegularFile } from "./memory-path-safety";
 
 export interface MemoryItem {
   relPath: string; // "labs/2026-05-15-foo.md" relativo a userMemoryDir
@@ -68,7 +69,9 @@ async function walk(root: string, rel: string, out: MemoryItem[]) {
       await walk(root, childRel, out);
     } else if (e.name.endsWith(".md")) {
       try {
-        const raw = await fs.readFile(path.join(root, childRel), "utf8");
+        const candidate = path.join(root, childRel);
+        if (!(await isSafeRegularFile(root, candidate))) continue;
+        const raw = await fs.readFile(candidate, "utf8");
         const parsed = matter(raw);
         const fm = (parsed.data ?? {}) as Record<string, unknown>;
         out.push({
@@ -100,7 +103,7 @@ export async function readMemoryItem(
 ): Promise<{ frontmatter: Record<string, unknown>; body: string; relPath: string } | null> {
   const root = userMemoryDir(userId);
   const abs = path.resolve(root, relPath);
-  if (!isInside(abs, root)) return null;
+  if (!isPathInside(abs, root) || !(await isSafeRegularFile(root, abs))) return null;
   try {
     const raw = await fs.readFile(abs, "utf8");
     const parsed = matter(raw);
@@ -120,15 +123,10 @@ export async function readMemoryItem(
 export async function deleteMemoryItem(userId: string, relPath: string): Promise<void> {
   const root = userMemoryDir(userId);
   const abs = path.resolve(root, relPath);
-  if (!isInside(abs, root)) {
+  if (!isPathInside(abs, root)) {
     throw new Error("path_traversal_denied");
   }
   await fs.rm(abs, { force: true });
-}
-
-function isInside(child: string, parent: string): boolean {
-  const rel = path.relative(parent, child);
-  return !!rel && !rel.startsWith("..") && !path.isAbsolute(rel);
 }
 
 /**
