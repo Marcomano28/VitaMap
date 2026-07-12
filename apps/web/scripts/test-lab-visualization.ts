@@ -8,6 +8,7 @@ import {
   normalizeLabMarker,
   parseReferenceRange,
 } from "../lib/lab-visualization";
+import { buildMeasurementTracks } from "../lib/lab-tracks";
 
 assert.equal(canonicalMarkerId("LDL"), "colesterol-ldl");
 assert.equal(canonicalMarkerId("LDL Cholesterin"), "colesterol-ldl");
@@ -67,6 +68,7 @@ const series = buildLabSeries(
 assert.equal(series.points.length, 2);
 assert.equal(series.comparability, "comparable");
 assert.deepEqual(series.points.map((point) => point.observedAt), ["2026-01-01", "2026-05-12"]);
+assert.equal(series.points[0].referenceOriginal, "< 116");
 
 const partialSeries = buildLabSeries(
   [
@@ -91,6 +93,25 @@ const partialSeries = buildLabSeries(
 );
 assert.equal(partialSeries.comparability, "partial");
 assert.match(partialSeries.warnings.join(" "), /unidades diferentes/);
+const partialTracks = buildMeasurementTracks(partialSeries);
+assert.equal(partialTracks.length, 2);
+assert.equal(partialTracks.find((track) => track.unitKey === "mg/dL")?.connectable, false);
+assert.equal(partialTracks.find((track) => track.unitKey === "mmol/L")?.connectable, false);
+
+const invalidDateSeries = buildLabSeries(
+  [
+    {
+      relPath: "labs/invalid.md",
+      frontmatter: {
+        type: "lab_result",
+        observed_at: "2026-02-31",
+        markers: [normalized],
+      },
+    },
+  ],
+  "colesterol-ldl",
+);
+assert.equal(invalidDateSeries.points.length, 0);
 
 interface FixtureReport {
   id: string;
@@ -126,6 +147,10 @@ assert.deepEqual([...new Set(fixtureInterrupted.points.map((point) => point.unit
   "mg/dL",
   "mmol/L",
 ]);
+const interruptedTracks = buildMeasurementTracks(fixtureInterrupted);
+assert.equal(interruptedTracks.find((track) => track.unitKey === "mg/dL")?.points.length, 3);
+assert.equal(interruptedTracks.find((track) => track.unitKey === "mg/dL")?.connectable, true);
+assert.equal(interruptedTracks.find((track) => track.unitKey === "mmol/L")?.points.length, 1);
 assert.equal(canonicalMarkerId("HDL Cholesterin"), "colesterol-hdl");
 assert.equal(canonicalMarkerId("Glukose nuechtern"), "glucosa-en-ayunas");
 

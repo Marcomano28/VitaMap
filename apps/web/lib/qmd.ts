@@ -22,8 +22,10 @@ import {
   applyHealthAreaPreference,
   applyLensPreference,
   applySeccionPreference,
+  expandQueryForLens,
   expandQueryForHealthAreas,
   filterByMarkers,
+  matchesLens,
 } from "./marker-scope";
 import { inferSourceLocaleFromUrl, normalizeJurisdiction, preferEvidenceForLocale } from "./source-locale";
 import type { Locale } from "./i18n";
@@ -347,6 +349,18 @@ function normalizedSearchQueries(query: string) {
   ];
 }
 
+function dedupeEvidenceChunks(chunks: readonly RetrievedChunk[]): RetrievedChunk[] {
+  const seen = new Set<string>();
+  const unique: RetrievedChunk[] = [];
+  for (const chunk of chunks) {
+    const key = chunk.path || chunk.docId;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    unique.push(chunk);
+  }
+  return unique;
+}
+
 export async function queryKB(
   query: string,
   opts: QueryOptions = {},
@@ -387,7 +401,9 @@ export async function queryMemoryAndKB(
   const kbLimit = markerScope || localePreference ? Math.max(limit * 4, 12) : limit;
   const healthAreas = new Set(opts.healthAreas ?? []);
   const strongMarkers = new Set(opts.markers ?? []);
+  const lens = new Set(opts.lens ?? []);
   const healthAreaActive = markerScope && strongMarkers.size === 0 && healthAreas.size > 0;
+  const lensSearchActive = markerScope && lens.size > 0;
 
   // Evitar expansión y reranking locales, demasiado costosos en el VPS
   // CPU-only, manteniendo recuperación híbrida BM25 + vector. La expansión por
@@ -396,8 +412,9 @@ export async function queryMemoryAndKB(
   const userSearches = normalizedSearchQueries(query);
   const kbQuery = healthAreaActive ? expandQueryForHealthAreas(query, healthAreas) : query;
   const kbSearches = normalizedSearchQueries(kbQuery);
+  const lensKbSearches = normalizedSearchQueries(expandQueryForLens(query, lens));
 
-  const [personalHits, evidenceHits] = await Promise.all([
+  const [personalHits, evidenceHits, lensEvidenceHits] = await Promise.all([
     userStore.search({
       queries: userSearches,
       rerank: false,
@@ -412,11 +429,21 @@ export async function queryMemoryAndKB(
       minScore,
       candidateLimit: 10,
     }),
+    lensSearchActive
+      ? kbStore.search({
+          queries: lensKbSearches,
+          rerank: false,
+          limit: Math.max(limit * 3, 9),
+          minScore,
+          candidateLimit: 10,
+        })
+      : Promise.resolve([] as RawHit[]),
   ]);
 
-  const [personal, evidence] = await Promise.all([
+  const [personal, evidence, lensEvidence] = await Promise.all([
     Promise.all(personalHits.map((h) => mapPersonalHit(userId, h))),
     Promise.all(evidenceHits.map(mapEvidenceHit)),
+    Promise.all(lensEvidenceHits.map(mapEvidenceHit)),
   ]);
 
   if (!markerScope) {
@@ -429,20 +456,24 @@ export async function queryMemoryAndKB(
   // memoria personal ya no abre el scope. Si el conjunto viene vacío,
   // filterByMarkers no filtra.
   const allowed = strongMarkers;
-  const lens = new Set(opts.lens ?? []);
   const markerFilteredEvidence = filterByMarkers(evidence, allowed);
-  // Preferencias suaves: locale -> lens -> area_de_salud. El area de salud se
-  // aplica al final para mantener el motivo de consulta por encima de docs
-  // genéricos, sin descartar nada.
-  const localizedEvidence = preferEvidenceForLocale(markerFilteredEvidence, opts.locale);
-  const lensPreferredEvidence = applyLensPreference(localizedEvidence, lens);
-  const areaPreferredEvidence = applyHealthAreaPreference(lensPreferredEvidence, healthAreas);
-  // Última preferencia (la más específica): el ÁNGULO que pide la intención, para
-  // que una repregunta distinta traiga otra tarjeta del dossier en vez de repetir.
-  const scopedEvidence = applySeccionPreference(areaPreferredEvidence, opts.seccion).slice(0, limit);
+  const lateralLensEvidence = lensEvidence.filter((chunk) => matchesLens(chunk, lens));
+  const combinedEvidence = dedupeEvidenceChunks([
+    ...markerFilteredEvidence,
+    ...lateralLensEvidence,
+  ]);
+  // Preferencias suaves: locale -> area_de_salud -> seccion -> lens.
+  // El lente va al final porque, si la persona pide "desde Ayurveda/MTC",
+  // esa perspectiva debe subir incluso cuando el fraseo tambien active
+  // "interpretacion" o "factores".
+  const localizedEvidence = preferEvidenceForLocale(combinedEvidence, opts.locale);
+  const areaPreferredEvidence = applyHealthAreaPreference(localizedEvidence, healthAreas);
+  const seccionPreferredEvidence = applySeccionPreference(areaPreferredEvidence, opts.seccion);
+  const scopedEvidence = applyLensPreference(seccionPreferredEvidence, lens).slice(0, limit);
   console.info("[chat] marker scope", {
     before: evidence.length,
     after: scopedEvidence.length,
+    lateralLens: lateralLensEvidence.length,
     markers: allowed.size,
     lens: lens.size,
     healthAreas: healthAreas.size,

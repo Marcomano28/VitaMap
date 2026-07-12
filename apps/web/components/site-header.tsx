@@ -21,12 +21,14 @@ export async function SiteHeader() {
     : false;
   const navAuthed = [
     { href: "/memory", label: t.memory },
+    { href: "/memory/map", label: t.map },
     { href: "/upload", label: t.upload },
     ...(assessEnabled ? [{ href: "/assess", label: t.assess }] : []),
     { href: "/chat", label: t.chat },
     { href: "/guide", label: t.guide },
   ];
   const mobileNavAuthed = [
+    { href: "/memory/map", label: t.map },
     ...(assessEnabled ? [{ href: "/assess", label: t.assess }] : []),
     { href: "/guide", label: t.guide },
     { href: "/chat", label: t.chat },

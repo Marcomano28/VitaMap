@@ -8,7 +8,9 @@ import {
   applyLensPreference,
   healthAreasIn,
   expandQueryForHealthAreas,
+  expandQueryForLens,
   applyHealthAreaPreference,
+  matchesLens,
 } from "../lib/marker-scope";
 
 // --- markersIn: detección por nombre, con acentos y separadores -------------
@@ -143,6 +145,7 @@ assert.deepEqual(
 );
 // Marcador-lente sin tema previo: el lente pasa a ser el tema (filtro fuerte).
 assert.deepEqual(scopeOf("¿qué dice el Ayurveda?"), { markers: ["ayurveda"], lens: [], healthAreas: [] });
+assert.ok(markersIn("rakta dhatu").has("ayurveda"), "rakta dhatu entra por el marker paraguas Ayurveda");
 // MTC también es lente: "según la medicina china" no abre el filtro.
 assert.deepEqual(
   scopeOf("¿y según la medicina china?", ["¿qué significa mi HDL?"]),
@@ -206,6 +209,24 @@ assert.deepEqual(
   applyLensPreference(lensDocs, new Set(["ayurveda"])).map((d) => d.title),
   ["LDL desde Ayurveda", "LDL biomédico", "LDL alimentación"],
   "la tarjeta de la tradición pedida sube, sin descartar el resto",
+);
+assert.ok(
+  expandQueryForLens("insulina desde Ayurveda", new Set(["ayurveda"])).includes("agni"),
+  "la busqueda lateral Ayurveda añade conceptos internos, no solo el marcador clinico",
+);
+assert.ok(
+  expandQueryForLens("fertilidad desde Ayurveda", new Set(["ayurveda"])).includes("shukra"),
+  "la busqueda lateral Ayurveda incluye shukra (sincronizado con los alias de la taxonomía)",
+);
+assert.equal(
+  matchesLens({ title: "Rasa", marker: ["ayurveda"], seccion: "tradicion" }, new Set(["ayurveda"])),
+  true,
+  "una tarjeta hub de Ayurveda puede recuperarse por lente aunque no declare marcador clinico",
+);
+assert.equal(
+  matchesLens({ title: "Rasa", tradicion: "ayurveda", seccion: "tradicion" }, new Set(["mtc"])),
+  false,
+  "una tarjeta Ayurveda no debe coincidir con el lente MTC si declara tradicion",
 );
 // Sin lente, el orden no cambia.
 assert.deepEqual(

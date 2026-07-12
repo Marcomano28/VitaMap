@@ -1,4 +1,5 @@
 import type { LabSeries, LabSeriesPoint } from "@/lib/lab-visualization";
+import { buildMeasurementTracks } from "@/lib/lab-tracks";
 
 export interface LabTimelineProps {
   displayName: string;
@@ -34,6 +35,7 @@ function rangeText(point: LabSeriesPoint, locale: "es" | "de") {
   const range = point.reference;
   if (!range || (range.low === null && range.high === null)) return "—";
   const unit = range.unitUcum ?? point.unitUcum ?? point.unitOriginal ?? "";
+  if (point.referenceOriginal) return `${point.referenceOriginal} ${unit}`;
   if (range.low !== null && range.high !== null) {
     return `${formatNumber(range.low, locale)}–${formatNumber(range.high, locale)} ${unit}`;
   }
@@ -45,7 +47,7 @@ export function LabTimeline({ displayName, series, locale = "es", sourceHref }: 
   const t = locale === "de"
     ? {
         insufficient: "Für einen Verlauf werden mindestens zwei Messungen benötigt.",
-        partial: "Die Messungen verwenden unterschiedliche oder nicht normalisierte Einheiten. Sie werden nicht als Verlaufslinie verbunden.",
+        partial: "Unterschiedliche Einheiten erscheinen in getrennten Spuren. Nur Werte mit derselben normalisierten Einheit werden verbunden.",
         reference: "Referenzbereich der Berichte",
         date: "Datum",
         value: "Wert",
@@ -56,7 +58,7 @@ export function LabTimeline({ displayName, series, locale = "es", sourceHref }: 
       }
     : {
         insufficient: "Se necesitan al menos dos mediciones para mostrar una evolución.",
-        partial: "Las mediciones utilizan unidades diferentes o no normalizadas. No se conectan como una línea de evolución.",
+        partial: "Las unidades diferentes aparecen en carriles separados. Solo se conectan valores con la misma unidad normalizada.",
         reference: "Intervalo de los informes",
         date: "Fecha",
         value: "Valor",
@@ -66,6 +68,7 @@ export function LabTimeline({ displayName, series, locale = "es", sourceHref }: 
         open: "Abrir",
       };
   const points = series.points;
+  const tracks = buildMeasurementTracks(series);
   const comparable = series.comparability === "comparable";
   const unit = comparable ? points[0]?.unitUcum ?? points[0]?.unitOriginal ?? "" : "";
   const dates = points.map((point) => new Date(`${point.observedAt.slice(0, 10)}T12:00:00Z`).getTime());
@@ -164,21 +167,82 @@ export function LabTimeline({ displayName, series, locale = "es", sourceHref }: 
           })}
         </svg>
       ) : (
-        <svg viewBox="0 0 700 150" role="img" aria-label={summary} className="block h-auto w-full overflow-visible">
+        <svg
+          viewBox={`0 0 700 ${Math.max(150, tracks.length * 116 + 28)}`}
+          role="img"
+          aria-label={summary}
+          className="block h-auto w-full overflow-visible"
+        >
           <title>{displayName}</title>
           <desc>{summary}</desc>
-          <line x1="64" x2="636" y1="72" y2="72" stroke="var(--color-border)" strokeWidth="1" />
-          {points.map((point, index) => {
-            const px = x(dates[index]);
+          {tracks.map((track, trackIndex) => {
+            const laneTop = 26 + trackIndex * 116;
+            const laneBottom = laneTop + 72;
+            const values = track.points.map((point) => point.value);
+            const min = Math.min(...values);
+            const max = Math.max(...values);
+            const spread = Math.max(max - min, Math.abs(max) * 0.08, 1);
+            const trackY = (value: number) =>
+              laneBottom - 12 - ((value - min) / spread) * 44;
+            const trackPoints = track.points.map((point) => {
+              const time = new Date(`${point.observedAt.slice(0, 10)}T12:00:00Z`).getTime();
+              return { point, px: x(time), py: trackY(point.value) };
+            });
             return (
-              <g key={`${point.sourcePath}-${point.observedAt}`}>
-                <circle cx={px} cy="72" r="6" fill="var(--color-card)" stroke="var(--color-foreground)" strokeWidth="2" />
-                <text className="hidden sm:block" x={px} y="44" textAnchor="middle" fill="var(--color-foreground)" fontSize="12">
-                  {formatNumber(point.value, locale)} {point.unitOriginal ?? point.unitUcum ?? ""}
+              <g key={track.unitKey}>
+                <text x="8" y={laneTop + 10} fill="var(--color-foreground)" fontSize="12">
+                  {track.unitLabel}
                 </text>
-                <text className="hidden sm:block" x={px} y="106" textAnchor="middle" fill="var(--color-muted)" fontSize="11">
-                  {formatDate(point.observedAt, locale)}
-                </text>
+                <line
+                  x1="64"
+                  x2="636"
+                  y1={laneBottom}
+                  y2={laneBottom}
+                  stroke="var(--color-border)"
+                  strokeWidth="1"
+                />
+                {track.connectable ? (
+                  <polyline
+                    points={trackPoints.map(({ px, py }) => `${px},${py}`).join(" ")}
+                    fill="none"
+                    stroke="var(--color-accent)"
+                    strokeWidth="2"
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                  />
+                ) : null}
+                {trackPoints.map(({ point, px, py }) => (
+                  <g key={`${point.sourcePath}-${point.observedAt}`}>
+                    <circle
+                      cx={px}
+                      cy={py}
+                      r="6"
+                      fill="var(--color-card)"
+                      stroke="var(--color-foreground)"
+                      strokeWidth="2"
+                    />
+                    <text
+                      className="hidden sm:block"
+                      x={px}
+                      y={Math.max(laneTop + 12, py - 12)}
+                      textAnchor="middle"
+                      fill="var(--color-foreground)"
+                      fontSize="12"
+                    >
+                      {formatNumber(point.value, locale)}
+                    </text>
+                    <text
+                      className="hidden sm:block"
+                      x={px}
+                      y={laneBottom + 17}
+                      textAnchor="middle"
+                      fill="var(--color-muted)"
+                      fontSize="11"
+                    >
+                      {formatDate(point.observedAt, locale)}
+                    </text>
+                  </g>
+                ))}
               </g>
             );
           })}
@@ -187,8 +251,9 @@ export function LabTimeline({ displayName, series, locale = "es", sourceHref }: 
 
       {commonRange && (
         <p className="text-xs text-[var(--color-muted)]">
-          {t.reference}: {commonRange.low === null ? "" : `${formatNumber(commonRange.low, locale)}–`}
-          {commonRange.high === null ? "" : formatNumber(commonRange.high, locale)} {unit}.
+          {t.reference}: {points[0]?.referenceOriginal
+            ? `${points[0].referenceOriginal} ${unit}`
+            : `${commonRange.low === null ? "" : `${formatNumber(commonRange.low, locale)}–`}${commonRange.high === null ? "" : formatNumber(commonRange.high, locale)} ${unit}`}.
         </p>
       )}
 

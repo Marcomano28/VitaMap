@@ -44,6 +44,7 @@ export async function GET() {
     service: "vitamap-web",
     version: "0.1.0",
     response_policy: "rag-lab-v7",
+    health_map_policy: "territories-v1",
     phase: "0",
     audit_chain: auditChain,
     ts: new Date().toISOString(),

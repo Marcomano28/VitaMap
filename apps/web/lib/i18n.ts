@@ -23,6 +23,7 @@ export const copy = {
   es: {
     nav: {
       memory: "Memoria",
+      map: "Mapa",
       upload: "Subir",
       assess: "Cuestionarios",
       chat: "Conversar",
@@ -189,6 +190,7 @@ export const copy = {
   de: {
     nav: {
       memory: "Gedächtnis",
+      map: "Karte",
       upload: "Hochladen",
       assess: "Fragebögen",
       chat: "Gespräch",
