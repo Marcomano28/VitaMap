@@ -61,6 +61,56 @@
   --color-accent-gold: oklch(0.65 0.15 60);
 }
 
+/* ─────────────────────────────────────────────────────────────────
+   GRÁFICAS DE LABORATORIO — dos registros: luz reciente y penumbra.
+   Derivados de los tokens del tema activo para que las cuatro paletas
+   (claro/oscuro × cálido/frío) conserven su propia "luz".
+   ───────────────────────────────────────────────────────────────── */
+:root {
+  --chart-recent: var(--color-accent);
+  --chart-recent-glow: color-mix(in oklch, var(--color-accent) 30%, transparent);
+  --chart-past: color-mix(in oklch, var(--color-muted) 80%, var(--color-border));
+  --chart-band: color-mix(in oklch, var(--color-accent) 11%, transparent);
+  --chart-band-edge: color-mix(in oklch, var(--color-accent) 32%, transparent);
+}
+
+/* "Las líneas se dibujan despacio al revelarse" — el sendero aparece
+   una sola vez, sin urgencia; los puntos emergen tras el trazo. */
+.lab-line-reveal {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: lab-line-reveal 1.8s cubic-bezier(0.4, 0, 0.2, 1) 0.15s forwards;
+}
+
+@keyframes lab-line-reveal {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.lab-mark-reveal {
+  opacity: 0;
+  animation: lab-mark-reveal 0.6s ease-out forwards;
+}
+
+@keyframes lab-mark-reveal {
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-line-reveal {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+
+  .lab-mark-reveal {
+    animation: none;
+    opacity: 1;
+  }
+}
+
 html,
 body {
   background: var(--color-background);
