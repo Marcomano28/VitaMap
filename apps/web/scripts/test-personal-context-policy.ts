@@ -14,6 +14,7 @@ assert.equal(isLatestLabRequest("¿Cómo evolucionó mi LDL?"), false);
 assert.equal(isPersonalLabValueRequest("¿Cómo está mi LDL?"), true);
 assert.equal(isPersonalLabValueRequest("Compara mis valores de glucosa"), true);
 assert.equal(isPersonalLabValueRequest("¿Qué es el colesterol LDL?"), false);
+assert.equal(isPersonalLabValueRequest("¿Qué es el LDL?"), false);
 assert.equal(isPersonalLabValueRequest("¿Qué alimentos afectan al LDL?"), false);
 
 const item = (observedAt: string, type = "lab_result"): MemoryItem => ({

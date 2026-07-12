@@ -70,8 +70,10 @@ function measurementKey(item: Measurement): string {
 export function deterministicResponseFlags(
   text: string,
   sourceContext = "",
+  enforcePersonalLabPolicy = true,
 ): GuardrailFlag[] {
   const flags = new Set<GuardrailFlag>();
+  if (!enforcePersonalLabPolicy) return [];
   const hasBothUnits = /\bmmol\s*\/\s*l\b/i.test(text) && /\bmg\s*\/\s*dL\b/i.test(text);
   const claimsConversion =
     /\b(equival\w*|entspricht|umgerechnet|convert\w*|aproximadamente|aprox\.?|unos?)\b/i.test(
@@ -149,8 +151,13 @@ export async function checkResponse(
   text: string,
   sourceContext = "",
   signal?: AbortSignal,
+  enforcePersonalLabPolicy = false,
 ): Promise<GuardrailDecision> {
-  const deterministicFlags = deterministicResponseFlags(text, sourceContext);
+  const deterministicFlags = deterministicResponseFlags(
+    text,
+    sourceContext,
+    enforcePersonalLabPolicy,
+  );
   const reviewInput = sourceContext
     ? `FUENTES PROPORCIONADAS:\n${sourceContext}\n\nRESPUESTA A REVISAR:\n${text}`
     : text;
