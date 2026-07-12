@@ -11,13 +11,23 @@ type Perspective = "systems" | "latest" | "evolution";
 export function HealthMapExplorer({
   model,
   locale,
+  initialMarkerId,
 }: {
   model: HealthMapModel;
   locale: Locale;
+  /** Deep link desde el chat: marcador preseleccionado (?marker=X). */
+  initialMarkerId?: string;
 }) {
   const de = locale === "de";
+  const requested = initialMarkerId
+    ? model.markers.find((marker) => marker.id === initialMarkerId)
+    : undefined;
+  // "systems" muestra todos los territorios: la única perspectiva donde el
+  // marcador pedido está garantizado visible.
   const [perspective, setPerspective] = useState<Perspective>("systems");
-  const [selectedId, setSelectedId] = useState(model.markers[0]?.id ?? "");
+  const [selectedId, setSelectedId] = useState(
+    requested?.id ?? model.markers[0]?.id ?? "",
+  );
   const visibleMarkers = useMemo(() => {
     if (perspective === "latest") {
       return model.markers.filter(
