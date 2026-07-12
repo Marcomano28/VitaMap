@@ -57,6 +57,7 @@ const discoverText = serializeEditorialSections(discover);
 assert.match(discoverText, /Una imagen para empezar/);
 assert.match(discoverText, /Límites de la explicación/);
 assert.match(discoverText, /Fuentes/);
+assert.doesNotMatch(discoverText, /Qué significa realmente/);
 assert.doesNotMatch(discoverText, /Cómo se relaciona/);
 assert.doesNotMatch(discoverText, /Si quieres profundizar/);
 

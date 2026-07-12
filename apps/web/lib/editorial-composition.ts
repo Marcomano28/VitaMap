@@ -47,7 +47,7 @@ const REQUIRED_SECTIONS: readonly EditorialSectionId[] = [
 ];
 
 const SECTIONS_BY_DEPTH: Record<EditorialDepth, readonly EditorialSectionId[]> = {
-  discover: ["summary", "analogy", "literal", "limitations", "sources"],
+  discover: ["summary", "analogy", "limitations", "sources"],
   understand: [
     "summary",
     "literal",
