@@ -69,6 +69,7 @@ export interface RetrievedChunk {
   sourceLanguage?: string;
   sourceJurisdiction?: string[];
   observedAt?: string;
+  editorialDepth?: "discover" | "understand" | "deep";
 }
 
 export interface RagResult {

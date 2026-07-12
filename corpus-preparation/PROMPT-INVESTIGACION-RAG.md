@@ -315,6 +315,12 @@ no está listo para publicación.
 
 ## 4. Tarjeta A — Interpretación de la analítica
 
+Cuando se solicite expresamente una **tarjeta A multinivel**, aplica además
+`corpus-preparation/MODULO-TARJETA-A-MULTINIVEL.md`. Ese módulo sustituye solo
+la estructura de encabezados y la longitud orientativa de la tarjeta A; no
+modifica las reglas de fuentes, derechos, taxonomía, evidencia o seguridad de
+este brief. No improvises el formato multinivel sin leerlo completo.
+
 Responde a preguntas como:
 
 - "¿Qué mide este parámetro?"

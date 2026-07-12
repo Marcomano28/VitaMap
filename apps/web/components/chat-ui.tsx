@@ -9,6 +9,8 @@ import { LabValueBand } from "./lab-value-band";
 import { copy, DEFAULT_LOCALE, type Locale } from "@/lib/i18n";
 import type { LabSeries } from "@/lib/lab-visualization";
 
+type EditorialDepth = "discover" | "understand" | "deep";
+
 interface Citation {
   source: "personal" | "evidence";
   title: string;
@@ -38,6 +40,9 @@ interface AssistantMessage {
   /** Series estructuradas del propio usuario; el servidor las construye
    *  de forma determinista y el cliente las dibuja. El LLM no interviene. */
   visualization?: ChatVisualization;
+  request: string;
+  depth: EditorialDepth;
+  editorialComposed?: boolean;
 }
 
 interface UserMessage {
@@ -54,6 +59,7 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [depth, setDepth] = useState<EditorialDepth>("understand");
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -61,15 +67,12 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, loading]);
 
-  async function send(e: React.FormEvent) {
-    e.preventDefault();
-    const text = input.trim();
-    if (!text || loading) return;
-    const nextHistory: Message[] = [...messages, { role: "user", content: text }];
-    setMessages(nextHistory);
-    setInput("");
-    setLoading(true);
-    setError(null);
+  async function requestAssistant(
+    text: string,
+    history: Message[],
+    requestedDepth: EditorialDepth,
+    forceDepth = false,
+  ): Promise<Omit<AssistantMessage, "role" | "request">> {
     const controller = new AbortController();
     const timeoutId = window.setTimeout(() => controller.abort(), 165_000);
     try {
@@ -79,8 +82,10 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
         body: JSON.stringify({
           message: text,
           locale,
-          history: nextHistory
-            .slice(-HISTORY_FOR_LLM - 1, -1) // sin el actual
+          depth: requestedDepth,
+          forceDepth,
+          history: history
+            .slice(-HISTORY_FOR_LLM)
             .map((m) => ({ role: m.role, content: m.content })),
         }),
         credentials: "same-origin",
@@ -89,11 +94,11 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
       if (!res.ok) {
         if (res.status === 401) {
           window.location.href = "/login?next=/chat";
-          return;
+          throw new Error(t.requestFailed);
         }
         if (res.status === 402) {
           window.location.href = "/settings/billing?required=1";
-          return;
+          throw new Error(t.requestFailed);
         }
         throw new Error(t.requestFailed);
       }
@@ -103,28 +108,79 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
         guardrail: { verdict: "safe" | "rewrite" | "block"; flags?: string[] };
         crisis?: boolean;
         visualization?: ChatVisualization;
+        depth: EditorialDepth;
+        editorialComposed?: boolean;
       };
-      setMessages([
-        ...nextHistory,
-        {
-          role: "assistant",
-          content: json.text,
-          citations: json.citations,
-          guardrail: json.guardrail,
-          crisis: json.crisis === true,
-          visualization: json.visualization,
-        },
-      ]);
-    } catch (err) {
-      setError(
-        err instanceof DOMException && err.name === "AbortError"
-          ? t.requestTimedOut
-          : err instanceof Error && err.message === t.requestFailed
-            ? err.message
-            : t.requestFailed,
-      );
+      return {
+        content: json.text,
+        citations: json.citations,
+        guardrail: json.guardrail,
+        crisis: json.crisis === true,
+        visualization: json.visualization,
+        depth: json.depth ?? requestedDepth,
+        editorialComposed: json.editorialComposed,
+      };
     } finally {
       window.clearTimeout(timeoutId);
+    }
+  }
+
+  function readableError(err: unknown): string {
+    return err instanceof DOMException && err.name === "AbortError"
+      ? t.requestTimedOut
+      : err instanceof Error && err.message === t.requestFailed
+        ? err.message
+        : t.requestFailed;
+  }
+
+  async function send(e: React.FormEvent) {
+    e.preventDefault();
+    const text = input.trim();
+    if (!text || loading) return;
+    const history = [...messages];
+    const nextHistory: Message[] = [...history, { role: "user", content: text }];
+    setMessages(nextHistory);
+    setInput("");
+    setLoading(true);
+    setError(null);
+    try {
+      const assistant = await requestAssistant(text, history, depth);
+      setDepth(assistant.depth);
+      setMessages([
+        ...nextHistory,
+        { role: "assistant", request: text, ...assistant },
+      ]);
+    } catch (err) {
+      setError(readableError(err));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function recompose(messageIndex: number, targetDepth: EditorialDepth) {
+    const message = messages[messageIndex];
+    if (loading || message?.role !== "assistant" || message.crisis) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const historyEnd = Math.max(0, messageIndex - 1);
+      const assistant = await requestAssistant(
+        message.request,
+        messages.slice(0, historyEnd),
+        targetDepth,
+        true,
+      );
+      setDepth(assistant.depth);
+      setMessages((current) =>
+        current.map((item, index) =>
+          index === messageIndex
+            ? { role: "assistant", request: message.request, ...assistant }
+            : item,
+        ),
+      );
+    } catch (err) {
+      setError(readableError(err));
+    } finally {
       setLoading(false);
     }
   }
@@ -145,7 +201,13 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
           m.role === "user" ? (
             <UserBubble key={i} content={m.content} />
           ) : (
-            <AssistantBubble key={i} m={m} locale={locale} />
+            <AssistantBubble
+              key={i}
+              m={m}
+              locale={locale}
+              disabled={loading}
+              onDepthChange={(target) => recompose(i, target)}
+            />
           ),
         )}
 
@@ -167,6 +229,24 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
         onSubmit={send}
         className="mt-4 flex flex-col items-stretch gap-2 border-t border-[var(--color-border)] pt-4 sm:flex-row sm:items-end"
       >
+        <fieldset className="flex shrink-0 gap-1" aria-label={t.depthLabel}>
+          {(["discover", "understand", "deep"] as const).map((value) => (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={depth === value}
+              onClick={() => setDepth(value)}
+              disabled={loading}
+              className={`rounded-md border px-2 py-2 text-xs transition-colors disabled:opacity-50 ${
+                depth === value
+                  ? "border-[var(--color-accent)] bg-[var(--color-card)] text-[var(--color-foreground)]"
+                  : "border-[var(--color-border)] text-[var(--color-muted)]"
+              }`}
+            >
+              {t.depth[value]}
+            </button>
+          ))}
+        </fieldset>
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -206,9 +286,13 @@ function UserBubble({ content }: { content: string }) {
 function AssistantBubble({
   m,
   locale,
+  disabled,
+  onDepthChange,
 }: {
   m: AssistantMessage;
   locale: Locale;
+  disabled: boolean;
+  onDepthChange: (depth: EditorialDepth) => void;
 }) {
   const t = copy[locale].chat;
   const blocked = m.guardrail.verdict === "block";
@@ -235,6 +319,31 @@ function AssistantBubble({
         )}
         <MarkdownView content={m.content} />
         <InlineDisclaimer locale={locale} />
+        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[var(--color-border)] pt-3">
+          <span className="text-xs text-[var(--color-muted)]">
+            {t.depthLabel}: {t.depth[m.depth]}
+          </span>
+          {m.depth !== "discover" && (
+            <button
+              type="button"
+              disabled={disabled}
+              onClick={() => onDepthChange(m.depth === "deep" ? "understand" : "discover")}
+              className="text-xs underline text-[var(--color-muted)] hover:text-[var(--color-foreground)] disabled:opacity-50"
+            >
+              {t.simpler}
+            </button>
+          )}
+          {m.depth !== "deep" && (
+            <button
+              type="button"
+              disabled={disabled}
+              onClick={() => onDepthChange(m.depth === "discover" ? "understand" : "deep")}
+              className="text-xs underline text-[var(--color-muted)] hover:text-[var(--color-foreground)] disabled:opacity-50"
+            >
+              {t.moreDetail}
+            </button>
+          )}
+        </div>
       </div>
 
       {m.visualization && m.visualization.series.length > 0 && (

@@ -109,6 +109,14 @@ export const copy = {
       placeholder:
         "Pregunta lo que quieras explorar. Enter envía, Shift+Enter salto de línea.",
       send: "Enviar",
+      depthLabel: "Profundidad",
+      depth: {
+        discover: "Fácil",
+        understand: "Comprender",
+        deep: "Detalle",
+      },
+      simpler: "Más sencillo",
+      moreDetail: "Más detalle",
       blocked: "respuesta bloqueada por el guardrail",
       rewritten: "respuesta reescrita en estilo socrático por el guardrail",
       sources: "Fuentes consultadas",
@@ -276,6 +284,14 @@ export const copy = {
       placeholder:
         "Frage, was du erkunden möchtest. Enter sendet, Shift+Enter fügt einen Zeilenumbruch ein.",
       send: "Senden",
+      depthLabel: "Tiefe",
+      depth: {
+        discover: "Einfach",
+        understand: "Verstehen",
+        deep: "Details",
+      },
+      simpler: "Einfacher",
+      moreDetail: "Mehr Details",
       blocked: "Antwort durch Guardrail blockiert",
       rewritten: "Antwort durch Guardrail in sokratischem Stil umgeschrieben",
       sources: "Genutzte Quellen",
