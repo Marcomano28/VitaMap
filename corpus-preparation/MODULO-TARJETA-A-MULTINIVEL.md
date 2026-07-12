@@ -66,13 +66,15 @@ La aplicación compone los bloques así:
 
 | Profundidad | Bloques |
 |---|---|
-| `discover` | En una frase + imagen + significado literal + límites + fuentes |
+| `discover` | En una frase + imagen con su anclaje literal + límites + fuentes |
 | `understand` | En una frase + significado literal + relaciones + límites + fuentes |
 | `deep` | Significado literal + relaciones + profundizar + límites + fuentes |
 
 Los niveles no se construyen acumulando siempre todo lo anterior. En
-`understand` se omite la metáfora y en `deep` se omiten además el resumen y la
-metáfora para reducir repeticiones y dar espacio al mecanismo.
+`discover`, el anclaje literal vive dentro del bloque de la imagen y se omite el
+bloque técnico completo. En `understand` se omite la metáfora y en `deep` se
+omiten además el resumen y la metáfora para reducir repeticiones y dar espacio
+al mecanismo.
 
 Los límites y las fuentes aparecen siempre. Una versión sencilla no debe perder
 la frontera entre educación general y lectura individual.
