@@ -31,6 +31,8 @@ import { detectCrisis, crisisResourcesText } from "@/lib/crisis";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { getLabSeriesSet } from "@/lib/memory-reader";
 import { buildLabSeriesAnswer } from "@/lib/lab-chat-fallback";
+import { displayMarker } from "@/lib/health-map";
+import type { LabSeries } from "@/lib/lab-visualization";
 import {
   isLatestLabRequest,
   isPersonalLabValueRequest,
@@ -428,9 +430,55 @@ export async function POST(req: Request) {
     payloadSum: `personal=${personal.length} evidence=${evidence.length} verdict=${verdict}`,
   });
 
+  // -- Visualización inline (PROPUESTA-VISUALIZACION §2/§5) ---------------
+  // "La visualización emerge en la conversación": si la pregunta es sobre
+  // valores personales de laboratorio, adjuntamos las series estructuradas
+  // construidas de forma determinista desde la memoria del usuario. El LLM
+  // no interviene: ni elige, ni dibuja, ni toca los números. Con respuesta
+  // bloqueada no se decora nada.
+  let visualization:
+    | {
+        kind: "lab-series";
+        series: Array<{ markerId: string; displayName: string; series: LabSeries }>;
+        mapHref: string;
+      }
+    | undefined;
+  if (
+    verdict !== "block" &&
+    (personalLabRequest || isLatestLabRequest(body.message))
+  ) {
+    try {
+      const allSeries = await getLabSeriesSet(userId, scopedMarkers);
+      const shown = allSeries
+        .filter((series) => series.points.length > 0)
+        .sort((a, b) =>
+          b.points.at(-1)!.observedAt.localeCompare(a.points.at(-1)!.observedAt),
+        )
+        .slice(0, 3);
+      if (shown.length > 0) {
+        visualization = {
+          kind: "lab-series",
+          series: shown.map((series) => ({
+            markerId: series.markerId,
+            displayName: displayMarker(series.markerId, body.locale),
+            series,
+          })),
+          mapHref: `/memory/map?marker=${encodeURIComponent(shown[0].markerId)}`,
+        };
+        console.info("[chat] inline visualization attached", {
+          markers: shown.map((series) => series.markerId),
+        });
+      }
+    } catch (err) {
+      // La visualización es un complemento: su fallo no bloquea la respuesta.
+      console.error("[chat] visualization_failed", err);
+    }
+  }
+
   return NextResponse.json({
     text: finalText,
     citations,
     guardrail: { verdict, flags },
+    ...(visualization ? { visualization } : {}),
   });
 }

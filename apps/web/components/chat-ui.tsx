@@ -4,7 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { MarkdownView } from "./markdown-view";
 import { CitationCard } from "./citation-card";
 import { InlineDisclaimer } from "./disclaimer";
+import { LabTimeline } from "./lab-timeline";
+import { LabValueBand } from "./lab-value-band";
 import { copy, DEFAULT_LOCALE, type Locale } from "@/lib/i18n";
+import type { LabSeries } from "@/lib/lab-visualization";
 
 interface Citation {
   source: "personal" | "evidence";
@@ -19,6 +22,12 @@ interface Citation {
   observedAt?: string;
 }
 
+interface ChatVisualization {
+  kind: "lab-series";
+  series: Array<{ markerId: string; displayName: string; series: LabSeries }>;
+  mapHref: string;
+}
+
 interface AssistantMessage {
   role: "assistant";
   content: string;
@@ -26,6 +35,9 @@ interface AssistantMessage {
   guardrail: { verdict: "safe" | "rewrite" | "block"; flags?: string[] };
   /** Aviso fijo de recursos de crisis: nunca generado por el LLM. */
   crisis?: boolean;
+  /** Series estructuradas del propio usuario; el servidor las construye
+   *  de forma determinista y el cliente las dibuja. El LLM no interviene. */
+  visualization?: ChatVisualization;
 }
 
 interface UserMessage {
@@ -90,6 +102,7 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
         citations: Citation[];
         guardrail: { verdict: "safe" | "rewrite" | "block"; flags?: string[] };
         crisis?: boolean;
+        visualization?: ChatVisualization;
       };
       setMessages([
         ...nextHistory,
@@ -99,6 +112,7 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
           citations: json.citations,
           guardrail: json.guardrail,
           crisis: json.crisis === true,
+          visualization: json.visualization,
         },
       ]);
     } catch (err) {
@@ -222,6 +236,44 @@ function AssistantBubble({
         <MarkdownView content={m.content} />
         <InlineDisclaimer locale={locale} />
       </div>
+
+      {m.visualization && m.visualization.series.length > 0 && (
+        <div className="max-w-[96%] space-y-3 sm:max-w-[90%]">
+          {m.visualization.series.map(({ markerId, displayName, series }) => (
+            <div
+              key={markerId}
+              className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 sm:p-5"
+            >
+              {series.points.length > 1 ? (
+                <LabTimeline
+                  displayName={displayName}
+                  series={series}
+                  locale={locale}
+                  sourceHref={(point) => `/memory/view/${encodeURI(point.sourcePath)}`}
+                />
+              ) : (
+                <LabValueBand
+                  displayName={displayName}
+                  value={series.points[0].value}
+                  unit={series.points[0].unitOriginal ?? series.points[0].unitUcum ?? ""}
+                  observedAt={series.points[0].observedAt}
+                  labName={series.points[0].labName}
+                  reference={series.points[0].reference}
+                  referenceOriginal={series.points[0].referenceOriginal}
+                  sourceHref={`/memory/view/${encodeURI(series.points[0].sourcePath)}`}
+                  locale={locale}
+                />
+              )}
+            </div>
+          ))}
+          <a
+            href={m.visualization.mapHref}
+            className="inline-block text-xs text-[var(--color-muted)] underline hover:text-[var(--color-foreground)]"
+          >
+            {locale === "de" ? "Auf der Gesundheitskarte vergrößern" : "Ampliar en el mapa de salud"} →
+          </a>
+        </div>
+      )}
 
       {m.citations.length > 0 && (
         <div className="max-w-[96%] sm:max-w-[90%]">

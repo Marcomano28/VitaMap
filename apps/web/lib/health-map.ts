@@ -88,7 +88,7 @@ export interface HealthMapViewModel {
 
 export type HealthMapModel = HealthMapViewModel;
 
-function displayMarker(markerId: string, locale: Locale): string {
+export function displayMarker(markerId: string, locale: Locale): string {
   const explicit = MARKER_LABELS[markerId]?.[locale];
   if (explicit) return explicit;
   const words = markerId.split("-");

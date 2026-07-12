@@ -20,10 +20,15 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function HealthMapPage() {
+export default async function HealthMapPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ marker?: string }>;
+}) {
   noStore();
   const userId = await requireSubscribedUserId();
   const locale = await getLocale();
+  const { marker } = await searchParams;
   const series = await getLabSeriesSet(userId);
   const model = buildHealthMapModel(series, locale);
   const de = locale === "de";
@@ -50,7 +55,7 @@ export default async function HealthMapPage() {
       </header>
 
       {model.markers.length > 0 ? (
-        <HealthMapExplorer model={model} locale={locale} />
+        <HealthMapExplorer model={model} locale={locale} initialMarkerId={marker} />
       ) : (
         <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] p-6">
           <p className="text-sm">
