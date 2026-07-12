@@ -102,6 +102,44 @@ export function displayMarker(markerId: string, locale: Locale): string {
     .join(" ");
 }
 
+/**
+ * Selecciona el payload visual del chat sin mezclar fechas en una petición de
+ * "última analítica". No convierte ni recalcula puntos.
+ */
+export function selectInlineLabSeries(
+  seriesSet: readonly LabSeries[],
+  latestOnly: boolean,
+  limit = 3,
+): LabSeries[] {
+  let selected = seriesSet
+    .filter((series) => series.points.length > 0)
+    .map((series) => ({ ...series, points: [...series.points] }));
+  if (latestOnly) {
+    const latestDate = selected
+      .flatMap((series) => series.points.map((point) => point.observedAt))
+      .sort()
+      .at(-1);
+    selected = latestDate
+      ? selected
+          .map((series) => ({
+            ...series,
+            points: series.points.filter((point) => point.observedAt === latestDate),
+            comparability: "insufficient" as const,
+            warnings: [],
+          }))
+          .filter((series) => series.points.length > 0)
+      : [];
+  }
+  return selected
+    .sort((a, b) => {
+      const byDate = b.points.at(-1)!.observedAt.localeCompare(
+        a.points.at(-1)!.observedAt,
+      );
+      return byDate || a.markerId.localeCompare(b.markerId);
+    })
+    .slice(0, Math.max(0, Math.floor(limit)));
+}
+
 function markerTerritory(markerId: string): string {
   for (const territory of TERRITORIES) {
     const belongs = territory.groups.some((groupId) =>

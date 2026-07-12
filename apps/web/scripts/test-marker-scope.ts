@@ -228,6 +228,11 @@ assert.equal(
   false,
   "una tarjeta Ayurveda no debe coincidir con el lente MTC si declara tradicion",
 );
+assert.equal(
+  matchesLens({ title: "Tradición sin identificar", seccion: "tradicion" }, new Set(["mtc"])),
+  false,
+  "seccion tradicion sin tradicion explicita no se atribuye a ningun lente",
+);
 // Sin lente, el orden no cambia.
 assert.deepEqual(
   applyLensPreference(lensDocs, new Set()).map((d) => d.title),

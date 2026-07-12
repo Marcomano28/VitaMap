@@ -224,8 +224,10 @@ export function matchesLens<T extends { tradicion?: string; seccion?: string; ma
   const markers = declaredMarkers(doc.marker);
   for (const marker of markers) if (lens.has(marker)) return true;
 
-  // Fallback historico: algunas tarjetas antiguas solo declaran `seccion`.
-  return typeof doc.tradicion !== "string" && doc.seccion === "tradicion";
+  // Fail-closed: `seccion: tradicion` no identifica qué tradición es. Las
+  // tarjetas sin `tradicion` no se elevan por un lente concreto, para evitar
+  // que Ayurveda, MTC y acupuntura se contaminen entre sí.
+  return false;
 }
 
 export function keepDoc(
