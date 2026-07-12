@@ -5,6 +5,7 @@ export interface LabValueBandProps {
   observedAt: string;
   labName?: string | null;
   reference?: { low: number | null; high: number | null } | null;
+  referenceOriginal?: string | null;
   sourceHref?: string;
   locale?: "es" | "de";
 }
@@ -20,6 +21,7 @@ export function LabValueBand({
   observedAt,
   labName,
   reference,
+  referenceOriginal,
   sourceHref,
   locale = "es",
 }: LabValueBandProps) {
@@ -50,13 +52,15 @@ export function LabValueBand({
   const pointX = x(value);
   const bandStart = low === null ? 48 : x(low);
   const bandEnd = high === null ? 652 : x(high);
-  const rangeText = hasRange
-    ? low !== null && high !== null
+  const rangeText = referenceOriginal
+    ? `${referenceOriginal} ${unit}`
+    : hasRange
+      ? low !== null && high !== null
       ? `${formatNumber(low, locale)}–${formatNumber(high, locale)} ${unit}`
       : low !== null
         ? `≥ ${formatNumber(low, locale)} ${unit}`
         : `≤ ${formatNumber(high as number, locale)} ${unit}`
-    : t.noReference;
+      : t.noReference;
   const description = `${displayName}: ${formatNumber(value, locale)} ${unit}, ${observedAt}. ${rangeText}.`;
 
   return (

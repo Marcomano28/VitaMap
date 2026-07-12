@@ -16,6 +16,7 @@ export interface LabSeriesPoint {
   labName: string | null;
   sourcePath: string;
   reference: StructuredReferenceRange | null;
+  referenceOriginal?: string | null;
   normalizationStatus: LabMarkerValue["normalization_status"];
 }
 
@@ -90,6 +91,13 @@ function decimal(value: string): number | null {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function validObservedAt(value: string): boolean {
+  const date = value.slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
+  const parsed = new Date(`${date}T00:00:00Z`);
+  return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === date;
+}
+
 /** Conservador: solo estructura rangos simples; el texto original siempre se conserva. */
 export function parseReferenceRange(
   input: string | null | undefined,
@@ -135,7 +143,11 @@ export function buildLabSeries(
   const points: LabSeriesPoint[] = [];
   for (const document of documents) {
     const fm = document.frontmatter;
-    if (fm.type !== "lab_result" || typeof fm.observed_at !== "string") continue;
+    if (
+      fm.type !== "lab_result" ||
+      typeof fm.observed_at !== "string" ||
+      !validObservedAt(fm.observed_at)
+    ) continue;
     const labName = typeof fm.lab_name === "string" ? fm.lab_name : null;
     const markers = Array.isArray(fm.markers) ? fm.markers : [];
     for (const raw of markers) {
@@ -155,6 +167,7 @@ export function buildLabSeries(
         reference: rr
           ? { low: rr.low, high: rr.high, unitUcum: rr.unit_ucum }
           : null,
+        referenceOriginal: marker.reference_range,
         normalizationStatus: marker.normalization_status,
       });
     }
