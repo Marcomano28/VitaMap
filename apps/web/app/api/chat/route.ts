@@ -135,6 +135,7 @@ export async function POST(req: Request) {
   let evidence: RetrievedChunk[] = [];
   let scopedMarkers: string[] = [];
   let structuredLabSources: Array<{ path: string; observedAt: string }> = [];
+  const personalLabRequest = isPersonalLabValueRequest(body.message);
   const retrievalStartedAt = Date.now();
   console.info("[chat] retrieval started");
   try {
@@ -259,11 +260,16 @@ export async function POST(req: Request) {
   const guardrailStartedAt = Date.now();
   console.info("[chat] guardrail started");
   try {
-    const decision = await checkResponse(draft, contextBlock, deadline);
+    const decision = await checkResponse(
+      draft,
+      contextBlock,
+      deadline,
+      personalLabRequest,
+    );
     verdict = decision.verdict;
     flags = decision.flags;
     if (decision.verdict === "rewrite") {
-      const structuredSeries = isPersonalLabValueRequest(body.message)
+      const structuredSeries = personalLabRequest
         ? await getLabSeriesSet(userId, scopedMarkers)
         : [];
       const groundedAnswer = buildLabSeriesAnswer(
@@ -293,6 +299,7 @@ export async function POST(req: Request) {
         const remainingPolicyFlags = deterministicResponseFlags(
           rewritten,
           contextBlock,
+          personalLabRequest,
         );
         if (
           hasVisibleAssistantText(rewritten) &&
@@ -316,6 +323,7 @@ export async function POST(req: Request) {
           const correctedPolicyFlags = deterministicResponseFlags(
             corrected,
             contextBlock,
+            personalLabRequest,
           );
           if (
             hasVisibleAssistantText(corrected) &&

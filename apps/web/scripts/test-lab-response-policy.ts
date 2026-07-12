@@ -83,5 +83,21 @@ assert.deepEqual(
   ),
   [],
 );
+assert.deepEqual(
+  deterministicResponseFlags(
+    "El LDL transporta colesterol en la sangre; una guía educativa puede expresar sus valores en mg/dL.",
+    `<source type="evidence">LDL cholesterol is commonly reported in mg/dL.</source>`,
+    false,
+  ),
+  [],
+);
+assert.deepEqual(
+  deterministicResponseFlags(
+    "El LDL está dentro del rango saludable.",
+    `<source type="personal">LDL: 139 mg/dL</source>`,
+    true,
+  ),
+  ["personal_target_without_source"],
+);
 
 console.log("Lab response policy: todas las pruebas pasaron.");
