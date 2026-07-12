@@ -93,26 +93,29 @@ export function LabValueBand({
             width={Math.max(2, bandEnd - bandStart)}
             height="32"
             rx="16"
-            fill="color-mix(in oklch, var(--color-accent) 18%, transparent)"
-            stroke="color-mix(in oklch, var(--color-accent) 48%, var(--color-border))"
+            fill="var(--chart-band)"
+            stroke="var(--chart-band-edge)"
           />
         )}
-        <line
-          x1={pointX}
-          x2={pointX}
-          y1="30"
-          y2="92"
-          stroke="var(--color-foreground)"
-          strokeWidth="2"
-        />
-        <circle
-          cx={pointX}
-          cy="64"
-          r="7"
-          fill="var(--color-card)"
-          stroke="var(--color-foreground)"
-          strokeWidth="3"
-        />
+        <g className="lab-mark-reveal" style={{ animationDelay: "0.2s" }}>
+          <line
+            x1={pointX}
+            x2={pointX}
+            y1="30"
+            y2="92"
+            stroke="var(--chart-recent)"
+            strokeWidth="2"
+          />
+          <circle cx={pointX} cy="64" r="13" fill="var(--chart-recent-glow)" />
+          <circle
+            cx={pointX}
+            cy="64"
+            r="7"
+            fill="var(--chart-recent)"
+            stroke="var(--color-card)"
+            strokeWidth="2.5"
+          />
+        </g>
         <text className="hidden sm:block" x={pointX} y="20" textAnchor="middle" fill="var(--color-foreground)" fontSize="13">
           {formatNumber(value, locale)} {unit}
         </text>
