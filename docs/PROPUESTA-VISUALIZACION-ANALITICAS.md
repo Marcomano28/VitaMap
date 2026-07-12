@@ -19,9 +19,26 @@ La primera base ya existe en el repositorio:
   no lo son, conserva la cronología pero interrumpe la lectura como tendencia;
 - `/guide/visualization` permite revisar el primer componente con datos
   sintéticos antes de conectarlo al chat o a datos personales.
+- `/memory/map` construye ya un mapa real desde la memoria autenticada del
+  usuario, sin API pública ni intervención del LLM en los valores;
+- `HealthMapViewModel` declara versión de esquema y taxonomía, política de no
+  conversión/no diagnóstico y `edges: []` por diseño;
+- las perspectivas **Territorios**, **Última analítica** y **Evolución** usan
+  `query_groups` únicamente como agrupaciones de navegación;
+- las unidades distintas se representan en carriles separados y solo se unen
+  puntos que comparten la misma unidad normalizada;
+- la lectura de memoria bloquea symlinks que intenten salir del directorio del
+  usuario y la página fuerza renderizado privado sin caché compartida.
+- el chat adjunta una lámina opcional únicamente ante intención personal de
+  laboratorio; la selección se deriva de `marker-scope` y los valores proceden
+  de las series estructuradas, no del texto generado por el LLM;
+- "última analítica" limita también la lámina a la fecha más reciente, mientras
+  que una petición de evolución conserva la serie longitudinal.
 
-Todavía no están implementados el contrato visual de la API de chat ni la
-selección de visualizaciones desde el RAG.
+Todavía no están implementados el plano autónomo de Ayurveda ni las relaciones
+revisadas del futuro grafo. No se dibujan aún aristas clínicas:
+`health_area_routes`, `query_groups` y `relacionado_con` no se reinterpretan
+como causalidad o equivalencia.
 
 ## 1. Qué se pide
 
@@ -70,9 +87,9 @@ diseño no negociables:
 - **Sin veredicto cromático.** Nunca pintar un valor como "malo" (nada de
   rojo/verde como juicio). El color comunica recencia y calma, no normalidad.
 - **La "norma" es una franja descriptiva, no una sentencia.** Se rotula
-  *"la mayoría de los resultados se sitúan en esta franja"*, no *"ANORMAL"*. Es
-  una afirmación sobre una distribución poblacional, no un juicio sobre la
-  persona.
+  *"intervalo de referencia indicado en este informe"*, no *"ANORMAL"*. No se
+  presupone que el intervalo describa una distribución poblacional ni se
+  convierte en un juicio sobre la persona.
 - **Procedencia visible en cada punto.** Cada medición enlaza a la analítica de
   origen (laboratorio, método, fecha). El intervalo de referencia se toma
   **del propio informe del usuario** como fuente primaria; los rangos
@@ -100,9 +117,9 @@ analítica de origen. Nada más.
 
 ### 4.2 Comparativa con la norma — "la franja de calma"
 
-El intervalo de referencia se representa como una **banda luminosa suave** —el
-territorio donde caen la mayoría de los resultados—, no como "zona normal verde
-/ zona roja". El valor de la persona se sitúa **en relación** con esa banda, sin
+El intervalo de referencia se representa como una **banda luminosa suave** —la
+franja declarada por ese informe—, no como "zona normal verde / zona roja". El
+valor de la persona se sitúa **en relación** con esa banda, sin
 que su posición fuera de ella se coloree como alarma. El lenguaje hace el trabajo
 que el color no debe hacer: descriptivo, con procedencia y con sus límites.
 
@@ -162,8 +179,8 @@ actualiza la lámina. Un solo lugar para conversar y para registrar; sin
 formulario aparte.
 
 **Cautela reforzada (presión).** Es el dato más sensible al guardrail por los
-umbrales de hipertensión. La franja se mantiene descriptiva ("dónde caen la
-mayoría de lecturas en reposo"), sin "ALTO" en rojo ni semáforo, con la
+umbrales de hipertensión. La franja se mantiene atribuida y descriptiva
+("intervalo indicado por la fuente seleccionada"), sin "ALTO" en rojo ni semáforo, con la
 advertencia de que una lectura aislada no se interpreta sola. No se suaviza el
 ruido en una falsa tendencia limpia: mostrar la dispersión es parte del mensaje.
 

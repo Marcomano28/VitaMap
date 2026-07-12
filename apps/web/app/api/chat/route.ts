@@ -31,7 +31,7 @@ import { detectCrisis, crisisResourcesText } from "@/lib/crisis";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { getLabSeriesSet } from "@/lib/memory-reader";
 import { buildLabSeriesAnswer } from "@/lib/lab-chat-fallback";
-import { displayMarker } from "@/lib/health-map";
+import { displayMarker, selectInlineLabSeries } from "@/lib/health-map";
 import type { LabSeries } from "@/lib/lab-visualization";
 import {
   isLatestLabRequest,
@@ -449,12 +449,11 @@ export async function POST(req: Request) {
   ) {
     try {
       const allSeries = await getLabSeriesSet(userId, scopedMarkers);
-      const shown = allSeries
-        .filter((series) => series.points.length > 0)
-        .sort((a, b) =>
-          b.points.at(-1)!.observedAt.localeCompare(a.points.at(-1)!.observedAt),
-        )
-        .slice(0, 3);
+      const shown = selectInlineLabSeries(
+        allSeries,
+        isLatestLabRequest(body.message),
+        3,
+      );
       if (shown.length > 0) {
         visualization = {
           kind: "lab-series",
