@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import {
   isLatestLabRequest,
   isPersonalLabValueRequest,
+  personalContextForRequest,
   selectLatestLabItem,
 } from "../lib/personal-context-policy";
 import type { MemoryItem } from "../lib/memory-reader";
@@ -16,6 +17,34 @@ assert.equal(isPersonalLabValueRequest("Compara mis valores de glucosa"), true);
 assert.equal(isPersonalLabValueRequest("¿Qué es el colesterol LDL?"), false);
 assert.equal(isPersonalLabValueRequest("¿Qué es el LDL?"), false);
 assert.equal(isPersonalLabValueRequest("¿Qué alimentos afectan al LDL?"), false);
+
+const personalChunks = [
+  {
+    source: "personal" as const,
+    docId: "lab",
+    path: "labs/2026.md",
+    title: "Analítica",
+    context: "",
+    snippet: "LDL 139 mg/dL",
+    score: 1,
+    memoryType: "lab_result",
+  },
+  {
+    source: "personal" as const,
+    docId: "note",
+    path: "notes/context.md",
+    title: "Observación",
+    context: "",
+    snippet: "Contexto personal no analítico",
+    score: 0.8,
+    memoryType: "observation",
+  },
+];
+assert.deepEqual(
+  personalContextForRequest(personalChunks, false).map((chunk) => chunk.docId),
+  ["note"],
+);
+assert.equal(personalContextForRequest(personalChunks, true).length, 2);
 
 const item = (observedAt: string, type = "lab_result"): MemoryItem => ({
   relPath: `labs/${observedAt}.md`,

@@ -64,11 +64,15 @@ const understand = composeEditorialCard(parsed, "understand");
 assert.ok(understand);
 const understandText = serializeEditorialSections(understand);
 assert.match(understandText, /Cómo se relaciona/);
+assert.doesNotMatch(understandText, /Una imagen para empezar/);
 assert.doesNotMatch(understandText, /Si quieres profundizar/);
 
 const deep = composeEditorialCard(parsed, "deep");
 assert.ok(deep);
-assert.match(serializeEditorialSections(deep), /Si quieres profundizar/);
+const deepText = serializeEditorialSections(deep);
+assert.match(deepText, /Si quieres profundizar/);
+assert.doesNotMatch(deepText, /En una frase/);
+assert.doesNotMatch(deepText, /Una imagen para empezar/);
 const bounded = serializeEditorialSectionsForPrompt([
   { id: "literal", heading: "Qué significa realmente", body: "dato ".repeat(1_000) },
   { id: "limitations", heading: "Límites de la explicación", body: "Límite obligatorio." },

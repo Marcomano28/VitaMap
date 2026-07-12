@@ -50,15 +50,12 @@ const SECTIONS_BY_DEPTH: Record<EditorialDepth, readonly EditorialSectionId[]> =
   discover: ["summary", "analogy", "literal", "limitations", "sources"],
   understand: [
     "summary",
-    "analogy",
     "literal",
     "relations",
     "limitations",
     "sources",
   ],
   deep: [
-    "summary",
-    "analogy",
     "literal",
     "relations",
     "limitations",

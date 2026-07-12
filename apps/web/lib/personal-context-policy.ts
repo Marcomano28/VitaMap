@@ -41,6 +41,19 @@ export function isPersonalLabValueRequest(message: string): boolean {
   );
 }
 
+/**
+ * Una pregunta conceptual sobre un marcador no autoriza a introducir sus
+ * analíticas. Conservamos otras clases de memoria para no desactivar el RAG
+ * personal general; solo retiramos informes de laboratorio estructurados.
+ */
+export function personalContextForRequest(
+  chunks: readonly RetrievedChunk[],
+  includeLabResults: boolean,
+): RetrievedChunk[] {
+  if (includeLabResults) return [...chunks];
+  return chunks.filter((chunk) => chunk.memoryType !== "lab_result");
+}
+
 export function selectLatestLabItem(items: readonly MemoryItem[]): MemoryItem | null {
   const dated = items.filter((item) => item.type === "lab_result" && item.observedAt);
   if (dated.length === 0) return null;

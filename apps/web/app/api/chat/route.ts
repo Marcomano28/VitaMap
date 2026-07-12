@@ -41,6 +41,7 @@ import {
   isLatestLabRequest,
   isPersonalLabValueRequest,
   latestLabContext,
+  personalContextForRequest,
 } from "@/lib/personal-context-policy";
 
 export const runtime = "nodejs"; // @tobilu/qmd y better-sqlite3 son nativos
@@ -195,6 +196,8 @@ export async function POST(req: Request) {
     if (isLatestLabRequest(body.message)) {
       const latest = await latestLabContext(userId);
       if (latest.length > 0) personal = latest;
+    } else {
+      personal = personalContextForRequest(personal, personalLabRequest);
     }
     console.info("[chat] retrieval complete", {
       durationMs: Date.now() - retrievalStartedAt,

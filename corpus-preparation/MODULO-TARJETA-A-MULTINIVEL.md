@@ -67,8 +67,12 @@ La aplicación compone los bloques así:
 | Profundidad | Bloques |
 |---|---|
 | `discover` | En una frase + imagen + significado literal + límites + fuentes |
-| `understand` | Lo anterior + cómo se relaciona |
-| `deep` | Todos los bloques, incluido profundizar |
+| `understand` | En una frase + significado literal + relaciones + límites + fuentes |
+| `deep` | Significado literal + relaciones + profundizar + límites + fuentes |
+
+Los niveles no se construyen acumulando siempre todo lo anterior. En
+`understand` se omite la metáfora y en `deep` se omiten además el resumen y la
+metáfora para reducir repeticiones y dar espacio al mecanismo.
 
 Los límites y las fuentes aparecen siempre. Una versión sencilla no debe perder
 la frontera entre educación general y lectura individual.
