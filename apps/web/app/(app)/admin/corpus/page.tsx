@@ -57,6 +57,9 @@ const TEXT = {
     none: "No hay documentos.",
     edit: "Editar",
     publish: "Publicar e indexar",
+    replace: "Sustituir e indexar",
+    replacementHint:
+      "Existe una tarjeta publicada con el mismo tarjeta_id. Esta acción la retirará y publicará la nueva versión en una sola operación.",
     delete: "Eliminar borrador",
     retire: "Retirar del índice",
     blockedRights:
@@ -71,6 +74,7 @@ const TEXT = {
     saved: "Borrador guardado.",
     deleted: "Borrador eliminado.",
     publishedOk: "Documento publicado e indexado.",
+    replacedOk: "Tarjeta sustituida e indexada.",
     retired: "Documento retirado del índice.",
     operationFailed:
       "La operación no se completó. Revisa los campos, los derechos y el estado del índice.",
@@ -109,6 +113,9 @@ const TEXT = {
     none: "Keine Dokumente vorhanden.",
     edit: "Bearbeiten",
     publish: "Veröffentlichen und indexieren",
+    replace: "Ersetzen und indexieren",
+    replacementHint:
+      "Eine veröffentlichte Karte mit derselben tarjeta_id ist vorhanden. Sie wird in einem Vorgang entfernt und durch diese Version ersetzt.",
     delete: "Entwurf löschen",
     retire: "Aus Index entfernen",
     blockedRights:
@@ -123,6 +130,7 @@ const TEXT = {
     saved: "Entwurf gespeichert.",
     deleted: "Entwurf gelöscht.",
     publishedOk: "Dokument veröffentlicht und indexiert.",
+    replacedOk: "Karte ersetzt und indexiert.",
     retired: "Dokument aus dem Index entfernt.",
     operationFailed:
       "Der Vorgang ist fehlgeschlagen. Felder, Nutzungsrechte und Indexstatus prüfen.",
@@ -178,6 +186,8 @@ export default async function CorpusAdminPage({ searchParams }: PageProps) {
             ? t.saved
             : params.success === "draft_deleted"
               ? t.deleted
+              : params.success === "replaced"
+                ? t.replacedOk
               : params.success === "published"
                 ? t.publishedOk
                 : t.retired}
@@ -330,7 +340,16 @@ export default async function CorpusAdminPage({ searchParams }: PageProps) {
           <p className="text-sm text-[var(--color-muted)]">{t.none}</p>
         ) : (
           <div className="space-y-3">
-            {drafts.map((document) => (
+            {drafts.map((document) => {
+              const tarjetaId = document.extraFrontmatter?.tarjeta_id;
+              const replacement =
+                typeof tarjetaId === "string"
+                  ? published.find(
+                      (candidate) =>
+                        candidate.extraFrontmatter?.tarjeta_id === tarjetaId,
+                    )
+                  : undefined;
+              return (
               <DocumentCard key={document.id} document={document} locale={locale}>
                 <Link
                   href={`/admin/corpus?edit=${encodeURIComponent(document.id)}#candidate`}
@@ -340,6 +359,9 @@ export default async function CorpusAdminPage({ searchParams }: PageProps) {
                 </Link>
                 <form action={publishCorpusDraftAction}>
                   <input type="hidden" name="id" value={document.id} />
+                  {replacement && (
+                    <input type="hidden" name="replace_existing" value="true" />
+                  )}
                   <SubmitButton
                     className={primaryButtonCls}
                     pendingLabel={t.processing}
@@ -348,7 +370,7 @@ export default async function CorpusAdminPage({ searchParams }: PageProps) {
                       document.rightsStatus !== "licensed"
                     }
                   >
-                    {t.publish}
+                    {replacement ? t.replace : t.publish}
                   </SubmitButton>
                 </form>
                 <form action={deleteCorpusDraftAction}>
@@ -363,8 +385,14 @@ export default async function CorpusAdminPage({ searchParams }: PageProps) {
                       {t.blockedRights}
                     </p>
                   )}
+                {replacement && (
+                  <p className="basis-full text-xs text-amber-700 dark:text-amber-300">
+                    {t.replacementHint} ({replacement.title})
+                  </p>
+                )}
               </DocumentCard>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>

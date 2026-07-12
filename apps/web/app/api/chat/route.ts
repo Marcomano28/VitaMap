@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { queryMemoryAndKB, wrapForPrompt, type RetrievedChunk } from "@/lib/qmd";
+import { kbDir, queryMemoryAndKB, wrapForPrompt, type RetrievedChunk } from "@/lib/qmd";
+import {
+  composeRetrievedEvidence,
+  inferEditorialDepth,
+} from "@/lib/editorial-composition";
 import { deriveScope } from "@/lib/marker-scope";
 import {
   chat,
@@ -44,6 +48,8 @@ export const runtime = "nodejs"; // @tobilu/qmd y better-sqlite3 son nativos
 const Body = z.object({
   message: z.string().min(1).max(4000),
   locale: z.enum(LOCALES).default("de"),
+  depth: z.enum(["discover", "understand", "deep"]).default("understand"),
+  forceDepth: z.boolean().default(false),
   history: z
     .array(
       z.object({
@@ -103,6 +109,9 @@ export async function POST(req: Request) {
     console.error("[chat] invalid_body", err);
     return NextResponse.json({ error: "invalid_body" }, { status: 400 });
   }
+  const editorialDepth = body.forceDepth
+    ? body.depth
+    : inferEditorialDepth(body.message, body.depth);
 
   // -- Clasificador de crisis ----------------------------------------------
   // Antes de cualquier generación (ROADMAP, criterios C-SSRS simplificados).
@@ -137,6 +146,7 @@ export async function POST(req: Request) {
   let evidence: RetrievedChunk[] = [];
   let scopedMarkers: string[] = [];
   let structuredLabSources: Array<{ path: string; observedAt: string }> = [];
+  let editorialComposed = false;
   const personalLabRequest = isPersonalLabValueRequest(body.message);
   const retrievalStartedAt = Date.now();
   console.info("[chat] retrieval started");
@@ -164,6 +174,20 @@ export async function POST(req: Request) {
     });
     personal = result.personal;
     evidence = result.evidence;
+
+    const composed = await composeRetrievedEvidence(
+      kbDir(),
+      evidence,
+      editorialDepth,
+    );
+    evidence = composed.chunks;
+    if (composed.composedPath) {
+      editorialComposed = true;
+      console.info("[chat] editorial card composed", {
+        depth: editorialDepth,
+        path: composed.composedPath,
+      });
+    }
 
     // QMD ordena por relevancia. Para una petición singular de "última
     // analítica", la fecha es el contrato: sustituimos el ranking semántico
@@ -222,6 +246,21 @@ export async function POST(req: Request) {
       ? "Antworte auf Deutsch, auch wenn einzelne Quellen in einer anderen Sprache vorliegen. Wenn relevante deutsche oder europäische Quellen im Kontext vorhanden sind, bevorzuge sie in der Erklärung; wenn eine wichtige Quelle auf Englisch ist, behandle das transparent."
       : "Responde en español, aunque alguna fuente esté en otro idioma.";
 
+  const depthInstruction = localize(body.locale, {
+    es:
+      editorialDepth === "discover"
+        ? "Usa lenguaje cotidiano, frases breves y explica todo término técnico. Conserva las cautelas y no infantilices."
+        : editorialDepth === "deep"
+          ? "Ofrece el mecanismo y los matices metodológicos disponibles en las fuentes, sin extrapolar al caso individual."
+          : "Explica con claridad el término correcto, el mecanismo esencial, el contexto y lo que no permite concluir.",
+    de:
+      editorialDepth === "discover"
+        ? "Verwende Alltagssprache und kurze Sätze und erkläre Fachbegriffe. Bewahre Einschränkungen und vermeide Bevormundung."
+        : editorialDepth === "deep"
+          ? "Erläutere die verfügbaren Mechanismen und methodischen Nuancen, ohne sie auf den Einzelfall zu übertragen."
+          : "Erkläre den korrekten Begriff, den wesentlichen Mechanismus, den Kontext und die Grenzen klar.",
+  });
+
   // Regla educativa opcional: desactivable por configuración para poder
   // apagar esta función interpretativa antes del piloto real (GUIA-OPERATIVA B-1).
   const eduGuide =
@@ -230,7 +269,7 @@ export async function POST(req: Request) {
   const messages: ChatMessage[] = [
     {
       role: "system",
-      content: `${SOCRATIC_SYSTEM_PROMPT}${eduGuide}\n\n${languageInstruction}`,
+      content: `${SOCRATIC_SYSTEM_PROMPT}${eduGuide}\n\n${languageInstruction}\n${depthInstruction}`,
     },
     ...body.history,
     { role: "user", content: userContent },
@@ -478,6 +517,8 @@ export async function POST(req: Request) {
     text: finalText,
     citations,
     guardrail: { verdict, flags },
+    depth: editorialDepth,
+    editorialComposed,
     ...(visualization ? { visualization } : {}),
   });
 }

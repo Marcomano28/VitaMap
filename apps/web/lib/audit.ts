@@ -44,6 +44,7 @@ export type AuditAction =
   | "kb.draft.update"
   | "kb.draft.delete"
   | "kb.publish"
+  | "kb.replace"
   | "kb.retire"
   | "kb.reindex"
   | "user.purge";

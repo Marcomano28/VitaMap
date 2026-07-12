@@ -121,6 +121,7 @@ export interface CorpusDocument extends CorpusDraftInput {
   publishedAt?: string;
   reviewedAt?: string;
   reviewedBy?: string;
+  replacedRelativePath?: string;
 }
 
 let corpusMutationQueue: Promise<void> = Promise.resolve();
@@ -401,6 +402,11 @@ function slugify(value: string): string {
 export function publishCorpusDraft(
   id: string,
   reviewer: string,
+  options: {
+    replaceExisting?: boolean;
+    /** Inyección solo para pruebas; producción usa siempre el reindexador QMD. */
+    reindex?: () => Promise<void>;
+  } = {},
 ): Promise<CorpusDocument> {
   return serializeCorpusMutation(async () => {
     const draftId = safeDraftId(id);
@@ -415,12 +421,45 @@ export function publishCorpusDraft(
       throw new Error("reviewed corpus content is required before publication");
     }
 
+    const tarjetaId = textValue(draft.extraFrontmatter?.tarjeta_id);
+    const published = tarjetaId ? await listPublishedCorpus() : [];
+    const sameCard = published.filter(
+      (document) => textValue(document.extraFrontmatter?.tarjeta_id) === tarjetaId,
+    );
+    if (sameCard.length > 1) {
+      throw new Error("multiple published documents share tarjeta_id");
+    }
+    if (sameCard.length === 1 && !options.replaceExisting) {
+      throw new Error("tarjeta_id already published; explicit replacement required");
+    }
+
     const now = new Date().toISOString();
     const relativePath = path.join(
       draft.sourceKind,
       `${slugify(draft.title)}-${draftId.slice(0, 8)}.md`,
     );
     const destination = resolveCorpusPath(kbDir(), relativePath);
+    const replaced = sameCard[0];
+    const replacedSource = replaced
+      ? resolveCorpusPath(kbDir(), replaced.relativePath)
+      : undefined;
+    const replacedExtension = replaced ? path.extname(replaced.relativePath) : undefined;
+    const retiredRelativePath = replaced
+      ? `${replaced.relativePath.slice(0, -replacedExtension!.length)}-replaced-${Date.now()}${replacedExtension}`
+      : undefined;
+    const replacedDestination = retiredRelativePath
+      ? resolveCorpusPath(retiredDir(), retiredRelativePath)
+      : undefined;
+    let previousVersion = 0;
+    if (replacedSource) {
+      const previousRaw = await fs.readFile(replacedSource, "utf8");
+      const previousData = matter(previousRaw).data as Record<string, unknown>;
+      previousVersion =
+        typeof previousData.version === "number" && previousData.version > 0
+          ? previousData.version
+          : 1;
+    }
+
     await fs.mkdir(path.dirname(destination), { recursive: true });
     await fs.writeFile(
       destination,
@@ -434,19 +473,32 @@ export function publishCorpusDraft(
         reviewed_by: reviewer,
         published_at: now,
         indexed_at: now.slice(0, 10),
-        version: 1,
+        version: previousVersion + 1,
+        replaces: replaced?.relativePath,
       }),
       { encoding: "utf8", flag: "wx" },
     );
 
+    let previousMoved = false;
     try {
+      if (replacedSource && replacedDestination) {
+        await fs.mkdir(path.dirname(replacedDestination), { recursive: true });
+        await fs.rename(replacedSource, replacedDestination);
+        previousMoved = true;
+        invalidateFrontmatterCache(replacedSource);
+      }
       invalidateFrontmatterCache(destination);
-      await reindexPublishedCorpus();
+      await (options.reindex ?? reindexPublishedCorpus)();
       await fs.unlink(draftPath);
     } catch (error) {
       await fs.rm(destination, { force: true }).catch(() => undefined);
       invalidateFrontmatterCache(destination);
-      await reindexPublishedCorpus().catch(() => undefined);
+      if (previousMoved && replacedSource && replacedDestination) {
+        await fs.mkdir(path.dirname(replacedSource), { recursive: true });
+        await fs.rename(replacedDestination, replacedSource).catch(() => undefined);
+        invalidateFrontmatterCache(replacedSource);
+      }
+      await (options.reindex ?? reindexPublishedCorpus)().catch(() => undefined);
       throw error;
     }
 
@@ -457,6 +509,7 @@ export function publishCorpusDraft(
       publishedAt: now,
       reviewedAt: now,
       reviewedBy: reviewer,
+      replacedRelativePath: replaced?.relativePath,
     };
   });
 }

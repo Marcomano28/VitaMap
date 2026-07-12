@@ -74,14 +74,21 @@ export async function deleteCorpusDraftAction(formData: FormData) {
 export async function publishCorpusDraftAction(formData: FormData) {
   const session = await requireAdminSession();
   const id = String(formData.get("id") ?? "");
+  const replaceExisting = formData.get("replace_existing") === "true";
 
   try {
-    const document = await publishCorpusDraft(id, session.user.id);
+    const document = await publishCorpusDraft(id, session.user.id, {
+      replaceExisting,
+    });
     await logAuditEventSafe({
       actor: session.user.id,
-      action: "kb.publish",
+      action: document.replacedRelativePath ? "kb.replace" : "kb.publish",
       subjectId: document.id,
-      payloadSum: `path=${document.relativePath} rights=${document.rightsStatus}`,
+      payloadSum: `path=${document.relativePath} rights=${document.rightsStatus}${
+        document.replacedRelativePath
+          ? ` replaced=${document.replacedRelativePath}`
+          : ""
+      }`,
     });
   } catch (error) {
     console.error("[corpus] failed to publish draft", { id }, error);
@@ -89,7 +96,7 @@ export async function publishCorpusDraftAction(formData: FormData) {
   }
 
   revalidatePath("/admin/corpus");
-  redirect("/admin/corpus?success=published");
+  redirect(`/admin/corpus?success=${replaceExisting ? "replaced" : "published"}`);
 }
 
 export async function retireCorpusDocumentAction(formData: FormData) {

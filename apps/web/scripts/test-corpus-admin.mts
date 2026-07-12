@@ -44,6 +44,7 @@ async function main() {
     createCorpusDraft,
     deleteCorpusDraft,
     listCorpusDrafts,
+    listPublishedCorpus,
     publishCorpusDraft,
     retireCorpusDocument,
     updateCorpusDraft,
@@ -170,6 +171,67 @@ Body long enough to pass corpus draft validation.
       motivos_descenso: ["riesgo-de-sesgo"],
     });
     await deleteCorpusDraft(evidenceDraft.id);
+
+    const versionedInput = {
+      ...baseInput,
+      title: "Versioned educational card",
+      rightsStatus: "permitted" as const,
+      body: "First published version with enough reviewed educational content.",
+      extraFrontmatter: {
+        tarjeta_id: "fixture-versioned-card",
+        marker: ["glucosa-en-ayunas"],
+      },
+    };
+    const firstVersion = await createCorpusDraft(versionedInput);
+    const firstPublished = await publishCorpusDraft(firstVersion.id, "admin@example.com", {
+      reindex: async () => undefined,
+    });
+    assert.equal((await listPublishedCorpus()).length, 1);
+
+    const secondVersion = await createCorpusDraft({
+      ...versionedInput,
+      body: "Second published version replaces the first without duplicate retrieval.",
+    });
+    await assert.rejects(
+      publishCorpusDraft(secondVersion.id, "admin@example.com", {
+        reindex: async () => undefined,
+      }),
+      /explicit replacement required/,
+    );
+    const replacement = await publishCorpusDraft(secondVersion.id, "admin@example.com", {
+      replaceExisting: true,
+      reindex: async () => undefined,
+    });
+    assert.equal(replacement.replacedRelativePath, firstPublished.relativePath);
+    const afterReplacement = await listPublishedCorpus();
+    assert.equal(afterReplacement.length, 1);
+    assert.match(afterReplacement[0].body, /Second published version/);
+    const replacementRaw = await fs.readFile(
+      path.join(root, "kb", afterReplacement[0].relativePath),
+      "utf8",
+    );
+    assert.match(replacementRaw, /version: 2/);
+    assert.match(replacementRaw, /replaces:/);
+    assert.equal((await markdownFiles(path.join(root, "kb-retired"))).length, 1);
+
+    const failedVersion = await createCorpusDraft({
+      ...versionedInput,
+      body: "This replacement must roll back when the index update fails.",
+    });
+    await assert.rejects(
+      publishCorpusDraft(failedVersion.id, "admin@example.com", {
+        replaceExisting: true,
+        reindex: async () => {
+          throw new Error("simulated reindex failure");
+        },
+      }),
+      /simulated reindex failure/,
+    );
+    const afterRollback = await listPublishedCorpus();
+    assert.equal(afterRollback.length, 1);
+    assert.match(afterRollback[0].body, /Second published version/);
+    assert.ok((await listCorpusDrafts()).some((item) => item.id === failedVersion.id));
+    await deleteCorpusDraft(failedVersion.id);
 
     await assert.rejects(
       publishCorpusDraft(created.id, "admin@example.com"),

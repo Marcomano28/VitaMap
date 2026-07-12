@@ -87,3 +87,15 @@ assert.match(
 );
 
 console.log("Prompt QMD ADR-017: evidencia conserva matices, memoria personal se trunca.");
+
+const editorialSentinel = "EDITORIAL_DESPUES_DE_2000";
+const editorialChunk: RetrievedChunk = {
+  ...chunk,
+  snippet: "bloque ".repeat(320) + editorialSentinel,
+  editorialDepth: "deep",
+};
+const editorialPrompt = wrapForPrompt([editorialChunk]);
+assert.match(editorialPrompt, new RegExp(editorialSentinel));
+assert.match(editorialPrompt, /editorial_depth="deep"/);
+
+console.log("Prompt QMD: la composición editorial no vuelve a truncarse.");
