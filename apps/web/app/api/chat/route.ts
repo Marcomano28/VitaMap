@@ -525,6 +525,7 @@ export async function POST(req: Request) {
     guardrail: { verdict, flags },
     depth: editorialDepth,
     editorialComposed,
+    topics: scopedMarkers,
     ...(visualization ? { visualization } : {}),
   });
 }

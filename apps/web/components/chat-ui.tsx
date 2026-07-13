@@ -30,6 +30,17 @@ interface ChatVisualization {
   mapHref: string;
 }
 
+interface CuriosityCardData {
+  id: string;
+  title: string;
+  body: string;
+  sourceUrl: string;
+  publicationDate?: string;
+  limitations: string[];
+  markers: string[];
+  related: boolean;
+}
+
 interface AssistantMessage {
   role: "assistant";
   content: string;
@@ -43,6 +54,8 @@ interface AssistantMessage {
   request: string;
   depth: EditorialDepth;
   editorialComposed?: boolean;
+  topics?: string[];
+  curiosityOpened?: boolean;
 }
 
 interface UserMessage {
@@ -50,18 +63,28 @@ interface UserMessage {
   content: string;
 }
 
-type Message = UserMessage | AssistantMessage;
+interface CuriosityMessage {
+  role: "curiosity";
+  card: CuriosityCardData;
+}
+
+type Message = UserMessage | AssistantMessage | CuriosityMessage;
 
 const HISTORY_FOR_LLM = 10; // últimos N mensajes que enviamos al LLM
 
 export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
   const t = copy[locale].chat;
+  // El catálogo piloto está redactado en español. No se traduce con el LLM.
+  const curiosityEnabled = locale === "es";
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [curiosityLoading, setCuriosityLoading] = useState(false);
+  const [seenCuriosityIds, setSeenCuriosityIds] = useState<string[]>([]);
   const [depth, setDepth] = useState<EditorialDepth>("understand");
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -85,6 +108,9 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
           depth: requestedDepth,
           forceDepth,
           history: history
+            .filter(
+              (m): m is UserMessage | AssistantMessage => m.role !== "curiosity",
+            )
             .slice(-HISTORY_FOR_LLM)
             .map((m) => ({ role: m.role, content: m.content })),
         }),
@@ -110,6 +136,7 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
         visualization?: ChatVisualization;
         depth: EditorialDepth;
         editorialComposed?: boolean;
+        topics?: string[];
       };
       return {
         content: json.text,
@@ -119,6 +146,7 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
         visualization: json.visualization,
         depth: json.depth ?? requestedDepth,
         editorialComposed: json.editorialComposed,
+        topics: json.topics ?? [],
       };
     } finally {
       window.clearTimeout(timeoutId);
@@ -185,6 +213,52 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
     }
   }
 
+  async function openCuriosity(topics: string[], afterIndex?: number) {
+    if (curiosityLoading || loading) return;
+    setCuriosityLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/curiosity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topics, seenIds: seenCuriosityIds }),
+        credentials: "same-origin",
+      });
+      if (!res.ok) {
+        if (res.status === 401) {
+          window.location.href = "/login?next=/chat";
+          return;
+        }
+        if (res.status === 402) {
+          window.location.href = "/settings/billing?required=1";
+          return;
+        }
+        throw new Error(res.status === 404 ? t.noCuriosity : t.requestFailed);
+      }
+      const card = (await res.json()) as CuriosityCardData;
+      setSeenCuriosityIds((current) => [...current, card.id]);
+      setMessages((current) => {
+        const next = current.map((message, index) =>
+          index === afterIndex && message.role === "assistant"
+            ? { ...message, curiosityOpened: true }
+            : message,
+        );
+        const insertion = afterIndex === undefined ? next.length : afterIndex + 1;
+        next.splice(insertion, 0, { role: "curiosity", card });
+        return next;
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t.requestFailed);
+    } finally {
+      setCuriosityLoading(false);
+    }
+  }
+
+  function exploreCuriosity(title: string) {
+    setInput(`${t.exploreCuriosity}: ${title}`);
+    window.requestAnimationFrame(() => inputRef.current?.focus());
+  }
+
   return (
     <div className="vitamap-chat-panel flex flex-col">
       <div
@@ -192,21 +266,42 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
         className="flex-1 overflow-y-auto space-y-6 pr-1 sm:pr-2"
       >
         {messages.length === 0 && !loading && (
-          <div className="text-sm text-[var(--color-muted)] rounded-md border border-dashed border-[var(--color-border)] p-4">
-            {t.empty}
+          <div className="space-y-3 text-sm text-[var(--color-muted)] rounded-md border border-dashed border-[var(--color-border)] p-4">
+            <p>{t.empty}</p>
+            {curiosityEnabled && <button
+              type="button"
+              disabled={curiosityLoading}
+              onClick={() => openCuriosity([])}
+              className="text-xs underline hover:text-[var(--color-foreground)] disabled:opacity-50"
+            >
+              {curiosityLoading ? t.openingCuriosity : t.openCuriosity}
+            </button>}
           </div>
         )}
 
         {messages.map((m, i) =>
           m.role === "user" ? (
             <UserBubble key={i} content={m.content} />
-          ) : (
+          ) : m.role === "assistant" ? (
             <AssistantBubble
               key={i}
               m={m}
               locale={locale}
               disabled={loading}
               onDepthChange={(target) => recompose(i, target)}
+              onCuriosity={() => openCuriosity(m.topics ?? [], i)}
+              curiosityLoading={curiosityLoading}
+              curiosityEnabled={curiosityEnabled}
+            />
+          ) : (
+            <CuriosityBubble
+              key={`${m.card.id}-${i}`}
+              card={m.card}
+              locale={locale}
+              onClose={() =>
+                setMessages((current) => current.filter((_, index) => index !== i))
+              }
+              onExplore={() => exploreCuriosity(m.card.title)}
             />
           ),
         )}
@@ -248,6 +343,7 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
           ))}
         </fieldset>
         <textarea
+          ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
@@ -288,11 +384,17 @@ function AssistantBubble({
   locale,
   disabled,
   onDepthChange,
+  onCuriosity,
+  curiosityLoading,
+  curiosityEnabled,
 }: {
   m: AssistantMessage;
   locale: Locale;
   disabled: boolean;
   onDepthChange: (depth: EditorialDepth) => void;
+  onCuriosity: () => void;
+  curiosityLoading: boolean;
+  curiosityEnabled: boolean;
 }) {
   const t = copy[locale].chat;
   const blocked = m.guardrail.verdict === "block";
@@ -341,6 +443,16 @@ function AssistantBubble({
               className="text-xs underline text-[var(--color-muted)] hover:text-[var(--color-foreground)] disabled:opacity-50"
             >
               {t.moreDetail}
+            </button>
+          )}
+          {curiosityEnabled && !blocked && !m.curiosityOpened && (
+            <button
+              type="button"
+              disabled={disabled || curiosityLoading}
+              onClick={onCuriosity}
+              className="ml-auto text-xs underline text-[var(--color-muted)] hover:text-[var(--color-foreground)] disabled:opacity-50"
+            >
+              {curiosityLoading ? t.openingCuriosity : t.openCuriosity}
             </button>
           )}
         </div>
@@ -409,5 +521,51 @@ function AssistantBubble({
         </div>
       )}
     </div>
+  );
+}
+
+function CuriosityBubble({
+  card,
+  locale,
+  onClose,
+  onExplore,
+}: {
+  card: CuriosityCardData;
+  locale: Locale;
+  onClose: () => void;
+  onExplore: () => void;
+}) {
+  const t = copy[locale].chat;
+  return (
+    <aside className="max-w-[96%] rounded-2xl border border-[var(--color-accent)]/40 bg-[var(--color-card)] px-4 py-4 sm:max-w-[90%]">
+      <p className="mb-1 text-[10px] uppercase tracking-[0.16em] text-[var(--color-muted)]">
+        {card.related ? t.relatedCuriosity : t.generalCuriosity}
+      </p>
+      <h3 className="mb-3 font-medium">{card.title}</h3>
+      <MarkdownView content={card.body} />
+      {card.limitations[0] && (
+        <p className="mt-3 text-xs text-[var(--color-muted)]">{card.limitations[0]}</p>
+      )}
+      <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-[var(--color-border)] pt-3 text-xs">
+        <a
+          href={card.sourceUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="underline text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
+        >
+          {t.curiositySource}{card.publicationDate ? ` · ${card.publicationDate}` : ""}
+        </a>
+        <button type="button" onClick={onExplore} className="underline">
+          {t.exploreThis}
+        </button>
+        <button
+          type="button"
+          onClick={onClose}
+          className="underline text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
+        >
+          {t.backToTopic}
+        </button>
+      </div>
+    </aside>
   );
 }
