@@ -102,6 +102,27 @@ async function main() {
       assert.ok(validated.body.length > 20);
       assert.ok(validated.limitations.length > 0);
     }
+    const layeredDraftDir = path.join(
+      workspaceRoot,
+      "corpus-preparation",
+      "source-material",
+      "borradores",
+      "migracion-multinivel",
+    );
+    const layeredDraftFiles = (await markdownFiles(layeredDraftDir)).filter(
+      (file) => path.basename(file).toLowerCase() !== "readme.md",
+    );
+    assert.ok(layeredDraftFiles.length >= 3);
+    for (const file of layeredDraftFiles) {
+      const imported = corpusDraftInputFromForm(
+        new FormData(),
+        await fs.readFile(file, "utf8"),
+      );
+      const validated = CorpusDraftInputSchema.parse(imported);
+      assert.ok(validated.extraFrontmatter?.tarjeta_id);
+      assert.ok(validated.body.includes("## Límites de la explicación"));
+      assert.ok(validated.body.includes("## Fuentes"));
+    }
     const importedWithEvidence = corpusDraftInputFromForm(
       new FormData(),
       `---

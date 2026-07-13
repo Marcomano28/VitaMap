@@ -4,10 +4,11 @@ Estado: borradores para revisión humana · no publicar automáticamente
 
 ## Alcance
 
-Este lote migra dos tarjetas A existentes:
+Este lote migra dos tarjetas A y una tarjeta D existentes:
 
 - colesterol LDL;
 - glucosa en ayunas.
+- lectura conjunta de glucosa en ayunas y HbA1c.
 
 No crea nuevas intenciones ni sustituye todavía los documentos de
 `approved-current-structure`. Cada borrador conserva el `tarjeta_id` de la
