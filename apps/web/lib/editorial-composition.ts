@@ -197,29 +197,23 @@ export async function composeRetrievedEvidence(
   chunks: readonly RetrievedChunk[],
   depth: EditorialDepth,
 ): Promise<{ chunks: RetrievedChunk[]; composedPath?: string }> {
-  let composedPath: string | undefined;
-  const output: RetrievedChunk[] = [];
+  const output = chunks.map((chunk) => ({ ...chunk }));
+  const primary = output[0];
+  if (!primary || primary.source !== "evidence") return { chunks: output };
 
-  for (const chunk of chunks) {
-    if (chunk.source !== "evidence" || composedPath) {
-      output.push({ ...chunk });
-      continue;
-    }
-    const card = await readEditorialCard(root, chunk.path);
-    const sections = card ? composeEditorialCard(card, depth) : null;
-    if (!sections) {
-      output.push({ ...chunk });
-      continue;
-    }
-    composedPath = chunk.path;
-    output.push({
-      ...chunk,
-      snippet: serializeEditorialSectionsForPrompt(sections),
-      editorialDepth: depth,
-    });
-  }
+  // Solo se recompone la tarjeta que QMD y el router han colocado primero.
+  // Buscar una A estructurada más abajo puede mezclar intenciones (por ejemplo,
+  // interpretación + lectura conjunta) y producir párrafos duplicados.
+  const card = await readEditorialCard(root, primary.path);
+  const sections = card ? composeEditorialCard(card, depth) : null;
+  if (!sections) return { chunks: output };
 
-  return { chunks: output, composedPath };
+  output[0] = {
+    ...primary,
+    snippet: serializeEditorialSectionsForPrompt(sections),
+    editorialDepth: depth,
+  };
+  return { chunks: output, composedPath: primary.path };
 }
 
 export function inferEditorialDepth(

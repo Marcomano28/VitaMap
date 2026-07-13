@@ -172,6 +172,34 @@ async function testPilotDrafts() {
   assert.match(retrieved.chunks[0].snippet, /## Límites de la explicación/);
   assert.equal(retrieved.chunks[0].editorialDepth, "discover");
   assert.equal(retrieved.chunks[1].snippet, "SEGUNDO_CHUNK");
+
+  const primaryClassic = await composeRetrievedEvidence(
+    root,
+    [
+      {
+        source: "evidence",
+        docId: "lectura-conjunta-antigua",
+        path: "no-estructurada.md",
+        title: "Lectura conjunta",
+        context: "",
+        snippet: "CHUNK_D_PRINCIPAL",
+        score: 1,
+      },
+      {
+        source: "evidence",
+        docId: "ldl-secundaria",
+        path: drafts[0],
+        title: "LDL",
+        context: "",
+        snippet: "CHUNK_A_SECUNDARIO",
+        score: 0.9,
+      },
+    ],
+    "deep",
+  );
+  assert.equal(primaryClassic.composedPath, undefined);
+  assert.equal(primaryClassic.chunks[0].snippet, "CHUNK_D_PRINCIPAL");
+  assert.equal(primaryClassic.chunks[1].snippet, "CHUNK_A_SECUNDARIO");
 }
 
 Promise.all([testSafeReread(), testPilotDrafts()])

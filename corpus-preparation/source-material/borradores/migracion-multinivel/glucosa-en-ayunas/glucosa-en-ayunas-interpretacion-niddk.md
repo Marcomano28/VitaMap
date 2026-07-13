@@ -100,6 +100,8 @@ resultado concreto es más alto o más bajo.
 Un solo valor no establece por sí mismo un diagnóstico, no identifica el tipo
 de diabetes y no describe el comportamiento de la glucosa durante todo el día.
 Esta tarjeta no interpreta un resultado personal ni indica una causa.
+Tampoco mide directamente “cómo funciona” el páncreas o el hígado: esos órganos
+participan en la regulación, pero la prueba informa de glucosa plasmática.
 
 ## Si quieres profundizar
 
