@@ -30,6 +30,7 @@ import {
 import { inferSourceLocaleFromUrl, normalizeJurisdiction, preferEvidenceForLocale } from "./source-locale";
 import type { Locale } from "./i18n";
 import { normalizeContentLocale, type ContentLocale } from "./language-contract";
+import { selectEvidenceForContentLocale } from "./content-locale-selection";
 export { wrapForPrompt } from "./qmd-prompt";
 
 // =====================================================================
@@ -56,8 +57,11 @@ export interface RetrievedChunk {
   tarjetaId?: string;
   canonicalCardId?: string;
   contentLocale?: ContentLocale;
+  localizationKind?: "original" | "translation";
   localizationStatus?: "draft" | "machine-draft" | "reviewed" | "stale";
   editorialSchemaVersion?: number;
+  requestedContentLocale?: Locale;
+  contentLocaleFallback?: boolean;
   dominio?: string;
   tipo?: string[];
   marker?: string[];
@@ -293,6 +297,10 @@ async function mapEvidenceHit(hit: RawHit): Promise<RetrievedChunk> {
     canonicalCardId:
       typeof fm.canonical_card_id === "string" ? fm.canonical_card_id : undefined,
     contentLocale: normalizeContentLocale(fm.content_locale),
+    localizationKind:
+      fm.localization_kind === "original" || fm.localization_kind === "translation"
+        ? fm.localization_kind
+        : undefined,
     localizationStatus:
       fm.localization_status === "draft" ||
       fm.localization_status === "machine-draft" ||
@@ -391,14 +399,17 @@ export async function queryKB(
   const minScore = opts.minScore ?? 0.3;
   const kbStore = await getKbStore();
 
+  const searchLimit = opts.locale ? Math.max(limit * 4, 12) : limit;
   const hits = await kbStore.search({
     queries: normalizedSearchQueries(query),
     rerank: false,
-    limit,
+    limit: searchLimit,
     minScore,
     candidateLimit: 10,
   });
-  return Promise.all(hits.map(mapEvidenceHit));
+  const evidence = await Promise.all(hits.map(mapEvidenceHit));
+  const localized = selectEvidenceForContentLocale(evidence, opts.locale);
+  return preferEvidenceForLocale(localized, opts.locale).slice(0, limit);
 }
 
 export async function queryMemoryAndKB(
@@ -469,7 +480,11 @@ export async function queryMemoryAndKB(
   ]);
 
   if (!markerScope) {
-    const localizedEvidence = preferEvidenceForLocale(evidence, opts.locale).slice(0, limit);
+    const contentLocalized = selectEvidenceForContentLocale(evidence, opts.locale);
+    const localizedEvidence = preferEvidenceForLocale(contentLocalized, opts.locale).slice(
+      0,
+      limit,
+    );
     return { personal, evidence: localizedEvidence };
   }
 
@@ -488,7 +503,8 @@ export async function queryMemoryAndKB(
   // El lente va al final porque, si la persona pide "desde Ayurveda/MTC",
   // esa perspectiva debe subir incluso cuando el fraseo tambien active
   // "interpretacion" o "factores".
-  const localizedEvidence = preferEvidenceForLocale(combinedEvidence, opts.locale);
+  const contentLocalized = selectEvidenceForContentLocale(combinedEvidence, opts.locale);
+  const localizedEvidence = preferEvidenceForLocale(contentLocalized, opts.locale);
   const areaPreferredEvidence = applyHealthAreaPreference(localizedEvidence, healthAreas);
   const seccionPreferredEvidence = applySeccionPreference(areaPreferredEvidence, opts.seccion);
   const scopedEvidence = applyLensPreference(seccionPreferredEvidence, lens).slice(0, limit);
@@ -501,6 +517,9 @@ export async function queryMemoryAndKB(
     healthAreas: healthAreas.size,
     healthAreaActive,
     locale: opts.locale,
+    contentLocaleFallbacks: scopedEvidence.filter(
+      (chunk) => chunk.contentLocaleFallback,
+    ).length,
   });
   return { personal, evidence: scopedEvidence };
 }

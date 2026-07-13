@@ -176,7 +176,7 @@ export default async function CorpusAdminPage({ searchParams }: PageProps) {
   let searchFailed = false;
   if (query) {
     try {
-      results = await queryKB(query, { limit: 6 });
+      results = await queryKB(query, { limit: 6, locale });
     } catch (error) {
       console.error("[corpus] retrieval test failed", error);
       searchFailed = true;
@@ -517,6 +517,61 @@ function DocumentCard({
   children: React.ReactNode;
 }) {
   const date = document.publishedAt ?? document.createdAt;
+  const metadata = document.extraFrontmatter ?? {};
+  const metadataLabels = localize(locale, {
+    es: {
+      summary: "Metadatos de idioma y versión",
+      legacyLocale: "es (heredado)",
+      notDeclared: "No declarado",
+      fields: {
+        tarjeta_id: "ID de tarjeta",
+        canonical_card_id: "Concepto común",
+        content_locale: "Idioma del contenido",
+        localization_kind: "Tipo de versión",
+        localization_status: "Estado editorial",
+        localized_from: "Traducida desde",
+        localized_from_version: "Versión de origen",
+        localized_from_checksum: "Huella de origen",
+        editorial_schema_version: "Esquema editorial",
+      },
+    },
+    de: {
+      summary: "Sprach- und Versionsmetadaten",
+      legacyLocale: "es (Bestand)",
+      notDeclared: "Nicht angegeben",
+      fields: {
+        tarjeta_id: "Karten-ID",
+        canonical_card_id: "Gemeinsames Konzept",
+        content_locale: "Inhaltssprache",
+        localization_kind: "Versionstyp",
+        localization_status: "Redaktionsstatus",
+        localized_from: "Übersetzt aus",
+        localized_from_version: "Ausgangsversion",
+        localized_from_checksum: "Ausgangs-Prüfsumme",
+        editorial_schema_version: "Redaktionsschema",
+      },
+    },
+  });
+  const metadataFields = [
+    "tarjeta_id",
+    "canonical_card_id",
+    "content_locale",
+    "localization_kind",
+    "localization_status",
+    "localized_from",
+    "localized_from_version",
+    "localized_from_checksum",
+    "editorial_schema_version",
+  ] as const;
+  const metadataValue = (field: (typeof metadataFields)[number]): string => {
+    const value = metadata[field];
+    if (field === "content_locale" && typeof value !== "string") {
+      return metadataLabels.legacyLocale;
+    }
+    if (Array.isArray(value)) return value.join(", ");
+    if (typeof value === "string" || typeof value === "number") return String(value);
+    return metadataLabels.notDeclared;
+  };
   return (
     <article className="rounded-md border border-[var(--color-border)] bg-[var(--color-card)] p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -537,6 +592,23 @@ function DocumentCard({
           <p className="break-all text-xs text-[var(--color-muted)]">
             {document.sourceUrl ?? document.doi ?? document.pmid ?? document.relativePath}
           </p>
+          <details className="pt-2 text-xs">
+            <summary className="cursor-pointer font-medium text-[var(--color-foreground)] hover:underline">
+              {metadataLabels.summary}
+            </summary>
+            <dl className="mt-3 grid gap-x-4 gap-y-2 rounded-md bg-[var(--color-background)] p-3 sm:grid-cols-[minmax(9rem,auto)_1fr]">
+              {metadataFields.map((field) => (
+                <div key={field} className="contents">
+                  <dt className="font-medium text-[var(--color-muted)]">
+                    {metadataLabels.fields[field]}
+                  </dt>
+                  <dd className="min-w-0 break-all font-mono text-[var(--color-foreground)]">
+                    {metadataValue(field)}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </details>
         </div>
         <div className="flex w-full flex-wrap items-center justify-start gap-2 sm:w-auto sm:justify-end">{children}</div>
       </div>

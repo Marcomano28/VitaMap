@@ -150,6 +150,7 @@ export async function POST(req: Request) {
   let scopedMarkers: string[] = [];
   let structuredLabSources: Array<{ path: string; observedAt: string }> = [];
   let editorialComposed = false;
+  let contentLocaleFallback = false;
   const personalLabRequest = isPersonalLabValueRequest(body.message);
   const retrievalStartedAt = Date.now();
   console.info("[chat] retrieval started");
@@ -187,6 +188,7 @@ export async function POST(req: Request) {
       editorialDepth,
     );
     evidence = composed.chunks;
+    contentLocaleFallback = evidence.some((chunk) => chunk.contentLocaleFallback);
     if (composed.composedPath) {
       editorialComposed = true;
       console.info("[chat] editorial card composed", {
@@ -254,6 +256,13 @@ export async function POST(req: Request) {
       ? "Antworte auf Deutsch, auch wenn einzelne Quellen in einer anderen Sprache vorliegen. Wenn relevante deutsche oder europäische Quellen im Kontext vorhanden sind, bevorzuge sie in der Erklärung; wenn eine wichtige Quelle auf Englisch ist, behandle das transparent."
       : "Responde en español, aunque alguna fuente esté en otro idioma.";
 
+  const fallbackInstruction = contentLocaleFallback
+    ? localize(language.answerLocale, {
+        es: "No existe una versión editorial revisada de la tarjeta principal en el idioma solicitado. Traduce fielmente la versión de respaldo: conserva sus límites, fuentes y grado de certeza, y no añadas afirmaciones.",
+        de: "Für die Hauptkarte liegt keine redaktionell geprüfte Fassung in der gewünschten Sprache vor. Übertrage die Fallback-Fassung sinngenau: Bewahre Grenzen, Quellen und Gewissheitsgrad und füge keine Aussagen hinzu.",
+      })
+    : "";
+
   const depthInstruction = localize(language.answerLocale, {
     es:
       editorialDepth === "discover"
@@ -277,7 +286,7 @@ export async function POST(req: Request) {
   const messages: ChatMessage[] = [
     {
       role: "system",
-      content: `${SOCRATIC_SYSTEM_PROMPT}${eduGuide}\n\n${languageInstruction}\n${depthInstruction}`,
+      content: `${SOCRATIC_SYSTEM_PROMPT}${eduGuide}\n\n${languageInstruction}\n${fallbackInstruction}\n${depthInstruction}`,
     },
     ...body.history,
     { role: "user", content: userContent },
@@ -452,6 +461,10 @@ export async function POST(req: Request) {
     sourceUrl: c.sourceUrl,
     sourceLanguage: c.sourceLanguage,
     sourceJurisdiction: c.sourceJurisdiction,
+    canonicalCardId: c.canonicalCardId,
+    contentLocale: c.contentLocale,
+    requestedContentLocale: c.requestedContentLocale,
+    contentLocaleFallback: c.contentLocaleFallback,
     observedAt: c.observedAt,
   }));
   for (const source of structuredLabSources) {
@@ -466,6 +479,10 @@ export async function POST(req: Request) {
       sourceUrl: undefined,
       sourceLanguage: undefined,
       sourceJurisdiction: undefined,
+      canonicalCardId: undefined,
+      contentLocale: undefined,
+      requestedContentLocale: undefined,
+      contentLocaleFallback: undefined,
       observedAt: source.observedAt,
     });
   }

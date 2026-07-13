@@ -44,12 +44,22 @@ const deSource: RetrievedChunk = {
 
 assert.deepEqual(
   preferEvidenceForLocale([enSource, deSource], "de").map((item) => item.title),
-  ["German source", "English source"],
+  ["English source", "German source"],
+  "el idioma de la fuente no debe vencer una diferencia grande de relevancia",
 );
 
 assert.deepEqual(
   preferEvidenceForLocale([enSource, deSource], "es").map((item) => item.title),
   ["English source", "German source"],
+);
+
+assert.deepEqual(
+  preferEvidenceForLocale(
+    [enSource, { ...deSource, score: 0.99 }],
+    "de",
+  ).map((item) => item.title),
+  ["German source", "English source"],
+  "el idioma local sí puede desempatar resultados de relevancia equivalente",
 );
 
 console.log("test-source-locale: OK");
