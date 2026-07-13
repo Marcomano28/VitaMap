@@ -125,6 +125,7 @@ async function testPilotDrafts() {
   const drafts = [
     "colesterol-ldl/colesterol-ldl-interpretacion-medlineplus.md",
     "glucosa-en-ayunas/glucosa-en-ayunas-interpretacion-niddk.md",
+    "glucosa-en-ayunas/glucosa-hba1c-lectura-conjunta-niddk.md",
   ];
   const root = path.resolve(
     process.cwd(),
@@ -142,6 +143,11 @@ async function testPilotDrafts() {
       assert.match(text, /## Fuentes/);
     }
   }
+
+  const jointCard = await readEditorialCard(root, drafts[2]);
+  assert.ok(jointCard);
+  assert.equal(jointCard.frontmatter.seccion, "lectura-conjunta");
+  assert.deepEqual(jointCard.frontmatter.marker, ["glucosa-en-ayunas", "hba1c"]);
 
   const retrieved = await composeRetrievedEvidence(
     root,

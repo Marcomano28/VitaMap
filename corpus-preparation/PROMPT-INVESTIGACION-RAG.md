@@ -396,6 +396,12 @@ debo hacer yo", diseñar dietas, prescribir ejercicio ni sugerir dosis.
 
 ## 5 bis. Tarjeta D — Lectura conjunta
 
+Cuando se solicite expresamente una **tarjeta D multinivel**, aplica además
+`corpus-preparation/MODULO-TARJETA-D-MULTINIVEL.md`. Este módulo sustituye solo
+la estructura de encabezados y la composición por profundidad; permanecen
+vigentes las reglas relacionales y de seguridad de
+`BRIEF-TARJETA-D-lectura-conjunta.md`.
+
 Solo créala cuando una fuente declarada describa de forma expresa por qué varios
 marcadores se leen juntos o qué aporta su combinación. No construyas patrones,
 cocientes, umbrales ni árboles diagnósticos a partir de conocimiento de memoria.
