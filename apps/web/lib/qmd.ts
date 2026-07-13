@@ -29,6 +29,7 @@ import {
 } from "./marker-scope";
 import { inferSourceLocaleFromUrl, normalizeJurisdiction, preferEvidenceForLocale } from "./source-locale";
 import type { Locale } from "./i18n";
+import { normalizeContentLocale, type ContentLocale } from "./language-contract";
 export { wrapForPrompt } from "./qmd-prompt";
 
 // =====================================================================
@@ -53,6 +54,10 @@ export interface RetrievedChunk {
   sourceDocumentType?: string;
   facetsVersion?: number;
   tarjetaId?: string;
+  canonicalCardId?: string;
+  contentLocale?: ContentLocale;
+  localizationStatus?: "draft" | "machine-draft" | "reviewed" | "stale";
+  editorialSchemaVersion?: number;
   dominio?: string;
   tipo?: string[];
   marker?: string[];
@@ -285,6 +290,20 @@ async function mapEvidenceHit(hit: RawHit): Promise<RetrievedChunk> {
     facetsVersion:
       typeof fm.facets_version === "number" ? fm.facets_version : undefined,
     tarjetaId: typeof fm.tarjeta_id === "string" ? fm.tarjeta_id : undefined,
+    canonicalCardId:
+      typeof fm.canonical_card_id === "string" ? fm.canonical_card_id : undefined,
+    contentLocale: normalizeContentLocale(fm.content_locale),
+    localizationStatus:
+      fm.localization_status === "draft" ||
+      fm.localization_status === "machine-draft" ||
+      fm.localization_status === "reviewed" ||
+      fm.localization_status === "stale"
+        ? fm.localization_status
+        : undefined,
+    editorialSchemaVersion:
+      typeof fm.editorial_schema_version === "number"
+        ? fm.editorial_schema_version
+        : undefined,
     dominio: typeof fm.dominio === "string" ? fm.dominio : undefined,
     tipo: stringArray(fm.tipo),
     marker: stringArray(fm.marker),

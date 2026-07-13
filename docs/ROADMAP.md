@@ -6,6 +6,11 @@ Documento de ruta para iniciar el piloto sin romper la arquitectura objetivo (se
 > `docs/QMD-EVOLUCION-VITAMAP.md`. Ese documento prevalece sobre los ejemplos
 > históricos de este roadmap cuando exista una diferencia.
 
+> La arquitectura de idioma, localización del corpus, niveles editoriales y
+> Pausa curiosa se define en
+> `docs/HOJA-DE-RUTA-MULTILINGUE-NIVELES-Y-CURIOSIDAD.md`. Ese documento
+> prevalece sobre la estrategia lingüística histórica de este roadmap.
+
 ---
 
 ## Principio rector — qué NO cambia entre fases

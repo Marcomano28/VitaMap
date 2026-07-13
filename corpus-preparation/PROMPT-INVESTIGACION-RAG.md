@@ -81,6 +81,11 @@ source_type: lab-interpretation-summary
 rights_status: permitted
 facets_version: 1
 tarjeta_id: colesterol-ldl-colesterol-ldl-interpretacion-medlineplus
+canonical_card_id: colesterol-ldl-colesterol-ldl-interpretacion-medlineplus
+content_locale: es
+localization_kind: original
+localization_status: draft
+editorial_schema_version: 2
 dominio: laboratorio
 tipo:
   - analito
@@ -121,7 +126,7 @@ limitations:
 > El bloque `evidence` y el `direccion` de `relacionado_con` son el **Contrato
 > mínimo de evidencia (v0)**. Aquí aparece su forma corta (una tarjeta de
 > interpretación bien establecida). La forma completa, las reglas de cuándo es
-> obligatorio y el vocabulario controlado están en la sección **3 bis**.
+> obligatorio y el vocabulario controlado están en la sección **3 ter**.
 
 ### Reglas de los campos
 
@@ -137,6 +142,12 @@ limitations:
 | `rights_status` | Solo `permitted`, `licensed`, `metadata-only` o `unknown`. No presupongas que acceso gratuito equivale a permiso. |
 | `facets_version` | Versión de la taxonomía aplicada. Usa la versión vigente de `corpus-taxonomy.json`. |
 | `tarjeta_id` | Identificador estable derivado de ruta/nombre de archivo sin `.md`, en minúsculas con guiones. |
+| `canonical_card_id` | Identidad del concepto compartida por todas sus versiones lingüísticas. En una tarjeta original nueva suele coincidir con `tarjeta_id`. |
+| `content_locale` | Idioma real del cuerpo y título: `es`, `de` o `en`. Inglés está admitido como contenido no público: puede guardarse como borrador, pero el administrador bloquea su publicación hasta habilitar retrieval, interfaz, seguridad y pruebas en inglés. No describe la fuente. |
+| `localization_kind` | `original` para la tarjeta base; `translation` para una rendición derivada. |
+| `localization_status` | La primera traducción automática usa `machine-draft`. Tras una segunda pasada explícita de terminología, fidelidad, tono y límites pasa a `draft`. Solo la publicación administrativa la convierte en `reviewed`. |
+| `localized_from*` | En traducciones: `localized_from`, versión y checksum SHA-256 de la tarjeta base. Los proporciona el flujo de localización; no los inventes. |
+| `editorial_schema_version` | Usa `2` en tarjetas multivel nuevas. Sus bloques se identifican mediante anchors estables, no por el título visible. |
 | `dominio` | Dominio del corpus: normalmente `laboratorio` en este brief. Si el tema es transversal, usa el dominio definido en la taxonomía. |
 | `tipo` | Naturaleza de la tarjeta según taxonomía: `analito`, `panel`, `vitamina`, `mineral`, `condicion`, `intervencion`, etc. Puede ser lista. |
 | `marker` | Lista de marcadores canónicos en minúsculas-con-guiones. Si cubre varios (lectura conjunta, panel), declara todos: `[vitamina-d, calcio, fosfato, pth]`. Si es transversal, usa `[general]`. No uses alias como marker. |
@@ -148,9 +159,9 @@ limitations:
 | `tradicion` | Solo cuando la tarjeta pertenezca claramente a una tradición identificable (`ayurveda`, `mtc`, `acupuntura`). No lo uses para prácticas complementarias modernas por defecto. |
 | `alias` | Sinónimos y formas de búsqueda que puede escribir el usuario; no sustituyen a `marker`. |
 | `relacionado_con` | Enlaces explícitos entre marcadores o intervenciones, con `id` canónico y `relacion` breve (`lectura_conjunta`, `mismo_panel`, `modifica_interpretacion`, `afecta_absorcion`, etc.). El `id` debe ser un **marcador canónico** de la taxonomía, no la clave de topic ni el nombre científico (p. ej. `huang-lian`, no `coptis-chinensis`). |
-| `relacionado_con[].direccion` | `simetrica` (la relación vale en ambos sentidos: `mismo_panel`, `lectura_conjunta`) o `dirigida` (A influye sobre B: `modifica_interpretacion`, `se_calcula_con`, `afecta_absorcion`). Ver sección 3 bis. |
+| `relacionado_con[].direccion` | `simetrica` (la relación vale en ambos sentidos: `mismo_panel`, `lectura_conjunta`) o `dirigida` (A influye sobre B: `modifica_interpretacion`, `se_calcula_con`, `afecta_absorcion`). Ver sección 3 ter. |
 | `relacionado_con[].contexto` | Opcional. Texto breve: en qué condición aplica la relación (p. ej. "en inflamación"). |
-| `evidence` | Contrato mínimo de evidencia (v0). Ver sección 3 bis. |
+| `evidence` | Contrato mínimo de evidencia (v0). Ver sección 3 ter. |
 | `limitations` | Lista de 3–5 advertencias honestas sobre los límites del documento. Es el lugar de las afirmaciones que la fuente **no** permite sostener (no inventes un campo aparte). |
 
 Usa ortografía y acentos correctos también en el frontmatter. El título se
@@ -158,6 +169,10 @@ muestra al usuario en las tarjetas de cita.
 
 El modelo prepara un borrador. No declares que ha sido revisado o aprobado por
 una persona; ese estado lo registra VitaMap durante la revisión administrativa.
+Una traducción generada por un modelo comienza como
+`localization_status: machine-draft`. Puede pasar a `draft` después de una
+segunda pasada editorial explícita y documentada; no debe pasar directamente a
+`reviewed`, porque ese estado registra la publicación administrativa.
 
 ### Fechas editoriales por fuente
 
@@ -170,7 +185,46 @@ una persona; ese estado lo registra VitaMap durante la revisión administrativa.
 - En MedlinePlus usa la fecha visible de la propia página de tema o prueba
   médica. No sustituyas esa fecha por metadatos técnicos del servidor.
 
-## 3 bis. Contrato mínimo de evidencia (v0)
+## 3 bis. Bloques editoriales multilingües (v2)
+
+Toda tarjeta nueva destinada a los niveles Fácil, Comprender y Detalle usa
+anchors internos estables. El título H2 puede traducirse; el identificador del
+comentario no se traduce ni se cambia:
+
+```markdown
+<!-- vitamap:block summary -->
+## En una frase
+
+<!-- vitamap:block analogy -->
+## Una imagen para empezar
+
+<!-- vitamap:block literal -->
+## Qué significa realmente
+
+<!-- vitamap:block relations -->
+## Cómo se relaciona
+
+<!-- vitamap:block limitations -->
+## Límites de la explicación
+
+<!-- vitamap:block deep_dive -->
+## Si quieres profundizar
+
+<!-- vitamap:block sources -->
+## Fuentes
+```
+
+En alemán, por ejemplo, `## En una frase` puede convertirse en
+`## Kurz gesagt`, pero conserva `<!-- vitamap:block summary -->`. Los siete
+bloques son obligatorios en una tarjeta multivel. Las limitaciones y fuentes
+se conservan en los tres niveles. Los anchors son comentarios internos y no se
+muestran al usuario.
+
+Las estructuras A, B, D y E de las secciones siguientes siguen definiendo la
+intención y las preguntas que debe cubrir cada tarjeta. Cuando la tarjeta sea
+multivel, distribuye ese contenido dentro de los siete bloques v2 anteriores.
+
+## 3 ter. Contrato mínimo de evidencia (v0)
 
 Esta es la **única parte nueva del frontmatter** respecto a versiones anteriores
 del brief, y es **obligatoria para tarjetas nuevas**. No cambia cómo investigas:
@@ -738,8 +792,11 @@ Prioriza fuentes oficiales, públicas y verificables.
 | Universidades y hospitales académicos | Explicaciones especializadas cuando identifican autoría, revisión y fecha |
 | PubMed Central y revistas de acceso abierto | Revisiones y estudios para preguntas que las fuentes institucionales no resuelven |
 
-Redacta en español. Si un término alemán puede mejorar la recuperación,
-añádelo entre paréntesis en la primera sección.
+Redacta íntegramente en `content_locale`. El corpus base actual usa español;
+una rendición alemana o inglesa escribe título, cuerpo, límites y términos
+visibles en ese idioma y conserva alias de otros idiomas solo cuando ayuden a
+recuperar el mismo concepto. No mezcles idiomas como sustituto de una rendición
+revisada.
 
 En MedlinePlus prioriza páginas de temas de salud y de pruebas médicas. Excluye
 la A.D.A.M. Medical Encyclopedia (`/ency/article/`) salvo que exista una licencia
@@ -765,12 +822,14 @@ aplicables al marcador, la muestra y la población de la tarjeta.
 - [ ] Si el topic falta en `corpus-taxonomy.json`, se propone entrada de taxonomía antes de redactar.
 - [ ] `marker`, `categoria`, `sistema`, `area_de_salud`, `seccion`, `alias` y `relacionado_con` son coherentes con la taxonomía.
 - [ ] Cada `relacionado_con[].id` es un marcador canónico (no la clave de topic ni el nombre científico) y declara `direccion` (`simetrica`/`dirigida`).
-- [ ] Incluye el bloque `evidence` con `certeza` (Contrato mínimo v0, sección 3 bis); `direccion` solo si hay afirmación; `motivos_descenso` si `certeza` no es `alta`.
+- [ ] Incluye el bloque `evidence` con `certeza` (Contrato mínimo v0, sección 3 ter); `direccion` solo si hay afirmación; `motivos_descenso` si `certeza` no es `alta`.
 - [ ] `source_kind` y `source_type` corresponden al documento real.
 - [ ] `rights_status` refleja derechos comprobados.
 - [ ] La fuente no prohíbe derivados, embeddings, indexación o uso en RAG.
 - [ ] `source_url` apunta a la fuente principal real y vigente.
 - [ ] `source_language` y `source_jurisdiction` describen la fuente enlazada.
+- [ ] `content_locale` describe el cuerpo; `canonical_card_id` agrupa sus idiomas.
+- [ ] Una tarjeta multivel v2 contiene los siete anchors `vitamap:block` sin traducir sus IDs.
 - [ ] Para público alemán, se ha comprobado si existe una fuente DE/EU equivalente.
 - [ ] `publication_date` coincide con la fecha indicada por la fuente.
 - [ ] Cada afirmación importante puede comprobarse en una fuente declarada.

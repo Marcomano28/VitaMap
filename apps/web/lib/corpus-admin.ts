@@ -5,6 +5,15 @@ import matter from "gray-matter";
 import { z } from "zod";
 import { getEnv } from "./env";
 import { invalidateFrontmatterCache } from "./frontmatter";
+import {
+  BASE_CONTENT_LOCALE,
+  corpusRenditionKey,
+  isContentLocale,
+  isPublicContentLocale,
+  isLocalizationKind,
+  isLocalizationStatus,
+  normalizeContentLocale,
+} from "./language-contract";
 import type { EvidenceSourceKind } from "./qmd";
 
 export const SOURCE_KINDS = [
@@ -25,6 +34,18 @@ export const FACET_FRONTMATTER_FIELDS = [
   "source_jurisdiction",
   "facets_version",
   "tarjeta_id",
+  "canonical_card_id",
+  "content_locale",
+  "localization_kind",
+  "localization_status",
+  "localized_from",
+  "localized_from_version",
+  "localized_from_checksum",
+  "editorial_schema_version",
+  "taxonomy_status",
+  "topic",
+  "curiosity_scope",
+  "review_after",
   "dominio",
   "tipo",
   "marker",
@@ -107,6 +128,80 @@ export const CorpusDraftInputSchema = z
         message: "a source URL, DOI, or PMID is required",
       });
     }
+
+    const metadata = value.extraFrontmatter ?? {};
+    const localizationFields = [
+      "canonical_card_id",
+      "content_locale",
+      "localization_kind",
+      "localization_status",
+      "localized_from",
+      "localized_from_version",
+      "localized_from_checksum",
+      "editorial_schema_version",
+    ];
+    const usesLocalizationContract = localizationFields.some(
+      (field) => metadata[field] !== undefined,
+    );
+    if (!usesLocalizationContract) return;
+
+    const issue = (field: string, message: string) =>
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["extraFrontmatter", field],
+        message,
+      });
+    const text = (field: string) =>
+      typeof metadata[field] === "string" ? metadata[field].trim() : "";
+    const stableId = /^[a-z0-9](?:[a-z0-9-]{0,158}[a-z0-9])?$/;
+
+    if (!stableId.test(text("tarjeta_id"))) {
+      issue("tarjeta_id", "a stable tarjeta_id is required by the language contract");
+    }
+    if (!stableId.test(text("canonical_card_id"))) {
+      issue(
+        "canonical_card_id",
+        "canonical_card_id must use lowercase letters, numbers, and hyphens",
+      );
+    }
+    if (!isContentLocale(text("content_locale"))) {
+      issue("content_locale", "content_locale must be an enabled VitaMap locale");
+    }
+    if (!isLocalizationKind(metadata.localization_kind)) {
+      issue("localization_kind", "localization_kind must be original or translation");
+    }
+    if (!isLocalizationStatus(metadata.localization_status)) {
+      issue(
+        "localization_status",
+        "localization_status must be draft, machine-draft, reviewed, or stale",
+      );
+    }
+
+    const schemaVersion = metadata.editorial_schema_version;
+    if (schemaVersion !== 1 && schemaVersion !== 2) {
+      issue("editorial_schema_version", "editorial_schema_version must be 1 or 2");
+    }
+
+    if (metadata.localization_kind === "translation") {
+      if (!stableId.test(text("localized_from"))) {
+        issue("localized_from", "a translation must identify its source card");
+      }
+      if (
+        !Number.isInteger(metadata.localized_from_version) ||
+        Number(metadata.localized_from_version) < 1
+      ) {
+        issue(
+          "localized_from_version",
+          "a translation must identify a positive source version",
+        );
+      }
+      if (!/^sha256:[a-f0-9]{64}$/.test(text("localized_from_checksum"))) {
+        issue(
+          "localized_from_checksum",
+          "a translation must include the source sha256 checksum",
+        );
+      }
+    }
   });
 
 export type CorpusDraftInput = z.infer<typeof CorpusDraftInputSchema>;
@@ -122,6 +217,32 @@ export interface CorpusDocument extends CorpusDraftInput {
   reviewedAt?: string;
   reviewedBy?: string;
   replacedRelativePath?: string;
+}
+
+export function isSameCorpusRendition(
+  left: Pick<CorpusDocument, "extraFrontmatter">,
+  right: Pick<CorpusDocument, "extraFrontmatter">,
+): boolean {
+  const leftMetadata = left.extraFrontmatter ?? {};
+  const rightMetadata = right.extraFrontmatter ?? {};
+  const leftKey = corpusRenditionKey(leftMetadata);
+  const rightKey = corpusRenditionKey(rightMetadata);
+  const leftCard = textValue(leftMetadata.tarjeta_id);
+  const rightCard = textValue(rightMetadata.tarjeta_id);
+  if (leftKey && rightKey) return leftKey === rightKey;
+  if (leftKey || rightKey) {
+    // Puente de migración: el corpus anterior no tenía content_locale y su
+    // cuerpo era español. Solo una rendición ES con el mismo tarjeta_id puede
+    // sustituirlo; una DE con el mismo ID se considera colisión.
+    const localizedMetadata = leftKey ? leftMetadata : rightMetadata;
+    return Boolean(
+      leftCard &&
+      rightCard &&
+      leftCard === rightCard &&
+      normalizeContentLocale(localizedMetadata.content_locale) === BASE_CONTENT_LOCALE
+    );
+  }
+  return Boolean(leftCard && rightCard && leftCard === rightCard);
 }
 
 let corpusMutationQueue: Promise<void> = Promise.resolve();
@@ -414,6 +535,9 @@ export function publishCorpusDraft(
     const raw = await fs.readFile(draftPath, "utf8");
     const draft = parseStoredDocument(raw, `${draftId}.md`, "draft");
     if (!draft) throw new Error("invalid corpus draft");
+    if (textValue(draft.extraFrontmatter?.taxonomy_status) === "proposed") {
+      throw new Error("proposed taxonomy must be approved before publication");
+    }
     if (!["permitted", "licensed"].includes(draft.rightsStatus)) {
       throw new Error("content rights do not permit publication");
     }
@@ -421,17 +545,54 @@ export function publishCorpusDraft(
       throw new Error("reviewed corpus content is required before publication");
     }
 
-    const tarjetaId = textValue(draft.extraFrontmatter?.tarjeta_id);
-    const published = tarjetaId ? await listPublishedCorpus() : [];
-    const sameCard = published.filter(
-      (document) => textValue(document.extraFrontmatter?.tarjeta_id) === tarjetaId,
+    const localizationStatus = textValue(
+      draft.extraFrontmatter?.localization_status,
     );
+    if (localizationStatus === "machine-draft" || localizationStatus === "stale") {
+      throw new Error("localization must be reviewed and current before publication");
+    }
+    const contentLocale = textValue(draft.extraFrontmatter?.content_locale);
+    if (contentLocale && !isPublicContentLocale(contentLocale)) {
+      throw new Error("content locale is stored but not enabled for publication");
+    }
+
+    const tarjetaId = textValue(draft.extraFrontmatter?.tarjeta_id);
+    const renditionKey = corpusRenditionKey(draft.extraFrontmatter ?? {});
+    const published = tarjetaId || renditionKey ? await listPublishedCorpus() : [];
+    const sameTarjeta = tarjetaId
+      ? published.filter(
+          (document) => textValue(document.extraFrontmatter?.tarjeta_id) === tarjetaId,
+        )
+      : [];
+    const sameRendition = published.filter((document) =>
+      isSameCorpusRendition(draft, document),
+    );
+    const sameCard = [...new Map(
+      [...sameTarjeta, ...sameRendition].map((document) => [document.relativePath, document]),
+    ).values()];
     if (sameCard.length > 1) {
-      throw new Error("multiple published documents share tarjeta_id");
+      throw new Error("multiple published documents share a corpus rendition identity");
+    }
+    if (
+      sameTarjeta.length === 1 &&
+      renditionKey &&
+      !isSameCorpusRendition(draft, sameTarjeta[0])
+    ) {
+      throw new Error("tarjeta_id collides with another language rendition");
     }
     if (sameCard.length === 1 && !options.replaceExisting) {
-      throw new Error("tarjeta_id already published; explicit replacement required");
+      throw new Error("corpus rendition already published; explicit replacement required");
     }
+
+    const publicationDraft: CorpusDocument = renditionKey
+      ? {
+          ...draft,
+          extraFrontmatter: {
+            ...(draft.extraFrontmatter ?? {}),
+            localization_status: "reviewed",
+          },
+        }
+      : draft;
 
     const now = new Date().toISOString();
     const relativePath = path.join(
@@ -463,7 +624,7 @@ export function publishCorpusDraft(
     await fs.mkdir(path.dirname(destination), { recursive: true });
     await fs.writeFile(
       destination,
-      serializeDocument(draft, {
+      serializeDocument(publicationDraft, {
         id: draftId,
         status: "published",
         review_status: "approved",
@@ -503,7 +664,7 @@ export function publishCorpusDraft(
     }
 
     return {
-      ...draft,
+      ...publicationDraft,
       status: "published",
       relativePath,
       publishedAt: now,

@@ -7,6 +7,11 @@ source_type: lab-interpretation-summary
 rights_status: permitted
 facets_version: 1
 tarjeta_id: colesterol-ldl-colesterol-ldl-interpretacion-medlineplus
+canonical_card_id: colesterol-ldl-colesterol-ldl-interpretacion-medlineplus
+content_locale: es
+localization_kind: original
+localization_status: draft
+editorial_schema_version: 2
 dominio: laboratorio
 tipo:
   - analito
@@ -47,12 +52,14 @@ source_jurisdiction:
 ---
 # Colesterol LDL: interpretación general
 
+<!-- vitamap:block summary -->
 ## En una frase
 
 LDL designa una clase de lipoproteínas: partículas que transportan colesterol y
 otros lípidos por la sangre. La analítica informa de la cantidad de colesterol
 transportada en esas partículas, expresada habitualmente como LDL-C.
 
+<!-- vitamap:block analogy -->
 ## Una imagen para empezar
 
 Imagina la circulación como una red de caminos y las lipoproteínas como
@@ -65,6 +72,7 @@ La imagen sirve para recordar la función de transporte, pero no representa el
 tamaño o el número real de partículas ni permite deducir qué está ocurriendo en
 las arterias de una persona concreta.
 
+<!-- vitamap:block literal -->
 ## Qué significa realmente
 
 El colesterol es necesario para funciones del organismo, entre ellas la
@@ -79,6 +87,7 @@ otros factores de riesgo cardiovascular. El intervalo impreso en el informe
 del laboratorio y los objetivos acordados clínicamente pueden ser diferentes
 de esa referencia educativa general.
 
+<!-- vitamap:block relations -->
 ## Cómo se relaciona
 
 LDL forma parte del perfil lipídico y se lee junto con colesterol total, HDL,
@@ -90,6 +99,7 @@ El LDL del informe puede estar medido directamente o calculado a partir de otros
 componentes del perfil. Por eso el método, las unidades y el contexto del
 informe importan cuando se comparan resultados.
 
+<!-- vitamap:block limitations -->
 ## Límites de la explicación
 
 Las palabras “bueno” y “malo” son atajos educativos: no significan que HDL sea
@@ -102,6 +112,7 @@ riesgo cardiovascular y no determina si una persona necesita tratamiento. Esta
 tarjeta explica el marcador en general; la interpretación individual requiere
 el conjunto del informe y el contexto clínico.
 
+<!-- vitamap:block deep_dive -->
 ## Si quieres profundizar
 
 LDL-C expresa colesterol contenido en partículas LDL y no cuenta directamente
@@ -114,6 +125,7 @@ temporal segura deben conservarse el método, la unidad y la procedencia; VitaMa
 no debe unir automáticamente valores en unidades diferentes sin una conversión
 validada y explícita.
 
+<!-- vitamap:block sources -->
 ## Fuentes
 
 - MedlinePlus, Biblioteca Nacional de Medicina de EE. UU. *Cholesterol Levels:

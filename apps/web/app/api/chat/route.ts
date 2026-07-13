@@ -24,6 +24,7 @@ import {
   SubscriptionRequiredError,
 } from "@/lib/subscription-access";
 import { LOCALES, localize } from "@/lib/i18n";
+import { languageContext } from "@/lib/language-contract";
 import {
   canRecoverMissingCitation,
   hasVisibleAssistantText,
@@ -110,6 +111,7 @@ export async function POST(req: Request) {
     console.error("[chat] invalid_body", err);
     return NextResponse.json({ error: "invalid_body" }, { status: 400 });
   }
+  const language = languageContext(body.locale);
   const editorialDepth = body.forceDepth
     ? body.depth
     : inferEditorialDepth(body.message, body.depth);
@@ -135,7 +137,7 @@ export async function POST(req: Request) {
       payloadSum: "crisis_notice_shown",
     });
     return NextResponse.json({
-      text: crisisResourcesText(body.locale),
+      text: crisisResourcesText(language.answerLocale),
       citations: [],
       guardrail: { verdict: "block", flags: [] },
       crisis: true,
@@ -155,7 +157,7 @@ export async function POST(req: Request) {
     // Condense question con LLM; fallback automático a la heurística de
     // conversation-policy si la pasada falla (ver lib/query-rewrite.ts).
     const { query: retrievalQuery, method: queryMethod } =
-      await resolveRetrievalQuery(body.message, body.history, body.locale);
+      await resolveRetrievalQuery(body.message, body.history, language.answerLocale);
     // Scope por marcador: el mensaje actual manda; si no aporta tema, se mira
     // una ventana corta de mensajes previos del USUARIO (no del asistente).
     // La memoria personal no entra aquí (ver lib/marker-scope.ts `deriveScope`).
@@ -167,7 +169,7 @@ export async function POST(req: Request) {
     const result = await queryMemoryAndKB(userId, retrievalQuery, {
       limit: 3,
       minScore: 0.35,
-      locale: body.locale,
+      locale: language.contentLocale,
       markers: [...scope.markers],
       lens: [...scope.lens],
       healthAreas: [...scope.healthAreas],
@@ -243,16 +245,16 @@ export async function POST(req: Request) {
 
   const userContent = contextBlock
     ? `${contextBlock}\n\n---\n\n${
-        body.locale === "de" ? "Frage des Benutzers" : "Pregunta del usuario"
+        language.answerLocale === "de" ? "Frage des Benutzers" : "Pregunta del usuario"
       }:\n${body.message}`
     : body.message;
 
   const languageInstruction =
-    body.locale === "de"
+    language.answerLocale === "de"
       ? "Antworte auf Deutsch, auch wenn einzelne Quellen in einer anderen Sprache vorliegen. Wenn relevante deutsche oder europäische Quellen im Kontext vorhanden sind, bevorzuge sie in der Erklärung; wenn eine wichtige Quelle auf Englisch ist, behandle das transparent."
       : "Responde en español, aunque alguna fuente esté en otro idioma.";
 
-  const depthInstruction = localize(body.locale, {
+  const depthInstruction = localize(language.answerLocale, {
     es:
       editorialDepth === "discover"
         ? "Usa lenguaje cotidiano, frases breves y explica todo término técnico. Conserva las cautelas y no infantilices."
@@ -321,7 +323,7 @@ export async function POST(req: Request) {
         : [];
       const groundedAnswer = buildLabSeriesAnswer(
         structuredSeries,
-        body.locale,
+        language.answerLocale,
         isLatestLabRequest(body.message),
       );
       if (groundedAnswer) {
@@ -341,7 +343,7 @@ export async function POST(req: Request) {
         });
       } else {
         const rewritten = prepareAssistantText(
-          await rewriteSocratic(draft, body.locale, contextBlock, deadline),
+          await rewriteSocratic(draft, language.answerLocale, contextBlock, deadline),
         );
         const remainingPolicyFlags = deterministicResponseFlags(
           rewritten,
@@ -361,7 +363,7 @@ export async function POST(req: Request) {
           const corrected = prepareAssistantText(
             await rewriteSocratic(
               rewritten,
-              body.locale,
+              language.answerLocale,
               contextBlock,
               deadline,
               remainingPolicyFlags,
@@ -384,7 +386,7 @@ export async function POST(req: Request) {
             console.warn("[chat] targeted lab rewrite blocked", {
               flags: correctedPolicyFlags,
             });
-            finalText = localize(body.locale, {
+            finalText = localize(language.answerLocale, {
               es: "No pude formular una respuesta suficientemente fiel a los informes recuperados. Inténtalo de nuevo pidiendo que muestre los valores por fecha y en sus unidades originales.",
               de: "Ich konnte keine ausreichend quellentreue Antwort formulieren. Bitte frage erneut nach den Werten nach Datum und in ihren Originaleinheiten.",
             });
@@ -396,20 +398,20 @@ export async function POST(req: Request) {
             personal.length + evidence.length > 0,
           )
         ) {
-          finalText = localize(body.locale, {
+          finalText = localize(language.answerLocale, {
             es: `Según la fuente consultada:\n\n${prepareAssistantText(draft)}`,
             de: `Laut der herangezogenen Quelle:\n\n${prepareAssistantText(draft)}`,
           });
         } else {
           verdict = "block";
-          finalText = localize(body.locale, {
+          finalText = localize(language.answerLocale, {
             es: "La revisión de seguridad no pudo producir una respuesta completa. No mostramos el borrador sin revisar.",
             de: "Die Sicherheitsprüfung konnte keine vollständige Antwort erzeugen. Der ungeprüfte Entwurf wird nicht angezeigt.",
           });
         }
       }
     } else if (decision.verdict === "block") {
-      finalText = localize(body.locale, {
+      finalText = localize(language.answerLocale, {
         es: "No puedo ofrecer una respuesta segura para esta consulta. Te sugiero hablarlo con un profesional sanitario.",
         de: "Ich kann auf diese Anfrage keine sichere Antwort geben. Bitte besprich sie mit medizinischem Fachpersonal.",
       });
@@ -417,7 +419,7 @@ export async function POST(req: Request) {
   } catch {
     // Si el guardrail falla, fail-closed: bloquear con mensaje neutro.
     verdict = "block";
-    finalText = localize(body.locale, {
+    finalText = localize(language.answerLocale, {
       es: "Se ha producido un problema verificando la respuesta. Por seguridad no la mostramos. Inténtalo de nuevo en unos segundos.",
       de: "Bei der Sicherheitsprüfung der Antwort ist ein Fehler aufgetreten. Die Antwort wird deshalb nicht angezeigt. Bitte versuche es in einigen Sekunden erneut.",
     });
@@ -433,7 +435,7 @@ export async function POST(req: Request) {
   if (!hasVisibleAssistantText(finalText)) {
     verdict = "block";
     flags = [...new Set([...flags, "missing_evidence_tag"])];
-    finalText = localize(body.locale, {
+    finalText = localize(language.answerLocale, {
       es: "La respuesta generada no contenía texto visible. No mostramos una respuesta incompleta; inténtalo de nuevo.",
       de: "Die erzeugte Antwort enthielt keinen sichtbaren Text. Eine unvollständige Antwort wird nicht angezeigt; bitte versuche es erneut.",
     });
@@ -504,7 +506,7 @@ export async function POST(req: Request) {
           kind: "lab-series",
           series: shown.map((series) => ({
             markerId: series.markerId,
-            displayName: displayMarker(series.markerId, body.locale),
+            displayName: displayMarker(series.markerId, language.uiLocale),
             series,
           })),
           mapHref: `/memory/map?marker=${encodeURIComponent(shown[0].markerId)}`,

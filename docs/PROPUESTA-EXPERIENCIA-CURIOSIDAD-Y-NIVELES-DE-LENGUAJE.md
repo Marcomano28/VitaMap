@@ -20,8 +20,19 @@ La base multinivel ya está implementada en el repositorio:
 - sustitución administrativa explícita por `tarjeta_id`, con retiro de la
   versión anterior y rollback si falla la reindexación.
 
-Los borradores piloto de LDL y glucosa en ayunas permanecen fuera del corpus
-vivo hasta desplegar este código y completar la revisión humana.
+Los tres archivos piloto permanecen en la carpeta de borradores como fuente de
+trabajo reproducible. Sus versiones correspondientes —LDL A, glucosa A y
+glucosa/HbA1c D— se han sustituido y probado manualmente en el corpus vivo del
+piloto. El repositorio no refleja por sí solo ese estado porque el KB operativo
+vive en el volumen del VPS.
+
+### Revisión multilingüe · 2026-07-13
+
+La composición funciona, pero su contrato v1 reconoce encabezados españoles y
+el alemán depende de la traducción del LLM. La evolución obligatoria —anchors
+de bloque independientes del idioma, `content_locale`, rendiciones revisadas y
+gates ES/DE— se define en
+`docs/HOJA-DE-RUTA-MULTILINGUE-NIVELES-Y-CURIOSIDAD.md`.
 
 ## 1. Tesis
 
@@ -471,7 +482,8 @@ datos sensibles.
 1. Permitir preferencia de profundidad por sesión o voluntaria por cuenta.
 2. Recomendar una puerta siguiente según el tema activo, no según un perfil
    psicológico inferido.
-3. Añadir alemán y revisar que sencillez y tono no se pierdan en traducción.
+3. Completar rendiciones alemanas revisadas y demostrar que sencillez, límites
+   y tono se conservan; la traducción del LLM queda solo como fallback del chat.
 4. Medir si la persona cambia de profundidad y si encuentra las fuentes.
 
 **Resultado:** experiencia adaptable sin clasificar ni manipular al usuario.

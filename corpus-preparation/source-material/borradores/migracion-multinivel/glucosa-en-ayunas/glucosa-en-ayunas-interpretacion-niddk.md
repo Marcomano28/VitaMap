@@ -7,6 +7,11 @@ source_type: lab-interpretation-summary
 rights_status: permitted
 facets_version: 1
 tarjeta_id: glucosa-en-ayunas-glucosa-en-ayunas-interpretacion-niddk
+canonical_card_id: glucosa-en-ayunas-glucosa-en-ayunas-interpretacion-niddk
+content_locale: es
+localization_kind: original
+localization_status: draft
+editorial_schema_version: 2
 dominio: laboratorio
 tipo:
   - analito
@@ -43,11 +48,13 @@ source_jurisdiction:
 ---
 # Glucosa plasmática en ayunas: interpretación general
 
+<!-- vitamap:block summary -->
 ## En una frase
 
 La glucosa en ayunas mide cuánta glucosa hay en la sangre en un momento concreto
 después de pasar al menos ocho horas sin comer ni beber, salvo agua.
 
+<!-- vitamap:block analogy -->
 ## Una imagen para empezar
 
 Imagina que el cuerpo es una ciudad y la glucosa es uno de los combustibles que
@@ -59,6 +66,7 @@ En términos literales, la sangre transporta glucosa, el hígado puede liberarla
 y varias hormonas participan en su regulación. La imagen ayuda a entender el
 momento de la medición; no describe todo el metabolismo.
 
+<!-- vitamap:block literal -->
 ## Qué significa realmente
 
 La prueba de glucosa plasmática en ayunas ofrece una fotografía puntual. NIDDK
@@ -78,6 +86,7 @@ atribuidas a los criterios de la American Diabetes Association:
 Estos umbrales son criterios generales de cribado y diagnóstico, no una lectura
 individual automática ni un sustituto del intervalo mostrado por el informe.
 
+<!-- vitamap:block relations -->
 ## Cómo se relaciona
 
 La glucosa en ayunas y la HbA1c observan escalas temporales diferentes. La
@@ -90,6 +99,7 @@ embarazo, la variabilidad biológica y el procesamiento de la muestra pueden
 afectar la lectura. Por eso conviene conservar fecha, condiciones, unidad,
 método e informe de origen.
 
+<!-- vitamap:block limitations -->
 ## Límites de la explicación
 
 La ciudad nunca queda realmente “sin tráfico”: durante el ayuno continúan la
@@ -103,6 +113,7 @@ Esta tarjeta no interpreta un resultado personal ni indica una causa.
 Tampoco mide directamente “cómo funciona” el páncreas o el hígado: esos órganos
 participan en la regulación, pero la prueba informa de glucosa plasmática.
 
+<!-- vitamap:block deep_dive -->
 ## Si quieres profundizar
 
 Durante el ayuno, el organismo mantiene la glucosa disponible mediante procesos
@@ -115,6 +126,7 @@ método, y que la muestra requiere un procesamiento adecuado. Dos resultados
 cercanos no deben presentarse como una tendencia segura sin revisar
 comparabilidad, unidades y condiciones de medición.
 
+<!-- vitamap:block sources -->
 ## Fuentes
 
 - National Institute of Diabetes and Digestive and Kidney Diseases (NIDDK).

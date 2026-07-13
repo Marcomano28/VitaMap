@@ -1,6 +1,6 @@
 # Prompt de investigación · Pausa curiosa de VitaMap
 
-Versión 0.1 · 2026-07-13
+Versión 0.2 · 2026-07-13
 Estado: brief especializado para preparar tarjetas C candidatas
 
 ## 1. Contexto
@@ -29,17 +29,20 @@ Puede pertenecer a uno de estos alcances editoriales:
 marker             relacionada con un marcador concreto
 system             relacionada con un sistema fisiológico
 body-general       curiosidad general sobre el cuerpo
-research-frontier  resultado científico reciente; no usar en el primer piloto
+research-frontier  resultado científico reciente; requiere fecha de revisión
 ```
 
-`curiosity_scope` es por ahora una nota de auditoría, no un campo de taxonomía.
-No lo añadas al frontmatter hasta que VitaMap lo adopte formalmente.
+Para tarjetas ya cubiertas por la taxonomía canónica, no añadas
+`curiosity_scope`. Para la reserva editorial
+`source-material/borradores/pausa-curiosa-general`, puede conservarse como
+metadato provisional junto a `taxonomy_status: proposed`; el administrador
+bloquea la publicación de esos borradores.
 
 ## 3. Antes de investigar
 
 1. Revisa si ya existe una tarjeta C equivalente.
 2. Comprueba si el tema o marker existe en `corpus-taxonomy.json`.
-3. Si no existe, propón primero la entrada canónica; no inventes el marker.
+3. Si no existe, propón primero un `topic`; no lo presentes como `marker`.
 4. Define la pregunta exacta que responderá.
 5. Explica por qué esta idea merece una pausa y no pertenece a A, B, D o E.
 
@@ -114,6 +117,11 @@ Longitud orientativa: 180–350 palabras.
 Usa el contrato completo del brief principal. Para este tipo:
 
 ```yaml
+canonical_card_id: id-conceptual-compartido
+content_locale: es
+localization_kind: original
+localization_status: draft
+editorial_schema_version: 1
 source_type: science-curiosity-summary
 seccion: curiosidad
 evidence:
@@ -123,6 +131,29 @@ evidence:
 Incluye 3–5 `limitations`. `marker`, `categoria`, `sistema`, `area_de_salud`,
 `alias` y `relacionado_con` deben usar únicamente valores canónicos. Una
 relación se declara solo si la fuente la sostiene y siempre incluye dirección.
+
+La Pausa curiosa es una superficie determinista: el título y el cuerpo deben
+estar escritos y revisados en `content_locale`. No traduzcas una curiosidad al
+vuelo. Una versión alemana o inglesa usa el mismo `canonical_card_id`, un
+`tarjeta_id` propio y `localization_kind: translation`; el flujo añade
+`localized_from`, versión y checksum. Comienza como `machine-draft`, pasa a
+`draft` tras una segunda revisión editorial explícita y solo la publicación
+administrativa la convierte en `reviewed`.
+
+Para una tarjeta de la reserva general cuya taxonomía aún no se ha aprobado,
+usa además:
+
+```yaml
+taxonomy_status: proposed
+topic:
+  - id-propuesto-en-PROPUESTA-TAXONOMIA
+curiosity_scope: body-general # o research-frontier
+review_after: "YYYY-MM-DD"
+```
+
+Mientras `taxonomy_status` siga siendo `proposed`, la tarjeta no es publicable.
+No añadas el tema propuesto a `marker` para superar artificialmente la
+validación.
 
 ## 9. Entrega
 
@@ -140,8 +171,9 @@ Recomendación: preparar / no preparar
 ```
 
 Después entrega un único bloque Markdown completo marcado como **borrador para
-revisión humana**. No declares que está aprobado ni lo coloques en
-`approved-current-structure`.
+revisión humana**. Las curiosidades generales o de frontera van a
+`source-material/borradores/pausa-curiosa-general`; no declares que están
+aprobadas ni las coloques en `approved-current-structure`.
 
 ## 10. Checklist
 
@@ -155,3 +187,4 @@ revisión humana**. No declares que está aprobado ni lo coloques en
 - [ ] El límite aparece en cuerpo y frontmatter.
 - [ ] El vocabulario coincide con la taxonomía.
 - [ ] Puede mostrarse directamente sin que el LLM la reescriba.
+- [ ] Su `content_locale` coincide con título, cuerpo y limitaciones.

@@ -23,12 +23,21 @@ export interface PersonalFrontmatter {
 export interface EvidenceFrontmatter {
   title?: string;
   source_url?: string;
+  /** Idioma del contenido editorial de la tarjeta, no de su fuente. */
+  content_locale?: string;
   source_language?: string;
   source_jurisdiction?: string | string[];
   source_kind?: string;
   source_type?: string;
   facets_version?: number;
   tarjeta_id?: string;
+  canonical_card_id?: string;
+  localization_kind?: "original" | "translation";
+  localization_status?: "draft" | "machine-draft" | "reviewed" | "stale";
+  localized_from?: string;
+  localized_from_version?: number;
+  localized_from_checksum?: string;
+  editorial_schema_version?: number;
   dominio?: string;
   tipo?: string[];
   marker?: string | string[];

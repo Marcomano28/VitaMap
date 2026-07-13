@@ -10,6 +10,11 @@ source_type: lab-pattern-interpretation-summary
 rights_status: permitted
 facets_version: 1
 tarjeta_id: glucosa-en-ayunas-glucosa-hba1c-lectura-conjunta-niddk
+canonical_card_id: glucosa-en-ayunas-glucosa-hba1c-lectura-conjunta-niddk
+content_locale: es
+localization_kind: original
+localization_status: draft
+editorial_schema_version: 2
 dominio: laboratorio
 tipo:
   - analito
@@ -52,12 +57,14 @@ limitations:
 ---
 # Glucosa en ayunas y HbA1c: cómo se leen juntas
 
+<!-- vitamap:block summary -->
 ## En una frase
 
 La glucosa en ayunas y la HbA1c observan el control de la glucosa desde ventanas
 temporales diferentes: una mide un momento concreto y la otra aproxima la
 exposición media de los meses anteriores.
 
+<!-- vitamap:block analogy -->
 ## Una imagen para empezar
 
 Imagina dos maneras de observar un recorrido. La glucosa en ayunas se parece a
@@ -69,6 +76,7 @@ La imagen ayuda a distinguir sus escalas temporales. No significa que la HbA1c
 reconstruya cada día ni que la glucosa en ayunas describa todo lo ocurrido antes
 o después de la extracción.
 
+<!-- vitamap:block literal -->
 ## Qué significa realmente
 
 La glucosa plasmática en ayunas mide la concentración de glucosa en una muestra
@@ -80,6 +88,7 @@ como aproximación de la glucosa media de los últimos tres meses. No requiere
 ayuno. Algunas condiciones que afectan a los glóbulos rojos o a la hemoglobina
 pueden alterar su fiabilidad.
 
+<!-- vitamap:block relations -->
 ## Cómo se relaciona
 
 Ambas pruebas pueden utilizarse para detectar alteraciones de la glucosa y
@@ -92,6 +101,7 @@ o al revés. Esa discordancia no demuestra por sí sola que una prueba esté mal
 normalmente lleva a revisar condiciones, posibles interferencias y la necesidad
 de repetir o confirmar resultados.
 
+<!-- vitamap:block limitations -->
 ## Límites de la explicación
 
 La comparación “fotografía frente a exposición prolongada” simplifica dos
@@ -103,6 +113,7 @@ distingue el tipo de diabetes y no establece una causa. Tampoco permite aplicar
 automáticamente un intervalo general a una persona sin atender al informe y al
 contexto clínico.
 
+<!-- vitamap:block deep_dive -->
 ## Si quieres profundizar
 
 La glucosa en ayunas tiene variabilidad biológica y depende de las condiciones
@@ -117,6 +128,7 @@ no concuerdan, se confirma la que se encuentra por encima del umbral diagnóstic
 y se interpreta el conjunto. Esta regla general no sustituye la valoración de
 un caso concreto.
 
+<!-- vitamap:block sources -->
 ## Fuentes
 
 - National Institute of Diabetes and Digestive and Kidney Diseases (NIDDK).

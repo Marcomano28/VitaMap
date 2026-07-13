@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -50,6 +51,71 @@ El hígado, el páncreas y varias hormonas participan en la regulación.
 
 const parsed = parseEditorialCard(CARD, "markers/glucosa.md");
 assert.ok(parsed);
+assert.equal(parsed.schemaVersion, 1);
+
+const GERMAN_V2_CARD = `---
+title: LDL-Cholesterin verstehen
+tarjeta_id: colesterol-ldl-interpretacion-de
+canonical_card_id: colesterol-ldl-interpretacion
+content_locale: de
+localization_kind: translation
+localization_status: reviewed
+editorial_schema_version: 2
+---
+
+# LDL-Cholesterin
+
+<!-- vitamap:block summary -->
+## Kurz gesagt
+
+LDL ist ein Transportpartikel für Cholesterin und andere Lipide.
+
+<!-- vitamap:block analogy -->
+## Ein Bild zum Einstieg
+
+Man kann es sich wie ein Transportfahrzeug vorstellen.
+
+<!-- vitamap:block literal -->
+## Was es genau bedeutet
+
+Der Laborwert beschreibt das in LDL-Partikeln transportierte Cholesterin.
+
+<!-- vitamap:block relations -->
+## Wie es zusammenhängt
+
+LDL wird zusammen mit weiteren Werten des Lipidprofils betrachtet.
+
+<!-- vitamap:block limitations -->
+## Grenzen dieser Erklärung
+
+Ein einzelner Wert bestimmt weder das Gesamtrisiko noch eine Behandlung.
+
+<!-- vitamap:block deep_dive -->
+## Wenn du tiefer einsteigen möchtest
+
+Partikelzahl und Cholesteringehalt sind verwandte, aber verschiedene Größen.
+
+<!-- vitamap:block sources -->
+## Quellen
+
+- Geprüfte institutionelle Quelle.
+`;
+
+const germanV2 = parseEditorialCard(GERMAN_V2_CARD, "markers/ldl-de.md");
+assert.ok(germanV2);
+assert.equal(germanV2.schemaVersion, 2);
+assert.equal(germanV2.frontmatter.content_locale, "de");
+assert.match(germanV2.sections.summary?.body ?? "", /Transportpartikel/);
+assert.match(germanV2.sections.deepDive?.heading ?? "", /tiefer/);
+for (const depth of ["discover", "understand", "deep"] as const) {
+  assert.ok(composeEditorialCard(germanV2, depth));
+}
+
+const invalidV2 = parseEditorialCard(
+  `---\neditorial_schema_version: 2\n---\n\n## Kurz gesagt\n\nOhne Anchor.`,
+  "invalid-v2.md",
+);
+assert.equal(invalidV2, null);
 
 const discover = composeEditorialCard(parsed, "discover");
 assert.ok(discover);
@@ -208,7 +274,119 @@ async function testPilotDrafts() {
   assert.equal(primaryClassic.chunks[1].snippet, "CHUNK_A_SECUNDARIO");
 }
 
-Promise.all([testSafeReread(), testPilotDrafts()])
+async function testGermanPilotDrafts() {
+  const workspaceRoot = path.resolve(process.cwd(), "../..");
+  const spanishRoot = path.join(
+    workspaceRoot,
+    "corpus-preparation/source-material/borradores/migracion-multinivel",
+  );
+  const germanRoot = path.join(
+    workspaceRoot,
+    "corpus-preparation/source-material/borradores/migracion-multinivel-de",
+  );
+  const pairs = [
+    {
+      source: "colesterol-ldl/colesterol-ldl-interpretacion-medlineplus.md",
+      translation:
+        "colesterol-ldl/colesterol-ldl-interpretacion-medlineplus-de.md",
+    },
+    {
+      source: "glucosa-en-ayunas/glucosa-en-ayunas-interpretacion-niddk.md",
+      translation:
+        "glucosa-en-ayunas/glucosa-en-ayunas-interpretacion-niddk-de.md",
+    },
+    {
+      source: "glucosa-en-ayunas/glucosa-hba1c-lectura-conjunta-niddk.md",
+      translation:
+        "glucosa-en-ayunas/glucosa-hba1c-lectura-conjunta-niddk-de.md",
+    },
+  ];
+
+  for (const pair of pairs) {
+    const sourceRaw = await fs.readFile(path.join(spanishRoot, pair.source), "utf8");
+    const expectedChecksum = `sha256:${crypto
+      .createHash("sha256")
+      .update(sourceRaw, "utf8")
+      .digest("hex")}`;
+    const card = await readEditorialCard(germanRoot, pair.translation);
+    assert.ok(card, `${pair.translation}: German rendition must parse`);
+    assert.equal(card.schemaVersion, 2);
+    assert.equal(card.frontmatter.content_locale, "de");
+    assert.equal(card.frontmatter.localization_kind, "translation");
+    assert.equal(card.frontmatter.localization_status, "draft");
+    assert.equal(card.frontmatter.localized_from_version, 1);
+    assert.equal(card.frontmatter.localized_from_checksum, expectedChecksum);
+    assert.match(card.sections.summary?.heading ?? "", /Kurz gesagt/);
+    assert.match(card.sections.limitations?.heading ?? "", /Grenzen/);
+    for (const depth of ["discover", "understand", "deep"] as const) {
+      const sections = composeEditorialCard(card, depth);
+      assert.ok(sections, `${pair.translation}: must compose ${depth}`);
+      const text = serializeEditorialSections(sections);
+      assert.match(text, /## Quellen/);
+      assert.match(text, /## Grenzen dieser Erklärung/);
+    }
+  }
+}
+
+async function testEnglishPilotDrafts() {
+  const workspaceRoot = path.resolve(process.cwd(), "../..");
+  const spanishRoot = path.join(
+    workspaceRoot,
+    "corpus-preparation/source-material/borradores/migracion-multinivel",
+  );
+  const englishRoot = path.join(
+    workspaceRoot,
+    "corpus-preparation/source-material/borradores/migracion-multinivel-en",
+  );
+  const pairs = [
+    {
+      source: "colesterol-ldl/colesterol-ldl-interpretacion-medlineplus.md",
+      translation:
+        "colesterol-ldl/colesterol-ldl-interpretacion-medlineplus-en.md",
+    },
+    {
+      source: "glucosa-en-ayunas/glucosa-en-ayunas-interpretacion-niddk.md",
+      translation:
+        "glucosa-en-ayunas/glucosa-en-ayunas-interpretacion-niddk-en.md",
+    },
+    {
+      source: "glucosa-en-ayunas/glucosa-hba1c-lectura-conjunta-niddk.md",
+      translation:
+        "glucosa-en-ayunas/glucosa-hba1c-lectura-conjunta-niddk-en.md",
+    },
+  ];
+
+  for (const pair of pairs) {
+    const sourceRaw = await fs.readFile(path.join(spanishRoot, pair.source), "utf8");
+    const expectedChecksum = `sha256:${crypto
+      .createHash("sha256")
+      .update(sourceRaw, "utf8")
+      .digest("hex")}`;
+    const card = await readEditorialCard(englishRoot, pair.translation);
+    assert.ok(card, `${pair.translation}: English rendition must parse`);
+    assert.equal(card.schemaVersion, 2);
+    assert.equal(card.frontmatter.content_locale, "en");
+    assert.equal(card.frontmatter.localization_kind, "translation");
+    assert.equal(card.frontmatter.localization_status, "draft");
+    assert.equal(card.frontmatter.localized_from_checksum, expectedChecksum);
+    assert.match(card.sections.summary?.heading ?? "", /In one sentence/);
+    assert.match(card.sections.limitations?.heading ?? "", /Limits/);
+    for (const depth of ["discover", "understand", "deep"] as const) {
+      const sections = composeEditorialCard(card, depth);
+      assert.ok(sections, `${pair.translation}: must compose ${depth}`);
+      const text = serializeEditorialSections(sections);
+      assert.match(text, /## Sources/);
+      assert.match(text, /## Limits of this explanation/);
+    }
+  }
+}
+
+Promise.all([
+  testSafeReread(),
+  testPilotDrafts(),
+  testGermanPilotDrafts(),
+  testEnglishPilotDrafts(),
+])
   .then(() => {
     console.log("Composición editorial: relectura segura y profundidades verificadas.");
   })
