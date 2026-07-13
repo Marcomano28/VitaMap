@@ -464,3 +464,18 @@ export function applySeccionPreference<T extends { seccion?: string }>(
   const rest = docs.filter((d) => !matchesSeccion(d));
   return [...preferred, ...rest];
 }
+
+/**
+ * Si existe una tarjeta exacta del ángulo pedido, la respuesta se apoya solo
+ * en ese ángulo. Las tarjetas son autosuficientes por contrato; mezclar A/B/C/E
+ * con una D recuperada introduce repeticiones y afirmaciones no solicitadas.
+ * Sin coincidencia exacta se conserva el conjunto como fallback.
+ */
+export function narrowToRequestedSection<T extends { seccion?: string }>(
+  docs: readonly T[],
+  seccion: string | undefined,
+): T[] {
+  if (!seccion) return [...docs];
+  const exact = docs.filter((doc) => doc.seccion === seccion);
+  return exact.length > 0 ? exact : [...docs];
+}
