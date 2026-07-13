@@ -29,6 +29,12 @@ export function isLatestLabRequest(message: string): boolean {
     ) ||
     /\b(?:meine[mrn]?|der|die|das)\s+(?:neueste[nrms]?|letzte[nrms]?)\s+(?:labor(?:bericht|befund|werte?)|blut(?:bild|werte?)|analyse|ergebnis)/i.test(
       normalized,
+    ) ||
+    /\b(?:c[oó]mo\s+est[aá]|cu[aá]l\s+es)\s+(?:ahora\s+)?(?:mi|el)\s+[\p{L}][\p{L}\d()%-]*(?:\s+[\p{L}][\p{L}\d()%-]*){0,3}\b/iu.test(
+      normalized,
+    ) ||
+    /\bwie\s+(?:ist|hoch\s+ist)\s+(?:mein\w*|der|die|das)\s+[\p{L}][\p{L}\d()%-]*\b/iu.test(
+      normalized,
     );
 
   return latest;
