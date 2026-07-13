@@ -10,6 +10,7 @@ import {
   expandQueryForHealthAreas,
   expandQueryForLens,
   applyHealthAreaPreference,
+  narrowToRequestedSection,
   matchesLens,
 } from "../lib/marker-scope";
 
@@ -254,6 +255,23 @@ assert.deepEqual(
   applyHealthAreaPreference(areaDocs, new Set(["energia-fatiga"])).map((d) => d.title),
   ["Ferritina y cansancio", "TSH y energía", "LDL biomédico"],
   "area_de_salud sube el motivo de consulta sin descartar el resto",
+);
+
+// --- respuesta por intención: estrechar solo cuando existe tarjeta exacta ---
+const sectionDocs = [
+  { title: "Glucosa A", seccion: "interpretacion" },
+  { title: "Glucosa B", seccion: "alimentacion-factores" },
+  { title: "Glucosa + HbA1c D", seccion: "lectura-conjunta" },
+];
+assert.deepEqual(
+  narrowToRequestedSection(sectionDocs, "lectura-conjunta").map((d) => d.title),
+  ["Glucosa + HbA1c D"],
+  "una D exacta evita mezclar interpretación y hábitos en la respuesta",
+);
+assert.equal(
+  narrowToRequestedSection(sectionDocs, "seguimiento").length,
+  3,
+  "sin tarjeta exacta se conserva el fallback",
 );
 
 console.log("test-marker-scope: OK (todas las aserciones pasaron)");

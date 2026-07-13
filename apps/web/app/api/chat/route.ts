@@ -5,7 +5,7 @@ import {
   composeRetrievedEvidence,
   inferEditorialDepth,
 } from "@/lib/editorial-composition";
-import { deriveScope } from "@/lib/marker-scope";
+import { deriveScope, narrowToRequestedSection } from "@/lib/marker-scope";
 import {
   chat,
   SOCRATIC_SYSTEM_PROMPT,
@@ -174,7 +174,10 @@ export async function POST(req: Request) {
       seccion: scope.seccion,
     });
     personal = result.personal;
-    evidence = result.evidence;
+    evidence =
+      scope.lens.size === 0
+        ? narrowToRequestedSection(result.evidence, scope.seccion)
+        : result.evidence;
 
     const composed = await composeRetrievedEvidence(
       kbDir(),
