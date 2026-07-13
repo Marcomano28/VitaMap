@@ -20,10 +20,10 @@ Prioridad: 🔴 bloqueante pre-dato-real · 🟡 antes de voluntarios 2/3 · �
 |:--:|:--:|:--:|---|---|---|
 | [ ] | 🔴 | 3 | MFA (TOTP/passkey) + recuperación | Alta, recuperación, dispositivo perdido y revocación probados | |
 | [ ] | 🔴 | 4 | Allowlist MIME + magic bytes en `/api/upload` | Fichero no permitido rechazado en el endpoint; test PDF/PNG/JPEG/WebP válidos e inválidos | |
-| [ ] | 🔴 | 1 | Parchear `next`/`better-auth`/`better-sqlite3` | `npm audit --omit=dev` sin altas/moderadas; build de producción verde | |
+| [x] | 🔴 | 1 | Parchear `next`/`better-auth`/`better-sqlite3` | `npm audit --omit=dev` sin altas/moderadas; build de producción verde | ✅ 07-02: high (next) resuelto → 15.5.20 desplegado; 3 transitivas (postcss/js-yaml/hono) aceptadas como no-explotables |
 | [ ] | 🔴 | 2 | Backup consistente de SQLite (`.backup`/`VACUUM INTO`) | Restauración de snapshot reciente abre sin corrupción; simulacro documentado | |
 | [ ] | 🔴 | — | Verificación de email + recuperación (Brevo) | Envío real desde producción sin revelar existencia de cuentas | |
-| [ ] | 🔴 | — | Módulos amarillos apagados por defecto | `ASSESSMENTS_ENABLED`/`ASSISTANT_EDU_GUIDE`/`KB_MARKER_SCOPE`/`RETRIEVAL_DEBUG`=`false` | |
+| [x] | 🔴 | — | Módulos amarillos apagados por defecto | `ASSESSMENTS_ENABLED`/`ASSISTANT_EDU_GUIDE`/`KB_MARKER_SCOPE`/`RETRIEVAL_DEBUG`=`false` | ✅ 07-02: los 4 en `false` en el VPS |
 | [ ] | 🔴 | — | Anclaje externo del hash de auditoría | Hash final anclado periódicamente fuera del VPS | |
 | [ ] | 🔴 | — | Borrado cubre originales+derivados+índices+inbox+temporales OCR | Simulacro de borrado sin residuos verificado | |
 | [x] | 🟡 | 5 | `USER` no-root en `Dockerfile.web` | Contenedor `web` como usuario sin privilegios; `/data` con permisos ajustados | ✅ Ya resuelto vía `setpriv`→`node` en el entrypoint (falso positivo del audit) |
@@ -46,7 +46,7 @@ Cada punto se cierra con la salida del comando correspondiente (ver
 |:--:|---|---|---|
 | [x] | `/opt/vitamap-next` en el commit esperado de `main`, árbol limpio | `git rev-parse --short HEAD` + `git status --short` | ✅ 07-02: 9914e0d == origin/main, 0/0, limpio |
 | [ ] | `infra/.env` con todas las variables nuevas | `grep '^[A-Z0-9_]\+=' infra/.env \| cut -d= -f1` | |
-| ❌ | Flags de módulo cerrados en producción | `grep -E '^(ASSESSMENTS_ENABLED\|ASSISTANT_EDU_GUIDE\|KB_MARKER_SCOPE\|RETRIEVAL_DEBUG)=' infra/.env` | 🔴 07-02: ASSESSMENTS_ENABLED=true, KB_MARKER_SCOPE=true |
+| [x] | Flags de módulo cerrados en producción | `grep -E '^(ASSESSMENTS_ENABLED\|ASSISTANT_EDU_GUIDE\|KB_MARKER_SCOPE\|RETRIEVAL_DEBUG)=' infra/.env` | ✅ 07-02: los 4 en `false` (backup .env.bak); web reiniciado. Verificar en UI que no salen assessments |
 | [~] | `/admin/corpus` abre para admin y da 404 a cuenta normal | Prueba manual con dos cuentas | 07-02: sin sesión → 307 (OK); ADMIN_EMAILS=2 correos; falta test cuenta no-admin |
 | [x] | Email de verificación y recuperación funcionan desde producción | Prueba con usuario de test | ✅ 07-02: no-enumeración OK; Brevo Enviado→Entregado→Abierto 13:31. Nota P1: log ERROR registra el email consultado |
 | [x] | Autenticar dominio de correo en Brevo (SPF/DKIM/DMARC) | Dominio "Authenticated" en Brevo + registros en Cloudflare | ✅ 07-02: DKIM 1/2 y DMARC (p=none) publicados y verificados con `dig`. Pendiente opcional: SPF explícito + subir DMARC a quarantine |
@@ -58,7 +58,7 @@ Cada punto se cierra con la salida del comando correspondiente (ver
 | [ ] | Credenciales GitHub CLI en `root` sustituidas por despliegue de solo lectura | Sesión cerrada / deploy key de solo lectura | |
 | [ ] | Primer payout Stripe → IBAN confirmado (fecha e importe neto) | Captura del dashboard de Stripe | |
 | [ ] | Reintento del PDF sintético tras corrección del worker `pdfjs-dist` | 11 marcadores extraídos correctamente | |
-| ❌ | `next` en versión parcheada en el contenedor desplegado | salida de versión de `next` en `web` | 🔴 07-02: 15.5.19 → objetivo 15.5.20 (solo bump de lockfile; package.json ya `^15.0.0`) |
+| [x] | `next` en versión parcheada en el contenedor desplegado | salida de versión de `next` en `web` | ✅ 07-02: desplegado 15.5.20 (docker top: next-server v15.5.20, UID 1000), healthy, sin errores better-auth. Tests invitations/billing/auth-email verdes |
 | [x] | Contenedor `web` NO corre como root | `docker compose top web` | ✅ 07-02: Dockerfile baja a usuario `node` (uid 1000) vía `setpriv` en el entrypoint (no usa directiva USER). El audit #5 fue falso positivo. Confirmar con `docker top` |
 | [x] | Solo cuentas sintéticas en la BD antes de la Puerta 4 | `SELECT id,email FROM user;` | ✅ 07-02: solo admin (igorcapote@yahoo.com) |
 
@@ -140,26 +140,32 @@ Pendiente de recibir: bloques 2 (flags/env), 3 (versiones/USER), 4 (backups),
 
 **🔴 Bloqueantes detectados (impiden datos reales):**
 
-1. **Módulos amarillos ABIERTOS.** `ASSESSMENTS_ENABLED=true` y
-   `KB_MARKER_SCOPE=true`. Deben estar en `false` (guía operativa §B-1, guía
-   legal §8-P0 "desactivar módulos amarillos"). Las escalas PHQ/GAD son zona
-   amarilla: no pueden estar activas sin evaluación MDR firmada.
-2. **LLM externo.** `LLM_PROVIDER=external` y `COMPOSE_PROFILES=` (vacío) → no hay
-   `llm` local; el chat envía contenido a un proveedor **fuera del VPS**. Para
-   el cierre del piloto debe ser `local` (guía operativa §C.3), o requiere
-   ADR-014 + consentimiento explícito de transferencia. Incompatible con "sin
-   APIs externas con datos reales" (guía legal §9).
+1. ~~**Módulos amarillos ABIERTOS.**~~ **✅ RESUELTO 07-02.** `ASSESSMENTS_ENABLED`
+   y `KB_MARKER_SCOPE` pasados a `false` (los 4 flags cerrados, backup `.env.bak`,
+   web reiniciado). Escalas PHQ/GAD desactivadas.
+2. **LLM externo.** `LLM_PROVIDER=external`, `COMPOSE_PROFILES=` (vacío) → el chat
+   envía prompt + contexto RAG (potencialmente Art. 9) a un tercero.
+   **DECISIÓN 07-02: se mantiene external** (no local) — ya cubierto por **ADR-014**.
+   Proveedor verificado: **Mistral AI (FR/UE), `mistral-small-latest`**. El chat
+   envía memoria personal Art. 9 en hasta 5 pasadas/turno (ver auditoría del
+   código). Válido para fase sintética. Para datos reales, condiciones (→ Frente C,
+   borradores listos en `BORRADOR-TRANSFERENCIA-LLM-MISTRAL.md`): (a) DPA Art. 28
+   con Mistral; (b) ZDR/opt-out por escrito; (c) addendum a ADR-014; (d) cláusula
+   de consentimiento; (e) párrafo de privacidad; (f) línea Registro Art. 30 + DSFA.
 3. **`next` sin parchear:** versión desplegada **15.5.19** (audit #1; parcheado
    en 15.5.20+). Vulnerabilidad alta aún presente en producción.
-4. **Disco SIN cifrar.** `lsblk` no muestra capa `crypt`: `sda1` es `ext4` plano.
-   No hay LUKS. Datos Art. 9 en reposo sin cifrado de disco (guía operativa §B,
-   guía legal §9 "cifrado de disco verificado"). El cifrado `age` por usuario
-   protege los originales subidos, pero los markdown derivados e índices QMD
-   quedan en claro en disco.
-5. **`billing_subscription` con filas heredadas.** Hay 3 filas para el admin, una
-   **con `user_id` vacío** (`|active||…`) y `current_period_end` obsoleto
-   (2026-06-08). Reconciliar como incidente (guía operativa §F.6): copiar
-   `auth.sqlite` primero, nunca marcar `active` a mano, documentar la reparación.
+4. **Disco SIN cifrar** — pero es **decisión documentada, no olvido: ADR-015**
+   difiere LUKS a Fase 2 como riesgo aceptado (mitigado con age, SSH por clave,
+   backups cifrados, aislamiento; el consentimiento NO promete cifrado at-rest).
+   `sda1` ext4 plano confirmado. Acción pendiente: que la **DSFA acepte
+   explícitamente ese riesgo residual** para datos reales (no es tarea técnica
+   nueva, es validación legal del ADR-015). Reevaluar en paso a GPU / >10 usuarios.
+5. ~~**`billing_subscription` con filas heredadas.**~~ **✅ RESUELTO 07-02.**
+   Diagnóstico: 3 filas = 1 LIVE (rowid 3, `livemode=1`, con eventos reales) + 2
+   TEST (`livemode=0`, sin eventos, una con `user_id` vacío). **No había cobro
+   múltiple.** Backup `auth-pre-billing-fix-2026-07-02.sqlite` + `DELETE WHERE
+   livemode=0` → queda solo la fila LIVE del admin. Vigilancia P1: `period_end`
+   2026-06-08 obsoleto, confirmar en próxima renovación / Stripe LIVE.
 
 **🟡 Recomendados antes de abrir:**
 
