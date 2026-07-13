@@ -117,10 +117,37 @@ export function preferEvidenceForLocale(
   locale: Locale | undefined,
 ): RetrievedChunk[] {
   if (!locale) return [...chunks];
-  return chunks
-    .map((chunk, index) => ({ chunk, index, preference: preferenceScore(chunk, locale) }))
-    .sort((a, b) => b.preference - a.preference || a.index - b.index)
-    .map(({ chunk }) => chunk);
+
+  // QMD ya entrega los resultados ordenados por relevancia. El idioma de la
+  // fuente solo debe decidir entre resultados prácticamente empatados, nunca
+  // convertir una coincidencia débil en el primer resultado.
+  const SCORE_TIE_WINDOW = 0.02;
+  const ranked = chunks.map((chunk, index) => ({
+    chunk,
+    index,
+    preference: preferenceScore(chunk, locale),
+  }));
+  const output: typeof ranked = [];
+
+  for (let start = 0; start < ranked.length; ) {
+    const bandTopScore = ranked[start]?.chunk.score ?? 0;
+    let end = start + 1;
+    while (
+      end < ranked.length &&
+      Math.abs(bandTopScore - (ranked[end]?.chunk.score ?? 0)) <= SCORE_TIE_WINDOW
+    ) {
+      end += 1;
+    }
+
+    output.push(
+      ...ranked
+        .slice(start, end)
+        .sort((a, b) => b.preference - a.preference || a.index - b.index),
+    );
+    start = end;
+  }
+
+  return output.map(({ chunk }) => chunk);
 }
 
 export function normalizeJurisdiction(value: unknown): string[] | undefined {
