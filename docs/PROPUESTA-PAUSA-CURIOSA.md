@@ -3,6 +3,27 @@
 Versión 0.1 · 2026-07-13
 Estado: esbozo de producto y plan de implementación
 
+### Estado técnico · 2026-07-13
+
+La Fase 1 está implementada en el repositorio, pendiente de despliegue:
+
+- endpoint autenticado `/api/curiosity`, separado de `/api/chat`;
+- lectura exclusiva del KB compartido, sin índice ni valores personales;
+- filtro duro por `science-curiosity-summary`, `seccion: curiosidad`, derechos y
+  catálogo piloto;
+- selección relacionada mediante markers canónicos o general cuando no existe
+  tema/C exacta;
+- exclusión de tarjetas vistas durante la sesión;
+- tarjeta determinista dentro del chat con fuente, límite, `Explorar esto` y
+  `Volver al tema`;
+- botón disponible en el chat vacío y bajo respuestas seguras;
+- piloto limitado a español hasta disponer de cuerpos editoriales en alemán;
+- ocho tarjetas C revisadas en el catálogo inicial, elegidas entre 54
+  disponibles en la preparación local.
+
+También existe `corpus-preparation/PROMPT-PAUSA-CURIOSA.md` para investigar
+nuevas candidatas sin relajar el contrato editorial.
+
 ## 1. Idea central
 
 VitaMap puede ofrecer una pausa voluntaria dentro de la exploración de salud:

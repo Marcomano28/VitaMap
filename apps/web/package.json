@@ -30,6 +30,7 @@
     "test:qmd-hit": "node --import tsx scripts/test-qmd-hit.ts",
     "test:qmd-prompt": "node --import tsx scripts/test-qmd-prompt.mts",
     "test:editorial-composition": "node --import tsx scripts/test-editorial-composition.ts",
+    "test:curiosity": "node --import tsx scripts/test-curiosity.ts",
     "test:lab-visualization": "node --import tsx scripts/test-lab-visualization.ts",
     "eval": "node --import tsx scripts/run-eval.mts",
     "eval:validate": "node --import tsx scripts/run-eval.mts --validate",
