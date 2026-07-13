@@ -1,16 +1,13 @@
-export const LOCALES = ["es", "de"] as const;
-export type Locale = (typeof LOCALES)[number];
+import type { Locale } from "./language-contract";
 
-export const DEFAULT_LOCALE: Locale = "de";
-export const LOCALE_COOKIE = "vitamap_locale";
-
-export function isLocale(value: string): value is Locale {
-  return (LOCALES as readonly string[]).includes(value);
-}
-
-export function localeTag(locale: Locale): "es-ES" | "de-DE" {
-  return locale === "de" ? "de-DE" : "es-ES";
-}
+export {
+  DEFAULT_LOCALE,
+  LOCALES,
+  LOCALE_COOKIE,
+  isLocale,
+  localeTag,
+  type Locale,
+} from "./language-contract";
 
 export function localize<T extends Record<Locale, unknown>>(
   locale: Locale,

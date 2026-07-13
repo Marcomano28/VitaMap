@@ -21,6 +21,10 @@ La Fase 1 está implementada en el repositorio, pendiente de despliegue:
 - ocho tarjetas C revisadas en el catálogo inicial, elegidas entre 54
   disponibles en la preparación local.
 
+La habilitación por idioma, el estado de localización y los gates que debe
+superar el catálogo se definen en
+`docs/HOJA-DE-RUTA-MULTILINGUE-NIVELES-Y-CURIOSIDAD.md`.
+
 También existe `corpus-preparation/PROMPT-PAUSA-CURIOSA.md` para investigar
 nuevas candidatas sin relajar el contrato editorial.
 

@@ -393,6 +393,14 @@ sin mezclarlas con las fuentes realmente usadas por el RAG en esa respuesta.
 
 ### 5.2 Idioma del cuerpo y variantes localizadas
 
+> **Revisión 2026-07-13:** esta sección conserva la hipótesis incremental que
+> sirvió para el piloto. La decisión operativa revisada vive en
+> `HOJA-DE-RUTA-MULTILINGUE-NIVELES-Y-CURIOSIDAD.md` y prevalece, en especial,
+> sobre dos puntos de la propuesta histórica: el cuerpo español deja de ser una
+> garantía suficiente para alemán y la preferencia suave en un único conjunto
+> de resultados se sustituye progresivamente por rendiciones revisadas y
+> proyecciones QMD por `content_locale` dentro del mismo corpus lógico.
+
 `source_language` no resuelve por sí solo el problema multilingüe: describe la
 fuente, no el idioma del cuerpo redactado por VitaMap. Una tarjeta puede estar
 escrita en español a partir de una fuente inglesa, o en alemán a partir de una
@@ -403,7 +411,7 @@ source_language: en      # idioma de la fuente citada
 content_language: es     # idioma del cuerpo VitaMap
 ```
 
-La dirección recomendada es un **híbrido incremental**, no dos corpus
+La hipótesis original fue un **híbrido incremental**, no dos corpus
 independientes:
 
 1. **Cuerpo ES como capa base editorial.** La tarjeta canónica se redacta,

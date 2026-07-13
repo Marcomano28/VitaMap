@@ -24,6 +24,8 @@
     "test:marker-scope": "node --import tsx scripts/test-marker-scope.ts",
     "test:marker-taxonomy": "npm run taxonomy:check && node --import tsx scripts/test-marker-taxonomy.ts",
     "test:source-locale": "node --import tsx scripts/test-source-locale.ts",
+    "test:language-contract": "node --import tsx scripts/test-language-contract.ts",
+    "test:corpus-locale-audit": "node --import tsx scripts/test-corpus-locale-audit.mts",
     "test:crisis": "node --import tsx scripts/test-crisis.ts",
     "test:auth-email": "node --import tsx scripts/test-auth-email.ts",
     "test:corpus-admin": "node --import tsx scripts/test-corpus-admin.mts",
@@ -37,6 +39,7 @@
     "taxonomy:generate": "node --import tsx scripts/generate-marker-vocabulary.ts",
     "taxonomy:check": "node --import tsx scripts/generate-marker-vocabulary.ts --check",
     "kb:check": "node --import tsx scripts/check-kb.mts",
+    "corpus:locale-audit": "node --import tsx scripts/audit-corpus-locales.mts",
     "memory:reindex": "node scripts/reindex-users.mjs"
   },
   "dependencies": {

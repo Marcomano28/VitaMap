@@ -4,12 +4,14 @@ import { requireAdminSession } from "@/lib/admin";
 import {
   RIGHTS_STATUSES,
   SOURCE_KINDS,
+  isSameCorpusRendition,
   listCorpusDrafts,
   listPublishedCorpus,
   type CorpusDocument,
 } from "@/lib/corpus-admin";
 import { getLocale } from "@/lib/locale";
 import { localeTag, localize } from "@/lib/i18n";
+import { isPublicContentLocale } from "@/lib/language-contract";
 import { queryKB, type RetrievedChunk } from "@/lib/qmd";
 import { SubmitButton } from "./submit-button";
 import {
@@ -59,11 +61,15 @@ const TEXT = {
     publish: "Publicar e indexar",
     replace: "Sustituir e indexar",
     replacementHint:
-      "Existe una tarjeta publicada con el mismo tarjeta_id. Esta acción la retirará y publicará la nueva versión en una sola operación.",
+      "Existe una versión publicada del mismo concepto e idioma. Esta acción la retirará y publicará la nueva versión en una sola operación.",
     delete: "Eliminar borrador",
     retire: "Retirar del índice",
     blockedRights:
       "Solo se puede publicar texto con derechos «permitted» o «licensed».",
+    blockedLocalization:
+      "Esta versión está marcada como traducción automática o desactualizada. Debe revisarse antes de publicarla.",
+    blockedNonPublicLocale:
+      "Este idioma está admitido como contenido de reserva, pero todavía no puede publicarse en el RAG.",
     retrievalTest: "Probar recuperación",
     retrievalHint:
       "La consulta se ejecuta exclusivamente contra el corpus compartido, no contra la memoria de ningún usuario.",
@@ -115,11 +121,15 @@ const TEXT = {
     publish: "Veröffentlichen und indexieren",
     replace: "Ersetzen und indexieren",
     replacementHint:
-      "Eine veröffentlichte Karte mit derselben tarjeta_id ist vorhanden. Sie wird in einem Vorgang entfernt und durch diese Version ersetzt.",
+      "Eine veröffentlichte Version desselben Konzepts und derselben Sprache ist vorhanden. Sie wird in einem Vorgang ersetzt.",
     delete: "Entwurf löschen",
     retire: "Aus Index entfernen",
     blockedRights:
       "Text kann nur mit den Rechten „permitted“ oder „licensed“ veröffentlicht werden.",
+    blockedLocalization:
+      "Diese Version ist maschinell erstellt oder veraltet und muss vor der Veröffentlichung geprüft werden.",
+    blockedNonPublicLocale:
+      "Diese Sprache ist als Reserveinhalt zulässig, kann aber noch nicht im RAG veröffentlicht werden.",
     retrievalTest: "Abruf testen",
     retrievalHint:
       "Die Abfrage läuft nur gegen den gemeinsamen Korpus, nicht gegen den Speicher eines Nutzers.",
@@ -341,14 +351,21 @@ export default async function CorpusAdminPage({ searchParams }: PageProps) {
         ) : (
           <div className="space-y-3">
             {drafts.map((document) => {
-              const tarjetaId = document.extraFrontmatter?.tarjeta_id;
-              const replacement =
-                typeof tarjetaId === "string"
-                  ? published.find(
-                      (candidate) =>
-                        candidate.extraFrontmatter?.tarjeta_id === tarjetaId,
-                    )
-                  : undefined;
+              const replacement = published.find((candidate) =>
+                isSameCorpusRendition(document, candidate),
+              );
+              const localizationStatus =
+                document.extraFrontmatter?.localization_status;
+              const localizationBlocked =
+                localizationStatus === "machine-draft" ||
+                localizationStatus === "stale";
+              const rightsBlocked =
+                document.rightsStatus !== "permitted" &&
+                document.rightsStatus !== "licensed";
+              const contentLocale = document.extraFrontmatter?.content_locale;
+              const nonPublicLocaleBlocked =
+                typeof contentLocale === "string" &&
+                !isPublicContentLocale(contentLocale);
               return (
               <DocumentCard key={document.id} document={document} locale={locale}>
                 <Link
@@ -366,8 +383,7 @@ export default async function CorpusAdminPage({ searchParams }: PageProps) {
                     className={primaryButtonCls}
                     pendingLabel={t.processing}
                     disabled={
-                      document.rightsStatus !== "permitted" &&
-                      document.rightsStatus !== "licensed"
+                      rightsBlocked || localizationBlocked || nonPublicLocaleBlocked
                     }
                   >
                     {replacement ? t.replace : t.publish}
@@ -379,12 +395,21 @@ export default async function CorpusAdminPage({ searchParams }: PageProps) {
                     {t.delete}
                   </SubmitButton>
                 </form>
-                {document.rightsStatus !== "permitted" &&
-                  document.rightsStatus !== "licensed" && (
+                {rightsBlocked && (
                     <p className="basis-full text-xs text-amber-700 dark:text-amber-300">
                       {t.blockedRights}
                     </p>
                   )}
+                {localizationBlocked && (
+                  <p className="basis-full text-xs text-amber-700 dark:text-amber-300">
+                    {t.blockedLocalization}
+                  </p>
+                )}
+                {nonPublicLocaleBlocked && (
+                  <p className="basis-full text-xs text-amber-700 dark:text-amber-300">
+                    {t.blockedNonPublicLocale}
+                  </p>
+                )}
                 {replacement && (
                   <p className="basis-full text-xs text-amber-700 dark:text-amber-300">
                     {t.replacementHint} ({replacement.title})
@@ -499,6 +524,12 @@ function DocumentCard({
           <h3 className="break-words font-medium">{document.title}</h3>
           <p className="break-words text-xs text-[var(--color-muted)]">
             {document.sourceKind} · {document.sourceType} · {document.rightsStatus}
+            {typeof document.extraFrontmatter?.content_locale === "string"
+              ? ` · ${document.extraFrontmatter.content_locale}`
+              : ""}
+            {typeof document.extraFrontmatter?.localization_status === "string"
+              ? ` · ${document.extraFrontmatter.localization_status}`
+              : ""}
             {date
               ? ` · ${new Date(date).toLocaleDateString(localeTag(locale))}`
               : ""}

@@ -24,6 +24,7 @@ export interface EditorialSection {
 export interface EditorialCard {
   relativePath: string;
   frontmatter: Record<string, unknown>;
+  schemaVersion: 1 | 2;
   sections: Partial<Record<EditorialSectionId, EditorialSection>>;
 }
 
@@ -38,6 +39,21 @@ const SECTION_BY_HEADING = new Map<string, EditorialSectionId>([
   ["si quieres profundizar", "deepDive"],
   ["fuentes", "sources"],
 ]);
+
+const SECTION_BY_ANCHOR = new Map<string, EditorialSectionId>([
+  ["summary", "summary"],
+  ["analogy", "analogy"],
+  ["literal", "literal"],
+  ["relations", "relations"],
+  ["limitations", "limitations"],
+  ["deep_dive", "deepDive"],
+  ["sources", "sources"],
+]);
+
+const EDITORIAL_ANCHOR_PATTERN =
+  /<!--\s*vitamap:block\s+([a-z0-9_-]+)\s*-->/g;
+const ANCHORED_H2_PATTERN =
+  /<!--\s*vitamap:block\s+([a-z0-9_-]+)\s*-->\s*\r?\n##\s+(.+?)\s*$/gm;
 
 const REQUIRED_SECTIONS: readonly EditorialSectionId[] = [
   "summary",
@@ -98,6 +114,38 @@ export function parseEditorialCard(
   const sections: Partial<Record<EditorialSectionId, EditorialSection>> = {};
   const matches = [...parsed.content.matchAll(/^##\s+(.+?)\s*$/gm)];
 
+  const anchors = [...parsed.content.matchAll(EDITORIAL_ANCHOR_PATTERN)];
+  const declaredVersion = parsed.data.editorial_schema_version;
+  if (declaredVersion !== undefined && declaredVersion !== 1 && declaredVersion !== 2) {
+    return null;
+  }
+
+  if (anchors.length > 0 || declaredVersion === 2) {
+    if (anchors.length === 0) return null;
+    const anchoredSections = [...parsed.content.matchAll(ANCHORED_H2_PATTERN)];
+    // Un anchor sin su H2 inmediato indica una tarjeta cortada o ambigua.
+    if (anchoredSections.length !== anchors.length) return null;
+
+    for (const match of anchoredSections) {
+      const id = SECTION_BY_ANCHOR.get(match[1]);
+      if (!id || sections[id]) return null;
+      const heading = match[2].trim();
+      const bodyStart = (match.index ?? 0) + match[0].length;
+      const nextH2 = matches.find((candidate) => (candidate.index ?? 0) >= bodyStart);
+      const bodyEnd = nextH2?.index ?? parsed.content.length;
+      const body = parsed.content.slice(bodyStart, bodyEnd).trim();
+      if (!body) return null;
+      sections[id] = { id, heading, body };
+    }
+
+    return {
+      relativePath: relativePath.split(path.sep).join("/"),
+      frontmatter: (parsed.data ?? {}) as Record<string, unknown>,
+      schemaVersion: 2,
+      sections,
+    };
+  }
+
   for (let index = 0; index < matches.length; index += 1) {
     const match = matches[index];
     const heading = match[1].trim();
@@ -116,6 +164,7 @@ export function parseEditorialCard(
   return {
     relativePath: relativePath.split(path.sep).join("/"),
     frontmatter: (parsed.data ?? {}) as Record<string, unknown>,
+    schemaVersion: 1,
     sections,
   };
 }
