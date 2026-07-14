@@ -65,3 +65,7 @@ coverage/
 .claude/
 .agents/
 skills-lock.json
+
+# material local, no del producto (guiones de audio y proyectos de video)
+textToAudio/
+videos/
