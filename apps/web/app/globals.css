@@ -758,13 +758,13 @@ body:has(.vitawende-shell) .vitamap-lienzo {
 }
 
 .vitawende-brand-mark {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: 1px solid rgba(32, 192, 224, 0.25);
-  box-shadow:
-    inset 2px 2px 4px rgba(32, 192, 224, 0.12),
-    0 0 10px rgba(32, 192, 224, 0.15);
+  width: 30px;
+  height: 30px;
+  /* Seed mark from logo.png (text stripped) as an alpha mask, so the tint
+     follows the palette instead of baking one colour into the bitmap. */
+  background-color: rgba(126, 205, 224, 0.88);
+  -webkit-mask: url("/images/logo-mark.png") center / contain no-repeat;
+  mask: url("/images/logo-mark.png") center / contain no-repeat;
 }
 
 .vitawende-brand-name {
@@ -1146,6 +1146,9 @@ body:has(.vitawende-shell) .vitamap-lienzo {
   top: 1.38rem;
   right: 2rem;
   z-index: 14;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
 }
 
 /* VitaWende is always penumbra: its look depends on the palette only, never on
@@ -1231,10 +1234,7 @@ html[data-palette="warm"] .vitawende-frame::after {
 }
 
 html[data-palette="warm"] .vitawende-brand-mark {
-  border-color: rgba(214, 132, 82, 0.28);
-  box-shadow:
-    inset 2px 2px 4px rgba(214, 132, 82, 0.13),
-    0 0 10px rgba(214, 132, 82, 0.16);
+  background-color: rgba(222, 169, 87, 0.9);
 }
 
 html[data-palette="warm"] .vitawende-brand-name {

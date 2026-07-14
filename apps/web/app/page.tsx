@@ -4,6 +4,7 @@ import { getSession } from "@/lib/session";
 import { copy } from "@/lib/i18n";
 import { getLocale } from "@/lib/locale";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { SupershapeOrb } from "@/components/supershape-orb";
 import { PenumbraTone } from "@/components/penumbra-tone";
 
@@ -27,6 +28,7 @@ export default async function VitaWendeShell() {
       <div className="vitawende-frame" aria-hidden="true" />
 
       <div className="vitawende-shell-toggle">
+        <LanguageSwitcher locale={locale} />
         <ThemeToggle intent="palette" />
       </div>
 

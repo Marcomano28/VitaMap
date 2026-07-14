@@ -284,11 +284,16 @@ export function SupershapeOrb() {
     let lastPointerY = 0;
     const pointer = { inside: false, x: 0, y: 0, z: 0, strength: 0 };
 
+    // Returns whether any node is still meaningfully away from rest, so the
+    // caller can stop simulating (and stop re-uploading GPU buffers) once the
+    // springs have settled — at rest the seed only rotates, which is uniforms.
     const update = (time: number) => {
       const damping = 0.925;
       const dt = 0.105;
       const pulse = 0.5 + 0.5 * Math.sin(time * 0.0014);
       const reach = radius * (0.16 + pulse * 0.08);
+      const restEps = radius * 0.002;
+      let moving = false;
 
       for (let i = 0; i < count; i += 1) {
         for (let j = 0; j < count; j += 1) {
@@ -313,7 +318,48 @@ export function SupershapeOrb() {
           node.x += node.vx * dt;
           node.y += node.vy * dt;
           node.z += node.vz * dt;
+
+          if (
+            !moving &&
+            (Math.abs(node.x - node.x0) > restEps ||
+              Math.abs(node.y - node.y0) > restEps ||
+              Math.abs(node.z - node.z0) > restEps ||
+              Math.abs(node.vx) > restEps ||
+              Math.abs(node.vy) > restEps ||
+              Math.abs(node.vz) > restEps)
+          ) {
+            moving = true;
+          }
         }
+      }
+
+      return moving;
+    };
+
+    // The springs only move while the pointer pulls on them or while they are
+    // still settling back afterwards. Outside those windows every frame skips
+    // the O(count²) physics and the point-cloud re-upload entirely.
+    let simActive = false;
+    let positionsDirty = true;
+
+    const stepSimulation = (time: number) => {
+      if (pointer.strength > 0) simActive = true;
+      if (!simActive) return;
+      const moving = update(time);
+      positionsDirty = true;
+      if (!moving && pointer.strength === 0) {
+        for (let i = 0; i < count; i += 1) {
+          for (let j = 0; j < count; j += 1) {
+            const node = nodes[i][j];
+            node.x = node.x0;
+            node.y = node.y0;
+            node.z = node.z0;
+            node.vx = 0;
+            node.vy = 0;
+            node.vz = 0;
+          }
+        }
+        simActive = false;
       }
     };
 
@@ -388,9 +434,12 @@ export function SupershapeOrb() {
       canvas.height = Math.round(height * dpr);
     };
 
-    // resize() / tick() are assigned by whichever renderer is active.
+    // resize() / tick() / applyPalette() are assigned by whichever renderer is
+    // active. applyPalette re-reads the CSS palette variables; it runs on theme
+    // attribute changes (observer below) instead of polling every N frames.
     let resize: () => void = () => {};
     let tick: (time: number) => void = () => {};
+    let applyPalette: () => void = () => {};
 
     const gl = canvas.getContext("webgl", {
       alpha: true,
@@ -494,6 +543,7 @@ export function SupershapeOrb() {
 
         nodePos = new Float32Array(count * count * 3);
         pointPos = new Float32Array(sampleCount * 3);
+        positionsDirty = true;
       };
 
       const setCommonUniforms = (u: Uniforms) => {
@@ -508,24 +558,33 @@ export function SupershapeOrb() {
       const render = () => {
         if (!isDragging && !reducedMotion) rotationX -= 0.0028;
 
-        // Flatten node positions, then interpolate the edge samples from them.
-        let p = 0;
-        for (let i = 0; i < count; i += 1) {
-          for (let j = 0; j < count; j += 1) {
-            const node = nodes[i][j];
-            nodePos[p++] = node.x;
-            nodePos[p++] = node.y;
-            nodePos[p++] = node.z;
+        // Flatten node positions and interpolate the edge samples only when
+        // the simulation actually moved something; at rest the buffers stay on
+        // the GPU and rotation rides on the uniforms alone.
+        if (positionsDirty) {
+          let p = 0;
+          for (let i = 0; i < count; i += 1) {
+            for (let j = 0; j < count; j += 1) {
+              const node = nodes[i][j];
+              nodePos[p++] = node.x;
+              nodePos[p++] = node.y;
+              nodePos[p++] = node.z;
+            }
           }
-        }
-        for (let s = 0; s < sampleCount; s += 1) {
-          const a = sampleAIdx[s];
-          const b = sampleBIdx[s];
-          const t = sampleP[s];
-          const o = s * 3;
-          pointPos[o] = nodePos[a] + (nodePos[b] - nodePos[a]) * t;
-          pointPos[o + 1] = nodePos[a + 1] + (nodePos[b + 1] - nodePos[a + 1]) * t;
-          pointPos[o + 2] = nodePos[a + 2] + (nodePos[b + 2] - nodePos[a + 2]) * t;
+          for (let s = 0; s < sampleCount; s += 1) {
+            const a = sampleAIdx[s];
+            const b = sampleBIdx[s];
+            const t = sampleP[s];
+            const o = s * 3;
+            pointPos[o] = nodePos[a] + (nodePos[b] - nodePos[a]) * t;
+            pointPos[o + 1] = nodePos[a + 1] + (nodePos[b + 1] - nodePos[a + 1]) * t;
+            pointPos[o + 2] = nodePos[a + 2] + (nodePos[b + 2] - nodePos[a + 2]) * t;
+          }
+          gl.bindBuffer(gl.ARRAY_BUFFER, nodeBuffer);
+          gl.bufferData(gl.ARRAY_BUFFER, nodePos, gl.DYNAMIC_DRAW);
+          gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer);
+          gl.bufferData(gl.ARRAY_BUFFER, pointPos, gl.DYNAMIC_DRAW);
+          positionsDirty = false;
         }
 
         gl.viewport(0, 0, canvas.width, canvas.height);
@@ -536,7 +595,6 @@ export function SupershapeOrb() {
         // Translucent faces (source-over over a transparent canvas).
         gl.useProgram(surfaceProgram);
         gl.bindBuffer(gl.ARRAY_BUFFER, nodeBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, nodePos, gl.DYNAMIC_DRAW);
         gl.enableVertexAttribArray(surfaceAttrib);
         gl.vertexAttribPointer(surfaceAttrib, 3, gl.FLOAT, false, 0, 0);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -549,7 +607,6 @@ export function SupershapeOrb() {
         // Additive glow point cloud.
         gl.useProgram(pointProgram);
         gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, pointPos, gl.DYNAMIC_DRAW);
         gl.enableVertexAttribArray(pointAttrib);
         gl.vertexAttribPointer(pointAttrib, 3, gl.FLOAT, false, 0, 0);
         setCommonUniforms(pointU);
@@ -557,7 +614,11 @@ export function SupershapeOrb() {
         gl.uniform1f(pointU.uLineA, line[3]);
         gl.uniform3f(pointU.uSoft, soft[0], soft[1], soft[2]);
         gl.uniform1f(pointU.uSoftA, soft[3]);
-        gl.blendFunc(gl.ONE, gl.ONE);
+        // Additive light only: RGB accumulates but alpha must NOT, or every dim
+        // dot makes the (premultiplied) canvas more opaque and occludes the orb
+        // background instead of glowing over it — the dots then read as flat
+        // background-tinted specks with no colour.
+        gl.blendFuncSeparate(gl.ONE, gl.ONE, gl.ZERO, gl.ONE);
         gl.drawArrays(gl.POINTS, 0, sampleCount);
       };
 
@@ -572,6 +633,7 @@ export function SupershapeOrb() {
           count = nextCount;
           radius = nextRadius;
           nodes = buildNodes(count, radius);
+          positionsDirty = true;
         }
         // Dot distribution is scale-invariant, so it only needs rebuilding when
         // the node grid (count) changes, not on every radius tweak.
@@ -583,8 +645,7 @@ export function SupershapeOrb() {
 
       tick = (time: number) => {
         frame += 1;
-        if (frame % 30 === 0) updatePalette();
-        if (!reducedMotion) update(time);
+        if (!reducedMotion) stepSimulation(time);
         render();
         if (!reducedMotion || frame < 2) {
           raf = window.requestAnimationFrame(tick);
@@ -593,6 +654,7 @@ export function SupershapeOrb() {
         }
       };
 
+      applyPalette = updatePalette;
       rebuildGeometry();
     } else {
       // --- Canvas 2D fallback (no WebGL): node-level point cloud, no edge fill ---
@@ -683,8 +745,7 @@ export function SupershapeOrb() {
 
       tick = (time: number) => {
         frame += 1;
-        if (frame % 30 === 0) updatePalette();
-        if (!reducedMotion) update(time);
+        if (!reducedMotion) stepSimulation(time);
         render();
         if (!reducedMotion || frame < 2) {
           raf = window.requestAnimationFrame(tick);
@@ -692,6 +753,8 @@ export function SupershapeOrb() {
           raf = null;
         }
       };
+
+      applyPalette = updatePalette;
     }
 
     const onMotionChange = () => {
@@ -699,6 +762,17 @@ export function SupershapeOrb() {
       if (!reducedMotion && raf === null) raf = window.requestAnimationFrame(tick);
       if (reducedMotion) resize();
     };
+
+    // The palette lives in CSS variables that change with the html data-theme /
+    // data-palette attributes; re-read them on change instead of polling.
+    const themeObserver = new MutationObserver(() => {
+      applyPalette();
+      if (raf === null) resize(); // repaint when reduced motion froze the loop
+    });
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme", "data-palette", "data-theme-mode"],
+    });
 
     resizeObserver.observe(canvas);
     window.addEventListener("pointerdown", startDrag);
@@ -711,6 +785,7 @@ export function SupershapeOrb() {
     raf = window.requestAnimationFrame(tick);
 
     return () => {
+      themeObserver.disconnect();
       resizeObserver.disconnect();
       window.removeEventListener("pointerdown", startDrag);
       window.removeEventListener("pointermove", updatePointer);
