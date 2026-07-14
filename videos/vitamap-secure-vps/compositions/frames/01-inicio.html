@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- head is ignored by the runtime; everything live lives in <template> -->
+  </head>
+  <body>
+    <template>
+      <style>
+        @import url("https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=Hanken+Grotesk:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap");
+
+        #root {
+          position: absolute;
+          inset: 0;
+          width: 1920px;
+          height: 1080px;
+          overflow: hidden;
+          font-family: "Hanken Grotesk", system-ui, sans-serif;
+          color: #c0e0e0;
+          background: #020b22;
+        }
+        .bg {
+          position: absolute;
+          inset: 0;
+          background-color: #020b22;
+          background-image:
+            radial-gradient(ellipse 70% 60% at 68% 46%, rgba(21, 68, 84, 0.35), transparent 60%),
+            radial-gradient(ellipse 46% 40% at 22% 24%, rgba(70, 86, 85, 0.10), transparent 72%),
+            linear-gradient(rgba(32, 192, 224, 0.055) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(32, 192, 224, 0.055) 1px, transparent 1px);
+          background-size: 100% 100%, 100% 100%, 48px 48px, 48px 48px;
+        }
+        .vignette {
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(ellipse 96% 78% at 56% 46%, transparent 40%, rgba(0, 2, 12, 0.55) 82%, rgba(0, 0, 4, 0.92) 100%);
+          pointer-events: none;
+        }
+        .hair {
+          position: absolute;
+          left: 80px;
+          right: 80px;
+          height: 2px;
+          background: linear-gradient(to right, transparent, rgba(83, 222, 238, 0.42) 12%, rgba(83, 222, 238, 0.10) 40%, rgba(83, 222, 238, 0.30) 74%, transparent);
+          transform-origin: left center;
+        }
+        .hair-top { top: 70px; }
+        .hair-bot { bottom: 66px; }
+
+        .brand {
+          position: absolute;
+          top: 104px;
+          left: 96px;
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          font-family: "DM Mono", ui-monospace, monospace;
+          font-size: 20px;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: rgba(219, 235, 236, 0.82);
+        }
+        .brand .dot {
+          width: 26px;
+          height: 26px;
+          border-radius: 50%;
+          border: 1px solid rgba(32, 192, 224, 0.4);
+          box-shadow: inset 2px 2px 5px rgba(32, 192, 224, 0.18), 0 0 12px rgba(32, 192, 224, 0.2);
+        }
+        .sysreadout {
+          position: absolute;
+          top: 108px;
+          right: 96px;
+          display: flex;
+          gap: 20px;
+          align-items: baseline;
+          font-family: "DM Mono", ui-monospace, monospace;
+          font-size: 18px;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: rgba(129, 149, 168, 0.55);
+        }
+        .sysreadout strong { color: #e0c040; font-weight: 500; }
+
+        .wordmark {
+          position: absolute;
+          top: 44%;
+          left: 52%;
+          transform: translate(-50%, -50%);
+          font-family: "Newsreader", Georgia, serif;
+          font-size: 300px;
+          font-weight: 400;
+          letter-spacing: 0.04em;
+          color: rgba(83, 222, 238, 0.035);
+          white-space: nowrap;
+          pointer-events: none;
+        }
+
+        .crystal {
+          position: absolute;
+          top: 300px;
+          left: 150px;
+          width: 720px;
+          padding: 44px 52px 46px;
+          border: 1px solid rgba(83, 222, 238, 0.14);
+          border-left: 4px solid #20c0e0;
+          background:
+            radial-gradient(ellipse 82% 120% at 92% 40%, rgba(83, 222, 238, 0.10), transparent 58%),
+            linear-gradient(90deg, rgba(3, 11, 28, 0.9), rgba(4, 16, 36, 0.55) 60%, rgba(5, 24, 43, 0.2));
+          box-shadow: 0 0 64px rgba(35, 186, 214, 0.10);
+        }
+        .kicker {
+          font-family: "DM Mono", ui-monospace, monospace;
+          font-size: 22px;
+          font-weight: 500;
+          letter-spacing: 0.34em;
+          text-transform: uppercase;
+          color: #e0c040;
+        }
+        .title {
+          margin-top: 18px;
+          font-family: "Newsreader", Georgia, serif;
+          font-size: 132px;
+          font-weight: 400;
+          line-height: 0.92;
+          letter-spacing: -0.01em;
+          color: rgba(229, 238, 238, 0.95);
+        }
+        .sub {
+          margin-top: 22px;
+          font-family: "Newsreader", Georgia, serif;
+          font-style: italic;
+          font-size: 40px;
+          line-height: 1.15;
+          color: rgba(32, 192, 224, 0.82);
+        }
+        .enter {
+          margin-top: 34px;
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          font-family: "Hanken Grotesk", system-ui, sans-serif;
+          font-size: 22px;
+          font-weight: 600;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+          color: #c0e0e0;
+        }
+        .enter .arrow { color: #20c0e0; font-size: 26px; }
+
+        .orb {
+          position: absolute;
+          top: 322px;
+          right: 176px;
+          width: 440px;
+          height: 440px;
+          border-radius: 50%;
+          border: 1px solid rgba(126, 194, 201, 0.14);
+          background:
+            radial-gradient(ellipse 54% 62% at 58% 55%, rgba(58, 105, 120, 0.16), transparent 66%),
+            radial-gradient(circle at 50% 50%, #081725 0%, #05111c 62%, #02070d 100%);
+          box-shadow: 0 0 40px rgba(88, 164, 176, 0.12), 0 0 120px rgba(88, 164, 176, 0.09), inset -24px -28px 70px rgba(0, 0, 0, 0.34);
+          overflow: hidden;
+          isolation: isolate;
+          --seed-fill: #261108;
+          --seed-line: rgba(255, 196, 124, 0.86);
+          --seed-line-soft: rgba(255, 142, 75, 0.5);
+          --seed-glow: rgba(255, 126, 58, 0.42);
+          --seed-shadow: rgba(0, 4, 12, 0.28);
+          --orb-particle: rgba(255, 178, 94, 1);
+          --orb-particle-soft: rgba(255, 111, 58, 0.78);
+          --orb-surface: rgba(238, 126, 64, 0.04);
+        }
+        .orb::before {
+          content: "";
+          position: absolute;
+          inset: 16%;
+          z-index: 0;
+          border-radius: inherit;
+          background:
+            radial-gradient(circle at 50% 48%, var(--seed-glow), transparent 56%),
+            radial-gradient(ellipse 58% 72% at 52% 50%, rgba(255, 178, 94, 0.16), transparent 72%);
+          filter: blur(22px);
+          opacity: 0.08;
+          pointer-events: none;
+        }
+        .vitawende-supershape-canvas {
+          position: absolute;
+          inset: 10%;
+          z-index: 1;
+          width: 80%;
+          height: 80%;
+          opacity: 0.92;
+          pointer-events: none;
+        }
+        .vitawende-seed-svg {
+          position: absolute;
+          inset: 15%;
+          z-index: 3;
+          width: 70%;
+          height: 70%;
+          overflow: visible;
+          pointer-events: none;
+          filter: drop-shadow(0 0 16px var(--seed-glow));
+        }
+        .seed-face {
+          fill: rgba(38, 17, 8, 0.78);
+          stroke: var(--seed-line);
+          stroke-width: 1.6;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+          stroke-dasharray: 0.1 6.5;
+          opacity: 0.85;
+          vector-effect: non-scaling-stroke;
+        }
+        .seed-face-inner {
+          fill: none;
+          stroke: var(--seed-line-soft);
+          stroke-width: 1.4;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+          stroke-dasharray: 0.1 7;
+          opacity: 0.7;
+        }
+        .seed-facet,
+        .seed-rib {
+          fill: none;
+          stroke: var(--seed-line-soft);
+          stroke-width: 1.2;
+          stroke-linecap: round;
+          stroke-dasharray: 0.1 7.5;
+          opacity: 0.5;
+          vector-effect: non-scaling-stroke;
+        }
+        .seed-facet-soft { opacity: 0.42; }
+        .seed-germ,
+        .seed-germ-shadow {
+          fill: none;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+          vector-effect: non-scaling-stroke;
+        }
+        .seed-germ-shadow {
+          stroke: var(--seed-shadow);
+          stroke-width: 5;
+          opacity: 0.4;
+        }
+        .seed-germ {
+          stroke: var(--seed-line);
+          stroke-width: 1.8;
+          stroke-dasharray: 0.1 6;
+          filter: drop-shadow(0 0 8px var(--seed-glow));
+        }
+        .orb-glass {
+          position: absolute;
+          inset: 0;
+          z-index: 4;
+          border-radius: inherit;
+          background: linear-gradient(116deg, rgba(255, 255, 255, 0.08), transparent 34%), radial-gradient(ellipse 50% 30% at 58% 18%, rgba(255, 255, 255, 0.05), transparent 70%);
+          pointer-events: none;
+        }
+
+        .readout {
+          position: absolute;
+          left: 150px;
+          bottom: 150px;
+          width: 460px;
+          padding: 24px 30px 26px;
+          border: 1px solid rgba(83, 222, 238, 0.12);
+          background: linear-gradient(90deg, rgba(3, 10, 25, 0.7), rgba(4, 16, 34, 0.34)), radial-gradient(ellipse at 100% 0%, rgba(83, 222, 238, 0.08), transparent 55%);
+          font-family: "DM Mono", ui-monospace, monospace;
+        }
+        .readout-title { display: block; margin-bottom: 16px; font-size: 18px; font-weight: 500; letter-spacing: 0.3em; color: rgba(83, 222, 238, 0.66); }
+        .readout .rrow { display: flex; justify-content: space-between; gap: 24px; font-size: 19px; padding: 4px 0; }
+        .readout dt { color: rgba(160, 177, 190, 0.6); }
+        .readout dd { color: #e0c040; }
+        .pagenum { position: absolute; right: 96px; bottom: 30px; font-family: "DM Mono", ui-monospace, monospace; font-size: 16px; letter-spacing: 0.2em; color: rgba(129, 149, 168, 0.4); }
+      </style>
+
+      <div id="root" data-composition-id="01-inicio" data-width="1920" data-height="1080" data-duration="5">
+        <div class="bg clip" data-start="0" data-duration="5" data-track-index="0"></div>
+
+        <div class="wordmark" data-layout-allow-occlusion>VitaWende</div>
+
+        <div class="hair hair-top"></div>
+        <div class="hair hair-bot"></div>
+
+        <div class="brand"><span class="dot"></span><span>VitaWende</span></div>
+        <div class="sysreadout"><span>SYS</span><strong>VITA-7</strong><span>TEMP</span><strong>36.7</strong></div>
+
+        <div class="orb">
+          <canvas class="vitawende-supershape-canvas" aria-hidden="true"></canvas>
+          <svg class="vitawende-seed-svg" viewBox="0 0 200 240" aria-hidden="true">
+            <path class="seed-face" d="M100 14 C146 54 174 120 154 178 C140 220 60 220 46 178 C26 120 54 54 100 14Z" />
+            <path class="seed-face-inner" d="M100 18 C91 76 91 156 100 220 C109 156 109 76 100 18Z" />
+            <path class="seed-facet" d="M100 18 C72 86 58 148 46 178 M100 18 C128 86 142 148 154 178" />
+            <path class="seed-facet seed-facet-soft" d="M63 194 C86 176 114 176 137 194 M56 151 C83 134 117 134 144 151 M70 98 C88 86 112 86 130 98" />
+            <path class="seed-rib" d="M46 178 C72 166 128 166 154 178 M64 205 C88 194 112 194 136 205" />
+            <path class="seed-germ-shadow" d="M100 157 C89 170 84 185 91 196 C99 207 116 202 119 188 C121 176 113 164 100 157Z" />
+            <path class="seed-germ" d="M100 157 C89 170 84 185 91 196 C99 207 116 202 119 188 C121 176 113 164 100 157Z" />
+          </svg>
+          <div class="orb-glass"></div>
+        </div>
+
+        <div class="crystal">
+          <div class="kicker">01 · Vital Dynamics</div>
+          <div class="title">VitaMap</div>
+          <div class="sub">Deine Gesundheitsdaten, kartiert.</div>
+          <div class="enter"><span>Einsteigen</span><span class="arrow">&rarr;</span></div>
+        </div>
+
+        <dl class="readout">
+          <span class="readout-title">Spectral Readout</span>
+          <div class="rrow"><dt>Chronotype</dt><dd>07.4</dd></div>
+          <div class="rrow"><dt>Inflammation</dt><dd>0.18</dd></div>
+          <div class="rrow"><dt>Recovery</dt><dd>82%</dd></div>
+          <div class="rrow"><dt>Active Signals</dt><dd>7 / 9</dd></div>
+        </dl>
+
+        <div class="pagenum">01 / 06</div>
+      </div>
+
+      <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+      <script src="../../assets/vitawende-orb.js"></script>
+      <script>
+        (function () {
+          window.__timelines = window.__timelines || {};
+          var S = '[data-composition-id="01-inicio"] ';
+          var tl = gsap.timeline({ paused: true });
+          var orbCanvas = document.querySelector(S + ".vitawende-supershape-canvas");
+          var orb = window.createVitaWendeOrb ? window.createVitaWendeOrb(orbCanvas) : { render: function () {} };
+          var orbState = { progress: 0 };
+          orb.render(0);
+
+          tl.fromTo(S + ".bg", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power1.out" }, 0);
+          tl.fromTo(S + ".hair", { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.9, ease: "power2.out", stagger: 0.1 }, 0.2);
+          tl.fromTo(S + ".wordmark", { opacity: 0 }, { opacity: 1, duration: 1.2, ease: "power1.out" }, 0.3);
+          tl.fromTo([S + ".brand", S + ".sysreadout"], { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out", stagger: 0.1 }, 0.4);
+
+          tl.fromTo(S + ".crystal", { opacity: 0, y: 46 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.7);
+          tl.fromTo(S + ".kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 1.0);
+          tl.fromTo(S + ".title", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 1.15);
+          tl.fromTo(S + ".sub", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 1.5);
+          tl.fromTo(S + ".enter", { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.6, ease: "power2.out" }, 2.2);
+
+          tl.fromTo(S + ".orb", { opacity: 0, scale: 0.82 }, { opacity: 1, scale: 1, duration: 1.0, ease: "power2.out" }, 0.8);
+          tl.fromTo(S + ".vitawende-supershape-canvas", { opacity: 0, scale: 0.74 }, { opacity: 0.92, scale: 1, duration: 1.0, ease: "power2.out" }, 1.1);
+          tl.fromTo(S + ".vitawende-seed-svg", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.9, ease: "power2.out" }, 1.6);
+          tl.to(orbState, { progress: 1, duration: 5, ease: "none", onUpdate: function () { orb.render(orbState.progress); } }, 0);
+
+          tl.fromTo(S + ".readout-title", { opacity: 0 }, { opacity: 1, duration: 0.5 }, 1.4);
+          tl.fromTo(S + ".readout .rrow", { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out", stagger: 0.12 }, 1.6);
+          tl.fromTo(S + ".pagenum", { opacity: 0 }, { opacity: 1, duration: 0.6 }, 2.0);
+
+          window.__timelines["01-inicio"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

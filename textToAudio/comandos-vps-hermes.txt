@@ -152,4 +152,325 @@ docker builder prune -af
 # Si dudas, NO ejecutes "docker compose down" ni prune fuera de
 # la carpeta ~/hermes. VitaMap (el piloto de usuarios) corre en
 # su propio compose; operar Hermes nunca debe tocarlo.
+
+
+----------------------------------------------------------
+11) CONEXIÓN A GITHUB (claves SSH / deploy keys)
+----------------------------------------------------------
+# Modelo de dos "identidades", una clave por cada una:
+#   - Clave 1 (vitamap_readonly): SOLO LECTURA del repo privado
+#       Marcomano28/VitaMap  (deploy key sin "Allow write access").
+#   - Clave 2 (vitawende_write): ESCRITURA en el repo de la cuenta
+#       máquina andereHermes/VitaWende (deploy key CON write access).
+#
+# Las claves viven en ~/hermes/data/ssh/ (en el VPS), que se monta
+# dentro del contenedor como /opt/data/ssh/. Son del usuario hermes
+# (uid 10000) y PERSISTEN entre reinicios y reconstrucciones --build.
+# No hay que rehacer nada salvo que borres esa carpeta.
+#
+# IMPORTANTE: una "deploy key" va atada a UN repo. Por eso hay una
+# clave por repo, y cada comando elige la suya con GIT_SSH_COMMAND.
+
+# Comprobar que la clave de lectura autentica (debe decir "Hi
+# Marcomano28/VitaMap! ... successfully authenticated"):
+ssh -i ~/hermes/data/ssh/vitamap_readonly -o StrictHostKeyChecking=accept-new -T git@github.com
+
+# El clon de VitaMap está dentro del contenedor en:
+#   /opt/data/repos/VitaMap   (en el VPS: ~/hermes/data/repos/VitaMap)
+
+# ACTUALIZAR EL ESPEJO (traer cambios de VitaMap y subirlos a VitaWende):
+docker compose exec hermes sh -c '
+cd /opt/data/repos/VitaMap
+GIT_SSH_COMMAND="ssh -i /opt/data/ssh/vitamap_readonly -o IdentitiesOnly=yes" git pull origin main
+GIT_SSH_COMMAND="ssh -i /opt/data/ssh/vitawende_write -o IdentitiesOnly=yes" git push mirror main
+'
+
+# Si algún día RECREAS una clave, recuerda devolverle el dueño a
+# Hermes para que pueda leerla (si no, dará "Permission denied"):
+#   chown 10000:10000 ~/hermes/data/ssh/NOMBRE_DE_LA_CLAVE
+#   chmod 600 ~/hermes/data/ssh/NOMBRE_DE_LA_CLAVE
+
+# Nota: el GITHUB_TOKEN del ~/hermes/data/.env NO se usa en este
+# flujo (vamos por SSH). Puede quedarse ahí; es inofensivo.
+
+
+----------------------------------------------------------
+12) SKILL VITAMAP AYURVEDA — RESUMEN DE LO QUE QUEDO
+----------------------------------------------------------
+# Objetivo:
+#   Darle a Hermes un tema de Ayurveda y que genere un paquete de tarjetas .md
+#   candidatas para el corpus RAG de VitaMap, sin que Hermes tenga acceso al
+#   repo/app de VitaMap en produccion.
+#
+# Skill activa/canonica:
+#   ayurveda-vitamap-runner
+#
+# Ruta local en el Mac (fuente que se edita):
+#   /Users/gorcap/myPro/Experimental/VitaMap/corpus-preparation/hermes-skills/ayurveda-vitamap-runner/SKILL.md
+#
+# Ruta en el VPS host (donde Hermes la lee):
+#   ~/hermes/data/skills/research/ayurveda-vitamap-runner/SKILL.md
+#
+# Ruta dentro del contenedor:
+#   /opt/data/skills/research/ayurveda-vitamap-runner/SKILL.md
+#
+# IMPORTANTE:
+#   La ruta que funciono para "hermes chat -s" fue /opt/data/skills/research,
+#   no /opt/data/.hermes/skills. Por eso las nuevas skills operativas deben
+#   instalarse bajo ~/hermes/data/skills/<categoria>/.
+
+
+----------------------------------------------------------
+13) USO NORMAL DESDE TELEGRAM
+----------------------------------------------------------
+# En Telegram, enviar un mensaje con este formato:
+#
+#   /ayurveda-vitamap-runner Tema: Agni en sentido amplio
+#
+# O indicando correo explicito:
+#
+#   /ayurveda-vitamap-runner Tema: Agni en sentido amplio Email: tu_correo@dominio.com
+#
+# La skill debe:
+#   1. Buscar fuentes con web_search.
+#   2. Extraer contenido con web_extract.
+#   3. Auditar tarjetas posibles para el tema.
+#   4. Generar archivos .md en /opt/data/outbox/vitamap-ayurveda/<slug>/.
+#   5. Validar mecanicamente las tarjetas.
+#   6. Crear MANIFEST.md.
+#   7. Intentar entregar por email.
+#   8. Si email falla, devolver los .md como documentos descargables.
+#
+# Resultado esperado para un tema:
+#   /opt/data/outbox/vitamap-ayurveda/<slug>/RUNNING.md
+#   /opt/data/outbox/vitamap-ayurveda/<slug>/SOURCES.md
+#   /opt/data/outbox/vitamap-ayurveda/<slug>/T1-BLOCKED.md  (o una T1 real)
+#   /opt/data/outbox/vitamap-ayurveda/<slug>/<tarjeta>.md   (T2/T3/M2/M3/M4 segun fuente)
+#   /opt/data/outbox/vitamap-ayurveda/<slug>/MANIFEST.md
+#   /opt/data/outbox/vitamap-ayurveda/<slug>/EMAIL.md
+
+
+----------------------------------------------------------
+14) USO NORMAL DESDE TERMINAL (PRUEBA CONTROLADA)
+----------------------------------------------------------
+# Desde el VPS:
+
+cd ~/hermes
+
+docker compose exec hermes hermes chat \
+  -t web,file \
+  -s ayurveda-vitamap-runner \
+  --max-turns 25 \
+  -q 'Tema: Agni en sentido amplio'
+
+# Ver archivos generados:
+docker compose exec hermes sh -lc 'find /opt/data/outbox/vitamap-ayurveda/agni-en-sentido-amplio -maxdepth 1 -type f -print | sort'
+
+# Leer una tarjeta concreta:
+docker compose exec hermes sh -lc 'sed -n "1,220p" /opt/data/outbox/vitamap-ayurveda/agni-en-sentido-amplio/t2-agni-001.md'
+
+# Leer el manifest:
+docker compose exec hermes sh -lc 'sed -n "1,220p" /opt/data/outbox/vitamap-ayurveda/agni-en-sentido-amplio/MANIFEST.md'
+
+
+----------------------------------------------------------
+15) COMO ACTUALIZAR LA SKILL DESDE EL MAC
+----------------------------------------------------------
+# Editar en el Mac:
+#   corpus-preparation/hermes-skills/ayurveda-vitamap-runner/SKILL.md
+#
+# Copiar al VPS (ejecutar desde el Mac, dentro de la carpeta VitaMap):
+
+scp -r corpus-preparation/hermes-skills/ayurveda-vitamap-runner root@VitaMap-prod:~/hermes/data/skills/research/
+
+# Ajustar permisos en el VPS:
+
+chown -R 10000:10000 ~/hermes/data/skills/research/ayurveda-vitamap-runner
+
+# Verificar que Hermes ve la version nueva:
+
+docker compose exec hermes sh -lc 'grep -n "Validacion Mecanica Obligatoria" /opt/data/skills/research/ayurveda-vitamap-runner/SKILL.md'
+
+
+----------------------------------------------------------
+16) QUE HACE LA SKILL ACTUAL
+----------------------------------------------------------
+# La skill actual no es un prompt largo de investigacion libre. Es un
+# procedimiento operativo.
+#
+# Entrada:
+#   Solo un tema, por ejemplo:
+#     Tema: Agni en sentido amplio
+#     Tema: Ama
+#     Tema: Ojas
+#     Tema: Ashwagandha
+#
+# Salida:
+#   Un paquete de .md revisables para VitaMap.
+#
+# Logica editorial:
+#   - Primero audita que tarjetas tienen sentido para el tema.
+#   - No genera tarjetas por cuota.
+#   - Cada tarjeta necesita fuente suficiente e intencion recuperable distinta.
+#   - T1 solo si hay pasaje clasico verificable.
+#   - Si T1 no pasa la puerta, crea T1-BLOCKED.md.
+#   - T2 cubre contexto academico/tradicional.
+#   - T3 solo si hay una pregunta moderna evaluable.
+#   - Para plantas/preparados puede considerar M1/M2/M3/M4.
+#   - No convierte Ayurveda en biomarcadores ni diagnosticos modernos.
+#
+# Para conceptos como Agni, la matriz posible es:
+#   - T1: pasaje clasico verificable.
+#   - T2: Agni general, Paka, tipologia.
+#   - T2 separada: Jatharagni/estados, si la fuente lo justifica.
+#   - T2 separada: Bhutagni/Dhatvagni, si aporta una intencion distinta.
+#   - T3: medicion/operacionalizacion moderna, solo si hay fuente adecuada.
+
+
+----------------------------------------------------------
+17) VALIDACIONES QUE DEBE HACER LA SKILL
+----------------------------------------------------------
+# Antes de crear MANIFEST.md, la skill debe leer de vuelta las tarjetas y
+# comprobar:
+#
+#   - La primera linea del archivo es exactamente ---.
+#   - El frontmatter se cierra con otra linea --- antes del cuerpo.
+#   - tarjeta_id coincide con el nombre del archivo sin .md.
+#   - El nombre del archivo esta en minusculas y kebab-case.
+#   - source_url es URL cruda, no Markdown.
+#   - No hay null, none, doi: null, pmid: null, pmcid: null ni muestra: none.
+#   - source_type y seccion son coherentes con corpus-taxonomy.json.
+#   - No hay equivalencias falsas entre Ayurveda y biomedicina.
+#   - MANIFEST.md marca duplicados viejos como ignorados, no como validos.
+#
+# Para PMC3221079 / "Physiological aspects of Agni", si se usa esa fuente:
+#   doi: 10.4103/0974-8520.77159
+#   pmcid: PMC3221079
+#   publication_date: '2010'
+#   source_language: en
+
+
+----------------------------------------------------------
+18) CONFIGURACION QUE HIZO FALTA PARA WEB_SEARCH / WEB_EXTRACT
+----------------------------------------------------------
+# El contenedor Hermes necesita TAVILY_API_KEY cargada como variable de entorno.
+#
+# Archivo de secretos en el VPS:
+#   ~/hermes/data/.hermes/.env
+#
+# Docker compose debe incluir:
+#   env_file:
+#     - ./data/.hermes/.env
+#
+# Comprobar dentro del contenedor:
+
+docker compose exec hermes sh -lc 'test -n "$TAVILY_API_KEY" && echo TAVILY_OK || echo TAVILY_MISSING'
+
+# Probar modulo web directamente:
+
+docker compose exec hermes sh -lc '
+. /opt/hermes/.venv/bin/activate
+python -m tools.web_tools
+'
+
+# Si esta bien, debe decir algo como:
+#   Web backend: tavily
+#   Web tools ready for use!
+
+
+----------------------------------------------------------
+19) CONFIGURACION EMAIL / HIMALAYA
+----------------------------------------------------------
+# Hermes envia correo mediante Himalaya si existe configuracion.
+#
+# Ruta dentro del contenedor:
+#   /opt/data/.config/himalaya/config.toml
+#
+# Ruta en el VPS host:
+#   ~/hermes/data/.config/himalaya/config.toml
+#
+# Comprobar IMAP/carpetas:
+
+docker compose exec hermes himalaya folder list
+
+# Si falla por credenciales, revisar app password de Gmail y config.toml.
+# Si email falla durante una generacion, la skill debe escribir EMAIL.md con
+# estado no-enviado y devolver los .md como documentos por Telegram.
+
+
+----------------------------------------------------------
+20) RESTOS DE IMPLEMENTACIONES ANTERIORES
+----------------------------------------------------------
+# No borrar hasta confirmar varias generaciones correctas con la runner unica.
+#
+# Restos que pueden revisarse o borrar en el futuro:
+#
+# 1. Skills separadas que fueron utiles para depurar, pero ya NO son el flujo
+#    principal:
+#      ~/hermes/data/skills/research/ayurveda-search
+#      ~/hermes/data/skills/research/ayurveda-t1-builder
+#      ~/hermes/data/skills/research/ayurveda-t2-builder
+#      ~/hermes/data/skills/research/vitamap-validator
+#      ~/hermes/data/skills/research/vitamap-package
+#
+# 2. Copias antiguas bajo .hermes que "hermes chat -s" no uso como ruta
+#    principal:
+#      ~/hermes/data/.hermes/skills/ayurveda-search
+#      ~/hermes/data/.hermes/skills/ayurveda-t1-builder
+#      ~/hermes/data/.hermes/skills/ayurveda-t2-builder
+#      ~/hermes/data/.hermes/skills/ayurveda-vitamap-runner
+#      ~/hermes/data/.hermes/skills/vitamap-validator
+#      ~/hermes/data/.hermes/skills/vitamap-package
+#      ~/hermes/data/.hermes/skills/ayurveda-knowledge-background-research
+#
+# 3. Bundle que se creo durante pruebas. Hermes lo ve, pero no fue la solucion
+#    final porque el bundle cargaba skills sin imponer bien la orquestacion:
+#      ~/hermes/data/skill-bundles/ayurveda-vitamap-cards.yaml
+#
+# 4. Paquetes de prueba en outbox:
+#      ~/hermes/data/outbox/test-hermes-file.md
+#      ~/hermes/data/outbox/vitamap-ayurveda/agni-en-sentido-amplio/
+#
+# Limpieza futura sugerida:
+#   - Primero mantener todo hasta generar 2-3 temas reales correctamente.
+#   - Despues borrar solo las skills separadas y el bundle antiguo.
+#   - No borrar ayurveda-vitamap-runner.
+#   - No borrar config de Himalaya ni .env.
+
+
+----------------------------------------------------------
+21) CREAR MAS SKILLS EN EL FUTURO
+----------------------------------------------------------
+# Reglas aprendidas:
+#
+# 1. Primero crear una skill unica y operativa.
+#    Evitar bundles hasta que el flujo funcione de punta a punta.
+#
+# 2. La skill debe ser procedimiento, no solo prompt:
+#      - entrada clara;
+#      - archivos que debe crear;
+#      - criterios de exito verificables;
+#      - validacion mecanica despues de escribir;
+#      - fallback si una herramienta falla.
+#
+# 3. Instalar donde Hermes realmente la lee:
+#      ~/hermes/data/skills/<categoria>/<skill>/SKILL.md
+#    Dentro del contenedor:
+#      /opt/data/skills/<categoria>/<skill>/SKILL.md
+#
+# 4. Probar primero que Hermes reconoce la skill:
+
+docker compose exec hermes hermes chat \
+  -t web,file \
+  -s ayurveda-vitamap-runner \
+  --max-turns 3 \
+  -q 'Responde solo: SKILL_OK'
+
+# 5. Probar una ejecucion real solo cuando SKILL_OK funcione.
+#
+# 6. Si se crean bundles mas adelante, recordar:
+#      hermes bundles create <nombre> --skill skill1 --skill skill2
+#    Pero no asumir que el bundle orquesta el flujo. La orquestacion debe vivir
+#    dentro de una skill directora o una skill unica.
+
 ==========================================================
