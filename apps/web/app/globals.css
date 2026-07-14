@@ -1407,8 +1407,8 @@ html[data-palette="warm"] .vitawende-nav a:focus-visible {
   .vitawende-orb {
     top: auto;
     right: 50%;
-    bottom: 12rem;
-    width: min(64vw, 17rem);
+    bottom: 12.8rem;
+    width: min(70vw, 18.5rem);
     transform: translateX(50%);
     opacity: 0.82;
   }
@@ -1482,8 +1482,8 @@ html[data-palette="warm"] .vitawende-nav a:focus-visible {
   }
 
   .vitawende-orb {
-    width: min(58vw, 15rem);
-    bottom: 10.6rem;
+    width: min(64vw, 16.5rem);
+    bottom: 11.2rem;
   }
 
   .vitawende-readout {
@@ -1492,6 +1492,23 @@ html[data-palette="warm"] .vitawende-nav a:focus-visible {
 
   .vitawende-nav {
     bottom: 1.5rem;
+  }
+}
+
+/* Guarda para pantallas muy bajas (raras): achica la esfera un paso para que
+   no se monte con el boton. */
+@media (max-width: 900px) and (max-height: 620px) {
+  .vitawende-crystal {
+    top: 4rem;
+  }
+
+  .vitawende-crystal-title {
+    font-size: 2.1rem;
+  }
+
+  .vitawende-orb {
+    width: min(54vw, 13rem);
+    bottom: 9.8rem;
   }
 }
 
