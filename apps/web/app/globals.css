@@ -995,13 +995,18 @@ body:has(.vitawende-shell) .vitamap-lienzo {
 }
 
 .seed-face {
-  fill: color-mix(in oklch, var(--seed-fill) 92%, transparent);
+  /* Relleno translúcido a propósito: el SVG es un contorno guía sobre la nube
+     de puntos WebGL, no una máscara opaca — debe verse la nube a través. Los
+     valores de fill/opacity del proyecto de referencia (92% / 0.85) asumen que
+     el SVG nunca se pinta con relleno visible ahí (esa marca no lo usa); en
+     VitaMap sí se usa y a esa opacidad tapaba el centro de la semilla. */
+  fill: color-mix(in oklch, var(--seed-fill) 40%, transparent);
   stroke: var(--seed-line);
   stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 0.1 6.5;
-  opacity: 0.85;
+  opacity: 0.6;
   vector-effect: non-scaling-stroke;
 }
 
