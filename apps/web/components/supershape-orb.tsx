@@ -614,11 +614,14 @@ export function SupershapeOrb() {
         gl.uniform1f(pointU.uLineA, line[3]);
         gl.uniform3f(pointU.uSoft, soft[0], soft[1], soft[2]);
         gl.uniform1f(pointU.uSoftA, soft[3]);
-        // Additive light only: RGB accumulates but alpha must NOT, or every dim
-        // dot makes the (premultiplied) canvas more opaque and occludes the orb
-        // background instead of glowing over it — the dots then read as flat
-        // background-tinted specks with no colour.
-        gl.blendFuncSeparate(gl.ONE, gl.ONE, gl.ZERO, gl.ONE);
+        // Glow without washing out: "screen" blending on RGB instead of plain
+        // addition. Overlapping dots converge toward the palette colour itself
+        // (a channel the colour lacks never gains energy), whereas ONE,ONE
+        // additive drove dense areas past 1.0 in every channel and bleached the
+        // cloud to pale white — hiding the theme colour entirely. Alpha stays
+        // untouched (ZERO,ONE) so the dots add light over the orb background
+        // instead of occluding it.
+        gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_COLOR, gl.ZERO, gl.ONE);
         gl.drawArrays(gl.POINTS, 0, sampleCount);
       };
 

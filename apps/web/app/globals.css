@@ -116,6 +116,9 @@ body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
+  /* Nunca scroll horizontal de documento (p. ej. por elementos decorativos
+     anchos): en móvil se traducía en paneo lateral de la página. */
+  overflow-x: clip;
 }
 
 *,
@@ -603,6 +606,9 @@ body:has(.vitawende-shell) .vitamap-lienzo {
   inset: 0;
   z-index: 50;
   overflow: hidden;
+  /* Solo desplazamiento vertical con el dedo: sin esto, Safari iOS deja
+     panear lateralmente la página al arrastrar sobre la carcasa. */
+  touch-action: pan-y;
   background:
     radial-gradient(ellipse 78% 76% at 74% 48%, rgba(21, 68, 84, 0.3), transparent 58%),
     radial-gradient(ellipse 62% 44% at 42% 48%, rgba(12, 47, 58, 0.25), transparent 68%),
@@ -983,17 +989,21 @@ body:has(.vitawende-shell) .vitamap-lienzo {
   height: 70%;
   overflow: visible;
   pointer-events: none;
-  filter: drop-shadow(0 0 16px var(--seed-glow));
+  /* Guía discreta sobre la nube de puntos: si el trazo y el relleno pesan
+     demasiado, el SVG tapa la semilla WebGL en vez de acompañarla. */
+  opacity: 0.55;
+  filter: drop-shadow(0 0 12px var(--seed-glow));
 }
 
 .seed-face {
-  fill: color-mix(in oklch, var(--seed-fill) 92%, transparent);
+  /* Relleno translúcido: la nube de puntos debe verse a través de la cara. */
+  fill: color-mix(in oklch, var(--seed-fill) 45%, transparent);
   stroke: var(--seed-line);
   stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 0.1 6.5;
-  opacity: 0.85;
+  opacity: 0.75;
   vector-effect: non-scaling-stroke;
 }
 
