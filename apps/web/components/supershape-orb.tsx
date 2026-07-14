@@ -314,6 +314,9 @@ export function SupershapeOrb() {
     let reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let rotationX = SEED_VIEW_TILT;
     let rotationY = 0.5;
+    // Velocidad de autorrotacion por frame. Mas lenta en movil (menos mareo en
+    // pantalla chica); se recalcula desde el ancho de viewport en measure().
+    let autoRotate = 0.0028;
     let isDragging = false;
     let lastPointerX = 0;
     let lastPointerY = 0;
@@ -399,10 +402,10 @@ export function SupershapeOrb() {
     };
 
     const updatePointer = (event: PointerEvent) => {
-      // Movil (tactil): sin interaccion. El arrastre y la atraccion de nodos
-      // hacia el dedo resultan demasiado marcados en un telefono; se deja solo
-      // la rotacion automatica por frames.
-      if (event.pointerType === "touch") return;
+      // En movil SI se permite la atraccion de los puntos hacia el dedo (el
+      // efecto "hover" que provoca la oscilacion), pero NO el arrastre para
+      // rotar: eso lo bloquea startDrag para pointerType === "touch", asi que
+      // isDragging nunca se activa y el bloque de rotacion de abajo no corre.
       const rect = canvas.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
@@ -457,12 +460,26 @@ export function SupershapeOrb() {
       stopDrag();
     };
 
+    const endPointer = (event: PointerEvent) => {
+      stopDrag();
+      // En tactil no hay "hover" persistente: al levantar el dedo ya no llegan
+      // mas pointermove, asi que soltamos la atraccion aqui para que los puntos
+      // vuelvan al reposo en vez de quedarse tironeados hacia el ultimo punto.
+      if (event.pointerType === "touch") {
+        pointer.inside = false;
+        pointer.strength = 0;
+      }
+    };
+
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const resizeObserver = new ResizeObserver(() => resize());
 
     const measure = () => {
       const rect = canvas.getBoundingClientRect();
       dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      // Viewport (no el canvas) decide movil vs escritorio: el canvas siempre
+      // es chico. Alineado al breakpoint mobil del CSS (900px).
+      autoRotate = window.innerWidth <= 900 ? 0.0014 : 0.0028;
       width = Math.max(1, rect.width);
       height = Math.max(1, rect.height);
       canvas.width = Math.round(width * dpr);
@@ -591,7 +608,7 @@ export function SupershapeOrb() {
       };
 
       const render = () => {
-        if (!isDragging && !reducedMotion) rotationX -= 0.0028;
+        if (!isDragging && !reducedMotion) rotationX -= autoRotate;
 
         // Flatten node positions and interpolate the edge samples only when
         // the simulation actually moved something; at rest the buffers stay on
@@ -723,7 +740,7 @@ export function SupershapeOrb() {
       const render = () => {
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, width, height);
-        if (!isDragging && !reducedMotion) rotationX -= 0.0028;
+        if (!isDragging && !reducedMotion) rotationX -= autoRotate;
 
         const projected = nodes.map((row) => row.map((node) => project(node)));
 
@@ -816,8 +833,8 @@ export function SupershapeOrb() {
     resizeObserver.observe(canvas);
     window.addEventListener("pointerdown", startDrag);
     window.addEventListener("pointermove", updatePointer);
-    window.addEventListener("pointerup", stopDrag);
-    window.addEventListener("pointercancel", stopDrag);
+    window.addEventListener("pointerup", endPointer);
+    window.addEventListener("pointercancel", endPointer);
     window.addEventListener("pointerleave", leavePointer);
     motionQuery.addEventListener("change", onMotionChange);
     resize();
@@ -828,8 +845,8 @@ export function SupershapeOrb() {
       resizeObserver.disconnect();
       window.removeEventListener("pointerdown", startDrag);
       window.removeEventListener("pointermove", updatePointer);
-      window.removeEventListener("pointerup", stopDrag);
-      window.removeEventListener("pointercancel", stopDrag);
+      window.removeEventListener("pointerup", endPointer);
+      window.removeEventListener("pointercancel", endPointer);
       window.removeEventListener("pointerleave", leavePointer);
       motionQuery.removeEventListener("change", onMotionChange);
       if (raf !== null) window.cancelAnimationFrame(raf);

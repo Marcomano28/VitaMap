@@ -1384,35 +1384,67 @@ html[data-palette="warm"] .vitawende-nav a:focus-visible {
     display: none;
   }
 
+  /* El boton sube para aprovechar el hueco de arriba (solo la marca vive ahi) y
+     se compacta para no montarse sobre la figura. */
   .vitawende-crystal {
-    top: 7.8rem;
+    top: 4.4rem;
     left: 1.6rem;
     width: calc(100vw - 3.2rem);
+    min-height: 0;
+    padding: 1.05rem 1.3rem 1.1rem 1.5rem;
   }
 
+  .vitawende-crystal-title {
+    font-size: 2.6rem;
+  }
+
+  .vitawende-crystal-sub {
+    margin-top: 0.55rem;
+    font-size: 0.82rem;
+  }
+
+  /* La figura queda centrada en la banda libre entre el boton y el readout. */
   .vitawende-orb {
     top: auto;
     right: 50%;
-    bottom: 10.2rem;
-    width: min(64vw, 19rem);
+    bottom: 12rem;
+    width: min(58vw, 15.5rem);
     transform: translateX(50%);
     opacity: 0.82;
   }
 
+  /* Panel decorativo achicado y bajado para que despeje la figura. */
   .vitawende-readout {
     left: 1.6rem;
-    bottom: 4.7rem;
+    bottom: 3.8rem;
     width: calc(100vw - 3.2rem);
-    padding: 0.95rem 1rem;
+    padding: 0.7rem 0.9rem 0.75rem;
+  }
+
+  .vitawende-readout-title {
+    margin-bottom: 0.5rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
   }
 
   .vitawende-readout dl {
     grid-template-columns: 1fr 1fr;
+    gap: 0.35rem 0.9rem;
   }
 
   .vitawende-readout div {
-    flex-direction: column;
-    gap: 0.15rem;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+
+  .vitawende-readout dt {
+    font-size: 0.62rem;
+  }
+
+  .vitawende-readout dd {
+    font-size: 0.72rem;
   }
 
   .vitawende-nav {
@@ -1435,6 +1467,31 @@ html[data-palette="warm"] .vitawende-nav a:focus-visible {
 
   .vitawende-timeline {
     display: none;
+  }
+}
+
+/* Telefonos de poca altura: compacto un paso mas (boton, figura, readout y
+   nav) para que la escena entre sin solaparse en pantallas cortas. */
+@media (max-width: 900px) and (max-height: 720px) {
+  .vitawende-crystal {
+    top: 3.8rem;
+  }
+
+  .vitawende-crystal-title {
+    font-size: 2.3rem;
+  }
+
+  .vitawende-orb {
+    width: min(52vw, 13.5rem);
+    bottom: 11.2rem;
+  }
+
+  .vitawende-readout {
+    bottom: 3rem;
+  }
+
+  .vitawende-nav {
+    bottom: 1.5rem;
   }
 }
 
