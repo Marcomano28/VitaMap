@@ -641,6 +641,10 @@ export function SupershapeOrb() {
 
       tick = (time: number) => {
         frame += 1;
+        // Re-read the theme palette periodically so the point cloud follows
+        // data-theme / data-palette changes even if the MutationObserver misses
+        // one (parity with the reference VitaWende implementation).
+        if (frame % 30 === 0) applyPalette();
         if (!reducedMotion) stepSimulation(time);
         render();
         if (!reducedMotion || frame < 2) {
@@ -741,6 +745,10 @@ export function SupershapeOrb() {
 
       tick = (time: number) => {
         frame += 1;
+        // Re-read the theme palette periodically so the point cloud follows
+        // data-theme / data-palette changes even if the MutationObserver misses
+        // one (parity with the reference VitaWende implementation).
+        if (frame % 30 === 0) applyPalette();
         if (!reducedMotion) stepSimulation(time);
         render();
         if (!reducedMotion || frame < 2) {
