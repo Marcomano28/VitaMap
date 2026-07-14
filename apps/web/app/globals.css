@@ -1387,7 +1387,7 @@ html[data-palette="warm"] .vitawende-nav a:focus-visible {
   /* El boton sube para aprovechar el hueco de arriba (solo la marca vive ahi) y
      se compacta para no montarse sobre la figura. */
   .vitawende-crystal {
-    top: 4.4rem;
+    top: 5.6rem;
     left: 1.6rem;
     width: calc(100vw - 3.2rem);
     min-height: 0;
@@ -1408,7 +1408,7 @@ html[data-palette="warm"] .vitawende-nav a:focus-visible {
     top: auto;
     right: 50%;
     bottom: 12rem;
-    width: min(58vw, 15.5rem);
+    width: min(64vw, 17rem);
     transform: translateX(50%);
     opacity: 0.82;
   }
@@ -1474,7 +1474,7 @@ html[data-palette="warm"] .vitawende-nav a:focus-visible {
    nav) para que la escena entre sin solaparse en pantallas cortas. */
 @media (max-width: 900px) and (max-height: 720px) {
   .vitawende-crystal {
-    top: 3.8rem;
+    top: 4.8rem;
   }
 
   .vitawende-crystal-title {
@@ -1482,8 +1482,8 @@ html[data-palette="warm"] .vitawende-nav a:focus-visible {
   }
 
   .vitawende-orb {
-    width: min(52vw, 13.5rem);
-    bottom: 11.2rem;
+    width: min(58vw, 15rem);
+    bottom: 10.6rem;
   }
 
   .vitawende-readout {
