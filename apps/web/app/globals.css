@@ -911,15 +911,17 @@ body:has(.vitawende-shell) .vitamap-lienzo {
   width: clamp(18rem, 30vw, 31rem);
   aspect-ratio: 1;
   border-radius: 50%;
-  /* Cool casing → warm seed accent (inverted temperature). */
-  --seed-fill: #261108;
-  --seed-line: rgba(255, 196, 124, 0.86);
-  --seed-line-soft: rgba(255, 142, 75, 0.5);
-  --seed-glow: rgba(255, 126, 58, 0.42);
+  /* Cool casing → warm seed accent (inverted temperature). Valores de
+     referencia del proyecto VitaWende: tonos apagados con alfa, el soft es el
+     mismo tono más oscuro y la superficie es visible (no residual). */
+  --seed-fill: #1d100d;
+  --seed-line: rgba(236, 178, 120, 0.56);
+  --seed-line-soft: rgba(236, 178, 120, 0.22);
+  --seed-glow: rgba(228, 138, 78, 0.24);
   --seed-shadow: rgba(0, 4, 12, 0.28);
-  --orb-particle: rgba(255, 178, 94, 1);
-  --orb-particle-soft: rgba(255, 111, 58, 0.78);
-  --orb-surface: rgba(238, 126, 64, 0.04);
+  --orb-particle: rgba(232, 150, 86, 0.86);
+  --orb-particle-soft: rgba(150, 84, 46, 0.5);
+  --orb-surface: rgba(160, 92, 52, 0.2);
   border: 1px solid rgba(126, 194, 201, 0.12);
   background-color: #030912;
   background:
@@ -989,21 +991,17 @@ body:has(.vitawende-shell) .vitamap-lienzo {
   height: 70%;
   overflow: visible;
   pointer-events: none;
-  /* Guía discreta sobre la nube de puntos: si el trazo y el relleno pesan
-     demasiado, el SVG tapa la semilla WebGL en vez de acompañarla. */
-  opacity: 0.55;
-  filter: drop-shadow(0 0 12px var(--seed-glow));
+  filter: drop-shadow(0 0 16px var(--seed-glow));
 }
 
 .seed-face {
-  /* Relleno translúcido: la nube de puntos debe verse a través de la cara. */
-  fill: color-mix(in oklch, var(--seed-fill) 45%, transparent);
+  fill: color-mix(in oklch, var(--seed-fill) 92%, transparent);
   stroke: var(--seed-line);
   stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 0.1 6.5;
-  opacity: 0.75;
+  opacity: 0.85;
   vector-effect: non-scaling-stroke;
 }
 
@@ -1307,15 +1305,16 @@ html[data-palette="warm"] .vitawende-crystal-sub {
 }
 
 html[data-palette="warm"] .vitawende-orb {
-  /* Warm casing → cool seed accent (inverted temperature). */
-  --seed-fill: #031622;
-  --seed-line: rgba(128, 242, 247, 0.88);
-  --seed-line-soft: rgba(52, 202, 232, 0.52);
-  --seed-glow: rgba(36, 190, 226, 0.46);
+  /* Warm casing → cool seed accent (inverted temperature). Valores de
+     referencia del proyecto VitaWende. */
+  --seed-fill: #06111a;
+  --seed-line: rgba(154, 214, 219, 0.6);
+  --seed-line-soft: rgba(154, 214, 219, 0.24);
+  --seed-glow: rgba(98, 182, 194, 0.22);
   --seed-shadow: rgba(26, 8, 5, 0.6);
-  --orb-particle: rgba(78, 225, 243, 1);
-  --orb-particle-soft: rgba(30, 158, 218, 0.8);
-  --orb-surface: rgba(52, 166, 198, 0.04);
+  --orb-particle: rgba(86, 168, 188, 0.86);
+  --orb-particle-soft: rgba(40, 88, 106, 0.5);
+  --orb-surface: rgba(48, 100, 116, 0.2);
   border-color: rgba(214, 132, 82, 0.13);
   background-color: #120907;
   background:
