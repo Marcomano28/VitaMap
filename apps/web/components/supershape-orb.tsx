@@ -140,11 +140,46 @@ function readCssVar(element: HTMLElement, name: string, fallback: string) {
 }
 
 function parseColor(input: string): Rgba {
-  const match = input.match(/rgba?\(([^)]+)\)/i);
-  if (!match) return [1, 1, 1, 1];
-  const parts = match[1].split(",").map((part) => parseFloat(part.trim()));
-  const [r = 255, g = 255, b = 255, a = 1] = parts;
-  return [r / 255, g / 255, b / 255, a];
+  const value = input.trim();
+
+  // Hex, including #rrggbbaa. The production CSS minifier (Lightning CSS, used
+  // by Tailwind v4) rewrites rgba(...) into hex, e.g.
+  //   --orb-particle: rgba(232, 150, 86, 0.86)  ->  #e89656db
+  // so the old rgba()-only parser matched nothing and fell back to white,
+  // which is why the dots lost their theme colour only in the built deploy.
+  if (value.charCodeAt(0) === 35 /* '#' */) {
+    let hex = value.slice(1);
+    if (hex.length === 3 || hex.length === 4) {
+      hex = hex.replace(/./g, (c) => c + c); // #rgb(a) -> #rrggbb(aa)
+    }
+    if (hex.length === 6 || hex.length === 8) {
+      const r = parseInt(hex.slice(0, 2), 16);
+      const g = parseInt(hex.slice(2, 4), 16);
+      const b = parseInt(hex.slice(4, 6), 16);
+      const a = hex.length === 8 ? parseInt(hex.slice(6, 8), 16) / 255 : 1;
+      if (Number.isFinite(r) && Number.isFinite(g) && Number.isFinite(b)) {
+        return [r / 255, g / 255, b / 255, Number.isFinite(a) ? a : 1];
+      }
+    }
+  }
+
+  // rgb()/rgba(), comma- or modern space/slash-separated (e.g.
+  // "rgb(232 150 86 / 86%)"), with optional percentage channels.
+  const match = value.match(/rgba?\(([^)]+)\)/i);
+  if (match) {
+    const tokens = match[1].split(/[\s,/]+/).filter(Boolean);
+    const channel = (t: string | undefined) =>
+      t === undefined ? 255 : t.endsWith("%") ? (parseFloat(t) / 100) * 255 : parseFloat(t);
+    const r = channel(tokens[0]);
+    const g = channel(tokens[1]);
+    const b = channel(tokens[2]);
+    const aTok = tokens[3];
+    const a =
+      aTok === undefined ? 1 : aTok.endsWith("%") ? parseFloat(aTok) / 100 : parseFloat(aTok);
+    return [r / 255, g / 255, b / 255, Number.isFinite(a) ? a : 1];
+  }
+
+  return [1, 1, 1, 1];
 }
 
 // --- WebGL: rotation + perspective happen on the GPU so the whole point cloud
