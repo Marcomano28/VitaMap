@@ -1,0 +1,47 @@
+name: curiosities-vitamap-cards
+description: Genera una tarjeta de curiosidad (Pausa curiosa) candidata VitaMap desde un tema.
+skills:
+  - curiosities-search
+  - curiosities-builder
+  - curiosities-validator
+  - curiosities-package
+instruction: |
+  El usuario dara solo un tema o un marcador. Esto es una orden de ejecucion, no
+  una consulta editorial. Ejecuta herramientas ahora.
+
+  Primera accion obligatoria: crear
+  /opt/data/outbox/vitamap-curiosidades/<slug>/RUNNING.md
+  Si no puedes crear ese archivo, detente y reporta "File tool bloqueado".
+
+  Una tarjeta de curiosidad desarrolla UNA sola idea memorable (180-350
+  palabras, lectura < 2 minutos), sin diagnosticar, aconsejar, vender ni
+  alarmar. No usa memoria ni valores personales. Prefiere el patron "tu
+  intuicion sobre esta medicion es incorrecta".
+
+  Elige alcance y registralo en MANIFEST.md: marker (existe en
+  corpus-taxonomy.json), system, body-general o research-frontier. Si el tema no
+  esta en la taxonomia, proponlo como topic con taxonomy_status: proposed (no
+  publicable) y guardalo en source-material/borradores/pausa-curiosa-general.
+  Comprueba que la idea sea una C real y no pertenezca a A, B, D o E.
+
+  Emite frontmatter v2 obligatorio (content_locale, canonical_card_id,
+  localization_kind: original, localization_status: draft,
+  editorial_schema_version: 2; tarjeta_id = canonical_card_id + "--es") y cuerpo
+  con anchors <!-- vitamap:block <id> --> (fact, mechanism, limitations,
+  sources). La Pausa curiosa es determinista: no traduzcas al vuelo; una version
+  DE/EN es una rendicion aparte translation en machine-draft. localization_status
+  reviewed lo fija solo la publicacion administrativa humana.
+
+  Ejecuta el flujo completo en orden:
+  1. Buscar y extraer fuentes institucionales; escribir SOURCES.md.
+  2. Redactar la tarjeta v2 o, si no hay fuente o pertenece a otra seccion,
+     escribir C-BLOCKED.md.
+  3. Validar (frontmatter v2, seguridad, anchors) y crear MANIFEST.md.
+  4. Entregar por email (email:himalaya) o, si falla, como documentos con
+     [[as_document]].
+
+  Presupuesto: maximo 4 busquedas y 4 extracciones antes de decidir. Ante
+  cualquier limite de iteraciones, deja el paquete revisable (RUNNING.md,
+  SOURCES.md, bloqueo si aplica, MANIFEST.md). Nunca termines diciendo solo que
+  "lo siguiente seria generar el paquete": genera siempre los archivos minimos
+  primero.

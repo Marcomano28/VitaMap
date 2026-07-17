@@ -229,7 +229,42 @@ Reglas:
 - Incluye siempre `limitations`.
 - No conviertas conceptos ayurvedicos en biomarcadores ni diagnosticos modernos.
 
-Plantilla:
+### Contrato de idioma y esquema (v2 · obligatorio)
+
+Toda tarjeta nueva debe declarar la identidad de idioma y el esquema editorial
+v2. No emitas tarjetas legacy sin estos campos: entrarian sin identidad y habria
+que re-migrarlas.
+
+- `content_locale` (obligatorio): idioma del cuerpo. Estas tarjetas se redactan
+  en `es`.
+- `canonical_card_id` (obligatorio): agrupa todas las rendiciones de una misma
+  intencion. Es el `tarjeta_id` **sin** el sufijo `--<locale>`.
+- `tarjeta_id`: `<canonical_card_id>--<locale>`, por ejemplo `...--es`.
+- `localization_kind: original` para la version que redactas ahora.
+- `localization_status: draft` (nunca `reviewed`; solo la publicacion
+  administrativa humana la convierte en `reviewed`).
+- `editorial_schema_version: 2`.
+- `source_language` describe la FUENTE, nunca el cuerpo; siguen siendo campos
+  independientes.
+- Para un `puente-editorial`, comparte `canonical_card_id` con la tarjeta del
+  biomarcador moderno equivalente cuando exista, para agrupar rendiciones.
+
+No traduzcas al vuelo. Una version alemana o inglesa es una rendicion aparte con
+el mismo `canonical_card_id`, su propio `tarjeta_id--de`/`--en`,
+`localization_kind: translation` y `localized_from` + version + checksum del
+original; empieza como `machine-draft`.
+
+### Bloques por anchor (parser v2)
+
+El cuerpo usa anchors invisibles y estables `<!-- vitamap:block <id> -->`
+inmediatamente antes de cada encabezado. El texto del H2 puede variar por idioma;
+el selector de profundidad usa el ID, no el titulo. IDs validos para tradicion:
+`summary`, `literal`, `relations`, `limitations`, `sources` (y `analogy`,
+`deep_dive` si aportan). Un `puente-editorial` puede añadir `relations` para el
+plano biomedico separado. No uses los textos españoles como identificador
+tecnico.
+
+Plantilla (esquema editorial v2):
 
 ```markdown
 ---
@@ -242,7 +277,12 @@ source_kind: tradition-context
 source_type: traditional-scholarly-context-summary
 rights_status: permitted
 facets_version: 1
-tarjeta_id: ...
+editorial_schema_version: 2
+tarjeta_id: <slug-tema>-<funcion>-<fuente>--es
+canonical_card_id: <slug-tema>-<funcion>-<fuente>
+content_locale: es
+localization_kind: original
+localization_status: draft
 dominio: tradiciones-practicas
 tipo:
   - concepto_tradicional
@@ -255,7 +295,31 @@ alias:
 limitations:
   - "..."
 ---
-# ...
+
+<!-- vitamap:block summary -->
+## En una frase
+
+...
+
+<!-- vitamap:block literal -->
+## Qué dice la fuente
+
+...
+
+<!-- vitamap:block relations -->
+## Conexiones internas del marco ayurvédico
+
+concepto-A -> predicado -> concepto-B ...
+
+<!-- vitamap:block limitations -->
+## Límites de la explicación
+
+...
+
+<!-- vitamap:block sources -->
+## Fuente
+
+...
 ```
 
 ## Guardado de archivos

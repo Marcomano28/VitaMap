@@ -17,6 +17,9 @@ export const PILOT_CURIOSITY_IDS = [
   "hemoglobina-hematocrito-hematocrito-curiosidad-plasma-hidratacion-medlineplus",
   "creatinina-creatinina-curiosidad-no-mide-directamente-el-rinon-kdigo",
   "plaquetas-plaquetas-curiosidad-recuento-falsamente-bajo-lardinois2021",
+  "magnesio-curiosidad-sangre-no-refleja-reserva--es",
+  "tsh-curiosidad-varia-segun-hora-extraccion--es",
+  "pcr-vsg-curiosidad-cinetica-inflamacion--es",
 ] as const;
 
 export interface CuriosityCard {

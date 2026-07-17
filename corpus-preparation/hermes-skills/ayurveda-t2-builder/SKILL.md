@@ -71,7 +71,12 @@ source_kind: tradition-context
 source_type: traditional-scholarly-context-summary
 rights_status: permitted
 facets_version: 1
-tarjeta_id: ...
+editorial_schema_version: 2
+tarjeta_id: <canonical_card_id>--es
+canonical_card_id: <slug-tema>-<funcion>-<fuente>
+content_locale: es
+localization_kind: original
+localization_status: draft
 dominio: tradiciones-practicas
 tipo:
   - concepto_tradicional
@@ -84,9 +89,34 @@ alias:
 limitations:
   - "..."
 ---
+
+<!-- vitamap:block summary -->
+## En una frase
+
+...
+
+<!-- vitamap:block relations -->
+## Conexiones internas del marco ayurvédico
+
+concepto-A -> predicado -> concepto-B ...
+
+<!-- vitamap:block limitations -->
+## Límites de la explicación
+
+...
+
+<!-- vitamap:block sources -->
+## Fuente
+
+...
 ```
 
-Omite campos sin valor real.
+Omite campos sin valor real, salvo los obligatorios del contrato v2
+(`content_locale`, `canonical_card_id`, `localization_kind`,
+`localization_status`, `editorial_schema_version`), que siempre se emiten.
+`tarjeta_id` es el `canonical_card_id` con sufijo `--es`. El cuerpo usa anchors
+`<!-- vitamap:block <id> -->` (IDs: `summary`, `literal`, `relations`,
+`limitations`, `sources`); el texto del H2 puede variar, el ID no.
 
 Para un `puente-editorial`, sustituye `dominio`, `tipo`, `marker`, `categoria`,
 `muestra`, `sistema` y `area_de_salud` por los facets canonicos del biomarcador

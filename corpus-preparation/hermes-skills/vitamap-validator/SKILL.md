@@ -19,6 +19,14 @@ Usa esta skill cuando ya existan tarjetas candidatas en
 2. Revisa cada tarjeta:
    - frontmatter abre y cierra con `---`;
    - `title`, `source_url`, `source_type`, `tarjeta_id`, `tradicion` existen;
+   - contrato v2 presente: `content_locale`, `canonical_card_id`,
+     `localization_kind`, `localization_status`, `editorial_schema_version: 2`;
+   - `tarjeta_id` == `<canonical_card_id>--<content_locale>`;
+   - `localization_status` es `draft` o `machine-draft` (nunca `reviewed`; eso
+     lo fija la publicacion administrativa humana);
+   - el cuerpo usa anchors `<!-- vitamap:block <id> -->` con IDs validos
+     (`summary`, `analogy`, `literal`, `relations`, `limitations`, `deep_dive`,
+     `sources`); al menos `summary`, `limitations` y `sources`;
    - no hay `doi: null`, `pmid: null`, `muestra: none`;
    - `source_url` no esta en formato Markdown;
    - `traditional-primary-source-summary` solo aparece si hay T1 valida;
