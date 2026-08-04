@@ -2,7 +2,7 @@ import Link from "next/link";
 import { copy } from "@/lib/i18n";
 import { getLocale } from "@/lib/locale";
 import type { Metadata } from "next";
-import { requireSubscribedUserId } from "@/lib/subscription-access";
+import { requireDataSubject } from "@/lib/data-access-guards";
 import { assessmentsEnabled } from "@/lib/flags";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function MemoryPage() {
-  await requireSubscribedUserId();
+  await requireDataSubject("read");
   const locale = await getLocale();
   const t = copy[locale].memory;
   const entries = assessmentsEnabled()

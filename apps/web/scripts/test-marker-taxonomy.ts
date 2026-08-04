@@ -53,7 +53,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 // Contrato mínimo de evidencia (v0). Vocabulario controlado. Ver
 // corpus-preparation/PROMPT-INVESTIGACION-RAG.md §3 bis y
-// docs/DIRECCION-METODOLOGICA-EVIDENCIA-Y-GRAFO.md (Tramo 2). La validación
+// docs/vision/DIRECCION-METODOLOGICA-EVIDENCIA-Y-GRAFO.md (Tramo 2). La validación
 // comprueba la FORMA cuando el campo existe; no exige presencia (backfill
 // oportunista), así que es aditiva: tarjetas sin estos campos siguen pasando.
 const CERTEZA = new Set(["alta", "moderada", "baja", "muy-baja"]);

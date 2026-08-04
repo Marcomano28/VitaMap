@@ -5,7 +5,7 @@ import { buildHealthMapModel } from "@/lib/health-map";
 import { getLabSeriesSet } from "@/lib/memory-reader";
 import { getLocale } from "@/lib/locale";
 import { localize } from "@/lib/i18n";
-import { requireSubscribedUserId } from "@/lib/subscription-access";
+import { requireDataSubject } from "@/lib/data-access-guards";
 import { unstable_noStore as noStore } from "next/cache";
 
 export const dynamic = "force-dynamic";
@@ -26,7 +26,7 @@ export default async function HealthMapPage({
   searchParams: Promise<{ marker?: string }>;
 }) {
   noStore();
-  const userId = await requireSubscribedUserId();
+  const { subject: userId } = await requireDataSubject("read");
   const locale = await getLocale();
   const { marker } = await searchParams;
   const series = await getLabSeriesSet(userId);

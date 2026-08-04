@@ -47,7 +47,14 @@ export type AuditAction =
   | "kb.replace"
   | "kb.retire"
   | "kb.reindex"
-  | "user.purge";
+  | "user.purge"
+  // Acceso cruzado actor→sujeto vía choke point (ADR-018)
+  | "data.cross_access.read"
+  | "data.cross_access.chat"
+  | "data.cross_access.manage"
+  | "data.subject.created"
+  | "data.grant.created"
+  | "data.grant.revoked";
 
 export interface AuditEventInput {
   actor: string;

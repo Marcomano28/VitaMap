@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getLocale } from "@/lib/locale";
 import { localize, type Locale } from "@/lib/i18n";
-import { requireSubscribedUserId } from "@/lib/subscription-access";
+import { requireDataSubject } from "@/lib/data-access-guards";
 import { assessmentsEnabled } from "@/lib/flags";
 
 const TEXT = {
@@ -80,7 +80,7 @@ function gad7Band(score: number, locale: Locale) {
 
 export default async function ResultPage({ params, searchParams }: PageProps) {
   if (!assessmentsEnabled()) notFound();
-  await requireSubscribedUserId();
+  await requireDataSubject("read");
   const { instrument } = await params;
   const sp = await searchParams;
   const score = Number(sp.score ?? "0");

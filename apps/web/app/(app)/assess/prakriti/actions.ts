@@ -5,13 +5,13 @@ import { revalidatePath } from "next/cache";
 import { assessmentsEnabled } from "@/lib/flags";
 import { writeConstitutionProfile } from "@/lib/memory";
 import { logAuditEventSafe } from "@/lib/audit";
-import { requireSubscribedUserId } from "@/lib/subscription-access";
+import { requireDataSubject } from "@/lib/data-access-guards";
 import { getLocale } from "@/lib/locale";
 import { getPrakritiItems, scorePrakriti, isDosha, type ItemAnswer } from "@/lib/prakriti";
 
 export async function savePrakritiAction(formData: FormData) {
   if (!assessmentsEnabled()) notFound();
-  const userId = await requireSubscribedUserId();
+  const { subject: userId } = await requireDataSubject("manage");
   const locale = await getLocale();
   const items = getPrakritiItems(locale);
 

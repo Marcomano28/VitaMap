@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { saveAssessmentAction } from "./actions";
 import { getLocale } from "@/lib/locale";
 import { localize, type Locale } from "@/lib/i18n";
-import { requireSubscribedUserId } from "@/lib/subscription-access";
+import { requireDataSubject } from "@/lib/data-access-guards";
 import { assessmentsEnabled } from "@/lib/flags";
 
 const TEXT = {
@@ -86,7 +86,7 @@ interface PageProps {
 
 export default async function AssessmentForm({ params }: PageProps) {
   if (!assessmentsEnabled()) notFound();
-  await requireSubscribedUserId();
+  await requireDataSubject("read");
   const { instrument: slug } = await params;
   const locale = await getLocale();
   const t = localize(locale, TEXT);

@@ -8,7 +8,7 @@ import {
   discardInboxItemAction,
   retryInboxExtractionAction,
 } from "./actions";
-import { requireSubscribedUserId } from "@/lib/subscription-access";
+import { requireDataSubject } from "@/lib/data-access-guards";
 import { getLocale } from "@/lib/locale";
 import { localeTag, localize } from "@/lib/i18n";
 
@@ -98,7 +98,7 @@ interface PageProps {
 }
 
 export default async function InboxItemPage({ params, searchParams }: PageProps) {
-  const userId = await requireSubscribedUserId();
+  const { subject: userId } = await requireDataSubject("read");
   const { id } = await params;
   const { error } = await searchParams;
   const item = await getInboxItem(userId, id);

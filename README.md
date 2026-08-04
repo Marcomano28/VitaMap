@@ -3,7 +3,7 @@
 Plataforma de inteligencia personal sobre la propia salud. Herramienta
 educativa, no dispositivo médico. Self-hosted, GDPR, EU.
 
-Ver `VitaMap-Descripcion.txt` para visión de producto y `docs/ROADMAP.md`
+Ver `docs/vision/VitaMap-Descripcion.txt` para visión de producto y `docs/es/arquitectura/ROADMAP.md`
 para la ruta de fases.
 
 ## Estado actual
@@ -19,10 +19,17 @@ preparar `docker-compose` para despliegue en Fase 1.
 │   └── web/          Next.js 15 + TypeScript (UI + API)
 ├── data/             Persistencia local (gitignored excepto seed KB)
 │   └── kb/           Base de conocimiento científica (markdown)
-├── docs/             Documentación del proyecto (roadmap, decisiones)
+├── docs/             Documentación — empezar por docs/README.md
+│   ├── es/           Activa en español (administración, arquitectura, legal)
+│   ├── de/           Handbücher und Rechtsdokumente (deutsch)
+│   ├── vision/       Producto, marca y material editorial
+│   └── recycle/      Histórico del proceso — puede sacarse del proyecto
 ├── infra/            Docker Compose, Caddy, scripts de despliegue
 └── package.json      Workspace npm raíz
 ```
+
+Para operar la instancia: `docs/es/administracion/MANUAL-VPS.md`
+(deutsch: `docs/de/HANDBUCH-VPS.md`).
 
 ## Requisitos locales
 
@@ -138,7 +145,7 @@ borrado de cuenta cancela primero cualquier suscripción vigente para evitar
 cobros posteriores sin servicio.
 
 La apertura a datos de salud reales está condicionada por la
-[guía legal y técnica del piloto en Alemania](docs/GUIA-LEGAL-PILOTO-ALEMANIA.md).
+[guía legal y técnica del piloto en Alemania](docs/es/legal/GUIA-LEGAL-PILOTO-ALEMANIA.md).
 La guía separa las funciones educativas de las que requieren revisión de
 protección de datos o de producto sanitario y define las evidencias necesarias
 antes del primer usuario real.

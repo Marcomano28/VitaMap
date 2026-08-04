@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { LabValueBand } from "@/components/lab-value-band";
 import { LabTimeline } from "@/components/lab-timeline";
 import { getLocale } from "@/lib/locale";
-import { requireSubscribedUserId } from "@/lib/subscription-access";
+import { requireDataSubject } from "@/lib/data-access-guards";
 import { buildLabSeries } from "@/lib/lab-visualization";
 
 export const metadata: Metadata = { title: "Visualización de analíticas" };
 
 export default async function VisualizationPrototypePage() {
-  await requireSubscribedUserId();
+  await requireDataSubject("read");
   const locale = await getLocale();
   const de = locale === "de";
   const syntheticSeries = buildLabSeries(

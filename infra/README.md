@@ -192,4 +192,4 @@ El servicio `caddy` guarda certificados en su propio volumen
 | >10 voluntarios activos | Fase 2 |
 | Latencia es la queja principal | Fase 3 (VPS con GPU) |
 
-Ver `docs/ROADMAP.md` para detalles de cada fase.
+Ver `docs/es/arquitectura/ROADMAP.md` para detalles de cada fase.

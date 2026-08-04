@@ -9,14 +9,14 @@ import { writeImageObservation } from "@/lib/memory";
 import { encryptForUser } from "@/lib/crypto";
 import { getEnv } from "@/lib/env";
 import { logAuditEventSafe } from "@/lib/audit";
-import { requireSubscribedUserId } from "@/lib/subscription-access";
+import { requireDataSubject } from "@/lib/data-access-guards";
 import { getLocale } from "@/lib/locale";
 
 const MAX_BYTES = 10 * 1024 * 1024;
 const ALLOWED_EXT = new Set([".png", ".jpg", ".jpeg", ".webp"]);
 
 export async function createImageObservationAction(formData: FormData) {
-  const userId = await requireSubscribedUserId();
+  const { subject: userId } = await requireDataSubject("manage");
   const locale = await getLocale();
   const file = formData.get("file");
   if (!(file instanceof File)) throw new Error("missing file");

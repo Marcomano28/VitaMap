@@ -136,14 +136,15 @@ services:
     environment:
       RESTIC_REPOSITORY: ${RESTIC_REPOSITORY:?RESTIC_REPOSITORY required}
       RESTIC_PASSWORD: ${RESTIC_PASSWORD:?RESTIC_PASSWORD required}
-      B2_ACCOUNT_ID: ${B2_ACCOUNT_ID:-}
-      B2_ACCOUNT_KEY: ${B2_ACCOUNT_KEY:-}
       BACKUP_TARGET: /data
       RETENTION_KEEP_DAILY: "7"
       RETENTION_KEEP_WEEKLY: "4"
       RETENTION_KEEP_MONTHLY: "6"
     volumes:
       - vitamap_data:/data:ro
+      - /root/.ssh/storagebox_ed25519:/root/.ssh/storagebox_ed25519:ro
+      - /root/.ssh/known_hosts:/root/.ssh/known_hosts:ro
+      - ./ssh/storagebox_config:/root/.ssh/config:ro
     networks:
       - vitamap
 

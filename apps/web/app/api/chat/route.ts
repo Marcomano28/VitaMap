@@ -19,10 +19,8 @@ import {
 } from "@/lib/guardrail";
 import { logAuditEventSafe } from "@/lib/audit";
 import { UnauthorizedError } from "@/lib/session";
-import {
-  requireSubscribedUserIdFromRequest,
-  SubscriptionRequiredError,
-} from "@/lib/subscription-access";
+import { SubscriptionRequiredError } from "@/lib/subscription-access";
+import { requireDataSubjectFromRequest } from "@/lib/data-access-guards";
 import { LOCALES, localize } from "@/lib/i18n";
 import { languageContext } from "@/lib/language-contract";
 import {
@@ -77,7 +75,7 @@ export async function POST(req: Request) {
   ]);
   let userId: string;
   try {
-    userId = await requireSubscribedUserIdFromRequest(req);
+    ({ subject: userId } = await requireDataSubjectFromRequest(req, "chat"));
   } catch (err) {
     if (err instanceof UnauthorizedError) {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });

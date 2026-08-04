@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale } from "@/lib/locale";
 import { localize } from "@/lib/i18n";
-import { requireSubscribedUserId } from "@/lib/subscription-access";
+import { requireDataSubject } from "@/lib/data-access-guards";
 import { assessmentsEnabled } from "@/lib/flags";
 import { getPrakritiItems, PROVENANCE } from "@/lib/prakriti";
 import { PrakritiQuestionnaire } from "./questionnaire";
@@ -75,7 +75,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function PrakritiForm() {
   if (!assessmentsEnabled()) notFound();
-  await requireSubscribedUserId();
+  await requireDataSubject("read");
   const locale = await getLocale();
   const t = localize(locale, TEXT);
   const items = getPrakritiItems(locale);

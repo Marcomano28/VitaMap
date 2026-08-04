@@ -18,10 +18,8 @@ import path from "node:path";
 import fs from "node:fs/promises";
 import { NextResponse } from "next/server";
 import { UnauthorizedError } from "@/lib/session";
-import {
-  requireSubscribedUserIdFromRequest,
-  SubscriptionRequiredError,
-} from "@/lib/subscription-access";
+import { SubscriptionRequiredError } from "@/lib/subscription-access";
+import { requireDataSubjectFromRequest } from "@/lib/data-access-guards";
 import { decryptForUser } from "@/lib/crypto";
 import { getEnv } from "@/lib/env";
 import { logAuditEventSafe } from "@/lib/audit";
@@ -44,7 +42,7 @@ export async function GET(req: Request, context: RouteContext) {
   // -- Auth -------------------------------------------------------------
   let userId: string;
   try {
-    userId = await requireSubscribedUserIdFromRequest(req);
+    ({ subject: userId } = await requireDataSubjectFromRequest(req, "read"));
   } catch (err) {
     if (err instanceof UnauthorizedError) {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });

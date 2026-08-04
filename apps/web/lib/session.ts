@@ -8,6 +8,9 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getAuth } from "./auth";
+// Re-export por compatibilidad: la implementación vive en lib/user-id.ts
+// (módulo sin dependencias, compartido con el choke point de data-access).
+import { safeUserId } from "./user-id";
 
 /** Devuelve la sesión activa o null. NO lanza. */
 export async function getSession() {
@@ -50,14 +53,4 @@ export class UnauthorizedError extends Error {
   }
 }
 
-/**
- * Defensa en profundidad: rechaza userIds con caracteres que podrían
- * permitir path traversal. BetterAuth genera UUIDs así que pasa
- * trivialmente, pero validamos por si algún día cambia el esquema.
- */
-export function safeUserId(id: string): string {
-  if (!/^[a-zA-Z0-9_-]{8,64}$/.test(id)) {
-    throw new Error("userId con formato inválido");
-  }
-  return id;
-}
+export { safeUserId };

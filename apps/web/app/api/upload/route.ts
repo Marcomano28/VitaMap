@@ -4,10 +4,8 @@ import { createInboxItem, InboxCategory } from "@/lib/inbox";
 import { enqueueInboxExtraction } from "@/lib/inbox-queue";
 import { logAuditEventSafe } from "@/lib/audit";
 import { UnauthorizedError } from "@/lib/session";
-import {
-  requireSubscribedUserIdFromRequest,
-  SubscriptionRequiredError,
-} from "@/lib/subscription-access";
+import { SubscriptionRequiredError } from "@/lib/subscription-access";
+import { requireDataSubjectFromRequest } from "@/lib/data-access-guards";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -36,7 +34,7 @@ const QueryParams = z.object({
 export async function POST(req: Request) {
   let userId: string;
   try {
-    userId = await requireSubscribedUserIdFromRequest(req);
+    ({ subject: userId } = await requireDataSubjectFromRequest(req, "manage"));
   } catch (err) {
     if (err instanceof UnauthorizedError) {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });

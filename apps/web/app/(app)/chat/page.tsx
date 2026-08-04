@@ -1,7 +1,7 @@
 import { ChatUI } from "@/components/chat-ui";
 import { copy } from "@/lib/i18n";
 import { getLocale } from "@/lib/locale";
-import { requireSubscribedUserId } from "@/lib/subscription-access";
+import { requireDataSubject } from "@/lib/data-access-guards";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ChatPage() {
-  await requireSubscribedUserId();
+  await requireDataSubject("read");
   const locale = await getLocale();
   const t = copy[locale].chat;
 

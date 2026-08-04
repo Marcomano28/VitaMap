@@ -18,3 +18,13 @@ function isOn(value: string | undefined): boolean {
 export function assessmentsEnabled(): boolean {
   return isOn(process.env.ASSESSMENTS_ENABLED);
 }
+
+/**
+ * Acceso cruzado supporter → sujeto de datos (ADR-018, Variante A).
+ * Mientras esté apagado, resolveDataSubject deniega TODO acceso cruzado
+ * aunque existan grants activos en la BD. Encender solo cuando el flujo
+ * de supporters esté aprobado (estatutos + guía legal).
+ */
+export function supporterAccessEnabled(): boolean {
+  return isOn(process.env.SUPPORTER_ACCESS_ENABLED);
+}

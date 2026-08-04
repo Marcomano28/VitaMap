@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getLocale } from "@/lib/locale";
 import { localize } from "@/lib/i18n";
-import { requireSubscribedUserId } from "@/lib/subscription-access";
+import { requireDataSubject } from "@/lib/data-access-guards";
 import { assessmentsEnabled } from "@/lib/flags";
 
 const TEXT = {
@@ -62,7 +62,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function AssessLandingPage() {
   if (!assessmentsEnabled()) notFound();
-  await requireSubscribedUserId();
+  await requireDataSubject("read");
   const locale = await getLocale();
   const t = localize(locale, TEXT);
   return (

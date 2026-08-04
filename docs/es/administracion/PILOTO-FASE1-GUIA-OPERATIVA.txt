@@ -1,0 +1,1204 @@
+VITAMAP — GUÍA OPERATIVA DEL PILOTO FASE 1
+La semilla de trigo sarraceno: la primera triada de usuarios
+Versión 0.7 · 2026-06-23
+
+════════════════════════════════════════════════════════════════════════
+
+ÍNDICE
+
+  A. Para quién es este documento
+  B. Estado actual y próximos pasos
+  C. Secuencia completa del administrador (VPS + primer usuario)
+  D. Secuencia del voluntario invitado (desde el correo hasta el uso)
+  E. Los tres voluntarios: quién entra en qué orden y por qué
+  F. Procedimientos posteriores de mantenimiento
+  G. Glosario de comandos de referencia rápida
+
+════════════════════════════════════════════════════════════════════════
+
+A. PARA QUIÉN ES ESTE DOCUMENTO
+────────────────────────────────
+
+Este documento tiene dos lectores:
+
+  ADMINISTRADOR  —  la persona que gestiona el VPS, genera las
+  invitaciones y da soporte técnico. En la Fase 1 es también el
+  primer voluntario (la semilla).
+
+  VOLUNTARIO INVITADO  —  las otras dos personas que reciben un
+  código de invitación por canal privado y se registran por su
+  cuenta. No necesitan conocimientos técnicos.
+
+El piloto admite exactamente tres usuarios. No hay registro público.
+Nadie puede crear una cuenta sin un código de invitación personal,
+vinculado a su dirección de correo, con fecha de caducidad.
+
+════════════════════════════════════════════════════════════════════════
+
+B. ESTADO ACTUAL Y PRÓXIMOS PASOS
+───────────────────────────────────
+
+La metáfora del trigo sarraceno describe bien la estructura del piloto.
+Su semilla tiene tres caras. El piloto también: el administrador más
+dos voluntarios de confianza forman la primera triada. Ninguno puede
+estar si los otros dos no existen. Los datos de uno no influyen en
+los de los otros: cada usuario vive en un directorio aislado, con su
+propio índice, sus propios archivos y su propia sesión.
+
+Esta guía utiliza cinco estados:
+
+  [COMPLETADO]
+    Existe y ha sido comprobado con el alcance indicado.
+
+  [VERIFICAR EN VPS]
+    Puede estar configurado, pero falta confirmarlo directamente en el
+    servidor antes de considerarlo una garantía del piloto.
+
+  [EN MAIN — VERIFICAR EN VPS]
+    El código ya está en la rama principal del repo, pero falta confirmar
+    que el VPS ejecuta esa versión y tiene las variables necesarias.
+
+  [PENDIENTE — BLOQUEA EL PILOTO REAL]
+    Debe resolverse antes de admitir datos médicos reales o invitar a
+    los otros dos voluntarios.
+
+  [PROCEDIMIENTO POSTERIOR]
+    Instrucción que se usará después de abrir el piloto; no es una tarea
+    que haya que repetir ahora.
+
+ESTADO CONOCIDO A 2026-06-23
+
+  [COMPLETADO]
+  - VPS contratado y disponible: 4 vCPU, 8 GB RAM, 160 GB de disco,
+    20 TB de tráfico saliente y 16,65 €/mes.
+  - Repositorio Git clonado desde main en /opt/vitamap-next. La
+    instalación anterior /opt/vitamap se conserva temporalmente como
+    referencia de rollback y no se actualiza con git.
+  - En la última verificación documentada, la versión desplegada
+    mediante Docker Compose arrancó correctamente; web y LLM informaron
+    estado healthy.
+  - HTTPS y endpoint público comprobados:
+      https://vitamap.marcomano.org/api/health
+    respondió status=ok, service=vitamap-web. La respuesta actual incluye
+    además version, phase, audit_chain y timestamp.
+  - Registro restringido por invitación implementado y probado
+    localmente. El alta directa de BetterAuth queda bloqueada.
+  - Flujo de pago comprobado primero en TEST y después en LIVE:
+      Checkout de Stripe → pago → webhook → base de datos →
+      estado "Activo" en billing.
+  - Primera suscripción LIVE del administrador completada por 6 €/mes.
+    VitaMap mostró "Pago realizado correctamente. Tu acceso está
+    activo" y habilitó "Gestionar pago o cancelar en Stripe".
+  - Customer Portal LIVE activado para facturas, información de
+    facturación, método de pago y cancelación.
+  - Webhook reforzado para asociar el usuario, reconocer los estados de
+    Stripe, registrar renovaciones y tolerar eventos repetidos o
+    recibidos fuera de orden.
+  - Estados Stripe TEST y LIVE separados. Una suscripción de prueba no
+    puede conceder acceso en producción.
+  - Prueba automatizada del flujo de billing y compilación de producción
+    superadas.
+  - Documento de laboratorio completamente ficticio preparado en:
+      test-data/analitica-sintetica-01.pdf
+    Está marcado como sintético y no contiene datos de una persona real.
+  - Exportación y eliminación de cuenta existen en la aplicación.
+
+  [EN MAIN — VERIFICAR EN VPS]
+  - La administración del corpus ya existe en main bajo /admin/corpus.
+    Archivos relevantes:
+      apps/web/app/(app)/admin/corpus/page.tsx
+      apps/web/lib/corpus-admin.ts
+      apps/web/scripts/test-corpus-admin.mts
+  - La ruta exige una cuenta BetterAuth autenticada cuyo correo figure
+    en ADMIN_EMAILS dentro de /opt/vitamap-next/infra/.env. Un usuario
+    autenticado sin ese correo recibe 404.
+  - La verificación de email y la recuperación de contraseña existen en
+    código mediante Brevo. En producción requieren BREVO_API_KEY,
+    EMAIL_FROM y, opcionalmente, EMAIL_REPLY_TO.
+  - Los interruptores de módulos existen y deben mantenerse apagados
+    salvo validación expresa:
+      ASSESSMENTS_ENABLED=false
+      ASSISTANT_EDU_GUIDE=false
+      KB_MARKER_SCOPE=false
+      RETRIEVAL_DEBUG=false
+  - El LLM local se controla con el perfil compose local-llm. En el
+    blindaje final del piloto se recomienda:
+      COMPOSE_PROFILES=local-llm
+      LLM_PROVIDER=local
+    Existe modo API externa UE para pruebas controladas, pero no es el
+    modo de cierre del piloto.
+
+  [VERIFICAR EN VPS]
+  - Que /opt/vitamap-next está en el commit esperado de main después del
+    despliegue y que no conserva cambios locales sin documentar.
+  - Que infra/.env de producción contiene las variables nuevas:
+    ADMIN_EMAILS, BREVO_API_KEY, EMAIL_FROM, EMAIL_REPLY_TO,
+    ASSESSMENTS_ENABLED, ASSISTANT_EDU_GUIDE, KB_MARKER_SCOPE,
+    RETRIEVAL_DEBUG, COMPOSE_PROFILES y LLM_PROVIDER.
+  - Que /admin/corpus abre para el administrador y no abre para una
+    cuenta normal.
+  - Que el envío de verificación de email y recuperación de contraseña
+    funciona con Brevo desde producción.
+  - Firewall, acceso SSH restringido y política de actualización del
+    sistema operativo.
+  - Cifrado del disco y custodia de las claves.
+  - Backups cifrados en región UE y restauración real comprobada.
+  - Separación entre usuarios, logs de auditoría y borrado de cuenta
+    comprobados de extremo a extremo en producción.
+  - Sustituir las credenciales personales de GitHub CLI guardadas en
+    root por un mecanismo de despliegue de solo lectura, o cerrar esa
+    sesión cuando ya no sea necesaria.
+  - Confirmar en Stripe la fecha e importe neto de la primera
+    transferencia al IBAN de Revolut. El pago ya está en Stripe, pero
+    eso no demuestra todavía que el banco haya recibido el payout.
+  - Completar el reintento del PDF sintético después de desplegar una
+    versión de main que incluya la corrección del worker de pdfjs-dist.
+
+  [PENDIENTE — BLOQUEA EL PILOTO REAL]
+  1. Desactivar mediante configuración los módulos todavía no aprobados,
+     especialmente cuestionarios PHQ/GAD, crisis y funciones OCR o
+     interpretativas que amplíen el riesgo regulatorio. Entre ellas, la
+     guía educativa del asistente (ASSISTANT_EDU_GUIDE, ver ADR-016):
+     mantener en "false" hasta la revisión por módulo. Su variante de
+     "alimentación y factores" (Tarjetas B) no se publica en el RAG hasta
+     validar el caso de regresión correspondiente.
+  2. Verificar en VPS la verificación de correo y recuperación segura de
+     cuenta. MFA sigue pendiente y es obligatoria para el administrador
+     antes del piloto real.
+  3. Publicar privacidad, Impressum, condiciones del servicio,
+     información de desistimiento y una cancelación de suscripción
+     separada de la eliminación de datos.
+  4. Corregir el consentimiento para identificar al responsable y a los
+     destinatarios/proveedores reales. No puede afirmar "ninguno" si
+     intervienen Stripe, hosting, correo o backups.
+  5. Completar DPIA/DSFA, Registro del Art. 30, contratos con encargados,
+     política de conservación y revisión MDR de cada módulo.
+  6. Ejecutar pruebas de aislamiento, acceso, logs, backup/restauración,
+     borrado e incidente usando únicamente datos sintéticos.
+  7. Mantener 48 horas de observación técnica con datos sintéticos
+     después de completar sin errores el recorrido de prueba.
+  8. Solo entonces generar las invitaciones de los voluntarios 2 y 3,
+     que participarán en el piloto con sus propios datos y un
+     consentimiento informado válido.
+
+PRÓXIMO PASO TÉCNICO INMEDIATO
+
+  Antes de subir cambios:
+    1. Separar mentalmente tres capas:
+         · código/infra/docs del repo;
+         · tarjetas preparadas en corpus-preparation/;
+         · KB publicada en /data/kb del VPS.
+       Hacer git push NO publica tarjetas en la KB. Las tarjetas nuevas
+       deben aprobarse/publicarse después desde /admin/corpus o mediante
+       el procedimiento administrativo equivalente.
+    2. Revisar `git status --short --untracked-files=all`.
+    3. Ejecutar los tests relevantes según el cambio:
+         npm run test:marker-taxonomy -w @vitamap/web
+         npm run test:source-locale -w @vitamap/web
+         npm run test:corpus-admin -w @vitamap/web
+       Si se ha tocado aplicación o auth, añadir build/test de producción
+       según corresponda.
+    4. Hacer commit y push a main.
+
+  En el VPS:
+    1. ssh root@<IP del VPS>
+    2. cd /opt/vitamap-next
+    3. git fetch origin main
+    4. git status --short
+       Debe estar limpio antes de `git pull`, salvo cambios locales
+       documentados en infra/.env, que no forma parte del repo.
+    5. git pull origin main
+    6. Revisar /opt/vitamap-next/infra/.env contra infra/.env.example.
+    7. cd infra
+    8. docker compose --env-file .env up -d --build
+    9. docker compose --env-file .env ps
+   10. curl -fsS https://vitamap.marcomano.org/api/health
+   11. Probar login, /settings/billing y /admin/corpus con la cuenta
+       administradora.
+
+  Después del despliegue:
+    - Si hay tarjetas nuevas, publicarlas desde /admin/corpus como
+      borrador, revisar metadatos, aprobar y comprobar que el índice KB
+      se actualiza.
+    - Ejecutar una consulta de prueba que deba recuperar una tarjeta
+      recién publicada.
+    - Completar con el administrador el recorrido sintético:
+        reintentar PDF → revisar extracción → confirmar en memoria →
+        consultar en chat → exportar → comprobar auditoría → borrar.
+
+  Después deben verificarse backup y restauración y comenzar las
+  48 horas de observación. No se invita todavía a los voluntarios 2 y 3.
+
+La preparación legal completa está detallada en:
+  docs/es/legal/GUIA-LEGAL-PILOTO-ALEMANIA.md
+
+Hasta completar los bloqueos anteriores no se introducen datos médicos
+reales. Esta restricción corresponde a la validación preliminar del
+administrador, que utiliza perfiles y documentos sintéticos.
+
+Una vez superada la puerta técnica y legal, comienza el piloto real:
+el administrador y los dos voluntarios pueden aportar sus propios datos
+de salud dentro del alcance consentido. No se espera que los invitados
+inventen historiales ficticios, porque eso impediría evaluar la utilidad
+real de VitaMap.
+
+════════════════════════════════════════════════════════════════════════
+
+C. SECUENCIA COMPLETA DEL ADMINISTRADOR
+─────────────────────────────────────────
+
+Esta sección conserva la secuencia operativa completa. Sus etiquetas
+indican qué parte ya está hecha, cuál debe verificarse y qué comandos
+se utilizarán únicamente en etapas posteriores.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+C.1  VPS ACTUAL — [COMPLETADO EN SU CONTRATACIÓN]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Proveedor: Hetzner Cloud, en una región de la UE.
+
+Servidor actual del piloto:
+  - 4 vCPU
+  - 8 GB RAM
+  - 160 GB de disco local
+  - 20 TB de tráfico saliente incluidos
+  - 16,65 €/mes
+
+No es necesario volver a contratar el servidor. Los pasos siguientes
+se conservan como referencia para reconstrucción, migración o auditoría.
+La configuración concreta debe revisarse según el bloque
+[VERIFICAR EN VPS] de la sección B.
+
+Pasos de referencia en el panel de Hetzner:
+  1. Crear el servidor contratado, región UE, imagen Ubuntu 24.04.
+  2. Añadir tu clave SSH pública al crear el servidor.
+  3. Asignar IP flotante (opcional pero recomendado: la IP no cambia si
+     reinicias o migras).
+  4. Configurar DNS en Cloudflare: A record apuntando al IP del VPS.
+     Ejemplo actual: vitamap.marcomano.org → <IP del VPS>
+
+Acceder al servidor:
+  ssh root@<IP del VPS>
+
+Instalar dependencias:
+  apt update && apt upgrade -y
+  apt install -y docker.io docker-compose-plugin git curl build-essential cmake python3 age restic
+
+  systemctl enable docker
+  systemctl start docker
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+C.2  REPOSITORIO Y ENTORNO — [COMPLETADO PARA EL DESPLIEGUE ACTUAL]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Estado actual:
+  - /opt/vitamap-next es el clon Git activo de main.
+  - /opt/vitamap-next/infra/.env contiene la configuración de producción
+    y tiene permisos restringidos.
+  - /opt/vitamap conserva la copia anterior sin metadatos Git. No debe
+    recibir `git pull`.
+  - Los secretos no entran en el contexto de build gracias a
+    .dockerignore.
+
+Para actualizar la instalación actual:
+  Usar el procedimiento completo de F.1. No hacer `git pull` y rebuild
+  a ciegas si infra/.env.example añadió variables nuevas.
+
+Para una instalación nueva o una reconstrucción futura:
+  cd /opt
+  git clone --branch main --single-branch <URL del repositorio> vitamap-next
+  cd vitamap-next
+
+Crear el fichero de variables de entorno que usa Docker Compose:
+  cp infra/.env.example infra/.env
+  nano infra/.env
+
+Variables obligatorias que debes rellenar en infra/.env:
+
+  PUBLIC_DOMAIN=vitamap.marcomano.org
+  PUBLIC_URL=https://vitamap.marcomano.org
+  NEXT_PUBLIC_APP_URL=https://vitamap.marcomano.org
+  CADDY_EMAIL=tu@correo.de
+
+  # Genera con: openssl rand -hex 32
+  MASTER_KEY=<64 caracteres hexadecimales>
+
+  # Genera con: openssl rand -hex 32
+  BETTER_AUTH_SECRET=<mínimo 32 caracteres aleatorios>
+  BETTER_AUTH_URL=https://vitamap.marcomano.org
+
+  # Administración del corpus
+  ADMIN_EMAILS=<correo exacto de la cuenta BetterAuth del administrador>
+
+  # LLM local en el VPS (modo recomendado para cierre del piloto)
+  COMPOSE_PROFILES=local-llm
+  LLM_PROVIDER=local
+  LLM_BASE_URL=http://llm:8080/v1
+  LLM_MODEL=qwen3-4b-instruct
+  LLM_API_KEY=not-needed-for-local
+  LLM_MODEL_FILE=qwen3-4b-instruct-q4_k_m.gguf
+  LLM_THREADS=2
+
+  QMD_EMBED_MODEL=hf:Qwen/Qwen3-Embedding-0.6B-GGUF/Qwen3-Embedding-0.6B-Q8_0.gguf
+
+  # Interruptores de módulo: mantener apagados salvo validación expresa
+  ASSESSMENTS_ENABLED=false
+  ASSISTANT_EDU_GUIDE=false
+  KB_MARKER_SCOPE=false
+  RETRIEVAL_DEBUG=false
+
+  # Email transaccional (Brevo, UE)
+  BREVO_API_KEY=xkeysib-...
+  EMAIL_FROM="VitaMap <no-reply@vitamap.marcomano.org>"
+  EMAIL_REPLY_TO=soporte@marcomano.org
+
+  DATA_ROOT=/data
+  KB_INDEX_PATH=/data/kb-index.sqlite
+  AUTH_DB_PATH=/data/auth.sqlite
+
+  # Stripe (facturación — obtener en dashboard.stripe.com)
+  STRIPE_SECRET_KEY=sk_live_...
+  STRIPE_PUBLISHABLE_KEY=pk_live_...
+  STRIPE_PRICE_ID=price_...
+  STRIPE_WEBHOOK_SECRET=whsec_...
+
+  NODE_ENV=production
+
+Notas:
+  - En modo API externa UE para pruebas controladas, COMPOSE_PROFILES
+    queda vacío, LLM_PROVIDER=external y LLM_BASE_URL/LLM_API_KEY apuntan
+    al proveedor elegido. Antes del piloto real debe revisarse ADR-014 y
+    el consentimiento aplicable.
+  - En producción, BREVO_API_KEY y EMAIL_FROM son necesarios para
+    verificación de correo y recuperación de contraseña.
+
+Cómo generar MASTER_KEY y BETTER_AUTH_SECRET de forma segura:
+  openssl rand -hex 32
+  (ejecuta dos veces, una para cada variable)
+
+Cómo obtener STRIPE_WEBHOOK_SECRET:
+  1. En dashboard.stripe.com → Developers → Webhooks → Add endpoint.
+  2. URL del endpoint:
+       https://vitamap.marcomano.org/api/billing/webhook
+  3. Seleccionar estos seis eventos:
+       · checkout.session.completed
+       · customer.subscription.created
+       · customer.subscription.updated
+       · customer.subscription.deleted
+       · invoice.payment_succeeded
+       · invoice.payment_failed
+  4. Guardar. Stripe muestra el Signing secret (whsec_...).
+     Copiarlo en .env como STRIPE_WEBHOOK_SECRET.
+  5. Usar claves LIVE (sk_live_..., pk_live_...) en producción.
+     Las claves TEST (sk_test_...) solo sirven en local.
+
+Cómo activar el Customer Portal LIVE:
+  1. En dashboard.stripe.com, confirmar que está seleccionado el modo LIVE.
+  2. Ir a Billing → Customer portal y activar el portal.
+  3. Permitir:
+       · actualizar el método de pago;
+       · consultar y descargar facturas;
+       · cancelar la suscripción.
+  4. Configurar la cancelación al final del periodo pagado, no inmediata.
+  5. Revisar nombre comercial, email de soporte y texto público mostrado.
+  6. Guardar la configuración. VitaMap crea una sesión temporal del portal
+     cuando el usuario pulsa "Gestionar pago o cancelar en Stripe".
+
+El portal es independiente del borrado de cuenta. Cancelar detiene la
+renovación; borrar la cuenta revoca el consentimiento y purga la memoria.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+C.3  MODELO LLM — [LOCAL BAJO PERFIL local-llm]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+El modo recomendado para cerrar el piloto es local:
+
+  COMPOSE_PROFILES=local-llm
+  LLM_PROVIDER=local
+
+Con ese perfil, Compose levanta el servicio `llm` con llama.cpp. El
+volumen vitamap_llm_models existente se reutilizó en el despliegue
+anterior y el servicio vitamap-llm-1 informó healthy. Debe verificarse
+una conversación completa con el documento sintético antes de considerar
+validada la inferencia en el VPS actual.
+
+Si COMPOSE_PROFILES está vacío y LLM_PROVIDER=external, el servicio llm
+no se levanta. Ese modo solo se contempla para pruebas controladas con
+proveedor UE, opt-out/ZDR cuando aplique y consentimiento compatible.
+
+En una instalación nueva, el modelo debe estar en disco antes de
+levantar los contenedores.
+El script infra/scripts/download-model.sh lo descarga en el volumen.
+
+  cd /opt/vitamap-next/infra
+  bash scripts/download-model.sh
+
+Esto descarga Qwen3-4B-Instruct Q4_K_M (~2.5 GB) desde HuggingFace
+al volumen Docker llm_models. La descarga puede tardar 5-15 minutos
+según la conexión del VPS. No interrumpir.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+C.4  STACK DE SERVICIOS — [COMPLETADO; REVISAR PERFIL LLM]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  cd /opt/vitamap-next/infra
+  docker compose --env-file .env up -d --build
+
+Esto levanta los servicios permanentes:
+  - caddy   → reverse proxy con TLS automático (Let's Encrypt)
+  - web     → Next.js con QMD embebido
+  - backup  → cron diario que cifra /data/ y sincroniza a Backblaze B2
+
+Y, si COMPOSE_PROFILES=local-llm:
+  - llm     → llama.cpp server con Qwen3-4B
+
+El servicio `admin` existe bajo el perfil `tools`; no queda corriendo.
+Se usa para invitaciones, seed/check de KB y tareas administrativas.
+
+Verificar que todo funciona:
+  docker compose --env-file .env ps
+  docker compose --env-file .env logs web --tail=50
+  docker compose --env-file .env logs llm --tail=20   # solo modo local-llm
+
+El endpoint de salud responde en:
+  curl https://vitamap.marcomano.org/api/health
+
+Respuesta esperada: status=ok, service=vitamap-web, version, phase,
+audit_chain y ts. Si audit_chain aparece como broken o error, el servicio
+puede seguir vivo, pero debe tratarse como alerta operativa.
+
+El aviso de que vitamap_llm_models ya existía y no fue creado por el
+Compose actual no bloqueó el despliegue: el volumen fue reutilizado y el
+LLM quedó healthy. Debe documentarse como volumen externo antes de una
+reconstrucción más amplia de la infraestructura.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+C.5  BACKUPS (BACKBLAZE B2) — [VERIFICAR Y PROBAR RESTAURACIÓN]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1. Crear cuenta en Backblaze B2 (backblaze.com), región EU.
+  2. Crear un bucket llamado "vitamap-backup" (privado).
+  3. Crear Application Key con acceso de lectura/escritura al bucket.
+  4. Añadir al .env:
+
+       B2_ACCOUNT_ID=<tu account id>
+       B2_ACCOUNT_KEY=<tu application key>
+       RESTIC_REPOSITORY=b2:vitamap-backup:/restic
+       RESTIC_PASSWORD=<contraseña larga para cifrar los snapshots>
+
+  5. Reiniciar el servicio backup:
+       docker compose --env-file .env restart backup
+
+Los backups corren cada 24 horas desde el arranque del contenedor, con
+un pequeño retraso aleatorio inicial. Restic cifra /data/ completo
+antes de enviarlo.
+
+Verificar que el primer backup funciona:
+  docker compose --env-file .env exec backup restic snapshots
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+C.6  PRIMER USUARIO — [PAGO COMPLETADO; PRUEBA SINTÉTICA EN CURSO]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+El administrador ya está registrado, ha completado la primera
+suscripción LIVE de 6 €/mes y tiene acceso activo. Customer Portal
+también está accesible desde VitaMap.
+
+No ejecutar esta sección con datos reales hasta completar la sección B.
+El administrador también necesita una invitación para registrarse.
+No existe ninguna vía que saltee este requisito: el hook de BetterAuth
+rechaza todo alta sin el código interno, incluso desde línea de comandos.
+
+Paso 1 — Generar la invitación para el administrador desde el
+contenedor administrativo, que comparte la base de producción:
+
+  cd /opt/vitamap-next/infra
+  docker compose --env-file .env --profile tools run --rm admin \
+    create admin@tudominio.de --days 7
+
+Salida esperada:
+  Invitacion creada
+  ID:       a1b2c3d4-...
+  Email:    admin@tudominio.de
+  Caduca:   2026-06-15T10:30:00.000Z
+  Codigo:   xK9mP2nQrT...
+
+  Envia el codigo por un canal privado. Solo se muestra ahora.
+
+IMPORTANTE: el código solo se muestra una vez. Copiarlo en un gestor
+de contraseñas antes de cerrar la terminal.
+
+Paso 2 — Abrir el navegador y registrarse como cualquier voluntario:
+  Ir a https://vitamap.marcomano.org/register
+  Rellenar: código, email (admin@tudominio.de), contraseña, checkboxes.
+  Pulsar "Validar invitación y crear cuenta".
+
+Después del registro, BetterAuth exige verificar el correo. El sistema envía
+un enlace por Brevo y muestra /verify-email-pending. El usuario debe abrir el
+enlace de verificación antes del primer acceso normal. Si el email no llega,
+revisar BREVO_API_KEY, EMAIL_FROM, el remitente verificado en Brevo y los logs
+del servicio web.
+
+El administrador queda registrado también como usuario normal. La cuenta ya
+existente no necesita registrarse de nuevo. Para administrar el corpus, su
+mismo correo de BetterAuth debe figurar en ADMIN_EMAILS dentro de
+/opt/vitamap-next/infra/.env. Si el VPS ya tiene desplegada una versión de
+main con /admin/corpus, entonces podrá abrir:
+
+  https://vitamap.marcomano.org/admin/corpus
+
+Un usuario autenticado que no figure en ADMIN_EMAILS recibe 404. Una persona
+no autenticada se redirige a login. Las operaciones de invitaciones (crear,
+revocar, listar) continúan haciéndose por SSH en el VPS y no se conceden por
+conocer la URL del panel.
+
+Prueba sintética actual:
+  1. Archivo:
+       test-data/analitica-sintetica-01.pdf
+  2. La primera subida confirmó almacenamiento cifrado, pero la
+     extracción falló por una ruta de worker vacía en pdfjs-dist.
+  3. La corrección registra el worker incluido en el bundle standalone
+     y conserva el fallback pdftoppm + Tesseract.
+  4. Tras desplegar una versión de main que incluya la corrección del
+     worker PDF, pulsar "Reintentar" sobre el mismo elemento. No volver
+     a subirlo.
+  5. Comprobar los 11 marcadores esperados. Glucosa, colesterol total y
+     LDL deben quedar altos; vitamina D baja; los demás, normales.
+  6. Corregir manualmente cualquier error antes de confirmar.
+  7. Confirmar en memoria, consultar desde chat, exportar y finalmente
+     borrar el dato de prueba.
+
+Nota sobre rutas:
+  En el VPS, web y tareas administrativas comparten rutas absolutas bajo
+  /data mediante el mismo volumen Docker. La normalización de rutas relativas
+  del entorno local no cambia este comportamiento de producción.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+C.7  INVITAR A LOS DOS VOLUNTARIOS — [PROCEDIMIENTO POSTERIOR]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+No ejecutar hasta que el administrador haya completado la prueba LIVE,
+las 48 horas de observación y la puerta legal y técnica de la sección B.
+Después de esa autorización, los invitados podrán utilizar datos propios
+dentro del alcance explicado y aceptado en el consentimiento.
+
+Cada invitación está vinculada a un email concreto. No es transferible.
+Si el voluntario usa otro correo no podrá registrarse con ese código.
+
+Generar invitación para voluntario 2:
+  docker compose --env-file .env --profile tools run --rm admin \
+    create voluntario2@dominio.de --days 7
+
+Generar invitación para voluntario 3:
+  docker compose --env-file .env --profile tools run --rm admin \
+    create voluntario3@dominio.de --days 7
+
+Cada comando devuelve un código diferente. Cada código se envía al
+voluntario correspondiente por canal privado (Signal, correo cifrado,
+o en persona). Nunca por un canal grupal: cada código es personal.
+
+Verificar el estado de todas las invitaciones:
+  docker compose --env-file .env --profile tools run --rm admin list
+
+Columnas del listado:
+  id        → identificador único de la invitación
+  email     → a quién pertenece
+  estado    → disponible / en registro / usada / caducada / revocada
+  caduca    → fecha y hora de expiración (ISO 8601)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+C.8  REVOCAR UNA INVITACIÓN — [PROCEDIMIENTO POSTERIOR]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Si una persona no va a participar o el código fue comprometido:
+  docker compose --env-file .env --profile tools run --rm admin \
+    revoke <id de la invitación>
+
+Una invitación revocada no puede usarse aunque el código sea correcto.
+Para que la persona pueda registrarse deberás generar una nueva.
+Las invitaciones ya consumidas (estado "usada") no se pueden revocar.
+
+════════════════════════════════════════════════════════════════════════
+
+D. SECUENCIA FUTURA DEL VOLUNTARIO INVITADO
+──────────────────────────────────────
+
+Esta sección describe el flujo que se habilitará después de superar los
+bloqueos de la sección B. A partir de ese momento, los voluntarios
+podrán usar datos médicos reales propios, con consentimiento explícito,
+información transparente y los controles técnicos ya verificados.
+Las personas invitadas no requieren acceso al VPS ni conocimientos
+técnicos.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+D.1  LO QUE RECIBES ANTES DE EMPEZAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+El administrador te enviará, por canal privado:
+  - La URL de la plataforma: https://vitamap.marcomano.org
+  - Tu código de invitación personal (una cadena de letras y números)
+  - La dirección de correo a la que está vinculado el código
+  - La fecha en que caduca el código (normalmente 7 días)
+
+El código solo funciona con TU dirección de correo. No funciona con
+otra dirección ni puede ser usado por otra persona.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+D.2  CREAR TU CUENTA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1. Abre el navegador y ve a:
+       https://vitamap.marcomano.org/register
+
+  2. Lee el texto de consentimiento que aparece en pantalla.
+     Es el documento completo que describe qué datos se procesan,
+     con qué finalidad y bajo qué derechos legales.
+
+  3. Rellena el formulario:
+       · Código de invitación → el que recibiste por canal privado
+       · Email → el mismo que el administrador usó al crear tu
+                 invitación. El sistema ignora mayúsculas y espacios
+                 exteriores, pero no admite otra dirección.
+       · Contraseña → mínimo 10 caracteres (elige una que no uses
+                      en otros sitios)
+       · Repite la contraseña → igual que la anterior
+
+  4. Marca los dos reconocimientos obligatorios:
+       ☑ Confirmo que VitaMap es una herramienta educativa, no un
+         dispositivo médico, y que sus respuestas no constituyen
+         consejo clínico.
+       ☑ Doy mi consentimiento explícito al tratamiento de mis datos
+         de salud conforme al Art. 9.2.a RGPD.
+
+  5. Pulsa "Validar invitación y crear cuenta".
+
+Si todo es correcto, quedarás registrado pero no entrarás directamente:
+VitaMap enviará un email de verificación y mostrará /verify-email-pending.
+Abre el enlace del correo. Tras verificarlo, podrás iniciar sesión y
+aterrizarás en Suscripción (/settings/billing).
+
+Errores frecuentes y soluciones:
+  "La invitación no es válida para ese email"
+  → Verifica que sea la misma dirección usada por el administrador.
+
+  "La invitación ha caducado"
+  → El código tiene una validez de 7 días. Pide al administrador
+    que genere una nueva invitación.
+
+  "Ya existe una cuenta con ese email"
+  → Alguien (o tú mismo) ya registró una cuenta con ese correo.
+    Ve a /login e intenta acceder.
+
+  "Necesitas verificar tu correo"
+  → Revisa tu buzón y spam. Desde la pantalla de verificación puedes
+    pedir un nuevo enlace, con límite de frecuencia.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+D.3  PRIMER ACCESO: POR DÓNDE EMPEZAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Tras verificar el correo e iniciar sesión, aterrizas en /settings/billing.
+Hasta que Stripe confirme una suscripción activa, solo permanecen disponibles
+billing, ajustes, exportación y borrado. Las páginas, acciones y APIs de salud
+verifican el estado en el servidor; la URL de retorno de Checkout no concede
+acceso.
+
+Cuando la suscripción está activa, las secciones principales son:
+
+  /memory       → Tu archivo personal. Aquí viven tus observaciones,
+                  notas y documentos procesados, en formato markdown.
+                  Puedes leerlos, exportarlos o borrarlos.
+
+  /upload       → Sube documentos: analíticas, informes médicos,
+                  notas en PDF. La plataforma los procesa y propone
+                  un borrador para tu revisión antes de guardarlo.
+
+  /chat         → Conversación con el asistente. Puedes hacer
+                  preguntas sobre tu historial, pedir explicaciones
+                  de valores, o simplemente describir cómo te
+                  encuentras. El asistente cita las fuentes que usa.
+
+  /observation  → Registro rápido de una observación del día
+                  (síntoma, hábito, nota libre).
+
+  /guide        → Guía de orientación: qué documentos son útiles,
+                  cómo conseguir los que no tienes, y qué hace
+                  VitaMap con ellos.
+
+  /settings     → Configuración de tu cuenta, suscripción y
+                  exportación de todos tus datos.
+
+Recomendación para el primer día, únicamente después de la autorización
+del piloto y con los módulos aprobados en la revisión legal y
+regulatoria:
+  1. Lee /guide para entender qué documentos aportar.
+  2. Sube al menos una analítica reciente en /upload.
+  3. Escribe una observación breve en /observation.
+  4. Abre /chat y haz una pregunta sobre algo que te genere dudas.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+D.4  SUSCRIPCIÓN (PAGO)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+El piloto tiene un coste de 6 €/mes por voluntario. Los tres voluntarios
+cubren conjuntamente el coste del VPS (16,65 €/mes) más comisiones.
+
+El pago se gestiona desde /settings → sección Suscripción.
+Se usa Stripe. Los recibos o facturas por email dependen de que esa
+opción esté activada en la configuración de Stripe.
+
+Lo que cubre la suscripción:
+  - Infraestructura del VPS (procesamiento, almacenamiento, backups)
+  - Acceso a todas las funciones disponibles en Fase 1
+
+Lo que NO cubre:
+  - Diagnósticos médicos
+  - Consultas con profesionales de la salud
+  - Ningún tipo de atención clínica
+
+Qué ocurre tras pulsar "Activar suscripción":
+  1. Stripe abre su página de pago seguro (dominio stripe.com).
+  2. Introduces tu tarjeta y confirmas.
+  3. Stripe te redirige de vuelta a VitaMap.
+  4. Si el webhook ya llegó, VitaMap muestra:
+       "Pago realizado correctamente. Tu acceso está activo."
+     Si todavía está en tránsito, muestra que Stripe está confirmando
+     el pago y el estado cambia a "Activo" al recibir el webhook.
+
+Si tras 2 minutos el estado sigue mostrando "Sin suscripción":
+  - No inicies otro Checkout.
+  - Si ya existe un cliente Stripe, usa "Gestionar pago o cancelar"
+    para revisar el método de pago y la suscripción.
+  - Escríbele al administrador con la hora aproximada del pago.
+  - El administrador verificará el estado desde el VPS (ver F.6).
+
+Regla de acceso:
+  La suscripción activa es necesaria desde la Fase 1, también para
+  los tres usuarios de confianza. Sin pago confirmado se bloquean chat,
+  memoria, documentos, observaciones y assessments. Billing, ajustes,
+  exportación y borrado continúan disponibles.
+
+  Stripe es la fuente de verdad. Volver desde Checkout no concede
+  acceso: el servidor espera la confirmación del webhook.
+
+Protecciones del webhook:
+  - los datos TEST y LIVE se separan en billing_subscription.livemode;
+  - una suscripción TEST nunca concede acceso cuando el VPS usa claves LIVE;
+  - checkout.session.completed ancla user_id, customer y subscription;
+  - los ocho estados de Stripe se traducen al estado local;
+  - invoice.payment_succeeded confirma renovaciones y su period_end;
+  - eventos repetidos se reconocen por event.id;
+  - eventos antiguos no pueden degradar un estado más reciente;
+  - pending no sustituye un estado ya confirmado;
+  - una actualización de suscripción no borra la fecha de renovación;
+  - el importe mensual procede del Price, no del total variable
+    de una factura con impuestos, créditos o prorrateos.
+  - las facturas solo actualizan una suscripción VitaMap previamente
+    reconocida por customer, subscription y modo.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+D.5  TUS DERECHOS SOBRE LOS DATOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Tus datos viven en un directorio aislado del servidor. Los otros
+usuarios no pueden leerlos. El administrador técnico del VPS conserva
+capacidad operativa de acceso y está sujeto al deber de confidencialidad,
+control de accesos y auditoría. El asistente local los usa para prestar
+las funciones que tú activas.
+
+En cualquier momento puedes:
+  - Exportar todo: /settings → Exportar mis datos (ZIP con todos
+    tus markdown y originales cifrados). El audit log no se incluye
+    en ese ZIP porque pertenece al registro de cumplimiento del sistema.
+  - Borrar una entrada concreta: desde /memory, cada entrada tiene
+    opción de borrado permanente.
+  - Revocar tu consentimiento y borrar todo: /settings → eliminar
+    cuenta. Debes escribir BORRAR y confirmar tu contraseña. El sistema
+    cancela primero cualquier suscripción vigente, registra la revocación,
+    pone los datos en cuarentena durante la operación, elimina la cuenta
+    y purga el directorio personal.
+
+════════════════════════════════════════════════════════════════════════
+
+E. LOS TRES VOLUNTARIOS: ORDEN Y LÓGICA
+─────────────────────────────────────────
+
+La triada del piloto no tiene jerarquía de uso, pero sí un orden
+natural de incorporación por razones técnicas:
+
+  VOLUNTARIO 1 — El administrador (la semilla)
+  ─────────────────────────────────────────────
+  Se registra primero para verificar que el stack completo funciona
+  antes de dar acceso a nadie. Durante al menos 48 horas usa la
+  plataforma en solitario exclusivamente con datos sintéticos y
+  verifica:
+    · El ciclo completo upload → procesamiento → chat → memoria.
+    · Que los backups están llegando a B2.
+    · Que el TLS (HTTPS) funciona correctamente.
+    · Que los logs de auditoría se generan bien.
+    · Que la latencia del chat es aceptable (15-25s por respuesta).
+  Si algo falla en este periodo, se corrige antes de invitar a nadie.
+  Una vez superada esta validación y abierta legalmente la fase piloto,
+  también puede pasar a utilizar sus propios datos como primer usuario.
+
+  VOLUNTARIO 2 — Primera persona de confianza externa
+  ────────────────────────────────────────────────────
+  Recibe su invitación cuando el administrador ha validado el entorno.
+  El objetivo de su incorporación es verificar el flujo de invitación
+  y registro desde el punto de vista de alguien sin acceso al VPS.
+  El administrador monitoriza los logs durante su primer registro:
+    docker compose --env-file .env logs web --tail=100 -f
+  Y confirma que la invitación queda marcada como "usada":
+    docker compose --env-file .env --profile tools run --rm admin list
+
+  VOLUNTARIO 3 — Segunda persona de confianza externa
+  ─────────────────────────────────────────────────────
+  Se incorpora una vez el voluntario 2 está operativo y sin problemas.
+  A partir de este momento el piloto está completo.
+
+No se generan invitaciones adicionales durante la Fase 1. El objetivo
+es profundidad con tres usuarios, no amplitud.
+
+════════════════════════════════════════════════════════════════════════
+
+F. PROCEDIMIENTOS POSTERIORES DE MANTENIMIENTO
+──────────────────────────────────────────────────────
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+F.1  ACTUALIZAR EL CÓDIGO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Antes de desplegar, el cambio debe estar en main y haber pasado los tests
+locales aplicables. Si hay tarjetas en `corpus-preparation/`, recordar que
+siguen siendo material preparado: no se publican en `/data/kb` por el mero
+hecho de hacer push.
+
+  ssh root@<IP del VPS>
+  cd /opt/vitamap-next
+  git fetch origin main
+  git status --short
+
+El estado debe estar limpio. No editar ni versionar secretos en el repo; la
+configuración real vive en /opt/vitamap-next/infra/.env.
+
+  git pull origin main
+
+Antes de reconstruir, revisar si infra/.env.example incorporó variables nuevas
+comparando solo nombres de claves, no valores secretos:
+  grep -E '^[A-Z0-9_]+=' infra/.env.example | cut -d= -f1 | sort > /tmp/vitamap-env-example.keys
+  grep -E '^[A-Z0-9_]+=' infra/.env | cut -d= -f1 | sort > /tmp/vitamap-env-prod.keys
+  comm -23 /tmp/vitamap-env-example.keys /tmp/vitamap-env-prod.keys
+
+No copiar el fichero completo encima de infra/.env: contiene secretos reales.
+Añadir solo las variables que falten y confirmar especialmente:
+  ADMIN_EMAILS
+  BREVO_API_KEY
+  EMAIL_FROM
+  ASSESSMENTS_ENABLED=false
+  ASSISTANT_EDU_GUIDE=false
+  KB_MARKER_SCOPE=false
+  RETRIEVAL_DEBUG=false
+  COMPOSE_PROFILES=local-llm
+  LLM_PROVIDER=local
+
+  cd infra
+  docker compose --env-file .env up -d --build
+
+Compose reconstruye las imágenes necesarias y conserva los volúmenes
+persistentes. Confirmar después:
+  docker compose --env-file .env ps
+  curl -fsS https://vitamap.marcomano.org/api/health
+
+Comprobaciones posteriores mínimas:
+  1. Entrar en /login con la cuenta administradora.
+  2. Abrir:
+       https://vitamap.marcomano.org/admin/corpus
+  3. Confirmar que una cuenta no incluida en ADMIN_EMAILS recibe 404.
+  4. Probar envío de email de verificación o recuperación en un usuario
+     de prueba, sin exponer datos reales.
+  5. Revisar logs:
+       docker compose --env-file .env logs web --tail=100
+  6. Si se publican tarjetas nuevas, cargar cada `.md` desde /admin/corpus,
+     guardar como borrador, revisar metadatos, aprobar y ejecutar una
+     consulta de prueba. La publicación crea/actualiza archivos en /data/kb
+     y reindexa el KB; `corpus-preparation/` no se indexa directamente.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+F.2  VER LOGS EN TIEMPO REAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  # Todos los servicios
+  docker compose --env-file .env logs -f
+
+  # Solo el servidor web
+  docker compose --env-file .env logs web -f --tail=100
+
+  # Solo el modelo LLM local (si COMPOSE_PROFILES=local-llm)
+  docker compose --env-file .env logs llm -f --tail=50
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+F.3  RESTAURAR UN BACKUP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  cd /opt/vitamap-next/infra
+  docker compose --env-file .env down
+  docker compose --env-file .env run --rm backup \
+    /usr/local/bin/restore.sh /restore
+
+El comando restaura el snapshot más reciente bajo /restore dentro
+del contenedor. Hay que inspeccionar el resultado antes de promoverlo
+a /data y volver a levantar el stack:
+  docker compose --env-file .env up -d
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+F.4  BORRAR UN USUARIO (DERECHO AL OLVIDO GDPR)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+El procedimiento normal se ejecuta desde /settings. El usuario:
+
+  1. Selecciona eliminar cuenta.
+  2. Escribe BORRAR.
+  3. Confirma su contraseña.
+
+La aplicación registra la revocación y el inicio de la purga, mueve
+el directorio a cuarentena, elimina la cuenta en BetterAuth, borra la
+cuarentena y registra la finalización. Si BetterAuth falla, intenta
+restaurar el directorio. No se deben ejecutar DELETE ni rm manuales
+como procedimiento habitual, porque saltarían esas garantías.
+
+NOTA: los backups en B2 conservan snapshots anteriores al borrado. La
+configuración actual mantiene 7 copias diarias, 4 semanales y 6 mensuales,
+por lo que un dato eliminado del almacenamiento activo puede permanecer
+en copias cifradas durante varios meses. No debe afirmarse que desaparece
+en 30 días.
+
+Restic elimina snapshots completos, no solamente los archivos de una persona.
+No ejecutar `restic forget --prune <snapshot-id>` como respuesta ordinaria a
+una solicitud individual: podría borrar puntos de restauración de todos los
+usuarios. Antes del piloto real debe aprobarse y probarse una política que
+combine un plazo proporcionado, aislamiento de backups, prohibición de
+restaurar datos ya suprimidos salvo recuperación de desastre y un procedimiento
+documentado para volver a aplicar las eliminaciones después de restaurar.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+F.5  MONITORIZACIÓN BÁSICA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Verificar que la plataforma responde:
+  curl https://vitamap.marcomano.org/api/health
+
+Estado de los contenedores:
+  docker compose --env-file .env ps
+
+Uso de disco (importante: el modelo LLM ocupa ~2.5 GB, los datos
+de los usuarios crecen con el tiempo):
+  df -h /
+
+Uso de RAM (el LLM necesita ~4 GB, dejar ~3 GB para el resto):
+  free -h
+
+Si el disco supera el 80% de capacidad, revisar si hay archivos
+de log grandes o PDFs acumulados sin procesar.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+F.6  VERIFICAR EL ESTADO DE PAGO DE UN VOLUNTARIO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Si un voluntario reporta que su pago no se refleja en la plataforma,
+seguir este procedimiento antes de pedirle que vuelva a pagar.
+
+Ver el estado de todas las suscripciones en la BD local:
+  docker compose --env-file .env exec web sh -c \
+    "sqlite3 /data/auth.sqlite \
+     'SELECT user_id, status, stripe_customer_id,
+             stripe_subscription_id, current_period_end,
+             status_event_created, period_event_created,
+             updated_at
+      FROM billing_subscription;'"
+
+  status_event_created y period_event_created son timestamps Unix
+  de Stripe (event.created). Si status_event_created es 0, ningún
+  evento de suscripción ha llegado aún para esa fila.
+
+Estados posibles en la columna status:
+  pending   → checkout asociado, pero estado de pago aún no confirmado
+  active    → pago confirmado, todo correcto
+  past_due  → pago fallido o renovación pendiente
+  cancelled → suscripción cancelada en Stripe
+
+Ver qué eventos de Stripe han llegado y fueron procesados:
+  docker compose --env-file .env exec web sh -c \
+    "sqlite3 /data/auth.sqlite \
+     'SELECT event_id, event_type,
+             datetime(event_created, \"unixepoch\") AS when_stripe,
+             processed_at
+      FROM stripe_webhook_event
+      ORDER BY event_created DESC LIMIT 20;'"
+
+Si el estado es pending y han pasado más de 5 minutos:
+  1. Consultar stripe_webhook_event (comando anterior) para ver si
+     algún evento llegó. Si la tabla está vacía, el webhook no ha
+     recibido nada.
+  2. Ir a dashboard.stripe.com → Developers → Webhooks.
+  3. Buscar el endpoint y comprobar los intentos de entrega recientes.
+  4. Si hay un evento fallido, usar "Resend" para reenviarlo.
+  5. Si no aparece ningún intento, verificar que los seis eventos
+     están registrados en el endpoint (ver sección C.2).
+
+Si el webhook llegó (aparece en stripe_webhook_event) pero
+billing_subscription sigue en pending o user_id está vacío:
+  1. No cambiar status ni user_id inmediatamente.
+  2. Verificar en Stripe que customer, subscription, email y pago
+     pertenecen realmente a la misma persona.
+  3. Revisar los eventos checkout.session.completed y
+     customer.subscription.created de esa operación.
+  4. Revisar los logs del servicio web para localizar un rechazo de
+     identificador o un error de base de datos.
+  5. Si se confirma una fila heredada o corrupta, hacer primero una
+     copia de auth.sqlite y documentar la reparación. Nunca marcar
+     active manualmente sin confirmación del pago en Stripe.
+
+La tabla stripe_webhook_event impide volver a procesar un event.id ya
+completado. Reenviar el mismo evento sirve para confirmar que el endpoint
+responde, pero no modifica de nuevo la suscripción. Una reconciliación
+manual debe tratarse como incidente y quedar documentada.
+
+════════════════════════════════════════════════════════════════════════
+
+G. GLOSARIO DE COMANDOS DE REFERENCIA RÁPIDA
+──────────────────────────────────────────────
+
+Todos los comandos de gestión de invitaciones se ejecutan desde:
+  /opt/vitamap-next/infra   (en el VPS)
+
+─────────────────────────────────────────────────────────────────────
+INVITACIONES
+─────────────────────────────────────────────────────────────────────
+
+Crear una invitación (validez por defecto: 7 días):
+  docker compose --env-file .env --profile tools run --rm admin \
+    create persona@dominio.de
+
+Crear una invitación con validez personalizada:
+  docker compose --env-file .env --profile tools run --rm admin \
+    create persona@dominio.de --days 14
+
+Listar todas las invitaciones:
+  docker compose --env-file .env --profile tools run --rm admin list
+
+Revocar una invitación (por su ID):
+  docker compose --env-file .env --profile tools run --rm admin \
+    revoke a1b2c3d4-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+
+─────────────────────────────────────────────────────────────────────
+STACK DE CONTENEDORES
+─────────────────────────────────────────────────────────────────────
+
+Levantar el stack completo:
+  cd /opt/vitamap-next/infra
+  docker compose --env-file .env up -d
+
+Detener el stack:
+  docker compose --env-file .env down
+
+Ver estado:
+  docker compose --env-file .env ps
+
+Reiniciar un servicio concreto:
+  docker compose --env-file .env restart web
+
+Ver logs de un servicio:
+  docker compose --env-file .env logs web -f --tail=100
+
+─────────────────────────────────────────────────────────────────────
+CORPUS Y KB
+─────────────────────────────────────────────────────────────────────
+
+Abrir interfaz administrativa:
+  https://vitamap.marcomano.org/admin/corpus
+
+Requisitos:
+  - sesión iniciada;
+  - correo de BetterAuth incluido en ADMIN_EMAILS;
+  - versión desplegada con /admin/corpus.
+
+Recordatorio:
+  corpus-preparation/approved-current-structure/ vive en el repo y sirve para
+  preparar tarjetas. QMD no lo indexa. La KB activa vive en /data/kb del VPS.
+
+Publicar una tarjeta preparada:
+  1. Abrir /admin/corpus.
+  2. Cargar el `.md`.
+  3. Revisar frontmatter importado, derechos y limitaciones.
+  4. Guardar como borrador.
+  5. Aprobar/publicar.
+  6. Probar una consulta que deba recuperar esa tarjeta.
+
+Reindexar KB compartida desde el contenedor administrativo:
+  docker compose --env-file .env --profile tools run --rm \
+    --entrypoint node admin --import tsx scripts/seed-kb.mts
+
+Forzar reembed completo:
+  docker compose --env-file .env --profile tools run --rm \
+    --entrypoint node admin --import tsx scripts/seed-kb.mts --force
+
+Comprobar que la KB contiene documentos reales y probar búsqueda:
+  docker compose --env-file .env --profile tools run --rm \
+    --entrypoint node admin --import tsx scripts/check-kb.mts \
+    "vitamina D valores bajos"
+
+─────────────────────────────────────────────────────────────────────
+BASES DE DATOS
+─────────────────────────────────────────────────────────────────────
+
+Listar usuarios registrados:
+  docker compose --env-file .env exec web sh -c \
+    "sqlite3 /data/auth.sqlite 'SELECT id,email,createdAt FROM user;'"
+
+Ver log de auditoría (últimas 20 entradas):
+  docker compose --env-file .env exec web sh -c \
+    "sqlite3 /data/auth.sqlite \
+     'SELECT actor,action,subject_id,ts FROM audit_event ORDER BY ts DESC LIMIT 20;'"
+
+Ver invitaciones directamente en SQLite:
+  docker compose --env-file .env exec web sh -c \
+    "sqlite3 /data/auth.sqlite \
+     'SELECT email, consumed_at, revoked_at, expires_at FROM registration_invitation;'"
+
+─────────────────────────────────────────────────────────────────────
+BACKUPS
+─────────────────────────────────────────────────────────────────────
+
+Ver snapshots disponibles en B2:
+  docker compose --env-file .env exec backup restic snapshots
+
+Verificar integridad del repositorio de backups:
+  docker compose --env-file .env exec backup restic check
+
+Forzar un backup manual inmediato:
+  docker compose --env-file .env exec backup sh -c \
+    "restic backup /data --tag manual"
+
+─────────────────────────────────────────────────────────────────────
+SALUD DEL SISTEMA
+─────────────────────────────────────────────────────────────────────
+
+Verificar que la API responde:
+  curl https://vitamap.marcomano.org/api/health
+
+Ver uso de disco:
+  df -h /
+
+Ver uso de RAM:
+  free -h
+
+Ver carga de CPU:
+  top -bn1 | head -5
+
+════════════════════════════════════════════════════════════════════════
+
+VitaMap · Guía Operativa Piloto Fase 1 · Versión 0.5
+Para la guía legal completa consultar: docs/es/legal/GUIA-LEGAL-PILOTO-ALEMANIA.md
+Para el roadmap técnico completo consultar: docs/es/arquitectura/ROADMAP.md
+Para la evolución y operación de QMD consultar:
+docs/es/arquitectura/QMD-EVOLUCION-VITAMAP.md

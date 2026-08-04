@@ -2,7 +2,7 @@ import { createObservationAction } from "./actions";
 import type { Metadata } from "next";
 import { getLocale } from "@/lib/locale";
 import { localize } from "@/lib/i18n";
-import { requireSubscribedUserId } from "@/lib/subscription-access";
+import { requireDataSubject } from "@/lib/data-access-guards";
 
 const TEXT = {
   es: {
@@ -41,7 +41,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function NewObservationPage() {
-  await requireSubscribedUserId();
+  await requireDataSubject("read");
   const locale = await getLocale();
   const t = localize(locale, TEXT);
   const today = new Date().toISOString().slice(0, 10);

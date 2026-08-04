@@ -1,0 +1,15 @@
+# Configuración SSH del contenedor de backup para hablar con la Hetzner
+# Storage Box. No contiene secretos: solo indica qué clave usar y que no
+# se debe caer en autenticación por contraseña si la clave fallara.
+#
+# Montado dentro del contenedor `backup` en /root/.ssh/config
+# (ver infra/docker-compose.yml, servicio backup).
+
+Host storagebox
+    HostName u645338.your-storagebox.de
+    User u645338
+    IdentityFile /root/.ssh/storagebox_ed25519
+    IdentitiesOnly yes
+    PasswordAuthentication no
+    StrictHostKeyChecking yes
+    UserKnownHostsFile /root/.ssh/known_hosts

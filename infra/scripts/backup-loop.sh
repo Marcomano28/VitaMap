@@ -17,13 +17,16 @@ log() { echo "[backup $(date -u +%FT%TZ)] $*"; }
 
 ensure_repo() {
   if ! restic snapshots >/dev/null 2>&1; then
-    log "inicializando repo restic"
-    restic init || true
+    log "ERROR: no se puede acceder al repositorio restic (¿existe? ¿credenciales correctas?)"
+    log "Este script NUNCA crea el repositorio automáticamente. Se inicializa a mano, una sola vez."
+    return 1
   fi
 }
 
 run_once() {
-  ensure_repo
+  if ! ensure_repo; then
+    return 1
+  fi
   log "snapshot de ${BACKUP_TARGET}"
   if restic backup "${BACKUP_TARGET}" --tag vitamap-auto; then
     log "snapshot OK; aplicando política de retención"

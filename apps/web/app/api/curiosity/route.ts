@@ -4,10 +4,8 @@ import { kbDir } from "@/lib/qmd";
 import { selectCuriosityCard } from "@/lib/curiosity";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { UnauthorizedError } from "@/lib/session";
-import {
-  requireSubscribedUserIdFromRequest,
-  SubscriptionRequiredError,
-} from "@/lib/subscription-access";
+import { SubscriptionRequiredError } from "@/lib/subscription-access";
+import { requireDataSubjectFromRequest } from "@/lib/data-access-guards";
 
 export const runtime = "nodejs";
 
@@ -19,7 +17,7 @@ const Body = z.object({
 export async function POST(req: Request) {
   let userId: string;
   try {
-    userId = await requireSubscribedUserIdFromRequest(req);
+    ({ subject: userId } = await requireDataSubjectFromRequest(req, "chat"));
   } catch (error) {
     if (error instanceof UnauthorizedError) {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });

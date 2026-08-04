@@ -57,7 +57,7 @@ precisa.
 
 La estructura temática completa y la evolución prevista de la recuperación se
 documentan en
-`docs/ARQUITECTURA-CORPUS-TEMATICO-Y-RECUPERACION.md`.
+`docs/es/arquitectura/ARQUITECTURA-CORPUS-TEMATICO-Y-RECUPERACION.md`.
 
 Las tarjetas biomédicas cumplen funciones distintas:
 
