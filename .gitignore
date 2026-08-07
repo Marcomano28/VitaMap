@@ -70,6 +70,16 @@ skills-lock.json
 textToAudio/
 videos/
 
+# notas operativas propias, no publicables
+local-notes/
+
+# Tooling editorial externo (agente con el que se preparan las tarjetas).
+# No forma parte de VitaMap ni de su despliegue: vive en su propio host y
+# no comparte backup ni ciclo de vida con la aplicación.
+corpus-preparation/hermes-skills/
+corpus-preparation/hermes-skill-bundles/
+corpus-preparation/PROMPT-HERMES-*.md
+
 # =====================================================================
 # Contenido del corpus RAG — fuera del repositorio público
 # ---------------------------------------------------------------------

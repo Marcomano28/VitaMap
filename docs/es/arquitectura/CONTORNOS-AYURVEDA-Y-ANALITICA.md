@@ -57,9 +57,10 @@ ahí se sigue:
   contorno biomédico honesto, dejar el límite cortante —no abrir facets, no
   sugerir equivalencia— es una afirmación epistémica correcta, no una carencia.
 
-Esto es lo que ya operacionaliza la skill de Hermes con sus tres salidas
-editoriales (`hub`, `relacion-interna`, `puente-editorial`) y la regla
-figura-fondo para facets. Este documento le da el fundamento y las fuentes.
+Esto es lo que ya operacionaliza la herramienta editorial de generación de
+tarjetas con sus tres salidas (`hub`, `relacion-interna`, `puente-editorial`) y
+la regla figura-fondo para facets. Este documento le da el fundamento y las
+fuentes.
 
 ### 1.1 Figura y fondo en el producto (por consulta)
 
@@ -309,5 +310,4 @@ recorridos · fugas biomédicas no solicitadas · tangencias sin límites explí
   Annotation and Querying Framework based on Semi-structured Ayurvedic Text.*
   arXiv:2202.00216, 2022. https://arxiv.org/abs/2202.00216
 - Interno: [ADR-013](DECISIONS.md), [ARQUITECTURA-CORPUS §3.6](ARQUITECTURA-CORPUS-TEMATICO-Y-RECUPERACION.md),
-  [PROMPT-HERMES-AYURVEDA-FUENTES-SKILL](../../../corpus-preparation/PROMPT-HERMES-AYURVEDA-FUENTES-SKILL.md),
   [DIRECCION-METODOLOGICA-EVIDENCIA-Y-GRAFO](DIRECCION-METODOLOGICA-EVIDENCIA-Y-GRAFO.md).
