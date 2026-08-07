@@ -89,7 +89,7 @@ En el VPS:
 ```bash
 cd /opt/vitamap-next && git pull origin main
 cd infra && docker compose --env-file .env up -d --build web
-curl -fsS https://vitamap.marcomano.org/api/health
+curl -fsS https://vitamap.example.com/api/health
 docker compose --env-file .env exec web sh -c \
   'node -e "console.log(require(\"next/package.json\").version)"'   # >= 15.5.20
 docker compose --env-file .env top web    # confirma UID node del proceso server.js

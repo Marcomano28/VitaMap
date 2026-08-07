@@ -480,7 +480,7 @@ preguntas que se van a probar. Cada documento debe:
 
 La implementación inicial está desarrollada y validada localmente en la rama
 de trabajo, donde expone `/admin/corpus`. No estará disponible en
-`vitamap.marcomano.org` hasta que los cambios se fusionen en `main` y se
+`vitamap.example.com` hasta que los cambios se fusionen en `main` y se
 reconstruya el despliegue del VPS. No pretende ser un gestor bibliográfico
 completo. Su función es hacer explícita y reproducible la selección que antes
 realizaba manualmente el administrador.

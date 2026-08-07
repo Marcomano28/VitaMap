@@ -1,5 +1,16 @@
 # Preparacion del corpus
 
+> **Qué se publica y qué no.** El repositorio público comparte el **método**
+> —prompts de investigación, skills, scripts, taxonomía y el manual de creación
+> de tarjetas— pero no el **contenido**. Las tarjetas del corpus permanecen en
+> el disco local, en las rutas que se describen aquí, y git no las sigue (ver
+> `.gitignore`). Los scripts y el flujo de trabajo funcionan igual.
+>
+> Se mantiene versionado el tema `approved-current-structure/vitamina-d/` como
+> ejemplo normativo: cubre los cinco tipos de tarjeta (interpretación,
+> alimentación, curiosidad, seguimiento temporal y fuente clásica), suficiente
+> para reproducir el formato sin publicar el corpus entero.
+
 Esta carpeta contiene material editorial previo a su carga desde `/admin/corpus`.
 
 No forma parte de `data/kb`, por lo que QMD no la indexa. Tampoco esta bajo

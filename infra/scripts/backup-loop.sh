@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # =====================================================================
 # Loop de backup diario con restic.
-# Snapshot cifrado a Backblaze B2 (u otro backend restic compatible) +
-# política de retención. Si una iteración falla, espera 1h y reintenta.
+# Snapshot cifrado a Hetzner Storage Box vía SFTP (u otro backend restic
+# compatible) + política de retención. Si una iteración falla, espera 1h y
+# reintenta.
 # =====================================================================
 set -uo pipefail
 

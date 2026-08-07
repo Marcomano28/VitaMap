@@ -161,7 +161,7 @@ contraseña distinta.
 Después de desplegar una versión que incluya la interfaz:
 
 ```text
-https://vitamap.marcomano.org/admin/corpus
+https://vitamap.example.com/admin/corpus
 ```
 
 La interfaz guarda borradores en `/data/kb-inbox`, publica únicamente contenido

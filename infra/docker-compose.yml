@@ -1,7 +1,7 @@
 # =====================================================================
 # VitaMap — Fase 1 (piloto 3 usuarios en VPS CCX13)
 # Cuatro servicios: caddy (TLS + reverse proxy), web (Next.js + QMD),
-# llm (llama.cpp server), backup (restic cron a Backblaze B2).
+# llm (llama.cpp server), backup (restic cron a Hetzner Storage Box).
 # =====================================================================
 
 name: vitamap

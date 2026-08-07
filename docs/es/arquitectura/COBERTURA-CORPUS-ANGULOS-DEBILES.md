@@ -386,7 +386,7 @@ docker compose --env-file .env --profile tools run --rm \
 ```
 
 Publicación de una tarjeta preparada (interfaz): abrir
-`https://vitamap.marcomano.org/admin/corpus` (sesión iniciada + correo en
+`https://vitamap.example.com/admin/corpus` (sesión iniciada + correo en
 `ADMIN_EMAILS`), cargar el `.md`, revisar frontmatter/derechos, guardar como
 borrador, aprobar/publicar y lanzar una consulta que deba recuperar esa tarjeta.
 

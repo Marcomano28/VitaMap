@@ -1,5 +1,8 @@
 # VitaMap
 
+*[English version](README.en.md) — visión general del proyecto, arquitectura y
+detalle del modelo de seguridad de datos.*
+
 Plataforma de inteligencia personal sobre la propia salud. Herramienta
 educativa, no dispositivo médico. Self-hosted, GDPR, EU.
 

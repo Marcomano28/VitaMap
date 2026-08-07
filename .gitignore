@@ -69,3 +69,19 @@ skills-lock.json
 # material local, no del producto (guiones de audio y proyectos de video)
 textToAudio/
 videos/
+
+# =====================================================================
+# Contenido del corpus RAG — fuera del repositorio público
+# ---------------------------------------------------------------------
+# El repositorio publica el MÉTODO (prompts, skills, scripts, taxonomía y
+# el manual de creación de tarjetas), no el CONTENIDO. Las tarjetas viven
+# en el disco local, en su ruta de siempre, para que el flujo de trabajo y
+# los scripts sigan funcionando sin cambios; git simplemente no las sigue.
+#
+# Se conserva versionado el tema `vitamina-d/` como ejemplo normativo:
+# cubre los cinco tipos de tarjeta (interpretación, alimentación,
+# curiosidad, seguimiento temporal y fuente clásica).
+corpus-preparation/approved-current-structure/*
+!corpus-preparation/approved-current-structure/vitamina-d/
+corpus-preparation/source-material/
+corpus-preparation/previously-uploaded/

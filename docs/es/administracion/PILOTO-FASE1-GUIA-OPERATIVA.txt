@@ -78,7 +78,7 @@ ESTADO CONOCIDO A 2026-06-23
     mediante Docker Compose arrancó correctamente; web y LLM informaron
     estado healthy.
   - HTTPS y endpoint público comprobados:
-      https://vitamap.marcomano.org/api/health
+      https://vitamap.example.com/api/health
     respondió status=ok, service=vitamap-web. La respuesta actual incluye
     además version, phase, audit_chain y timestamp.
   - Registro restringido por invitación implementado y probado
@@ -212,7 +212,7 @@ PRÓXIMO PASO TÉCNICO INMEDIATO
     7. cd infra
     8. docker compose --env-file .env up -d --build
     9. docker compose --env-file .env ps
-   10. curl -fsS https://vitamap.marcomano.org/api/health
+   10. curl -fsS https://vitamap.example.com/api/health
    11. Probar login, /settings/billing y /admin/corpus con la cuenta
        administradora.
 
@@ -275,7 +275,7 @@ Pasos de referencia en el panel de Hetzner:
   3. Asignar IP flotante (opcional pero recomendado: la IP no cambia si
      reinicias o migras).
   4. Configurar DNS en Cloudflare: A record apuntando al IP del VPS.
-     Ejemplo actual: vitamap.marcomano.org → <IP del VPS>
+     Ejemplo actual: vitamap.example.com → <IP del VPS>
 
 Acceder al servidor:
   ssh root@<IP del VPS>
@@ -315,9 +315,9 @@ Crear el fichero de variables de entorno que usa Docker Compose:
 
 Variables obligatorias que debes rellenar en infra/.env:
 
-  PUBLIC_DOMAIN=vitamap.marcomano.org
-  PUBLIC_URL=https://vitamap.marcomano.org
-  NEXT_PUBLIC_APP_URL=https://vitamap.marcomano.org
+  PUBLIC_DOMAIN=vitamap.example.com
+  PUBLIC_URL=https://vitamap.example.com
+  NEXT_PUBLIC_APP_URL=https://vitamap.example.com
   CADDY_EMAIL=tu@correo.de
 
   # Genera con: openssl rand -hex 32
@@ -325,7 +325,7 @@ Variables obligatorias que debes rellenar en infra/.env:
 
   # Genera con: openssl rand -hex 32
   BETTER_AUTH_SECRET=<mínimo 32 caracteres aleatorios>
-  BETTER_AUTH_URL=https://vitamap.marcomano.org
+  BETTER_AUTH_URL=https://vitamap.example.com
 
   # Administración del corpus
   ADMIN_EMAILS=<correo exacto de la cuenta BetterAuth del administrador>
@@ -349,8 +349,8 @@ Variables obligatorias que debes rellenar en infra/.env:
 
   # Email transaccional (Brevo, UE)
   BREVO_API_KEY=xkeysib-...
-  EMAIL_FROM="VitaMap <no-reply@vitamap.marcomano.org>"
-  EMAIL_REPLY_TO=soporte@marcomano.org
+  EMAIL_FROM="VitaMap <no-reply@vitamap.example.com>"
+  EMAIL_REPLY_TO=soporte@example.com
 
   DATA_ROOT=/data
   KB_INDEX_PATH=/data/kb-index.sqlite
@@ -379,7 +379,7 @@ Cómo generar MASTER_KEY y BETTER_AUTH_SECRET de forma segura:
 Cómo obtener STRIPE_WEBHOOK_SECRET:
   1. En dashboard.stripe.com → Developers → Webhooks → Add endpoint.
   2. URL del endpoint:
-       https://vitamap.marcomano.org/api/billing/webhook
+       https://vitamap.example.com/api/billing/webhook
   3. Seleccionar estos seis eventos:
        · checkout.session.completed
        · customer.subscription.created
@@ -461,7 +461,7 @@ Verificar que todo funciona:
   docker compose --env-file .env logs llm --tail=20   # solo modo local-llm
 
 El endpoint de salud responde en:
-  curl https://vitamap.marcomano.org/api/health
+  curl https://vitamap.example.com/api/health
 
 Respuesta esperada: status=ok, service=vitamap-web, version, phase,
 audit_chain y ts. Si audit_chain aparece como broken o error, el servicio
@@ -529,7 +529,7 @@ IMPORTANTE: el código solo se muestra una vez. Copiarlo en un gestor
 de contraseñas antes de cerrar la terminal.
 
 Paso 2 — Abrir el navegador y registrarse como cualquier voluntario:
-  Ir a https://vitamap.marcomano.org/register
+  Ir a https://vitamap.example.com/register
   Rellenar: código, email (admin@tudominio.de), contraseña, checkboxes.
   Pulsar "Validar invitación y crear cuenta".
 
@@ -545,7 +545,7 @@ mismo correo de BetterAuth debe figurar en ADMIN_EMAILS dentro de
 /opt/vitamap-next/infra/.env. Si el VPS ya tiene desplegada una versión de
 main con /admin/corpus, entonces podrá abrir:
 
-  https://vitamap.marcomano.org/admin/corpus
+  https://vitamap.example.com/admin/corpus
 
 Un usuario autenticado que no figure en ADMIN_EMAILS recibe 404. Una persona
 no autenticada se redirige a login. Las operaciones de invitaciones (crear,
@@ -635,7 +635,7 @@ D.1  LO QUE RECIBES ANTES DE EMPEZAR
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 El administrador te enviará, por canal privado:
-  - La URL de la plataforma: https://vitamap.marcomano.org
+  - La URL de la plataforma: https://vitamap.example.com
   - Tu código de invitación personal (una cadena de letras y números)
   - La dirección de correo a la que está vinculado el código
   - La fecha en que caduca el código (normalmente 7 días)
@@ -648,7 +648,7 @@ D.2  CREAR TU CUENTA
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   1. Abre el navegador y ve a:
-       https://vitamap.marcomano.org/register
+       https://vitamap.example.com/register
 
   2. Lee el texto de consentimiento que aparece en pantalla.
      Es el documento completo que describe qué datos se procesan,
@@ -907,12 +907,12 @@ Añadir solo las variables que falten y confirmar especialmente:
 Compose reconstruye las imágenes necesarias y conserva los volúmenes
 persistentes. Confirmar después:
   docker compose --env-file .env ps
-  curl -fsS https://vitamap.marcomano.org/api/health
+  curl -fsS https://vitamap.example.com/api/health
 
 Comprobaciones posteriores mínimas:
   1. Entrar en /login con la cuenta administradora.
   2. Abrir:
-       https://vitamap.marcomano.org/admin/corpus
+       https://vitamap.example.com/admin/corpus
   3. Confirmar que una cuenta no incluida en ADMIN_EMAILS recibe 404.
   4. Probar envío de email de verificación o recuperación en un usuario
      de prueba, sin exponer datos reales.
@@ -985,7 +985,7 @@ F.5  MONITORIZACIÓN BÁSICA
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Verificar que la plataforma responde:
-  curl https://vitamap.marcomano.org/api/health
+  curl https://vitamap.example.com/api/health
 
 Estado de los contenedores:
   docker compose --env-file .env ps
@@ -1115,7 +1115,7 @@ CORPUS Y KB
 ─────────────────────────────────────────────────────────────────────
 
 Abrir interfaz administrativa:
-  https://vitamap.marcomano.org/admin/corpus
+  https://vitamap.example.com/admin/corpus
 
 Requisitos:
   - sesión iniciada;
@@ -1123,8 +1123,11 @@ Requisitos:
   - versión desplegada con /admin/corpus.
 
 Recordatorio:
-  corpus-preparation/approved-current-structure/ vive en el repo y sirve para
-  preparar tarjetas. QMD no lo indexa. La KB activa vive en /data/kb del VPS.
+  corpus-preparation/approved-current-structure/ vive en tu disco local (git no
+  la sigue; ver .gitignore) y sirve para preparar tarjetas. QMD no la indexa. La
+  carga es una subida desde el navegador en /admin/corpus, así que no hace falta
+  que el contenido esté en el repositorio ni en el VPS. La KB activa vive en
+  /data/kb del VPS.
 
 Publicar una tarjeta preparada:
   1. Abrir /admin/corpus.
@@ -1184,7 +1187,7 @@ SALUD DEL SISTEMA
 ─────────────────────────────────────────────────────────────────────
 
 Verificar que la API responde:
-  curl https://vitamap.marcomano.org/api/health
+  curl https://vitamap.example.com/api/health
 
 Ver uso de disco:
   df -h /
