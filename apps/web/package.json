@@ -44,6 +44,7 @@
     "taxonomy:check": "node --import tsx scripts/generate-marker-vocabulary.ts --check",
     "kb:check": "node --import tsx scripts/check-kb.mts",
     "corpus:locale-audit": "node --import tsx scripts/audit-corpus-locales.mts",
+    "seed-demo": "node scripts/seed-demo-subject.mjs",
     "memory:reindex": "node scripts/reindex-users.mjs"
   },
   "dependencies": {
