@@ -32,6 +32,7 @@ import { responseTokenBudget } from "@/lib/conversation-policy";
 import { resolveRetrievalQuery } from "@/lib/query-rewrite";
 import { detectCrisis, crisisResourcesText } from "@/lib/crisis";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { consumeLlmQuota, refundLlmQuota } from "@/lib/llm-quota";
 import { getLabSeriesSet } from "@/lib/memory-reader";
 import { buildLabSeriesAnswer } from "@/lib/lab-chat-fallback";
 import { displayMarker, selectInlineLabSeries } from "@/lib/health-map";
@@ -100,6 +101,29 @@ export async function POST(req: Request) {
     );
   }
 
+  // -- Cuota diaria de inferencia ------------------------------------------
+  // Distinta del limitador de ráfaga de arriba: acota el GASTO diario, no la
+  // frecuencia. El tope de suscriptor es holgado y no debe notarse en uso
+  // normal; existe como red ante una sesión robada o un cliente en bucle. El
+  // tope global protege la factura de la instancia entera (ADR-019).
+  const quota = consumeLlmQuota(userId, "user");
+  if (!quota.allowed) {
+    const payload =
+      quota.reason === "kill_switch"
+        ? { error: "llm_unavailable" }
+        : {
+            error:
+              quota.reason === "global_daily"
+                ? "daily_capacity_reached"
+                : "daily_quota_reached",
+            resetsInSec: quota.resetsInSec,
+          };
+    return NextResponse.json(payload, {
+      status: quota.reason === "kill_switch" ? 503 : 429,
+      headers: { "Retry-After": String(quota.resetsInSec) },
+    });
+  }
+
   // -- Validación ---------------------------------------------------------
   let body: z.infer<typeof Body>;
   try {
@@ -107,6 +131,8 @@ export async function POST(req: Request) {
   } catch (err) {
     // No devolver el error crudo: puede contener internals. Al log sí.
     console.error("[chat] invalid_body", err);
+    // La consulta nunca llegó al modelo: se devuelve la unidad de cuota.
+    refundLlmQuota(userId, "user");
     return NextResponse.json({ error: "invalid_body" }, { status: 400 });
   }
   const language = languageContext(body.locale);

@@ -3,6 +3,122 @@
 Documento vivo de decisiones técnicas con su contexto. Una entrada por
 decisión; nunca se borran, solo se marcan como *superseded* si cambian.
 
+**Siguiente número libre: ADR-021.** (El orden de las entradas no es
+monotónico; comprobar aquí antes de asignar número.)
+
+---
+
+## ADR-020 · Modo demostración por configuración, no por bifurcación del proyecto
+**Estado:** aceptada · 2026-08-13
+
+**Contexto.** El piloto con datos reales queda en pausa: cerrar el frente legal
+(DSFA, análisis MDR, registro Art. 30, contratos Art. 28, firmas profesionales)
+no es abordable por una sola persona, y el corpus necesita colaboradores. Al
+mismo tiempo interesa que la instancia sea visitable como muestra de
+arquitectura y portafolio.
+
+Son dos usos con requisitos opuestos —uno custodia datos de salud reales, el
+otro solo tiene que enseñarse— y la tentación es separarlos: un repositorio
+privado y otro público, o una rama paralela permanente.
+
+**Decisión.** Ni lo uno ni lo otro: **un repositorio, una rama, y el modo como
+variable de entorno**, siguiendo el patrón que ya establece `lib/flags.ts`.
+
+`DEMO_MODE=true` convierte la instancia en muestra: consulta anónima sobre
+datos sintéticos de solo lectura, con las cuotas de ADR-019; sin subida, sin
+registro y sin cobro. Apagado (por defecto), la aplicación es el piloto de
+siempre, con sus puertas intactas.
+
+**Por qué no dos repositorios.** Cada corrección —una dependencia parcheada, un
+fallo de seguridad— habría que aplicarla dos veces. La divergencia es cuestión
+de meses, y el que diverge peor es el público: justo el que se enseña. Además
+duplica el trabajo de higiene del repositorio.
+
+**Por qué no una rama paralela.** Una rama que nunca se fusiona es un segundo
+repositorio con peor ergonomía. La deuda de fusión crece hasta que fusionar da
+miedo y se deja de hacer.
+
+**Consecuencia deseable.** Que el mismo código sirva para ambos usos *es* la
+demostración de arquitectura: quien lea `flags.ts`, el choke point de ADR-018 y
+las puertas del checklist ve que la separación entre lo que se enseña y lo que
+se custodia está resuelta en el diseño. Dos repositorios divergentes no cuentan
+esa historia.
+
+**Condición no negociable.** El modo demostración debe declarar de forma visible
+que los datos son ficticios y que es una muestra, no un servicio. Es una
+herramienta de salud: la claridad sobre qué es cada cosa forma parte del
+producto.
+
+**Consecuencias.** El checklist de go-live queda marcado como pausado con fecha
+y motivo, sin rebajar ninguna casilla. Reanudar es apagar la variable y seguir
+por la Puerta 0. El riesgo a vigilar es que el modo demostración acumule código
+propio hasta convertirse de hecho en la bifurcación que se quería evitar:
+mantenerlo como un condicional fino sobre las mismas rutas, no como una
+aplicación paralela.
+
+---
+
+## ADR-019 · Cuota diaria de inferencia en tres capas
+**Estado:** aceptada — capa de suscriptor y tope global en producción; capa
+anónima implementada a la espera de la demo pública · 2026-08-13
+
+**Contexto.** Se plantea abrir una demostración pública sin suscripción, para
+que la instancia sirva de portafolio: consultar el asistente sobre un conjunto
+de datos sintéticos de solo lectura, sin subir nada. Eso expone el endpoint más
+caro del sistema a internet.
+
+Dos riesgos concretos. El de coste: la inferencia se paga por token y cada
+consulta dispara **varias** pasadas (generación + guardrail y a veces
+reescritura, ADR-006/ADR-010), así que el gasto real por pregunta es un
+múltiplo del aparente. Y el de abuso: un endpoint LLM abierto acaba
+localizándose y usándose como proxy gratuito de terceros.
+
+`lib/rate-limit.ts` no cubre esto: es un limitador de ráfaga en memoria (N por
+minuto) cuyo objetivo declarado es que una sesión no sature la CPU. Acota la
+velocidad, no el gasto acumulado, y se reinicia con el proceso.
+
+**Decisión.** Cuota diaria persistente en tres capas, en `lib/llm-quota.ts`:
+
+| Capa | Actor | Propósito | Defecto |
+|---|---|---|---|
+| `anon` | Visitante sin cuenta (clave: IP) | Que la instancia no sea un LLM gratuito ajeno | 12/día |
+| `user` | Persona suscrita (clave: userId) | Red ante sesión robada o cliente en bucle | 100/día |
+| global | Toda la instancia | Techo conocido de la factura | 300/día |
+
+Configurables con `LLM_DAILY_ANON_MAX`, `LLM_DAILY_USER_MAX` y
+`LLM_DAILY_GLOBAL_MAX`. `LLM_DISABLED=true` es un interruptor de emergencia que
+corta toda inferencia sin tocar sesión, exportación, borrado ni billing.
+
+Cuatro decisiones de diseño que conviene no revertir sin motivo:
+
+1. **Se cuenta una unidad por consulta del usuario**, no por llamada al modelo.
+   Contar llamadas haría que el número configurado no significase nada
+   intuitivo. La contrapartida es que el multiplicador de pasadas hay que
+   tenerlo presente al dimensionar el tope global.
+2. **Persistente en `auth.sqlite`**, no en memoria. Con contadores en memoria,
+   reiniciar el contenedor reiniciaría el tope global — justo la garantía que
+   no debe poder saltarse.
+3. **Se comprueba global antes que actor.** Con la instancia al tope no se
+   gasta cuota individual de nadie, y el motivo devuelto distingue "no hay
+   capacidad" de "has llegado a tu límite".
+4. **Un rechazo no consume cuota**, y existe `refundLlmQuota()` para consultas
+   que se abortan antes de llegar al modelo.
+
+El límite de suscriptor es holgado a propósito: **en uso normal no debe
+notarse**. Si alguien lo alcanza legítimamente, es señal de que hay que subirlo,
+no de que esté racionando bien.
+
+**Consecuencias.** El gasto de inferencia tiene un máximo conocido de antemano,
+condición previa para abrir cualquier acceso sin suscripción. La tabla
+`llm_quota_usage` crece con el número de actores distintos por día;
+`pruneQuotaUsage()` la poda. Suite: `npm run test:llm-quota` (27
+comprobaciones).
+
+**Pendiente.** La capa `anon` no tiene todavía consumidor: la ruta de demo
+pública no existe. Antes de abrirla hacen falta, además, una aceptación ligera
+previa al primer mensaje (carácter educativo + las consultas viajan a un
+proveedor UE, ADR-014) y la garantía en código de que esa vía no persiste nada.
+
 ---
 
 ## ADR-018 · Supporters con cubículos (Variante A) sobre choke point de autorización genérico

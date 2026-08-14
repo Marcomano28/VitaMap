@@ -59,6 +59,15 @@ services:
       # Diagnóstico de retrieval: vuelca query y títulos de chunks al log.
       # Contiene datos de usuario — solo "true" en sesiones de depuración.
       RETRIEVAL_DEBUG: ${RETRIEVAL_DEBUG:-false}
+      # Modo demostración pública (ADR-020): muestra con datos sintéticos de
+      # solo lectura, sin subida ni registro. Apagado por defecto.
+      DEMO_MODE: ${DEMO_MODE:-false}
+      # Cuota diaria de inferencia (ADR-019). Los defaults del código son los
+      # mismos, así que omitirlas en .env no deja el sistema sin techo.
+      LLM_DAILY_GLOBAL_MAX: ${LLM_DAILY_GLOBAL_MAX:-300}
+      LLM_DAILY_USER_MAX: ${LLM_DAILY_USER_MAX:-100}
+      LLM_DAILY_ANON_MAX: ${LLM_DAILY_ANON_MAX:-12}
+      LLM_DISABLED: ${LLM_DISABLED:-false}
       # Email transaccional (verificación + reset de contraseña) vía Brevo.
       BREVO_API_KEY: ${BREVO_API_KEY:?BREVO_API_KEY required}
       EMAIL_FROM: ${EMAIL_FROM:?EMAIL_FROM required}

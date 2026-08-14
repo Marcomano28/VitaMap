@@ -1,6 +1,28 @@
 # Checklist de autorización — piloto de 3 usuarios con datos reales
 
-Estado: documento vivo de seguimiento · creado 2026-07-02
+> ## ⏸ PILOTO EN PAUSA desde 2026-08-13
+>
+> **Por qué.** El piloto con datos reales exige, además del cierre técnico, un
+> paquete legal completo (frente C: catorce casillas, firmas profesionales,
+> DSFA, análisis MDR) que una sola persona no puede cerrar con seriedad. Se
+> pausa hasta contar con colaboradores que ayuden a completar el corpus y a
+> cerrar ese frente.
+>
+> **Qué NO significa.** Ninguna casilla se rebaja ni se da por buena. Las seis
+> puertas siguen exactamente igual de cerradas, y ningún dato de salud real
+> entra hasta cruzarlas. Pausar no es relajar.
+>
+> **Qué se hace mientras tanto.** La instancia se despliega en modo
+> demostración (`DEMO_MODE=true`, ver `lib/flags.ts` y ADR-020): datos
+> sintéticos de solo lectura, sin subida, sin registro y sin cobro. Ese modo no
+> toca ninguna de estas casillas porque no procesa datos de salud reales de
+> nadie; su cometido es enseñar la arquitectura, no prestar un servicio.
+>
+> **Cómo se reanuda.** Se apaga `DEMO_MODE`, se retoma este checklist por donde
+> está y se continúa con la Puerta 0. No hace falta deshacer nada: el modo
+> demostración es configuración, no una variante del código.
+
+Estado: documento vivo de seguimiento · creado 2026-07-02 · **pausado 2026-08-13**
 Deriva de: `AUDITORIA-2026-07-02.md` (anexo go-live), `GUIA-LEGAL-PILOTO-ALEMANIA.md`
 (§8-P0, §9) y `PILOTO-FASE1-GUIA-OPERATIVA.txt` (§B).
 
@@ -32,7 +54,7 @@ Prioridad: 🔴 bloqueante pre-dato-real · 🟡 antes de voluntarios 2/3 · �
 | [ ] | 🟡 | 6 | CI mínima (GitHub Actions) | Workflow install→typecheck→lint→tests→`npm audit` en cada push | |
 | [ ] | 🟢 | 8 | Envelope encryption (rotación de clave) | Clave por usuario cifrada con MASTER_KEY; rotación probada | |
 | [ ] | 🟢 | 7 | Migrar tests a vitest/`node:test` | Runner unificado con assertions y cobertura | |
-| [ ] | 🟢 | 10 | Higiene del repo (media/docs fuera) | `textToAudio/`, `videos/`, `.DS_Store` fuera del árbol; `docs/` separado | |
+| [x] | 🟢 | 10 | Higiene del repo (media/docs fuera) | `textToAudio/`, `videos/`, `.DS_Store` fuera del árbol; `docs/` separado | ✅ 08-13: `textToAudio/` sin versionar; corpus de tarjetas y tooling editorial externo fuera del repo público, con el historial reescrito (`git filter-repo`) |
 | [ ] | 🟢 | 12–15 | Majors, CSP nonce, LICENSE, logging pino | Anotados en `DECISIONS.md`; logger estructurado con requestId | |
 
 ---

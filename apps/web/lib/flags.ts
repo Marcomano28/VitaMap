@@ -28,3 +28,21 @@ export function assessmentsEnabled(): boolean {
 export function supporterAccessEnabled(): boolean {
   return isOn(process.env.SUPPORTER_ACCESS_ENABLED);
 }
+
+/**
+ * Modo demostración pública (ADR-020).
+ *
+ * Encendido, la instancia deja de comportarse como servicio y pasa a ser una
+ * muestra de arquitectura: un visitante sin cuenta puede consultar al asistente
+ * sobre un conjunto de datos **sintéticos y de solo lectura**, con las cuotas
+ * de ADR-019. No se puede subir nada, no se registra nadie y no se cobra.
+ *
+ * No relaja ninguna garantía: el piloto con datos reales sigue tras las mismas
+ * puertas del checklist de go-live, que este modo no toca porque no procesa
+ * datos de salud de ninguna persona real.
+ *
+ * Apagado (por defecto) la aplicación funciona como el piloto de siempre.
+ */
+export function demoModeEnabled(): boolean {
+  return isOn(process.env.DEMO_MODE);
+}

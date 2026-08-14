@@ -155,7 +155,9 @@ rechtliche und nicht nur technische Folgen hat.
 
 ---
 
-## 4. Inferenzmodus: lokal oder extern
+## 4. Betriebsmodi und Kostengrenzen
+
+### 4.1 Inferenz: lokal oder extern
 
 Zwei Modi, gesteuert über zwei Variablen in `infra/.env`:
 
@@ -171,6 +173,55 @@ einer Änderung `apps/web/lib/consent.ts` und den Rechtsleitfaden prüfen.
 
 Auf einem CCX13 (2 dedizierte vCPU, EPYC) liegt die lokale Latenz bei 15–25 s
 pro Antwort.
+
+### 4.2 Tägliches Inferenzkontingent (ADR-019)
+
+Begrenzt die täglichen **Kosten**, nicht die Frequenz (dafür ist der
+Burst-Limiter im Code zuständig). Gezählt wird **eine Einheit pro Nutzerfrage**;
+da jede Frage mehrere Modelldurchläufe auslöst (Generierung + Guardrail), ist
+die Zahl der tatsächlichen Aufrufe ein Vielfaches davon. Das bei der
+Dimensionierung berücksichtigen.
+
+| Variable | Standard | Wofür |
+|---|---|---|
+| `LLM_DAILY_GLOBAL_MAX` | `300` | Obergrenze der gesamten Instanz. Die Garantie, dass die Rechnung nicht ausufert |
+| `LLM_DAILY_USER_MAX` | `100` | Abonnent. Großzügig: im Normalbetrieb nicht spürbar. Absicherung gegen gestohlene Sitzung oder Client-Schleife |
+| `LLM_DAILY_ANON_MAX` | `12` | Besucher im Demo-Modus, pro IP |
+| `LLM_DISABLED` | `false` | **Notschalter.** Mit `true` wird jede Inferenz unterbunden |
+
+Die Zähler liegen in `auth.sqlite` und **überstehen Neustarts**: ein Neustart des
+Containers setzt die Obergrenze nicht zurück. Zurückgesetzt wird um
+Mitternacht UTC.
+
+Um laufenden Missbrauch zu stoppen:
+
+```bash
+cd /opt/vitamap-next/infra
+sed -i 's/^LLM_DISABLED=.*/LLM_DISABLED=true/' .env
+docker compose --env-file .env up -d web
+```
+
+Sitzung, Einstellungen, Export, Löschung und Billing funktionieren weiter; nur
+die Inferenz wird verweigert.
+
+Erreicht jemand das Abonnenten-Limit, ist das ein Hinweis, es anzuheben — nicht,
+dass es gut funktioniert: dieses Limit soll im Normalbetrieb nie spürbar sein.
+
+### 4.3 Demo-Modus (ADR-020)
+
+`DEMO_MODE=true` macht die Instanz zu einer öffentlichen Demonstration: anonyme
+Abfrage über **synthetische, nur lesbare** Daten, ohne Upload, ohne Registrierung
+und ohne Bezahlung. Ausgeschaltet (Standard) verhält sich die Anwendung wie das
+bisherige Pilotsystem.
+
+Es lockert keine Zusicherung: die Tore der Go-live-Checkliste bleiben
+unverändert geschlossen, denn dieser Modus verarbeitet keine Gesundheitsdaten
+realer Personen.
+
+**Beim Einschalten prüfen**, dass die Oberfläche deutlich ausweist, dass die
+Daten fiktiv sind und es sich um eine Demonstration handelt, nicht um einen
+Dienst. Es ist ein Gesundheitswerkzeug: diese Klarheit gehört zum Produkt und
+ist keine Zierde.
 
 ---
 

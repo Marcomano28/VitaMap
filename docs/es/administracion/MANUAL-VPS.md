@@ -155,7 +155,9 @@ implicaciones legales, no solo técnicas.
 
 ---
 
-## 4. Modo de inferencia: local o externo
+## 4. Modos de operación y límites de gasto
+
+### 4.1 Inferencia: local o externa
 
 Dos modos, controlados por dos variables en `infra/.env`:
 
@@ -170,6 +172,50 @@ declare. **Cambiar de modo cambia lo que se ha prometido a los usuarios**: si lo
 tocas, revisa `apps/web/lib/consent.ts` y la guía legal antes.
 
 En una VPS CCX13 (2 vCPU EPYC) la latencia local es de 15–25 s por respuesta.
+
+### 4.2 Cuota diaria de inferencia (ADR-019)
+
+Acota el **gasto** diario, no la frecuencia (de eso se ocupa el limitador de
+ráfaga del código). Se cuenta **una unidad por pregunta del usuario**; como cada
+pregunta dispara varias pasadas de modelo (generación + guardrail), el número de
+llamadas reales es un múltiplo. Tenlo presente al dimensionar el tope.
+
+| Variable | Defecto | Para qué |
+|---|---|---|
+| `LLM_DAILY_GLOBAL_MAX` | `300` | Techo de toda la instancia. La garantía de que la factura no se dispara |
+| `LLM_DAILY_USER_MAX` | `100` | Suscriptor. Holgado: en uso normal no debe notarse. Red ante sesión robada o cliente en bucle |
+| `LLM_DAILY_ANON_MAX` | `12` | Visitante del modo demostración, por IP |
+| `LLM_DISABLED` | `false` | **Interruptor de emergencia.** Con `true` corta toda inferencia |
+
+Los contadores viven en `auth.sqlite` y **sobreviven a los reinicios**: reiniciar
+el contenedor no reinicia el tope. Se reinician a medianoche UTC.
+
+Si necesitas cortar un abuso en curso:
+
+```bash
+cd /opt/vitamap-next/infra
+sed -i 's/^LLM_DISABLED=.*/LLM_DISABLED=true/' .env
+docker compose --env-file .env up -d web
+```
+
+Sesión, ajustes, exportación, borrado y billing siguen funcionando; solo se
+deniega la inferencia.
+
+Que alguien alcance el límite de suscriptor es señal de que hay que subirlo, no
+de que esté funcionando bien: ese límite no debería notarse nunca en uso normal.
+
+### 4.3 Modo demostración (ADR-020)
+
+`DEMO_MODE=true` convierte la instancia en muestra pública: consulta anónima
+sobre datos sintéticos de solo lectura, sin subida, sin registro y sin cobro.
+Apagado (por defecto), la aplicación funciona como el piloto de siempre.
+
+No relaja ninguna garantía: las puertas del checklist de go-live siguen igual de
+cerradas, porque este modo no procesa datos de salud de ninguna persona real.
+
+**Al encenderlo, comprueba** que la interfaz declara de forma visible que los
+datos son ficticios y que es una muestra, no un servicio. Es una herramienta de
+salud: esa claridad forma parte del producto, no es un adorno.
 
 ---
 

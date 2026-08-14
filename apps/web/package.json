@@ -20,6 +20,7 @@
     "test:lab-chat-fallback": "node --import tsx scripts/test-lab-chat-fallback.ts",
     "test:health-map": "node --import tsx scripts/test-health-map.ts",
     "test:memory-path-safety": "node --import tsx scripts/test-memory-path-safety.ts",
+    "test:llm-quota": "node --import tsx scripts/test-llm-quota.ts",
     "test:data-access": "node --import tsx scripts/test-data-access.ts",
     "check:data-access": "node --import tsx scripts/check-data-access-invariant.ts",
     "test:conversation-policy": "node --import tsx scripts/test-conversation-policy.ts",
