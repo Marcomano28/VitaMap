@@ -15,7 +15,10 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ChatPage() {
   const { anonymous } = await requireViewSubject("read");
   const locale = await getLocale();
-  const t = copy[locale].chat;
+  const base = copy[locale].chat;
+  // La cabecera de la página describe lo mismo que el subtítulo del asistente:
+  // en demostración debe decir "la analítica ficticia", no "tu memoria".
+  const t = anonymous ? { ...base, body: base.bodyDemo } : base;
 
   // Sin cartel de datos ficticios en esta página: la aceptación previa que se
   // muestra justo debajo ya lo dice, y con más detalle. Repetirlo sería ruido.
@@ -29,7 +32,7 @@ export default async function ChatPage() {
       </header>
       {anonymous ? (
         <DemoConsentGate locale={locale}>
-          <ChatUI locale={locale} demoConsent />
+          <ChatUI locale={locale} demoConsent demo />
         </DemoConsentGate>
       ) : (
         <ChatUI locale={locale} />

@@ -102,6 +102,13 @@ export const copy = {
         "Asistente reflexivo. Lee tu memoria personal y la base de evidencia. Cada afirmación va con su fuente.",
       empty:
         "Escribe una pregunta sobre tu propia salud. El asistente leerá fragmentos relevantes de tu memoria y de la base de evidencia, y responderá citando cada fuente. Nunca diagnostica.",
+      // Variantes del modo demostración (ADR-020): los datos no son de quien
+      // pregunta, sino de una persona ficticia. Decir "tu memoria" ahí sería
+      // sencillamente falso.
+      bodyDemo:
+        "Asistente reflexivo. Lee la analítica ficticia de la demostración y la base de evidencia. Cada afirmación va con su fuente.",
+      emptyDemo:
+        "Pregunta sobre los valores de la analítica ficticia — por ejemplo, qué significa tener el LDL alto o la vitamina D baja. El asistente leerá fragmentos de esos datos y de la base de evidencia, y responderá citando cada fuente. Nunca diagnostica.",
       loading: "Consultando memoria y preparando una respuesta...",
       placeholder:
         "Pregunta lo que quieras explorar. Enter envía, Shift+Enter salto de línea.",
@@ -289,6 +296,10 @@ export const copy = {
         "Reflektierender Assistent. Er liest deine persönliche Erinnerung und die Evidenzbasis. Jede Aussage wird mit Quelle angezeigt.",
       empty:
         "Stelle eine Frage zu deiner eigenen Gesundheit. Der Assistent liest relevante Ausschnitte aus deiner Erinnerung und der Evidenzbasis und antwortet mit Quellen. Er stellt keine Diagnosen.",
+      bodyDemo:
+        "Reflektierender Assistent. Er liest die fiktiven Laborwerte der Demonstration und die Evidenzbasis. Jede Aussage wird mit Quelle angezeigt.",
+      emptyDemo:
+        "Fragen Sie nach den Werten der fiktiven Laboranalyse — etwa, was ein erhöhtes LDL oder ein niedriger Vitamin-D-Wert bedeutet. Der Assistent liest Ausschnitte aus diesen Daten und der Evidenzbasis und antwortet mit Quellen. Er stellt keine Diagnosen.",
       loading: "Durchsucht den Speicher und bereitet eine Antwort vor...",
       placeholder:
         "Frage, was du erkunden möchtest. Enter sendet, Shift+Enter fügt einen Zeilenumbruch ein.",

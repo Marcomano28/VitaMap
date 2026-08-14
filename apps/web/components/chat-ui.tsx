@@ -75,8 +75,15 @@ const HISTORY_FOR_LLM = 10; // últimos N mensajes que enviamos al LLM
 export function ChatUI({
   locale = DEFAULT_LOCALE,
   demoConsent = false,
+  demo = false,
 }: {
   locale?: Locale;
+  /**
+   * Modo demostración: los datos no son de quien pregunta, sino de una persona
+   * ficticia. Cambia los textos que dicen "tu memoria" o "tu propia salud",
+   * que ahí serían falsos.
+   */
+  demo?: boolean;
   /**
    * Solo lo pone la demostración anónima, y solo después de que el visitante
    * haya aceptado el aviso (ver components/demo-consent.tsx). La API lo exige
@@ -85,7 +92,10 @@ export function ChatUI({
    */
   demoConsent?: boolean;
 }) {
-  const t = copy[locale].chat;
+  const base = copy[locale].chat;
+  const t = demo
+    ? { ...base, body: base.bodyDemo, empty: base.emptyDemo }
+    : base;
   // El catálogo piloto está redactado en español. No se traduce con el LLM.
   const curiosityEnabled = locale === "es";
   const [messages, setMessages] = useState<Message[]>([]);
