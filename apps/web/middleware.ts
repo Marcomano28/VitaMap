@@ -31,6 +31,29 @@ const PROTECTED_PREFIXES = [
   "/admin",
 ];
 
+/**
+ * Rutas que el visitante sin cuenta puede ver con `DEMO_MODE=true` (ADR-020).
+ *
+ * Duplica a propósito la lista de `DEMO_VISIBLE_PREFIXES` en
+ * `lib/data-access-guards.ts`: este middleware corre en Edge runtime y no puede
+ * importar de ahí sin arrastrar dependencias nativas que no funcionan en Edge.
+ * **Si cambias una, cambia la otra.** La comprobación fuerte vive en las
+ * páginas, mediante `requireViewSubject`; esto solo evita la redirección.
+ *
+ * `/admin` queda fuera de forma deliberada: la superficie administrativa se
+ * oculta, no se desactiva.
+ */
+const DEMO_VISIBLE_PREFIXES = ["/memory", "/chat", "/upload"];
+
+/**
+ * Se lee `process.env` directamente porque en Edge no está disponible
+ * `lib/flags.ts` (arrastra módulos de Node). Mismo criterio que allí: solo el
+ * valor exacto "true" enciende el modo.
+ */
+function demoMode(): boolean {
+  return process.env.DEMO_MODE === "true";
+}
+
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
@@ -38,6 +61,18 @@ export function middleware(req: NextRequest) {
 
   const hasSession = SESSION_COOKIE_NAMES.some((n) => req.cookies.has(n));
   if (hasSession) return NextResponse.next();
+
+  // Visitante sin cuenta en modo demostración: se le deja pasar a las rutas
+  // del escaparate. Cada página resuelve el sujeto de demostración por su
+  // cuenta y se renderiza en modo solo lectura.
+  if (
+    demoMode() &&
+    DEMO_VISIBLE_PREFIXES.some(
+      (p) => pathname === p || pathname.startsWith(`${p}/`),
+    )
+  ) {
+    return NextResponse.next();
+  }
 
   const loginUrl = new URL("/login", req.url);
   loginUrl.searchParams.set("next", pathname);

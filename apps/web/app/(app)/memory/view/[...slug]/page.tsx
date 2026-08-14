@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { requireDataSubject } from "@/lib/data-access-guards";
+import { requireViewSubject } from "@/lib/data-access-guards";
+import { DemoBanner } from "@/components/demo-notice";
 import { readMemoryItem } from "@/lib/memory-reader";
 import { MarkdownView } from "@/components/markdown-view";
 import { deleteMemoryItemAction } from "./actions";
@@ -39,7 +40,7 @@ interface PageProps {
 }
 
 export default async function MemoryViewPage({ params }: PageProps) {
-  const { subject: userId } = await requireDataSubject("read");
+  const { subject: userId, anonymous } = await requireViewSubject("read");
   const { slug } = await params;
   const relPath = slug.map(decodeURIComponent).join("/");
   const item = await readMemoryItem(userId, relPath);
@@ -56,6 +57,7 @@ export default async function MemoryViewPage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
+      {anonymous ? <DemoBanner locale={locale} /> : null}
       <div className="space-y-1">
         <Link href="/memory/timeline" className="text-xs text-[var(--color-muted)] hover:underline">
           {t.back}

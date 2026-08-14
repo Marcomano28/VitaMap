@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { requireDataSubject } from "@/lib/data-access-guards";
+import { requireViewSubject } from "@/lib/data-access-guards";
+import { DemoBanner } from "@/components/demo-notice";
 import { listAllTags, listMemory, type MemoryItem } from "@/lib/memory-reader";
 import { getLocale } from "@/lib/locale";
 import { localize, type Locale } from "@/lib/i18n";
@@ -81,7 +82,7 @@ interface PageProps {
 }
 
 export default async function TimelinePage({ searchParams }: PageProps) {
-  const { subject: userId } = await requireDataSubject("read");
+  const { subject: userId, anonymous } = await requireViewSubject("read");
   const locale = await getLocale();
   const t = localize(locale, TEXT);
   const sp = await searchParams;
@@ -95,6 +96,7 @@ export default async function TimelinePage({ searchParams }: PageProps) {
 
   return (
     <div className="space-y-6">
+      {anonymous ? <DemoBanner locale={locale} /> : null}
       <header className="space-y-2">
         <h1 className="text-2xl font-semibold">{t.title}</h1>
         <p className="text-sm text-[var(--color-muted)]">

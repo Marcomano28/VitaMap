@@ -4,7 +4,8 @@ import { listInbox } from "@/lib/inbox";
 import { UploadDropzone } from "@/components/upload-dropzone";
 import { InboxAutoRefresh } from "@/components/inbox-auto-refresh";
 import { discardInboxItemAction, retryInboxExtractionAction } from "./actions";
-import { requireDataSubject } from "@/lib/data-access-guards";
+import { requireViewSubject } from "@/lib/data-access-guards";
+import { DemoBanner, DemoLockedNotice } from "@/components/demo-notice";
 import { getLocale } from "@/lib/locale";
 import { localeTag, localize } from "@/lib/i18n";
 
@@ -57,9 +58,28 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function UploadPage() {
-  const { subject: userId } = await requireDataSubject("read");
+  const { subject: userId, anonymous } = await requireViewSubject("read");
   const locale = await getLocale();
   const t = localize(locale, TEXT);
+
+  // Escaparate para el visitante sin cuenta: se ve la habitación (qué hace
+  // esta página, qué formatos acepta) pero no hay nada accionable. No se
+  // renderiza el componente de subida, ni siquiera desactivado: lo que no
+  // existe en el árbol no se puede accionar. La bandeja tampoco se consulta,
+  // porque el sujeto de demostración no tiene ninguna.
+  if (anonymous) {
+    return (
+      <div className="space-y-8">
+        <DemoBanner locale={locale} />
+        <header className="space-y-2">
+          <h1 className="text-2xl font-semibold">{t.title}</h1>
+          <p className="text-sm text-[var(--color-muted)]">{t.intro}</p>
+        </header>
+        <DemoLockedNotice locale={locale} what="upload" />
+      </div>
+    );
+  }
+
   const inbox = await listInbox(userId);
   const activeJobs = inbox.filter(
     (it) => it.status === "pending" || it.status === "extracting",

@@ -7,7 +7,7 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { hasActiveSubscription } from "@/lib/billing";
 import { isAdminEmail } from "@/lib/admin";
-import { assessmentsEnabled } from "@/lib/flags";
+import { assessmentsEnabled, demoModeEnabled } from "@/lib/flags";
 
 export async function SiteHeader() {
   const locale = await getLocale();
@@ -34,20 +34,40 @@ export async function SiteHeader() {
     { href: "/chat", label: t.chat },
     { href: "/settings", label: t.account },
   ];
-  const visibleNav = subscribed
-    ? navAuthed
-    : [
-        { href: "/guide", label: t.guide },
-        { href: "/settings/billing", label: t.subscription },
-        { href: "/settings", label: t.account },
-      ];
-  const visibleMobileNav = subscribed
-    ? mobileNavAuthed
-    : [
-        { href: "/guide", label: t.guide },
-        { href: "/settings/billing", label: t.subscription },
-        { href: "/settings", label: t.account },
-      ];
+  /**
+   * Navegación del visitante sin cuenta en modo demostración (ADR-020).
+   *
+   * Se le enseñan las habitaciones que cuentan algo del producto: la memoria,
+   * el mapa, el asistente, la guía y la subida —esta última inerte, con su
+   * explicación—. Fuera quedan ajustes, bandeja y cuestionarios: sin datos
+   * propios no enseñan nada. `/admin/corpus` no aparece nunca: la superficie
+   * administrativa se oculta, no se desactiva.
+   */
+  const demoNav = [
+    { href: "/memory", label: t.memory },
+    { href: "/memory/map", label: t.map },
+    { href: "/chat", label: t.chat },
+    { href: "/upload", label: t.upload },
+    { href: "/guide", label: t.guide },
+  ];
+  const demoActive = demoModeEnabled() && !authed;
+
+  const anonNav = [
+    { href: "/guide", label: t.guide },
+    { href: "/settings/billing", label: t.subscription },
+    { href: "/settings", label: t.account },
+  ];
+
+  const visibleNav = demoActive
+    ? demoNav
+    : subscribed
+      ? navAuthed
+      : anonNav;
+  const visibleMobileNav = demoActive
+    ? demoNav
+    : subscribed
+      ? mobileNavAuthed
+      : anonNav;
 
   return (
     <header className="vitamap-header">

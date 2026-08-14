@@ -2,7 +2,8 @@ import Link from "next/link";
 import { copy } from "@/lib/i18n";
 import { getLocale } from "@/lib/locale";
 import type { Metadata } from "next";
-import { requireDataSubject } from "@/lib/data-access-guards";
+import { requireViewSubject } from "@/lib/data-access-guards";
+import { DemoBanner } from "@/components/demo-notice";
 import { assessmentsEnabled } from "@/lib/flags";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -11,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function MemoryPage() {
-  await requireDataSubject("read");
+  const { anonymous } = await requireViewSubject("read");
   const locale = await getLocale();
   const t = copy[locale].memory;
   const entries = assessmentsEnabled()
@@ -20,6 +21,7 @@ export default async function MemoryPage() {
 
   return (
     <div className="space-y-8">
+      {anonymous ? <DemoBanner locale={locale} /> : null}
       <header className="space-y-2">
         <h1 className="text-4xl sm:text-5xl font-semibold vital-reveal-text leading-tight">
           {t.title}

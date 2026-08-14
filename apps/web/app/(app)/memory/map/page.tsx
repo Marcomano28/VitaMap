@@ -5,7 +5,8 @@ import { buildHealthMapModel } from "@/lib/health-map";
 import { getLabSeriesSet } from "@/lib/memory-reader";
 import { getLocale } from "@/lib/locale";
 import { localize } from "@/lib/i18n";
-import { requireDataSubject } from "@/lib/data-access-guards";
+import { requireViewSubject } from "@/lib/data-access-guards";
+import { DemoBanner } from "@/components/demo-notice";
 import { unstable_noStore as noStore } from "next/cache";
 
 export const dynamic = "force-dynamic";
@@ -26,7 +27,7 @@ export default async function HealthMapPage({
   searchParams: Promise<{ marker?: string }>;
 }) {
   noStore();
-  const { subject: userId } = await requireDataSubject("read");
+  const { subject: userId, anonymous } = await requireViewSubject("read");
   const locale = await getLocale();
   const { marker } = await searchParams;
   const series = await getLabSeriesSet(userId);
@@ -35,6 +36,7 @@ export default async function HealthMapPage({
 
   return (
     <div className="space-y-7">
+      {anonymous ? <DemoBanner locale={locale} /> : null}
       <header className="space-y-2">
         <p className="text-xs uppercase tracking-wide text-[var(--color-muted)]">
           {de ? "Privater Speicher · strukturierte Werte" : "Memoria privada · valores estructurados"}

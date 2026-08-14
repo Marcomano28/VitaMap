@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import { LabValueBand } from "@/components/lab-value-band";
 import { LabTimeline } from "@/components/lab-timeline";
 import { getLocale } from "@/lib/locale";
-import { requireDataSubject } from "@/lib/data-access-guards";
+import { requireViewSubject } from "@/lib/data-access-guards";
+import { DemoBanner } from "@/components/demo-notice";
 import { buildLabSeries } from "@/lib/lab-visualization";
 
 export const metadata: Metadata = { title: "Visualización de analíticas" };
 
 export default async function VisualizationPrototypePage() {
-  await requireDataSubject("read");
+  const { anonymous } = await requireViewSubject("read");
   const locale = await getLocale();
   const de = locale === "de";
   const syntheticSeries = buildLabSeries(
@@ -45,6 +46,7 @@ export default async function VisualizationPrototypePage() {
   );
   return (
     <div className="max-w-2xl space-y-8">
+      {anonymous ? <DemoBanner locale={locale} /> : null}
       <header className="space-y-2">
         <p className="text-xs uppercase tracking-wide text-[var(--color-muted)]">
           {de ? "Interner Prototyp · synthetische Daten" : "Prototipo interno · datos sintéticos"}

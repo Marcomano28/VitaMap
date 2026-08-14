@@ -16,7 +16,7 @@ import {
   type DataScope,
   type SubjectContext,
 } from "./data-access";
-import { UnauthorizedError } from "./session";
+import { UnauthorizedError, getSession } from "./session";
 import { demoModeEnabled } from "./flags";
 import { DEMO_SUBJECT_ID, clientIpKey } from "./demo";
 import type { QuotaTier } from "./llm-quota";
@@ -50,6 +50,36 @@ export async function requireDataSubjectFromRequest(
 }
 
 /**
+ * Rutas que el visitante anónimo puede ver en modo demostración.
+ *
+ * Deliberadamente corta. Cada entrada es una superficie más que revisar, así
+ * que solo están las que enseñan el producto:
+ *
+ *   · `/memory` y `/memory/map` — la serie temporal, que es lo que se entiende
+ *     de un vistazo.
+ *   · `/chat` — el asistente citando el corpus.
+ *   · `/upload` — se ve la habitación, pero inerte (ver la propia página).
+ *
+ * Fuera quedan `/settings` (borrado y facturación: no enseña producto),
+ * `/inbox` (vacío sin datos propios) y `/admin` (superficie administrativa:
+ * oculta, no desactivada).
+ *
+ * `/guide` no aparece porque nunca estuvo protegida: ya es pública.
+ */
+export const DEMO_VISIBLE_PREFIXES = [
+  "/memory",
+  "/chat",
+  "/upload",
+] as const;
+
+/** ¿Es una ruta que el visitante anónimo puede ver con el modo encendido? */
+export function isDemoVisiblePath(pathname: string): boolean {
+  return DEMO_VISIBLE_PREFIXES.some(
+    (p) => pathname === p || pathname.startsWith(`${p}/`),
+  );
+}
+
+/**
  * Contexto de una petición de chat, sea de una persona con cuenta o de un
  * visitante anónimo de la demostración.
  */
@@ -79,6 +109,51 @@ export interface ChatContext extends SubjectContext {
  * suscripción sigue recibiendo `SubscriptionRequiredError`: quien tiene cuenta
  * no debe colarse por la puerta de los visitantes.
  */
+/**
+ * Contexto de una página (Server Component), con o sin cuenta.
+ */
+export interface ViewContext extends SubjectContext {
+  /** Sin cuenta: visitante del modo demostración, todo de solo lectura. */
+  anonymous: boolean;
+}
+
+/**
+ * Equivalente de `requireChatContext` para páginas.
+ *
+ * **Con sesión**: `requireDataSubject`, el camino de siempre. Si falta
+ * suscripción redirige a billing, exactamente igual que antes.
+ *
+ * **Sin sesión y con `DEMO_MODE=true`**: visitante anónimo sobre
+ * `DEMO_SUBJECT_ID`. El sujeto es constante, nunca viene de la URL.
+ *
+ * **Sin sesión y sin modo demostración**: redirige a login (comportamiento
+ * heredado, vía `requireSubscribedUserId`).
+ *
+ * Solo se cae al camino anónimo si NO hay sesión. Quien tiene cuenta sin
+ * suscripción sigue yendo a billing: no se cuela por la puerta del visitante.
+ *
+ * `anonymous` es la señal que usan las páginas para renderizarse en modo
+ * escaparate: sin acciones, con el aviso de datos ficticios. La seguridad no
+ * depende de ese flag — las rutas de escritura exigen sesión y suscripción por
+ * su cuenta, y un anónimo nunca las satisface.
+ */
+export async function requireViewSubject(
+  scope: DataScope,
+): Promise<ViewContext> {
+  if (demoModeEnabled()) {
+    const session = await getSession();
+    if (!session?.user) {
+      return {
+        actor: DEMO_SUBJECT_ID,
+        subject: DEMO_SUBJECT_ID,
+        anonymous: true,
+      };
+    }
+  }
+  const ctx = await requireDataSubject(scope);
+  return { ...ctx, anonymous: false };
+}
+
 export async function requireChatContext(req: Request): Promise<ChatContext> {
   try {
     const ctx = await requireDataSubjectFromRequest(req, "chat");
