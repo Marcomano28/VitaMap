@@ -29,7 +29,7 @@ export default async function ChatPage() {
       </header>
       {anonymous ? (
         <DemoConsentGate locale={locale}>
-          <ChatUI locale={locale} />
+          <ChatUI locale={locale} demoConsent />
         </DemoConsentGate>
       ) : (
         <ChatUI locale={locale} />

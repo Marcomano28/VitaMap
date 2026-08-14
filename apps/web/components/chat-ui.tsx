@@ -72,7 +72,19 @@ type Message = UserMessage | AssistantMessage | CuriosityMessage;
 
 const HISTORY_FOR_LLM = 10; // últimos N mensajes que enviamos al LLM
 
-export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
+export function ChatUI({
+  locale = DEFAULT_LOCALE,
+  demoConsent = false,
+}: {
+  locale?: Locale;
+  /**
+   * Solo lo pone la demostración anónima, y solo después de que el visitante
+   * haya aceptado el aviso (ver components/demo-consent.tsx). La API lo exige
+   * para atender a un anónimo: así el requisito queda en el contrato y no
+   * puede perderse en un refactor de la interfaz.
+   */
+  demoConsent?: boolean;
+}) {
   const t = copy[locale].chat;
   // El catálogo piloto está redactado en español. No se traduce con el LLM.
   const curiosityEnabled = locale === "es";
@@ -107,6 +119,7 @@ export function ChatUI({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
           locale,
           depth: requestedDepth,
           forceDepth,
+          demoConsent,
           history: history
             .filter(
               (m): m is UserMessage | AssistantMessage => m.role !== "curiosity",

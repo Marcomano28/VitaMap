@@ -51,6 +51,9 @@ const Body = z.object({
   locale: z.enum(LOCALES).default("de"),
   depth: z.enum(["discover", "understand", "deep"]).default("understand"),
   forceDepth: z.boolean().default(false),
+  // Solo lo envía la demostración anónima, tras aceptar el aviso previo. Un
+  // visitante sin cuenta no recibe respuesta si falta (ADR-020).
+  demoConsent: z.boolean().default(false),
   history: z
     .array(
       z.object({
@@ -65,8 +68,15 @@ const Body = z.object({
 /**
  * Endpoint del asistente reflexivo.
  *
- * Requiere sesión válida (cookie BetterAuth). userId proviene de la
- * sesión, no de query string.
+ * Dos caminos, resueltos por `requireChatContext` (ver lib/data-access-guards):
+ *
+ *  · **Con sesión** — el de siempre. El userId proviene de la cookie de
+ *    BetterAuth, nunca de la petición, y pasa por el choke point de ADR-018.
+ *  · **Sin sesión y con `DEMO_MODE=true`** — visitante de la demostración
+ *    (ADR-020). El sujeto es la constante `DEMO_SUBJECT_ID`, la cuota se cuenta
+ *    por IP y hace falta `demoConsent: true` para obtener respuesta.
+ *
+ * Sin modo demostración, sin sesión no hay respuesta: 401.
  */
 export async function POST(req: Request) {
   const startedAt = Date.now();
@@ -142,6 +152,15 @@ export async function POST(req: Request) {
     refundLlmQuota(chatCtx.quotaKey, chatCtx.quotaTier);
     return NextResponse.json({ error: "invalid_body" }, { status: 400 });
   }
+  // -- Aviso previo del visitante anónimo (ADR-020) -------------------------
+  // La interfaz ya no renderiza el chat hasta que se acepta, pero el requisito
+  // se comprueba también aquí: así vive en el contrato de la API y no depende
+  // de que una futura versión de la interfaz siga haciéndolo bien.
+  if (chatCtx.anonymous && !body.demoConsent) {
+    refundLlmQuota(chatCtx.quotaKey, chatCtx.quotaTier);
+    return NextResponse.json({ error: "demo_consent_required" }, { status: 403 });
+  }
+
   const language = languageContext(body.locale);
   const editorialDepth = body.forceDepth
     ? body.depth
