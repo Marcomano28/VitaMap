@@ -28,8 +28,47 @@ Deriva de: `AUDITORIA-2026-07-02.md` (anexo go-live), `GUIA-LEGAL-PILOTO-ALEMANI
 
 > **Regla:** ninguna casilla se marca por intención. Cada una enlaza a una
 > **evidencia** concreta (test verde, captura, comando con su salida, documento
-> firmado). Ningún dato de salud real entra hasta cerrar A + B + C y cruzar la
-> Puerta 4 (autorización escrita).
+> firmado). Ningún dato de salud real **de terceros** entra hasta cerrar
+> A + B + C y cruzar la Puerta 4 (autorización escrita).
+
+### Excepción registrada: datos del propio operador · 2026-08-13
+
+El operador (administrador y, por ahora, única cuenta) **sí sube analíticas
+propias reales**, asumiendo el riesgo de forma consciente. Queda anotado aquí
+para que este documento no diga una cosa mientras la instancia contiene otra.
+
+**Por qué se admite.** Sujeto de los datos, responsable del tratamiento y
+persona que asume el riesgo son la misma. Las obligaciones que bloquean el
+piloto —DSFA, registro Art. 30, contratos Art. 28, informe MDR, consentimiento
+versionado— existen para proteger a terceros; con datos propios no hay tercero
+a quien proteger. La regla de arriba se lee, por tanto, referida a **datos de
+terceros**.
+
+**Para qué.** Afinar la recuperación contra un caso realista: comprobar que el
+asistente encuentra la tarjeta adecuada ante un valor real, que la serie
+temporal se construye bien con laboratorios y unidades auténticos, y que el
+guardrail se comporta ante una pregunta personal de verdad. **No amplía el
+corpus compartido**: la memoria personal (`data/users/<id>/memory`) y la
+biblioteca del RAG (`data/kb`) son almacenes distintos.
+
+**Riesgos aceptados, en concreto.**
+
+| Riesgo | Estado | Referencia |
+|---|---|---|
+| **Sin MFA.** Una contraseña filtrada da acceso completo a los datos de salud del operador | 🔴 abierto | ADR-009, Frente A #3 |
+| **Sin cifrado en reposo.** La memoria queda en markdown en claro y los índices en SQLite sin cifrar; un snapshot del proveedor los expondría. Los PDF originales sí van cifrados con age | Diferido a Fase 2 | ADR-015 |
+| **Borrado con residuos sin verificar.** No hay simulacro que confirme que no quedan restos en índices, inbox y temporales de OCR | 🔴 abierto | Frente A |
+
+Los backups **no** están entre los riesgos: restic cifra en cliente antes de
+subir a la Storage Box.
+
+**Qué NO habilita esta excepción.** No abre la puerta a datos de ninguna otra
+persona, ni adelanta ninguna casilla, ni cambia el estado de las puertas. Al
+reanudar el piloto, la primera pregunta es si estos datos se conservan o se
+purgan antes de admitir a nadie más.
+
+**Revisión.** Al cerrar MFA (Frente A #3), releer esta excepción: parte de su
+motivo desaparece.
 
 Leyenda de estado: `[ ]` pendiente · `[~]` en curso · `[x]` cerrado con evidencia.
 Prioridad: 🔴 bloqueante pre-dato-real · 🟡 antes de voluntarios 2/3 · 🟢 posterior.

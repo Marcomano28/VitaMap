@@ -20,7 +20,7 @@ import {
 import { logAuditEventSafe } from "@/lib/audit";
 import { UnauthorizedError } from "@/lib/session";
 import { SubscriptionRequiredError } from "@/lib/subscription-access";
-import { requireDataSubjectFromRequest } from "@/lib/data-access-guards";
+import { requireChatContext, type ChatContext } from "@/lib/data-access-guards";
 import { LOCALES, localize } from "@/lib/i18n";
 import { languageContext } from "@/lib/language-contract";
 import {
@@ -75,8 +75,10 @@ export async function POST(req: Request) {
     AbortSignal.timeout(300_000),
   ]);
   let userId: string;
+  let chatCtx: ChatContext;
   try {
-    ({ subject: userId } = await requireDataSubjectFromRequest(req, "chat"));
+    chatCtx = await requireChatContext(req);
+    userId = chatCtx.subject;
   } catch (err) {
     if (err instanceof UnauthorizedError) {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
@@ -93,7 +95,12 @@ export async function POST(req: Request) {
   // -- Rate limit ----------------------------------------------------------
   // Cada respuesta consume varias pasadas de LLM en CPU: limitar por
   // usuario evita que una sesión sature el servicio para el resto.
-  const rate = checkRateLimit(`chat:${userId}`, 10, 60_000);
+  // El visitante anónimo se limita por IP y con menos margen: comparte el
+  // mismo sujeto de datos que todos los demás visitantes, así que la clave
+  // no puede ser el sujeto.
+  const rate = chatCtx.anonymous
+    ? checkRateLimit(`chat:anon:${chatCtx.quotaKey}`, 4, 60_000)
+    : checkRateLimit(`chat:${userId}`, 10, 60_000);
   if (!rate.allowed) {
     return NextResponse.json(
       { error: "rate_limited", retryAfterSec: rate.retryAfterSec },
@@ -106,7 +113,7 @@ export async function POST(req: Request) {
   // frecuencia. El tope de suscriptor es holgado y no debe notarse en uso
   // normal; existe como red ante una sesión robada o un cliente en bucle. El
   // tope global protege la factura de la instancia entera (ADR-019).
-  const quota = consumeLlmQuota(userId, "user");
+  const quota = consumeLlmQuota(chatCtx.quotaKey, chatCtx.quotaTier);
   if (!quota.allowed) {
     const payload =
       quota.reason === "kill_switch"
@@ -132,7 +139,7 @@ export async function POST(req: Request) {
     // No devolver el error crudo: puede contener internals. Al log sí.
     console.error("[chat] invalid_body", err);
     // La consulta nunca llegó al modelo: se devuelve la unidad de cuota.
-    refundLlmQuota(userId, "user");
+    refundLlmQuota(chatCtx.quotaKey, chatCtx.quotaTier);
     return NextResponse.json({ error: "invalid_body" }, { status: 400 });
   }
   const language = languageContext(body.locale);

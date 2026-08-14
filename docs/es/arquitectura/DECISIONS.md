@@ -49,6 +49,54 @@ que los datos son ficticios y que es una muestra, no un servicio. Es una
 herramienta de salud: la claridad sobre qué es cada cosa forma parte del
 producto.
 
+**Registro y cobro cerrados mientras dure el modo.** El alta ya exige código de
+invitación nominativa (ADR-012), así que ningún visitante puede registrarse ni
+pagar. Se mantiene deliberadamente: **no se cobra por un servicio que todavía no
+puede prestarse**. Quien pagara adquiriría derecho a subir sus analíticas, que es
+justo lo que está detrás de las puertas del checklist; cobrar sin poder admitirle
+sería un problema de consumo, no solo una incoherencia.
+
+En su lugar, la demostración sustituye el formulario de registro por una
+explicación honesta —qué es VitaMap, en qué estado está— y una vía de contacto.
+Para un portafolio funciona mejor que un botón de pago, y es además el canal
+natural para encontrar a los colaboradores que el proyecto necesita.
+
+**Datos del operador.** La excepción registrada en el checklist (2026-08-13)
+permite al administrador subir analíticas propias reales bajo su propio riesgo.
+No afecta a este modo: la demostración usa un sujeto distinto (`demo-public`)
+sembrado solo con datos sintéticos, y la memoria del operador nunca se expone.
+
+**Implementación: una ruta, no dos.** El visitante anónimo entra por el mismo
+`/api/chat` que todo el mundo, a través de `requireChatContext()` en
+`lib/data-access-guards.ts`. Se intenta primero el camino con sesión —el choke
+point de ADR-018, sin cambios para quien tiene cuenta— y solo ante
+`UnauthorizedError` **con el modo encendido** se cae al camino anónimo.
+
+Cuatro garantías de ese diseño:
+
+1. **El sujeto es una constante**, `DEMO_SUBJECT_ID`, nunca tomado de la
+   petición: un visitante no puede direccionar los datos de una persona real.
+2. **Una sesión válida sin suscripción sigue recibiendo 402.** Solo se cae al
+   camino anónimo por falta de sesión, no por falta de pago: quien tiene cuenta
+   no se cuela por la puerta de los visitantes.
+3. **La clave de cuota es la IP**, no el sujeto — todos los visitantes comparten
+   sujeto, así que usarlo como clave daría una sola cuota para el mundo entero.
+   La IP se toma de las cabeceras que pone Caddy con `header_up`, que
+   **reemplaza** en vez de añadir, de modo que no es falsificable. IPv6 se
+   recorta al prefijo /64 para que cambiar de dirección dentro del propio rango
+   no renueve la cuota.
+4. **El límite de ráfaga anónimo es más estrecho** (4/min frente a 10/min).
+
+Duplicar la ruta habría sido más simple de leer y peor de mantener: el chat
+concentra guardrail, detector de crisis, recuperación y política conversacional,
+y una copia paralela habría divergido en seguridad — que es justo donde no debe
+divergir. Es el riesgo que este ADR advierte en sus consecuencias.
+
+**Lo que el visitante no puede hacer** no se apoya en comprobaciones nuevas sino
+en que la ruta de chat solo lee: no escribe memoria y sus eventos de auditoría
+no contienen contenido de la conversación (solo recuentos y veredicto). La
+subida, la exportación y el borrado siguen exigiendo sesión y suscripción.
+
 **Consecuencias.** El checklist de go-live queda marcado como pausado con fecha
 y motivo, sin rebajar ninguna casilla. Reanudar es apagar la variable y seguir
 por la Puerta 0. El riesgo a vigilar es que el modo demostración acumule código
