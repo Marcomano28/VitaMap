@@ -58,16 +58,11 @@ export async function SiteHeader() {
     { href: "/settings", label: t.account },
   ];
 
-  const visibleNav = demoActive
-    ? demoNav
-    : subscribed
-      ? navAuthed
-      : anonNav;
-  const visibleMobileNav = demoActive
-    ? demoNav
-    : subscribed
-      ? mobileNavAuthed
-      : anonNav;
+  // Estas dos listas solo se usan en la rama con sesión. El visitante anónimo
+  // de la demostración se pinta aparte, más abajo: su bloque conserva
+  // "solicitar acceso" y el botón de entrar, que no deben desaparecer.
+  const visibleNav = subscribed ? navAuthed : anonNav;
+  const visibleMobileNav = subscribed ? mobileNavAuthed : anonNav;
 
   return (
     <header className="vitamap-header">
@@ -132,6 +127,18 @@ export async function SiteHeader() {
           )}
           {!authed && (
             <div className="vitamap-desktop-nav-main">
+              {/* En modo demostración el visitante recorre las habitaciones;
+                  sin él, solo ve la puerta. */}
+              {demoActive &&
+                demoNav.map((n) => (
+                  <Link
+                    key={n.href}
+                    href={n.href}
+                    className="text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
+                  >
+                    {n.label}
+                  </Link>
+                ))}
               <Link
                 href="/register"
                 className="text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
@@ -161,6 +168,15 @@ export async function SiteHeader() {
                 {n.label}
               </Link>
             ))
+          ) : demoActive ? (
+            <>
+              {demoNav.map((n) => (
+                <Link key={n.href} href={n.href}>
+                  {n.label}
+                </Link>
+              ))}
+              <Link href="/register">{t.requestAccess}</Link>
+            </>
           ) : (
             <>
               <Link href="/guide">{t.guide}</Link>
