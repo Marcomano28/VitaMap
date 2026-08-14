@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { copy } from "@/lib/i18n";
 import { getLocale } from "@/lib/locale";
+import { demoModeEnabled } from "@/lib/flags";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { SupershapeOrb } from "@/components/supershape-orb";
@@ -16,6 +17,13 @@ export default async function VitaWendeShell() {
 
   const locale = await getLocale();
   const t = copy[locale].vitawende;
+
+  // Con el modo demostración encendido (ADR-020) la puerta principal lleva a la
+  // aplicación, no al formulario de acceso: el visitante entra directamente al
+  // escaparate con datos sintéticos. Apagado, se comporta como siempre.
+  const demo = demoModeEnabled();
+  const entryHref = demo ? "/memory/map" : "/login";
+  const entrySub = demo ? t.crystalSubDemo : t.crystalSub;
 
   return (
     <div className="vitawende-shell">
@@ -48,10 +56,10 @@ export default async function VitaWendeShell() {
         VitaWende
       </span>
 
-      <Link href="/login" className="vitawende-crystal">
+      <Link href={entryHref} className="vitawende-crystal">
         <span className="vitawende-crystal-kicker">01 - VITAL DYNAMICS</span>
         <span className="vitawende-crystal-title">VitaMap</span>
-        <span className="vitawende-crystal-sub">{t.crystalSub}</span>
+        <span className="vitawende-crystal-sub">{entrySub}</span>
       </Link>
 
       <div className="vitawende-orb" aria-hidden="true">

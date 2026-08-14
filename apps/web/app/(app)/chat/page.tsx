@@ -3,6 +3,7 @@ import { copy } from "@/lib/i18n";
 import { getLocale } from "@/lib/locale";
 import { requireViewSubject } from "@/lib/data-access-guards";
 import { DemoBanner } from "@/components/demo-notice";
+import { DemoConsentGate } from "@/components/demo-consent";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -26,7 +27,13 @@ export default async function ChatPage() {
           {t.body}
         </p>
       </header>
-      <ChatUI locale={locale} />
+      {anonymous ? (
+        <DemoConsentGate locale={locale}>
+          <ChatUI locale={locale} />
+        </DemoConsentGate>
+      ) : (
+        <ChatUI locale={locale} />
+      )}
     </div>
   );
 }

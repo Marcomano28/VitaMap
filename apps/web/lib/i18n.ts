@@ -140,6 +140,9 @@ export const copy = {
     },
     vitawende: {
       crystalSub: "Memoria · Evidencia · Preguntas",
+      // Subtítulo alternativo cuando el visitante entra a la demostración
+      // (DEMO_MODE, ADR-020): promete lo que hay, ni más ni menos.
+      crystalSubDemo: "Demostración · Datos ficticios",
       nav: {
         semilla: "La semilla",
         manifiesto: "Manifiesto",
@@ -324,6 +327,7 @@ export const copy = {
     },
     vitawende: {
       crystalSub: "Gedächtnis · Evidenz · Fragen",
+      crystalSubDemo: "Demonstration · Fiktive Daten",
       nav: {
         semilla: "Der Samen",
         manifiesto: "Manifest",
