@@ -21,8 +21,13 @@ export default async function VitaWendeShell() {
   // Con el modo demostración encendido (ADR-020) la puerta principal lleva a la
   // aplicación, no al formulario de acceso: el visitante entra directamente al
   // escaparate con datos sintéticos. Apagado, se comporta como siempre.
+  //
+  // Destino: `/memory`, el mismo punto de entrada que tiene una persona con
+  // cuenta. Se valoró llevar al mapa (más vistoso) o al chat (más
+  // interactivo), y se descartaron: el visitante debe recorrer el camino real
+  // del producto y explorar desde ahí, no una versión curada para impresionar.
   const demo = demoModeEnabled();
-  const entryHref = demo ? "/memory/map" : "/login";
+  const entryHref = demo ? "/memory" : "/login";
   const entrySub = demo ? t.crystalSubDemo : t.crystalSub;
 
   return (
