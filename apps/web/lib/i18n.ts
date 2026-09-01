@@ -221,7 +221,9 @@ export const copy = {
       guide: "Leitfaden",
       admin: "Korpus",
       subscription: "Abonnement",
-      requestAccess: "Zugang anfragen",
+      // "Zugang anfragen" desbordaba la barra en modo demostración, donde hay
+      // cinco enlaces más. "Zugang" junto a "Anmelden" se entiende igual.
+      requestAccess: "Zugang",
       login: "Anmelden",
       account: "Konto",
       settings: "Einstellungen",

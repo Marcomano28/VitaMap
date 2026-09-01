@@ -126,7 +126,9 @@ export async function SiteHeader() {
             </>
           )}
           {!authed && (
-            <div className="vitamap-desktop-nav-main">
+            <div
+              className={`vitamap-desktop-nav-main${demoActive ? " is-demo" : ""}`}
+            >
               {/* En modo demostración el visitante recorre las habitaciones;
                   sin él, solo ve la puerta. */}
               {demoActive &&

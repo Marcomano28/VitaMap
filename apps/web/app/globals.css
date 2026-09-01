@@ -511,6 +511,19 @@ body:has(.vitawende-shell) .vitamap-lienzo {
   width: 100%;
 }
 
+/* Barra del visitante en modo demostración: cinco enlaces más que la del
+   usuario anónimo normal, y en alemán cada etiqueta es más larga. Sin apretar
+   el espaciado, la fila salta de línea. `white-space: nowrap` evita además que
+   una etiqueta de dos palabras se parta por la mitad. */
+.vitamap-desktop-nav-main.is-demo {
+  font-size: 0.8125rem;
+  gap: 0.6rem;
+}
+
+.vitamap-desktop-nav-main.is-demo a {
+  white-space: nowrap;
+}
+
 .vitamap-account-link {
   max-width: min(28vw, 14rem);
   overflow: hidden;
