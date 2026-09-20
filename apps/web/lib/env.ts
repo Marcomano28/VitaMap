@@ -45,6 +45,9 @@ const EnvSchema = z.object({
 
   // App
   ADMIN_EMAILS: z.string().default(""),
+  // Habilita la puerta administrativa, no activa Jev ni cambia el flujo público.
+  CHAT_EXPERIMENTS_ENABLED: z.enum(["true", "false"])
+    .default("false").transform((value) => value === "true"),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   NEXT_PUBLIC_APP_URL: z.string().url(),
 

@@ -13,6 +13,8 @@ Documento de ruta para iniciar el piloto sin romper la arquitectura objetivo (se
 
 ---
 
+> Revisión propuesta (2026-09-20): [Contornos y orquestación conversacional](PROPUESTA-ORQUESTACION-CONVERSACIONAL.md) distingue la implementación actual del diseño objetivo y propone rutas, hechos deterministas y decisiones tipadas. El 2026-09-21 se preparó la separación del motor y la puerta de pruebas de admin; Jev sigue sin integrar. La propuesta no sustituye todavía los ADR vigentes.
+
 ## Principio rector — qué NO cambia entre fases
 
 Estas piezas se fijan desde la Fase 0 para que escalar sea solo un cambio de infra:

@@ -26,6 +26,8 @@ contiene contexto y estado que los manuales no repiten.
 | `DECISIONS.md` | **Registro ADR.** Toda decisión técnica con su contexto. Nunca se borra nada |
 | `ROADMAP.md` | Fases del piloto y ruta prevista |
 | `INFORME-ARQUITECTURA-2026-08-02.md` | Mapa del repo, inconsistencias y deuda localizada |
+| [PROPUESTA-ORQUESTACION-CONVERSACIONAL.md](arquitectura/PROPUESTA-ORQUESTACION-CONVERSACIONAL.md) | Propuesta: contornos del agente, evaluación de TypeSafe y mapa de implementación |
+| [PLAN-VARIANTE-JEV.md](arquitectura/PLAN-VARIANTE-JEV.md) | Plan acotado: Jev para intención, pertinencia y respaldo de afirmaciones; ventajas y evaluación |
 | `QMD-EVOLUCION-VITAMAP.md` | Motor RAG: configuración operativa y evolución. Prevalece sobre los ejemplos del roadmap |
 | `ARQUITECTURA-CORPUS-TEMATICO-Y-RECUPERACION.md` | Estructura temática del corpus y evolución de la recuperación |
 | `REGISTRO-PREDICADOS.md` | Contrato de aristas del grafo de conocimiento |

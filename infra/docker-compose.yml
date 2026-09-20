@@ -50,6 +50,7 @@ services:
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET required}
       BETTER_AUTH_URL: ${PUBLIC_URL:?PUBLIC_URL required}
       ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+      CHAT_EXPERIMENTS_ENABLED: ${CHAT_EXPERIMENTS_ENABLED:-false}
       # Módulo de cuestionarios /assess (B.1). Apagado salvo "true" explícito.
       ASSESSMENTS_ENABLED: ${ASSESSMENTS_ENABLED:-false}
       # Guía educativa y acotación de KB por marcador. Ambos quedan apagados
