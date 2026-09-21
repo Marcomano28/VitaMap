@@ -18,10 +18,22 @@ import { LlmRateLimitError } from "../llm-errors";
 import { llmRateLimitResult } from "./rate-limit-response";
 import { measureChatStage, measureChatStageSync } from "./telemetry";
 
+export interface CurrentChatServices {
+  queryMemoryAndKB: typeof queryMemoryAndKB;
+  composeRetrievedEvidence: typeof composeRetrievedEvidence;
+  latestLabContext: typeof latestLabContext;
+  getLabSeriesSet: typeof getLabSeriesSet;
+  logAuditEventSafe: typeof logAuditEventSafe;
+}
+const defaultServices: CurrentChatServices = {
+  queryMemoryAndKB, composeRetrievedEvidence, latestLabContext, getLabSeriesSet, logAuditEventSafe,
+};
+
 /** Flujo actual extraído sin cambiar recuperación, prompts ni guardrail.
  * Solo se invoca tras las guardas comunes de /api/chat.
  */
-export async function runCurrentChat(context: ChatExecutionContext): Promise<ChatRunResult> {
+export async function runCurrentChat(context: ChatExecutionContext, services: CurrentChatServices = defaultServices): Promise<ChatRunResult> {
+  const { queryMemoryAndKB, composeRetrievedEvidence, latestLabContext, getLabSeriesSet, logAuditEventSafe } = services;
   const { input: body, language, editorialDepth, deadline, startedAt } = context;
   const userId = context.subject.subject;
   // -- Retrieval dual -----------------------------------------------------

@@ -1,11 +1,11 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 
-export type LlmStage = "crisis" | "query_rewrite" | "generation" | "guardrail" | "response_rewrite" | "unclassified";
+export type LlmStage = "crisis" | "query_rewrite" | "generation" | "guardrail" | "response_rewrite" | "jev_route" | "jev_evidence" | "jev_support" | "unclassified";
 type Usage = { prompt_tokens?: unknown; completion_tokens?: unknown; total_tokens?: unknown };
 type Outcome = "ok" | "rate_limited" | "aborted" | "error";
 type Call = {
   stage: LlmStage;
-  provider: "local" | "external";
+  provider: "local" | "external" | "typesafe";
   offsetMs: number;
   durationMs: number;
   outcome: Outcome;
@@ -25,8 +25,12 @@ type Span = {
   durationMs: number;
   outcome: "ok" | "error" | "unfinished";
 };
-type Scope = { start: number; closed: boolean; calls: Call[]; spans: Span[] };
+type Scope = { start: number; closed: boolean; calls: Call[]; spans: Span[]; attempts: number; maxCalls?: number };
 const storage = new AsyncLocalStorage<Scope>();
+
+export class InferenceBudgetError extends Error {
+  constructor() { super("inference_budget_exhausted"); }
+}
 
 function beginChatStage(stage: ChatStage) {
   const scope = storage.getStore();
@@ -72,8 +76,12 @@ function tokens(value: unknown): number | null {
 
 /** Only numeric usage and fixed labels enter the collector: never prompts,
  * answers, provider error bodies, URLs, credentials or account identifiers. */
-export function beginLlmMeasurement(stage: LlmStage, provider: "local" | "external") {
+export function beginLlmMeasurement(stage: LlmStage, provider: Call["provider"]) {
   const scope = storage.getStore();
+  if (scope?.maxCalls !== undefined && (scope.closed || scope.attempts >= scope.maxCalls)) {
+    throw new InferenceBudgetError();
+  }
+  if (scope) scope.attempts++;
   const start = performance.now();
   let finished = false;
   return (result: { outcome: Outcome; httpStatus?: number; usage?: Usage }) => {
@@ -118,8 +126,9 @@ export type ChatTelemetry = {
 export async function withChatTelemetry<T extends { status: number }>(
   run: () => Promise<T>,
   emit: (summary: ChatTelemetry) => void = summary => console.info("[chat] llm_usage " + JSON.stringify(summary)),
+  options: { maxCalls?: number } = {},
 ): Promise<T> {
-  const scope: Scope = { start: performance.now(), closed: false, calls: [], spans: [] };
+  const scope: Scope = { start: performance.now(), closed: false, calls: [], spans: [], attempts: 0, maxCalls: options.maxCalls };
   const startedAt = new Date().toISOString();
   return storage.run(scope, async () => {
     let responseStatus = 500;

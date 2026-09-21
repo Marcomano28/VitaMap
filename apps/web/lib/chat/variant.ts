@@ -13,7 +13,8 @@ type VariantSelection =
 
 /** Server-only policy: the callback must check the current authenticated actor.
  * No client flag, email, or requested subject grants experimental access.
- * Jev is deliberately unavailable until a synthetic-only runner is implemented.
+ * Public free-text chat never dispatches to Jev. The synthetic-only laboratory
+ * has its own admin API and accepts server-owned fixture IDs instead of text.
  */
 export async function resolveChatVariant(
   requested: ChatVariant,
@@ -26,6 +27,6 @@ export async function resolveChatVariant(
   if (!policy.experimentsEnabled || !(await policy.isAdminActor())) {
     return { allowed: false, status: 403, error: "chat_experiment_forbidden" };
   }
-  // Enabling the experiment gate does not install or activate a provider.
+  // This endpoint cannot supply the laboratory's synthetic-data guarantee.
   return { allowed: false, status: 503, error: "chat_variant_unavailable" };
 }

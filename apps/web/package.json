@@ -31,6 +31,7 @@
     "test:content-locale": "node --import tsx scripts/test-content-locale-selection.ts",
     "test:language-contract": "node --import tsx scripts/test-language-contract.ts",
     "test:corpus-locale-audit": "node --import tsx scripts/test-corpus-locale-audit.mts",
+    "test:chat-experiments": "node --import tsx scripts/test-chat-experiments.ts",
     "test:chat-telemetry": "node --import tsx scripts/test-chat-telemetry.ts",
     "test:chat-variants": "node --import tsx scripts/test-chat-variants.ts",
     "test:crisis": "node --import tsx scripts/test-crisis.ts",

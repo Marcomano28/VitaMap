@@ -95,12 +95,15 @@ export async function SiteHeader() {
                   </Link>
                 ))}
                 {admin && (
-                  <Link
-                    href="/admin/corpus"
-                    className="text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
-                  >
-                    {t.admin}
-                  </Link>
+                  <>
+                    <Link
+                      href="/admin/corpus"
+                      className="text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
+                    >
+                      {t.admin}
+                    </Link>
+                    <Link href="/admin/chat-experiments" className="text-[var(--color-muted)] hover:text-[var(--color-foreground)]">Jev · Lab</Link>
+                  </>
                 )}
                 <Link
                   href="/settings"

@@ -20,6 +20,12 @@ const EnvSchema = z.object({
   // blindaje final.
   LLM_PROVIDER: z.enum(["local", "external"]).default("local"),
 
+  // Solo el laboratorio administrativo sintético usa TypeSafe.
+  TYPESAFE_API_KEY: optionalString(z.string().min(1)),
+  TYPESAFE_MODEL: z.literal("jev-1.13.0").default("jev-1.13.0"),
+  TYPESAFE_TIMEOUT_MS: z.coerce.number().int().min(500).max(30000).default(5000),
+  CHAT_EXPERIMENT_DAILY_CALLS: z.coerce.number().int().min(0).max(600).default(120),
+
   // QMD embeddings (multilingüe fijado desde Fase 0)
   QMD_EMBED_MODEL: z.string().min(1),
 
@@ -45,7 +51,7 @@ const EnvSchema = z.object({
 
   // App
   ADMIN_EMAILS: z.string().default(""),
-  // Habilita la puerta administrativa, no activa Jev ni cambia el flujo público.
+  // Habilita el laboratorio sintético administrativo; no cambia el chat público.
   CHAT_EXPERIMENTS_ENABLED: z.enum(["true", "false"])
     .default("false").transform((value) => value === "true"),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),

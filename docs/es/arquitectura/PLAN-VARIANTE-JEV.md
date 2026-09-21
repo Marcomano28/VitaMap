@@ -1,9 +1,14 @@
 # Variante Jev: decisiones acotadas y respuestas fundamentadas
 
-2026-09-20 · Actualizado 2026-09-21. **Plan con base técnica inicial implementada; Jev todavía no integrado.**
+2026-09-20 · Actualizado 2026-09-21. **Laboratorio sintético Jev implementado;
+pendiente de despliegue, prueba con credenciales y evaluación real.**
 Desarrolla la [propuesta de orquestación](PROPUESTA-ORQUESTACION-CONVERSACIONAL.md),
 especialmente E1–E4. Su objetivo es reducir las oportunidades de inventar datos,
 fuentes y acciones; el ahorro de llamadas es una consecuencia a medir por ruta.
+
+Estado vigente: §11. Las entregas de §6 describen el recorrido completo hacia el
+chat real; el laboratorio permite evaluar componentes con fuentes fijas, sin
+dar por completada la integración con recuperación QMD ni habilitar datos reales.
 
 ## 1. Alcance de la primera versión
 
@@ -409,7 +414,7 @@ guardas. El administrador podrá seleccionar una variante para su conversación 
 prueba; ese permiso no amplía el acceso a datos personales ni modifica el motor
 del resto de usuarios.
 
-### 9.1 Base implementada en esta entrega
+### 9.1 Base inicial (histórico; ampliada en §11)
 
 Se ha preparado la separación sin integrar TypeSafe ni simular un motor experimental:
 
@@ -423,9 +428,9 @@ Se ha preparado la separación sin integrar TypeSafe ni simular un motor experim
 | `CHAT_EXPERIMENTS_ENABLED` | Flag validado en `env.ts`, ejemplos local/VPS y servicio web en Compose; habilita la puerta administrativa, no implementa ni activa Jev |
 | `test:chat-variants` | Ejecuta la ruta real con dependencias simuladas, esquema y política reales; no llama a proveedores ni abre datos de usuario |
 
-**No hay todavía interruptor visual, conversación experimental, adaptador Jev,
+**En aquella entrega no había interruptor visual, conversación experimental, adaptador Jev,
 comparador ni selección persistente por conversación.** La UI actual no envía el
-nuevo campo y mantiene el comportamiento anterior. Esta entrega implementa parte
+nuevo campo y mantiene el comportamiento anterior. Aquella entrega implementó parte
 de la base de V1 y el control de acceso previo a V2; no completa esas entregas.
 
 La semántica de la API es explícita:
@@ -436,7 +441,7 @@ La semántica de la API es explícita:
 | Variante fuera del enum | 400 `invalid_body` |
 | `variant=jev` con flag apagado | 403 `chat_experiment_forbidden` |
 | `variant=jev` sin sesión admin coincidente con el actor autorizado | 403 `chat_experiment_forbidden` |
-| `variant=jev`, flag activo y admin verificado | 503 `chat_variant_unavailable` hasta implementar el motor |
+| `variant=jev`, flag activo y admin verificado | 503 `chat_variant_unavailable`; el chat libre sigue cerrado a Jev, el laboratorio tiene una API distinta |
 
 La identidad procede de la sesión, nunca de `isAdmin`, email o sujeto enviados
 por el cliente. Ser visitante de la demo no habilita experimentos. Si se rechaza
@@ -452,7 +457,7 @@ el fail-open de crisis y sus límites de contexto. No se consideran corregidos p
 este refactor; siguen pendientes en E1 del documento base. La política de seguridad
 aprobada deberá ser común a ambos antes del ensayo comparativo.
 
-### 9.2 Interruptor del administrador: siguiente entrega
+### 9.2 Contrato del interruptor administrativo
 
 1. Crear un panel de pruebas protegido por sesión admin tanto en UI como en API.
    El administrador podrá elegir **Actual** o **Experimental**, con estado visible
@@ -468,10 +473,9 @@ aprobada deberá ser común a ambos antes del ensayo comparativo.
    condiciones de datos y revisión. No añadir un botón global de despliegue al
    selector de conversación.
 
-Mientras no exista el runner Jev, el rechazo 503 permanece deliberadamente activo.
-No sustituirlo simplemente por un `if` que llame al nuevo proveedor: la siguiente
-entrega debe aportar también el contrato de sesión y la restricción de pruebas
-sintéticas descritos aquí.
+El rechazo 503 del chat libre permanece deliberadamente activo. El runner del
+§11 usa una API administrativa distinta con contrato estricto de sesión y casos
+sintéticos; no se sustituye ese rechazo por un `if` que envíe texto libre a Jev.
 
 ### 9.3 Comparación inicial: casos sintéticos controlados
 
@@ -641,3 +645,150 @@ simulados: verifica búsquedas paralelas, reutilización de índices y conservac
 de resultados. También verifica errores, tramos sin LLM, aislamiento entre turnos
 y que una rama pendiente no modifique un registro ya emitido. No sustituye la
 medición de rendimiento del QMD real en el VPS.
+
+## 11. Laboratorio administrativo implementado
+
+### 11.1 Alcance que se puede activar
+
+`/admin/chat-experiments` y `/api/admin/chat-experiments` implementan el primer
+ensayo. La sesión debe corresponder a un correo de `ADMIN_EMAILS` en **cada**
+petición. No se requiere una suscripción comercial para administrar el laboratorio;
+sí se aplican el interruptor global de inferencia y las cuotas global/individual.
+Esta excepción administrativa no concede acceso a sujetos ni memoria personal.
+
+El selector ofrece:
+
+- **A · Actual (fuentes fijas):** ejecuta `runCurrentChat` con servicios de datos
+  sustituidos por fixtures. Conserva generación, reescritura, revisión y posibles
+  reparaciones del motor actual. La composición editorial es identidad, pues las
+  fuentes ya están fijadas. No es un benchmark del recorrido QMD de producción.
+- **B · Reglas + plantillas:** enrutado conservador y selección determinista sobre
+  los mismos fixtures; respuesta factual por plantilla o explicación estructurada
+  con el generador y guardrail actuales.
+- **C · Jev:** J1 decide intención/perspectiva/referencia; J2 valora candidatos;
+  para explicaciones seguras se ejecuta J3 **offline**. J3 se muestra para evaluación,
+  pero no se presenta como permiso de publicación ni reemplaza al guardrail.
+
+Los tres comparten el detector de entrada. En el laboratorio, un error del
+detector detiene el ensayo; no se simula el fail-open del chat público. Los casos
+son cortos y no exceden la ventana del detector existente. No se afirma haber
+resuelto con esto su cobertura sobre conversaciones reales largas.
+
+Se incluyen seis escenarios en ES/DE: definición y seguimiento de ferritina,
+último resultado, explicación contextual, referencia ambigua, evidencia ausente
+y crisis ficticia. Son casos iniciales de comprobación, **no un banco clínico
+validado ni una muestra suficiente para aprobar el despliegue real**. Las fichas
+de prueba están identificadas como sintéticas; no se atribuyen a estudios reales.
+
+### 11.2 Fronteras de datos, sesiones y presupuesto
+
+El cliente solo envía `caseId`, `locale` y `variant` al crear la sesión; después,
+`sessionId` y el índice de paso. Campos extra como texto, historia, sujeto, fuentes
+o modelo se rechazan. Los inputs y las fuentes se construyen en servidor desde
+`fixtures.ts`. Un seguimiento reproduce una historia canónica fijada, no el texto
+generado en el turno anterior: así ambas variantes reciben la misma entrada.
+
+La sesión usa UUID opaco, propietario, variante inmutable, caso, idioma e ID de
+configuración. Este último incluye versión de política, fixtures, modelos y flags
+relevantes. Un cambio exige sesión nueva. Se revalidan propietario, permiso admin,
+flags, versión y paso antes de inferir; no se puede reenviar un paso ya consumido.
+
+Las tablas `chat_experiment_session` y `chat_experiment_budget` se crean en
+`AUTH_DB_PATH`. No hay lectura de carpetas de usuarios ni de informes de la demo.
+Caducidad de acceso: 30 minutos; limpieza física oportunista al crear o reclamar
+sesiones posteriores. El panel mantiene los resultados abiertos y permite
+descargar JSON. Una recarga del panel pierde la lista local: exportar antes.
+
+Cada paso reserva **6 llamadas** del presupuesto diario propio, además de una
+unidad de la cuota de turnos vigente. Por defecto son 120 llamadas reservadas/día
+UTC, es decir, hasta 20 pasos. La reserva se conserva incluso si el recorrido usa
+menos llamadas o falla: es deliberadamente conservadora y distinta del consumo
+real registrado. El colector impide emitir una séptima llamada. Solo se ejecuta
+una prueba a la vez por base SQLite, también entre procesos; bloqueo de trabajo
+con caducidad de 6 minutos y deadline del turno de 5 minutos. No hay doble ejecución
+automática ni reintentos del proveedor. Bases SQLite independientes no comparten
+este presupuesto ni bloqueo; el piloto asume un volumen de base compartido.
+
+### 11.3 Decisiones y límites de esta implementación
+
+- Adaptador HTTP directo al endpoint oficial, sin SDK ni reintentos implícitos.
+  Versión fijada `jev-1.13.0`, validación de modelo, IDs, enums, números, suma de
+  probabilidades y coherencia de opción ganadora. Errores sin cuerpo del proveedor.
+- Timeout configurable: 5 s por defecto, 0,5–30 s permitidos. Se amplía respecto a
+  la propuesta inicial de 2 s para medir desde el VPS; no constituye un SLA.
+- Umbrales provisionales de laboratorio: confianza ≥0,7, opción ganadora ≥0,8 y
+  margen ≥0,2. **No están calibrados por etapa/idioma**; se registra la distribución
+  para evaluarlos antes de ampliar. Incertidumbre produce abstención.
+- El renderizador factual solo cubre los fixtures de cifras finitas, fechas únicas
+  y unidades coincidentes. No habilita aún todos los casos de informes arbitrarios
+  (empates, censura, conversiones, identidad del informe).
+- Las explicaciones tienen hasta seis afirmaciones con IDs de fuentes existentes;
+  el servidor construye las citas. No hay campo libre de respuesta fuera del
+  contrato. La generación no recibe las magnitudes personales sintéticas.
+- J2 no puede eliminar la cautela `s2` vinculada a `s1` en estos fixtures. Esa
+  relación editorial es explícita del banco, no una política general de corpus.
+- Guardrail distinto de `safe` o contrato inválido produce abstención, sin
+  reparación en B/C. J3 analiza la relación textual por afirmación después del
+  guardrail: sus desacuerdos se observan offline. Un fallo de proveedor detiene
+  la prueba y queda como indisponibilidad, no como aprobación.
+
+La telemetría añade etapas `jev_route`, `jev_evidence`, `jev_support` y proveedor
+`typesafe`. El panel separa llamadas y tokens por proveedor, muestra tiempos y
+permite exportar decisiones. No calcula euros ni equipara los tokens totales de
+proveedores con políticas de facturación diferentes. Los registros generales del
+experimento contienen versión/caso/idioma/variante y consumo, sin prompts ni cifras.
+
+### 11.4 Qué debe hacer el administrador en el VPS
+
+1. Crear una API key de TypeSafe y guardarla en el servidor; nunca enviarla por
+   chat ni incluirla en git. Mantener también configurado el proveedor principal.
+2. Tras subir y descargar esta revisión, editar **`infra/.env`**:
+
+   ```dotenv
+   CHAT_EXPERIMENTS_ENABLED=true
+   TYPESAFE_API_KEY=clave_real_solo_en_el_servidor
+   TYPESAFE_MODEL=jev-1.13.0
+   TYPESAFE_TIMEOUT_MS=5000
+   CHAT_EXPERIMENT_DAILY_CALLS=120
+   ```
+
+   `ADMIN_EMAILS` debe incluir el correo exacto de la cuenta con sesión.
+   `LLM_DISABLED` no debe estar activo. El origen público debe corresponder a
+   `PUBLIC_URL` (Compose lo pasa como `NEXT_PUBLIC_APP_URL`). No cambiar claves
+   de Mistral, cifrado ni autenticación.
+3. Desde `infra`: `docker compose --env-file .env up -d --build web`.
+4. Abrir `/admin/chat-experiments` o **Jev · Lab** en el encabezado de administrador.
+   «Configurado» solo significa que hay una clave; la primera llamada verifica
+   realmente que el proveedor la acepta.
+5. Ejecutar el mismo caso e idioma por separado con A, B y C. «Nueva sesión» no
+   llama a proveedores; «Ejecutar este paso» sí consume presupuesto. Exportar el
+   JSON de cada sesión antes de cerrar/recargar el panel.
+6. Comenzar por «Último resultado»: B usa plantilla; C añade J1. Revisar fecha,
+   cifra, unidad y fuente. Después probar definición y seguimiento, insuficiencia,
+   ambigüedad y crisis en ambos idiomas. Revisar manualmente cobertura, fidelidad,
+   cautelas y abstenciones, además del tiempo y las llamadas.
+
+Logs: `docker compose logs --since=30m --no-log-prefix web | grep -F '[chat-experiment] usage '`.
+Para cerrar el laboratorio: `CHAT_EXPERIMENTS_ENABLED=false` y recrear `web`.
+El endpoint de chat libre no se activa para Jev mediante este flag ni esta clave.
+
+### 11.5 Verificación y trabajo posterior
+
+`test:chat-experiments` usa HTTP, índices y servicios simulados y SQLite temporal.
+Verifica validación del proveedor, errores/cancelación, límite antes de emitir
+llamadas, reserva persistente, propietario/caducidad/pasos, exclusión mutua,
+permiso admin, origen, cuotas, rechazo de campos libres, plantilla ES/DE,
+preservación de cautelas y bloqueo común de seguridad. Las suites de telemetría,
+variantes y acceso comprueban que el chat público conserva sus controles.
+La compilación de producción de Next.js también se ha completado localmente.
+
+Pendiente con credenciales del operador: prueba real de conexión, evaluación de
+calidad por idioma, medidas repetidas y calibración. Después: banco más amplio y
+reservado, selección de informes generales, extracción de filtros comunes para
+QMD y ruta solo corpus, revisión contractual antes de datos reales. La integración
+de ese recorrido con QMD medirá latencia del VPS; este laboratorio de fuentes
+fijas aísla la contribución de decisiones y generación.
+
+Contrato implementado contra la [API oficial de TypeSafe](https://docs.typesafe.ai/api)
+y la versión de [modelos documentada](https://docs.typesafe.ai/models), comprobadas
+el 2026-09-21. No se ha enviado ninguna petición real a TypeSafe durante el desarrollo.

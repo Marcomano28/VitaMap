@@ -51,6 +51,10 @@ services:
       BETTER_AUTH_URL: ${PUBLIC_URL:?PUBLIC_URL required}
       ADMIN_EMAILS: ${ADMIN_EMAILS:-}
       CHAT_EXPERIMENTS_ENABLED: ${CHAT_EXPERIMENTS_ENABLED:-false}
+      TYPESAFE_API_KEY: ${TYPESAFE_API_KEY:-}
+      TYPESAFE_MODEL: ${TYPESAFE_MODEL:-jev-1.13.0}
+      TYPESAFE_TIMEOUT_MS: ${TYPESAFE_TIMEOUT_MS:-5000}
+      CHAT_EXPERIMENT_DAILY_CALLS: ${CHAT_EXPERIMENT_DAILY_CALLS:-120}
       # Módulo de cuestionarios /assess (B.1). Apagado salvo "true" explícito.
       ASSESSMENTS_ENABLED: ${ASSESSMENTS_ENABLED:-false}
       # Guía educativa y acotación de KB por marcador. Ambos quedan apagados
