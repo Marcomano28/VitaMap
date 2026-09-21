@@ -75,7 +75,7 @@ export function ExperimentPanel(props: {
       {session.results.map((result, index) => <article key={index} className="space-y-2 border-t pt-3">
         <p className="font-medium">{session.turns[index].message}</p>
         <p className="whitespace-pre-wrap">{result.answer?.text ?? result.error}</p>
-        {result.answer && <p className="text-sm">{result.answer.route} · {result.answer.disposition} · J3: {result.answer.supportMode}</p>}
+        {result.answer && <p className="text-sm">{result.answer.route} · {result.answer.disposition} · {result.answer.routingSource ?? "current"} · J3: {result.answer.supportMode}</p>}
         {result.metrics && <table className="w-full text-left text-sm"><thead><tr><th>{de ? "Anbieter" : "Proveedor"}</th><th>{de ? "Aufrufe" : "Llamadas"}</th><th>Tokens*</th></tr></thead><tbody>{["external", "local", "typesafe"].map(provider => {
           const calls = result.metrics!.calls.filter(c => c.provider === provider);
           if (!calls.length) return null;

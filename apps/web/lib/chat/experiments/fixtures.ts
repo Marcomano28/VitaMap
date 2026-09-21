@@ -1,7 +1,7 @@
 import type { RetrievedChunk } from "../../qmd";
 import type { LabSeries } from "../../lab-visualization";
 
-export const EXPERIMENT_VERSION = "synthetic-jev-v1";
+export const EXPERIMENT_VERSION = "synthetic-jev-v2";
 export const MAX_EXPERIMENT_CALLS = 6;
 export type ExperimentVariant = "current" | "control" | "jev";
 export type ExperimentLocale = "es" | "de";

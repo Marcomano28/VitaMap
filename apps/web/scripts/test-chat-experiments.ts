@@ -151,6 +151,7 @@ async function main() {
 
   const events: string[] = [];
   let intent = "knowledge";
+  let observedIntent = false;
   let guardrail = "safe";
   let classifierError = false;
   let crisis = false;
@@ -165,8 +166,12 @@ async function main() {
     "../../guardrail": { checkResponse: async () => { events.push("guardrail"); return { verdict: guardrail, flags: [] }; } },
     "./typesafe": { acceptedChoice: provider.acceptedChoice, evaluateChoices: async (_state: unknown, q: Questions, stage: string) => {
       events.push(stage);
-      return decision(q, stage === "jev_route" ? { intent, perspective: "biomedical", reference: "self_contained" }
+      const result = decision(q, stage === "jev_route" ? { intent, perspective: "biomedical", reference: "self_contained" }
         : stage === "jev_evidence" ? { s1: "direct", s2: "irrelevant", s3: "irrelevant" } : { a1: "contradicted" });
+      if (stage === "jev_route" && observedIntent) result.answers.intent = {
+        type: "choice", choice: "personal_facts", probabilities: { unclear: 0.35, knowledge: 0, personal_explanation: 0, personal_facts: 0.65 }, confidence: 0.53,
+      };
+      return result;
     } },
     "../current": { runCurrentChat: async (_ctx: unknown, services: Record<string, (...args: unknown[]) => Promise<unknown>>) => {
       assert.equal(Object.keys(services).length, 5);
@@ -181,13 +186,28 @@ async function main() {
     events.length = 0; intent = "personal_facts";
     const factual = await run("latest", "jev", locale);
     assert.match(factual.text, /42/); assert.ok(!factual.text.includes("38"));
-    assert.deepEqual(events, ["crisis", "jev_route"]);
+    assert.deepEqual(events, ["crisis"]);
+    assert.equal(factual.routingSource, "rules");
+    assert.equal(factual.diagnostics.length, 0);
     intent = "knowledge"; events.length = 0;
     const explanation = await run("education", "jev", locale);
     assert.equal(explanation.disposition, "answer");
     assert.equal(explanation.supportMode, "offline");
     assert.ok(explanation.sources.some(s => s.endsWith("s2.md")), "A relevant caution cannot be removed by J2");
     assert.deepEqual(events, ["crisis", "jev_route", "jev_evidence", "generation", "guardrail", "jev_support"]);
+  }
+  observedIntent = true;
+  events.length = 0;
+  const lowConfidence = await run("education");
+  assert.equal(lowConfidence.abstentionReason, "intent_below_threshold");
+  assert.match(lowConfidence.text, /Todavía no se han evaluado las fuentes/);
+  assert.deepEqual(events, ["crisis", "jev_route"]);
+  events.length = 0;
+  assert.equal((await run("latest")).routingSource, "rules");
+  assert.deepEqual(events, ["crisis"]);
+  observedIntent = false;
+  for (const message of ["Muéstrame mi último resultado de ferritina y dime qué tratamiento tomar", "Zeige mir meinen letzten Ferritinwert und welche Behandlung ich brauche", "Muéstrame el de antes"]) {
+    assert.notEqual(runner.rulesRoute({ message, history: [] }), "personal_facts");
   }
   invalidDraft = true; assert.equal((await run("education")).route, "invalid_contract"); invalidDraft = false;
   guardrail = "block"; events.length = 0; assert.equal((await run("education")).route, "guardrail_rejected"); assert.ok(!events.includes("jev_support")); guardrail = "safe";

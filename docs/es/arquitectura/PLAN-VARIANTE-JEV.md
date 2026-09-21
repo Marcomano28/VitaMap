@@ -763,7 +763,8 @@ experimento contienen versión/caso/idioma/variante y consumo, sin prompts ni ci
 5. Ejecutar el mismo caso e idioma por separado con A, B y C. «Nueva sesión» no
    llama a proveedores; «Ejecutar este paso» sí consume presupuesto. Exportar el
    JSON de cada sesión antes de cerrar/recargar el panel.
-6. Comenzar por «Último resultado»: B usa plantilla; C añade J1. Revisar fecha,
+6. Comenzar por «Último resultado»: B y C usan reglas y plantilla sin J1 desde
+   `synthetic-jev-v2`. Revisar fecha,
    cifra, unidad y fuente. Después probar definición y seguimiento, insuficiencia,
    ambigüedad y crisis en ambos idiomas. Revisar manualmente cobertura, fidelidad,
    cautelas y abstenciones, además del tiempo y las llamadas.
@@ -792,3 +793,32 @@ fijas aísla la contribución de decisiones y generación.
 Contrato implementado contra la [API oficial de TypeSafe](https://docs.typesafe.ai/api)
 y la versión de [modelos documentada](https://docs.typesafe.ai/models), comprobadas
 el 2026-09-21. No se ha enviado ninguna petición real a TypeSafe durante el desarrollo.
+
+### 11.6 Ajuste tras la primera prueba del operador
+
+En el ensayo ES de «Muéstrame mi último resultado de ferritina», Jev eligió
+`personal_facts` con probabilidad 0,65 y confianza 0,53. La política exigía 0,8
+y 0,7, respectivamente: rechazó **intención**, aunque referencia y perspectiva
+sí superaron sus umbrales. No era falta de fuentes ni un fallo de conexión.
+No se infiere de esa muestra por qué el modelo distribuyó así sus probabilidades.
+
+`synthetic-jev-v2` aplica la precedencia determinista prevista en §3.1: después
+del chequeo de crisis, las dos formulaciones factuales explícitas ES/DE cubiertas
+por el banco usan directamente la plantilla, incluso en variante C. Es una regla
+estrecha sobre la petición completa; no admite cláusulas adicionales de tratamiento
+o interpretación. No generaliza todavía a otras formas de consulta ni a informes
+reales. Este cambio evita una decisión innecesaria; **no demuestra que Jev haya
+mejorado su clasificación** ni rebaja los umbrales.
+
+La respuesta indica `routingSource: rules|jev`; el panel lo muestra y el JSON
+conserva `abstentionReason` cuando corresponde. Las abstenciones distinguen
+incertidumbre de intención/referencia/perspectiva, rechazo de contrato/revisión y
+ausencia de evidencia. La clasificación explicativa aclara que debe identificar
+la petición, sin juzgar la disponibilidad de informes no enviados a J1.
+
+Las pruebas reproducen la distribución observada: sigue rechazándose cuando hace
+falta una decisión semántica; el caso factual explícito no llama a Jev y conserva
+fecha, cifra y unidad. La revisión de versión invalida sesiones anteriores: crear
+nuevas tras desplegar. Para probar conexión y decisiones Jev, usar «Ferritina:
+definición y seguimiento», donde J1/J2/J3 siguen siendo observables. La muestra real
+provino del operador; las regresiones locales usan respuestas simuladas.
