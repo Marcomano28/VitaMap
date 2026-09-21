@@ -7,6 +7,7 @@
 
 import { getEnv } from "./env";
 import { LlmRateLimitError, parseRetryAfter } from "./llm-errors";
+import { beginLlmMeasurement, type LlmStage } from "./chat/telemetry";
 
 // =====================================================================
 // Tipos
@@ -18,6 +19,7 @@ export interface ChatMessage {
 }
 
 export interface ChatRequest {
+  stage?: LlmStage;
   messages: ChatMessage[];
   temperature?: number;
   maxTokens?: number;
@@ -146,39 +148,53 @@ function jsonSchemaFormat(
 export async function chat(req: ChatRequest): Promise<string> {
   const env = getEnv();
   const signal = req.signal ?? AbortSignal.timeout(300_000);
-  const res = await fetch(`${env.LLM_BASE_URL}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${env.LLM_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: env.LLM_MODEL,
-      messages: req.messages,
-      temperature: req.temperature ?? 0.4,
-      max_tokens: req.maxTokens ?? 1024,
-      stream: false,
-      ...llamaCppExtras(env.LLM_PROVIDER),
-      ...jsonSchemaFormat(env.LLM_PROVIDER, req.jsonSchema),
-    }),
-    signal,
-  });
+  const finish = beginLlmMeasurement(req.stage ?? "unclassified", env.LLM_PROVIDER);
+  let httpStatus: number | undefined;
+  let usage: CompletionResponse["usage"];
+  let outcome: "ok" | "rate_limited" | "aborted" | "error" = "error";
+  try {
+    const res = await fetch(`${env.LLM_BASE_URL}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${env.LLM_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: env.LLM_MODEL,
+        messages: req.messages,
+        temperature: req.temperature ?? 0.4,
+        max_tokens: req.maxTokens ?? 1024,
+        stream: false,
+        ...llamaCppExtras(env.LLM_PROVIDER),
+        ...jsonSchemaFormat(env.LLM_PROVIDER, req.jsonSchema),
+      }),
+      signal,
+    });
+    httpStatus = res.status;
 
-  if (res.status === 429) {
-    await res.body?.cancel().catch(() => undefined);
-    throw new LlmRateLimitError(parseRetryAfter(res.headers.get("retry-after")));
-  }
-  if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    throw new Error(`LLM error ${res.status}: ${body.slice(0, 500)}`);
-  }
+    if (res.status === 429) {
+      await res.body?.cancel().catch(() => undefined);
+      throw new LlmRateLimitError(parseRetryAfter(res.headers.get("retry-after")));
+    }
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      throw new Error(`LLM error ${res.status}: ${body.slice(0, 500)}`);
+    }
 
-  const data = (await res.json()) as CompletionResponse;
-  const content = data.choices?.[0]?.message?.content;
-  if (typeof content !== "string") {
-    throw new Error("LLM response missing choices[0].message.content");
+    const data = (await res.json()) as CompletionResponse;
+    usage = data.usage;
+    const content = data.choices?.[0]?.message?.content;
+    if (typeof content !== "string") {
+      throw new Error("LLM response missing choices[0].message.content");
+    }
+    outcome = "ok";
+    return content;
+  } catch (error) {
+    outcome = error instanceof LlmRateLimitError ? "rate_limited" : signal.aborted ? "aborted" : "error";
+    throw error;
+  } finally {
+    finish({ outcome, httpStatus, usage });
   }
-  return content;
 }
 
 /**

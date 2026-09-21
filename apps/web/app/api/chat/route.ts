@@ -14,6 +14,7 @@ import { ChatBody, type ChatInput } from "@/lib/chat/request";
 import { resolveChatVariant } from "@/lib/chat/variant";
 import { runCurrentChat } from "@/lib/chat/current";
 import { llmRateLimitResult } from "@/lib/chat/rate-limit-response";
+import { withChatTelemetry } from "@/lib/chat/telemetry";
 
 export const runtime = "nodejs"; // @tobilu/qmd y better-sqlite3 son nativos
 
@@ -31,6 +32,10 @@ export const runtime = "nodejs"; // @tobilu/qmd y better-sqlite3 son nativos
  * Sin modo demostración, sin sesión no hay respuesta: 401.
  */
 export async function POST(req: Request) {
+  return withChatTelemetry(() => handlePost(req));
+}
+
+async function handlePost(req: Request) {
   const startedAt = Date.now();
   const deadline = AbortSignal.any([
     req.signal,

@@ -522,3 +522,73 @@ correr también por separado y evitar que ambas ejecuciones compitan por CPU/QMD
 Verificación de esta base: `test:chat-variants`, typecheck, `check:data-access`
 y suites de política/respuesta factual, demo y cuotas. Las pruebas de ruta usan
 fakes; no constituyen una prueba extremo a extremo contra Next.js, QMD o un LLM.
+
+## 10. Medición del recorrido actual antes de integrar Jev
+
+Implementada el 2026-09-21 en el código local; su disponibilidad en el VPS requiere
+desplegar esta revisión. No activa Jev ni modifica las decisiones de seguridad,
+las cuotas o el número de llamadas. Es el primer paso para medir qué trabajo
+conviene evitar o trasladar.
+
+`lib/chat/telemetry.ts` mantiene un colector por petición con `AsyncLocalStorage`.
+El cliente `chat()` registra cada intento HTTP y conserva su contrato de retorno.
+Al terminar un turno que haya hecho inferencia, incluso con error, `/api/chat`
+emite una línea JSON precedida por `[chat] llm_usage`:
+
+- `schemaVersion: 1`, hora de inicio, duración total y estado HTTP del turno.
+- `llmCalls`: intentos completados, incluidos los fallidos; no es una cuota ni
+  una cantidad facturada.
+- `calls`: etapa (`crisis`, `query_rewrite`, `generation`, `guardrail`,
+  `response_rewrite`), proveedor configurado (`local`/`external`), desplazamiento
+  desde el inicio, duración, estado HTTP del proveedor y resultado
+  (`ok`, `rate_limited`, `aborted`, `error`). `unclassified` permite detectar una
+  futura llamada sin etiqueta. Las reparaciones aparecen como llamadas separadas.
+- Tokens de entrada, salida y total comunicados por el proveedor, por llamada y
+  sumados. `reported: null` significa que no hay consumo informado, nunca cero.
+  `callsWithUsage` y `callsWithoutUsage` indican la cobertura de cada suma:
+  si falta uso de alguna llamada, el importe informado es parcial.
+
+El registro no contiene preguntas, respuestas, valores analíticos, fuentes,
+identificadores de personas, URLs del proveedor, claves ni textos de error.
+No se añaden datos a la respuesta pública ni a la memoria. Un fallo al emitir
+la telemetría no impide responder. Los turnos rechazados antes de inferencia no
+emiten esta línea. Esta garantía se refiere al nuevo registro de consumo; no
+equivale a una revisión de todos los logs existentes.
+
+**Alcance:** llamadas no streaming al LLM principal dentro de `/api/chat`.
+No contabiliza embeddings, modelos internos de QMD, extracción de documentos,
+otros endpoints ni futuros usos de Jev. La duración total incluye el resto del
+turno; las duraciones por llamada miden petición y lectura de respuesta del LLM.
+No calcula euros ni identifica qué límite concreto causó un 429. Tampoco observa
+consumo de otras aplicaciones que compartan la organización del proveedor.
+
+Desde el directorio de Compose usado en el VPS, después del despliegue:
+
+```sh
+docker compose logs --since=30m --no-log-prefix web | grep -F '[chat] llm_usage '
+```
+
+No hace falta activar `RETRIEVAL_DEBUG` ni añadir una API key. Para obtener una
+línea base comparable, usar casos sintéticos: pregunta independiente, seguimiento
+con historial y consulta factual de una analítica de prueba. Registrar la revisión
+de código y el modelo configurado junto al informe de pruebas. La instrumentación
+se activa también en el uso ordinario, con el mismo esquema sin contenido.
+
+Orden de trabajo a partir de esa línea base:
+
+1. Comparar número de llamadas, tokens informados, tiempos por etapa y frecuencia
+   de reparaciones. Separar turnos con errores y consumo incompleto.
+2. Implementar y evaluar rutas que eviten trabajo innecesario: reescritura solo
+   cuando exista dependencia contextual y respuesta factual mediante plantilla.
+   Mantener los controles de seguridad y las pruebas de calidad.
+3. Regular cadencia/concurrencia del proveedor con sus límites efectivos;
+   coordinar entre réplicas si las hubiera. El limitador actual por usuario no
+   sustituye ese control compartido. Evitar reintentos inmediatos en cascada.
+4. Incorporar Jev en el runner sintético del §9 y ampliar la medición por proveedor.
+   Comparar llamadas a Mistral, llamadas totales, calidad, latencia y coste real:
+   trasladar una decisión puede aliviar Mistral sin reducir las llamadas totales.
+
+Verificado sin peticiones reales al proveedor con `test:chat-telemetry`,
+`test:chat-variants` y typecheck. Se comprueban aislamiento entre turnos
+concurrentes, ausencia de contenido en la telemetría, consumo desconocido,
+429, errores de transporte, cancelación y conservación del número de llamadas.

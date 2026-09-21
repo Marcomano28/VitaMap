@@ -162,6 +162,7 @@ export async function checkResponse(
     ? `FUENTES PROPORCIONADAS:\n${sourceContext}\n\nRESPUESTA A REVISAR:\n${text}`
     : text;
   const raw = await chat({
+    stage: "guardrail",
     messages: [
       { role: "system", content: GUARDRAIL_CLASSIFIER_PROMPT },
       { role: "user", content: reviewInput },
@@ -237,6 +238,7 @@ export async function rewriteSocratic(
     ? `FUENTES PROPORCIONADAS:\n${sourceContext}\n\nTEXTO A REESCRIBIR:\n${text}${targetedCorrection}`
     : `${text}${targetedCorrection}`;
   return chat({
+    stage: "response_rewrite",
     messages: [
       { role: "system", content: REWRITE_PROMPT[locale] },
       { role: "user", content: rewriteInput },

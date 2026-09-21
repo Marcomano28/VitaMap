@@ -178,6 +178,7 @@ export async function runCurrentChat(context: ChatExecutionContext): Promise<Cha
   console.info("[chat] generation started");
   try {
     draft = await chat({
+      stage: "generation",
       messages,
       temperature: 0.4,
       maxTokens: responseTokenBudget(body.message),

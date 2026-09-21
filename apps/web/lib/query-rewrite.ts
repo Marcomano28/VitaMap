@@ -86,6 +86,7 @@ export async function resolveRetrievalQuery(
     }: ${message.replace(/\s+/g, " ").trim().slice(0, MAX_TURN_CHARS)}`;
 
     const raw = await chat({
+      stage: "query_rewrite",
       messages: [
         { role: "system", content: REWRITE_SYSTEM_PROMPT[locale] },
         { role: "user", content: userContent },

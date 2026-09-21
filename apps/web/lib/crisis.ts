@@ -83,6 +83,7 @@ export async function detectCrisis(
       { role: "user", content: collectUserText(message, history) },
     ];
     const raw = await chat({
+      stage: "crisis",
       messages,
       temperature: 0,
       maxTokens: 60,

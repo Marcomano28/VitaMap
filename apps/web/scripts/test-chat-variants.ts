@@ -5,6 +5,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
 import ts from "typescript";
+import { withChatTelemetry } from "../lib/chat/telemetry";
 import { ChatBody } from "../lib/chat/request";
 import { resolveChatVariant } from "../lib/chat/variant";
 import { llmRateLimitResult } from "../lib/chat/rate-limit-response";
@@ -36,6 +37,7 @@ function harness(options: {
   const subject = { actor: "actor_123", subject: "subject_456", anonymous: !!options.anonymous, quotaKey: "quota_123", quotaTier: "user" };
   const answer = { text: "Respuesta sintética", citations: [], guardrail: { verdict: "safe", flags: [] }, depth: "understand", editorialComposed: false, topics: [] };
   const dependencies: Record<string, unknown> = {
+    "@/lib/chat/telemetry": { withChatTelemetry },
     "next/server": { NextResponse: { json: (body: unknown, init?: ResponseInit) => Response.json(body, init) } },
     "@/lib/editorial-composition": { inferEditorialDepth: (_message: string, depth: string) => depth },
     "@/lib/audit": { logAuditEventSafe: async () => { events.push("audit"); } },
