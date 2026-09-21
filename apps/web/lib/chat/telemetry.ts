@@ -14,8 +14,57 @@ type Call = {
   outputTokens: number | null;
   totalTokens: number | null;
 };
-type Scope = { start: number; closed: boolean; calls: Call[] };
+export type ChatStage =
+  | "query_resolution" | "scope_resolution" | "qmd_retrieval"
+  | "memory_store" | "kb_store" | "memory_search" | "kb_search" | "kb_lens_search"
+  | "memory_documents" | "kb_documents" | "kb_lens_documents" | "evidence_selection"
+  | "editorial_composition" | "personal_context" | "prompt_preparation";
+type Span = {
+  stage: ChatStage;
+  offsetMs: number;
+  durationMs: number;
+  outcome: "ok" | "error" | "unfinished";
+};
+type Scope = { start: number; closed: boolean; calls: Call[]; spans: Span[] };
 const storage = new AsyncLocalStorage<Scope>();
+
+function beginChatStage(stage: ChatStage) {
+  const scope = storage.getStore();
+  const start = performance.now();
+  const span: Span = { stage, offsetMs: scope ? Math.round(start - scope.start) : 0, durationMs: 0, outcome: "unfinished" };
+  if (scope && !scope.closed) scope.spans.push(span);
+  return (outcome: "ok" | "error") => {
+    if (!scope || scope.closed) return;
+    span.durationMs = Math.round(performance.now() - start);
+    span.outcome = outcome;
+  };
+}
+
+/** Nested/parallel spans are wall times, not additive costs. Only fixed labels
+ * are recorded; values returned by work and thrown errors never enter the log. */
+export async function measureChatStage<T>(stage: ChatStage, work: () => Promise<T>): Promise<T> {
+  const finish = beginChatStage(stage);
+  try {
+    const value = await work();
+    finish("ok");
+    return value;
+  } catch (error) {
+    finish("error");
+    throw error;
+  }
+}
+
+export function measureChatStageSync<T>(stage: ChatStage, work: () => T): T {
+  const finish = beginChatStage(stage);
+  try {
+    const value = work();
+    finish("ok");
+    return value;
+  } catch (error) {
+    finish("error");
+    throw error;
+  }
+}
 
 function tokens(value: unknown): number | null {
   return typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : null;
@@ -53,22 +102,24 @@ function tokenSummary(calls: Call[], field: "inputTokens" | "outputTokens" | "to
 }
 
 export type ChatTelemetry = {
-  schemaVersion: 1;
+  schemaVersion: 2;
   startedAt: string;
   durationMs: number;
   responseStatus: number;
   llmCalls: number;
   calls: Call[];
+  spans: Span[];
   tokens: Record<"input" | "output" | "total", ReturnType<typeof tokenSummary>>;
 };
 
 /** Request-local collection, including failures. No new inference or retries.
- * Non-streaming chat calls only; embeddings/QMD and ingestion are out of scope. */
+ * Token usage covers non-streaming chat only. QMD spans measure wall time,
+ * never tokens of its internal models. Ingestion is out of scope. */
 export async function withChatTelemetry<T extends { status: number }>(
   run: () => Promise<T>,
   emit: (summary: ChatTelemetry) => void = summary => console.info("[chat] llm_usage " + JSON.stringify(summary)),
 ): Promise<T> {
-  const scope: Scope = { start: performance.now(), closed: false, calls: [] };
+  const scope: Scope = { start: performance.now(), closed: false, calls: [], spans: [] };
   const startedAt = new Date().toISOString();
   return storage.run(scope, async () => {
     let responseStatus = 500;
@@ -78,13 +129,19 @@ export async function withChatTelemetry<T extends { status: number }>(
       return response;
     } finally {
       scope.closed = true;
-      // Requests rejected before inference don't need a provider usage record.
-      if (scope.calls.length) {
+      const durationMs = Math.round(performance.now() - scope.start);
+      // Parallel work may still be running when a sibling rejects. Report its
+      // elapsed time as unfinished and prevent later mutation of this snapshot.
+      for (const span of scope.spans) {
+        if (span.outcome === "unfinished") span.durationMs = Math.max(0, durationMs - span.offsetMs);
+      }
+      // Requests rejected before instrumented work don't need a usage record.
+      if (scope.calls.length || scope.spans.length) {
         try {
           emit({
-            schemaVersion: 1, startedAt,
-            durationMs: Math.round(performance.now() - scope.start),
+            schemaVersion: 2, startedAt, durationMs,
             responseStatus, llmCalls: scope.calls.length, calls: scope.calls,
+            spans: scope.spans,
             tokens: {
               input: tokenSummary(scope.calls, "inputTokens"),
               output: tokenSummary(scope.calls, "outputTokens"),

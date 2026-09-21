@@ -532,10 +532,12 @@ conviene evitar o trasladar.
 
 `lib/chat/telemetry.ts` mantiene un colector por petición con `AsyncLocalStorage`.
 El cliente `chat()` registra cada intento HTTP y conserva su contrato de retorno.
-Al terminar un turno que haya hecho inferencia, incluso con error, `/api/chat`
+Al terminar un turno que haya hecho trabajo instrumentado, incluso con error, `/api/chat`
 emite una línea JSON precedida por `[chat] llm_usage`:
 
-- `schemaVersion: 1`, hora de inicio, duración total y estado HTTP del turno.
+- `schemaVersion: 2`, hora de inicio, duración total y estado HTTP del turno.
+  La versión 1, desplegada inicialmente, solo desglosaba llamadas al LLM;
+  la versión 2 añade `spans` para recuperación y preparación del contexto.
 - `llmCalls`: intentos completados, incluidos los fallidos; no es una cuota ni
   una cantidad facturada.
 - `calls`: etapa (`crisis`, `query_rewrite`, `generation`, `guardrail`,
@@ -551,12 +553,13 @@ emite una línea JSON precedida por `[chat] llm_usage`:
 El registro no contiene preguntas, respuestas, valores analíticos, fuentes,
 identificadores de personas, URLs del proveedor, claves ni textos de error.
 No se añaden datos a la respuesta pública ni a la memoria. Un fallo al emitir
-la telemetría no impide responder. Los turnos rechazados antes de inferencia no
-emiten esta línea. Esta garantía se refiere al nuevo registro de consumo; no
+la telemetría no impide responder. Los turnos rechazados antes de ejecutar trabajo
+instrumentado no emiten esta línea. Esta garantía se refiere al nuevo registro de consumo; no
 equivale a una revisión de todos los logs existentes.
 
-**Alcance:** llamadas no streaming al LLM principal dentro de `/api/chat`.
-No contabiliza embeddings, modelos internos de QMD, extracción de documentos,
+**Alcance:** llamadas no streaming al LLM principal y tiempos de recuperación
+y preparación dentro de `/api/chat`. No contabiliza tokens de embeddings ni de
+modelos internos de QMD, extracción de documentos,
 otros endpoints ni futuros usos de Jev. La duración total incluye el resto del
 turno; las duraciones por llamada miden petición y lectura de respuesta del LLM.
 No calcula euros ni identifica qué límite concreto causó un 429. Tampoco observa
@@ -592,3 +595,49 @@ Verificado sin peticiones reales al proveedor con `test:chat-telemetry`,
 `test:chat-variants` y typecheck. Se comprueban aislamiento entre turnos
 concurrentes, ausencia de contenido en la telemetría, consumo desconocido,
 429, errores de transporte, cancelación y conservación del número de llamadas.
+
+### 10.1 Localizar la espera antes de la generación
+
+Una primera muestra del VPS tardó 15.196 ms: 3.385 ms correspondían a tres
+llamadas al LLM y 11.785 ms al intervalo entre el fin del chequeo de crisis y
+el inicio de la generación. No basta para atribuir ese intervalo a QMD ni para
+establecer una latencia típica. Motiva el desglose añadido en la versión 2:
+
+| `spans[].stage` | Qué mide |
+|---|---|
+| `query_resolution` | Resolución de la consulta, incluida la reescritura LLM si ocurre |
+| `scope_resolution` | Determinación del ámbito temático |
+| `qmd_retrieval` | Recuperación dual completa; contiene los tramos siguientes de QMD |
+| `memory_store`, `kb_store` | Obtención del índice personal y del corpus: caché o espera de apertura |
+| `memory_search`, `kb_search` | Búsqueda en cada índice, con sus operaciones internas de QMD |
+| `kb_lens_search` | Búsqueda adicional por perspectiva, solo cuando está activa |
+| `memory_documents`, `kb_documents`, `kb_lens_documents` | Lectura de metadatos y transformación de resultados |
+| `evidence_selection` | Filtrado y preferencias sobre los candidatos |
+| `editorial_composition` | Composición de la ficha según profundidad |
+| `personal_context` | Selección de contexto personal, incluida la última analítica si se solicita |
+| `prompt_preparation` | Construcción del contexto y mensajes enviados al generador |
+
+Cada tramo registra desplazamiento desde el inicio, duración en milisegundos y
+resultado `ok`, `error` o `unfinished`. No registra consultas, documentos ni
+valores devueltos. `unfinished` significa que el turno terminó mientras una rama
+paralela seguía pendiente; su duración es la transcurrida hasta emitir el registro,
+no su tiempo final. La instrumentación no introduce cancelaciones ni reintentos.
+
+**No sumar todos los tiempos:** memoria y corpus se consultan en paralelo, y
+`qmd_retrieval` contiene sus subtramos. Del mismo modo, `query_resolution` puede
+contener una llamada ya contabilizada en `calls`. El tiempo de pared observado
+incluye posibles esperas y competencia por recursos; no mide CPU exclusivamente.
+Los tokens y `llmCalls` conservan su significado anterior.
+
+Para comparar, repetir una pregunta sintética independiente en conversaciones
+nuevas, primero tras el arranque normal del servicio y luego sin reiniciarlo.
+Esto permite observar diferencias compatibles con inicialización/caché, sin
+confundirlas con la reescritura de un seguimiento. Después medir un seguimiento
+y una consulta factual de prueba. Comparar varias muestras; no reducir controles
+de seguridad ni cambiar de modelo a partir de un único turno.
+
+La suite `test:chat-telemetry` ejecuta el adaptador QMD real con índices y archivos
+simulados: verifica búsquedas paralelas, reutilización de índices y conservación
+de resultados. También verifica errores, tramos sin LLM, aislamiento entre turnos
+y que una rama pendiente no modifique un registro ya emitido. No sustituye la
+medición de rendimiento del QMD real en el VPS.

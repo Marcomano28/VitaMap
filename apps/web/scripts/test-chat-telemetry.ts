@@ -2,10 +2,60 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
+import { createRequire } from "node:module";
 import ts from "typescript";
-import { beginLlmMeasurement, withChatTelemetry, type ChatTelemetry } from "../lib/chat/telemetry";
+import { beginLlmMeasurement, measureChatStage, measureChatStageSync, withChatTelemetry, type ChatTelemetry } from "../lib/chat/telemetry";
 import { LlmRateLimitError, parseRetryAfter } from "../lib/llm-errors";
 import type { ChatRequest } from "../lib/llm";
+import type { RagResult } from "../lib/qmd";
+
+async function testRetrieval(emit: (summary: ChatTelemetry) => void) {
+  // Execute the real QMD adapter with fake stores/files. Both search promises
+  // must start before either completes: instrumentation must preserve parallelism.
+  const realRequire = createRequire(new URL("../lib/qmd.ts", import.meta.url));
+  let opened = 0;
+  let searches = 0;
+  let release!: () => void;
+  const bothSearching = new Promise<void>(resolve => { release = resolve; });
+  const dependencies: Record<string, unknown> = {
+    "node:fs/promises": { mkdir: async () => {} },
+    "./env": { getEnv: () => ({ DATA_ROOT: "/synthetic-private-root", KB_INDEX_PATH: "/synthetic-private-root/kb.sqlite" }) },
+    "./frontmatter": { readPersonalFrontmatter: async () => ({}), readEvidenceFrontmatter: async () => ({}) },
+    "./chat/telemetry": { measureChatStage, measureChatStageSync },
+    "@tobilu/qmd": { createStore: async (options: { config: { collections: Record<string, unknown> } }) => {
+      opened++;
+      const collection = "memory" in options.config.collections ? "memory" : "kb";
+      return { search: async (options: { rerank: boolean; candidateLimit: number }) => {
+        assert.equal(options.rerank, false);
+        assert.equal(options.candidateLimit, 10);
+        searches++;
+        if (searches >= 2) release();
+        await bothSearching;
+        return [{ displayPath: `${collection}/synthetic-private.md`, bestChunk: "synthetic-private-document", score: 0.9 }];
+      } };
+    } },
+  };
+  const exports: { queryMemoryAndKB?: (user: string, query: string) => Promise<RagResult> } = {};
+  vm.runInNewContext(ts.transpileModule(fs.readFileSync(new URL("../lib/qmd.ts", import.meta.url), "utf8"), {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true },
+  }).outputText, {
+    exports, process: { env: {} }, console: { info() {}, error() {} },
+    require: (id: string) => Object.hasOwn(dependencies, id) ? dependencies[id] : realRequire(id),
+  });
+  let first: RagResult | undefined;
+  for (let i = 0; i < 2; i++) {
+    await withChatTelemetry(async () => {
+      const result = await measureChatStage("qmd_retrieval", () => exports.queryMemoryAndKB!("synthetic-private-user", "synthetic-private-query"));
+      assert.equal(result.personal[0].snippet, "synthetic-private-document");
+      assert.equal(result.evidence[0].snippet, "synthetic-private-document");
+      if (first) assert.deepEqual(result, first);
+      first = result;
+      return { status: 200 };
+    }, emit);
+  }
+  assert.equal(opened, 2, "Store reuse survives instrumentation");
+  assert.equal(searches, 4, "Exactly two searches per turn, without retries");
+}
 
 async function main() {
   const summaries: ChatTelemetry[] = [];
@@ -47,7 +97,7 @@ async function main() {
 
   // Deliberately interleave two turns: B finishes while A is waiting on HTTP.
   const a = withChatTelemetry(async () => {
-    assert.equal(await chat("synthetic-private-A", "generation"), "synthetic-private-answer");
+    assert.equal(await measureChatStage("query_resolution", () => chat("synthetic-private-A", "generation")), "synthetic-private-answer");
     await chat("no-usage", "guardrail");
     return { status: 200 };
   }, emit);
@@ -66,6 +116,9 @@ async function main() {
   assert.deepEqual(summaries[1].tokens.total, { reported: 12, callsWithUsage: 1, callsWithoutUsage: 1 });
   assert.equal(summaries[1].tokens.input.reported, 10);
   assert.equal(summaries[1].tokens.output.reported, 2);
+  assert.equal(summaries[0].spans.length, 0);
+  assert.equal(summaries[1].spans[0].stage, "query_resolution");
+  assert.equal(summaries[1].spans[0].outcome, "ok");
   assert.equal(fetches, 3, "Instrumentation must not add requests or retries");
 
   await assert.rejects(withChatTelemetry(async () => {
@@ -96,6 +149,54 @@ async function main() {
     await chat("ok", "crisis");
     return { status: 200 };
   }, () => { throw new Error("logger failed"); })).status, 200);
+
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  try {
+    await Promise.race([
+      testRetrieval(emit),
+      new Promise<never>((_, reject) => {
+        timeout = setTimeout(() => reject(new Error("Retrieval searches stopped running in parallel")), 5_000);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timeout);
+  }
+  for (const summary of summaries.slice(-2)) {
+    assert.equal(summary.schemaVersion, 2);
+    assert.equal(summary.llmCalls, 0, "QMD spans must not inflate LLM calls or tokens");
+    assert.equal(summary.tokens.total.reported, null);
+    assert.deepEqual(summary.spans.map(s => s.stage), ["qmd_retrieval", "memory_store", "kb_store", "memory_search", "kb_search", "memory_documents", "kb_documents", "kb_lens_documents", "evidence_selection"]);
+    assert.ok(summary.spans.every(s => s.outcome === "ok"));
+  }
+
+  // If one parallel branch fails, the other may outlive the response. It must
+  // remain explicitly unfinished in the emitted snapshot, even after resolving.
+  let finishPending!: () => void;
+  const pending = new Promise<void>(resolve => { finishPending = resolve; });
+  let lateWork!: Promise<void>;
+  const originalError = new Error("synthetic-private-error");
+  await assert.rejects(withChatTelemetry(async () => {
+    await measureChatStage("qmd_retrieval", () => {
+      lateWork = measureChatStage("memory_search", () => pending);
+      return Promise.all([
+        lateWork,
+        measureChatStage("kb_search", async () => { throw originalError; }),
+      ]);
+    });
+    return { status: 200 };
+  }, emit), error => error === originalError);
+  assert.deepEqual(summaries.at(-1)!.spans.map(s => s.outcome), ["error", "unfinished", "error"]);
+  const snapshot = JSON.stringify(summaries.at(-1));
+  finishPending();
+  await lateWork;
+  assert.equal(JSON.stringify(summaries.at(-1)), snapshot);
+  await withChatTelemetry(async () => {
+    const value = { content: "synthetic-private-value" };
+    assert.equal(measureChatStageSync("prompt_preparation", () => value), value);
+    assert.throws(() => measureChatStageSync("evidence_selection", () => { throw originalError; }), error => error === originalError);
+    return { status: 200 };
+  }, emit);
+  assert.deepEqual(summaries.at(-1)!.spans.map(s => s.outcome), ["ok", "error"]);
   const serialized = JSON.stringify(summaries);
   for (const secret of ["private", "messages", "content", "Authorization", "LLM_API_KEY"]) {
     assert.ok(!serialized.includes(secret), `Telemetry leaked ${secret}`);
@@ -105,6 +206,9 @@ async function main() {
     assert.ok(summary.durationMs >= 0);
     for (const call of summary.calls) {
       assert.ok(call.durationMs >= 0 && call.offsetMs >= 0);
+    }
+    for (const span of summary.spans) {
+      assert.ok(span.durationMs >= 0 && span.offsetMs >= 0);
     }
   }
   console.log("chat telemetry: isolation, privacy, usage coverage, errors and unchanged calls OK");

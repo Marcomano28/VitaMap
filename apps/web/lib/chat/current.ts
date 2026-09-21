@@ -16,6 +16,7 @@ import { isLatestLabRequest, isPersonalLabValueRequest, latestLabContext, person
 import type { ChatExecutionContext, ChatRunResult } from "./contract";
 import { LlmRateLimitError } from "../llm-errors";
 import { llmRateLimitResult } from "./rate-limit-response";
+import { measureChatStage, measureChatStageSync } from "./telemetry";
 
 /** Flujo actual extraído sin cambiar recuperación, prompts ni guardrail.
  * Solo se invoca tras las guardas comunes de /api/chat.
@@ -37,16 +38,17 @@ export async function runCurrentChat(context: ChatExecutionContext): Promise<Cha
     // Condense question con LLM; fallback automático a la heurística de
     // conversation-policy si la pasada falla (ver lib/query-rewrite.ts).
     const { query: retrievalQuery, method: queryMethod } =
-      await resolveRetrievalQuery(body.message, body.history, language.answerLocale);
+      await measureChatStage("query_resolution", () =>
+        resolveRetrievalQuery(body.message, body.history, language.answerLocale));
     // Scope por marcador: el mensaje actual manda; si no aporta tema, se mira
     // una ventana corta de mensajes previos del USUARIO (no del asistente).
     // La memoria personal no entra aquí (ver lib/marker-scope.ts `deriveScope`).
     const priorUserMessages = body.history
       .filter((m) => m.role === "user")
       .map((m) => m.content);
-    const scope = deriveScope(body.message, priorUserMessages);
+    const scope = measureChatStageSync("scope_resolution", () => deriveScope(body.message, priorUserMessages));
     scopedMarkers = [...scope.markers];
-    const result = await queryMemoryAndKB(userId, retrievalQuery, {
+    const result = await measureChatStage("qmd_retrieval", () => queryMemoryAndKB(userId, retrievalQuery, {
       limit: 3,
       minScore: 0.35,
       locale: language.contentLocale,
@@ -54,18 +56,18 @@ export async function runCurrentChat(context: ChatExecutionContext): Promise<Cha
       lens: [...scope.lens],
       healthAreas: [...scope.healthAreas],
       seccion: scope.seccion,
-    });
+    }));
     personal = result.personal;
     evidence =
       scope.lens.size === 0
         ? narrowToRequestedSection(result.evidence, scope.seccion)
         : result.evidence;
 
-    const composed = await composeRetrievedEvidence(
+    const composed = await measureChatStage("editorial_composition", () => composeRetrievedEvidence(
       kbDir(),
       evidence,
       editorialDepth,
-    );
+    ));
     evidence = composed.chunks;
     contentLocaleFallback = evidence.some((chunk) => chunk.contentLocaleFallback);
     if (composed.composedPath) {
@@ -79,12 +81,14 @@ export async function runCurrentChat(context: ChatExecutionContext): Promise<Cha
     // QMD ordena por relevancia. Para una petición singular de "última
     // analítica", la fecha es el contrato: sustituimos el ranking semántico
     // por el único informe lab_result con observed_at más reciente.
-    if (isLatestLabRequest(body.message)) {
-      const latest = await latestLabContext(userId);
-      if (latest.length > 0) personal = latest;
-    } else {
-      personal = personalContextForRequest(personal, personalLabRequest);
-    }
+    await measureChatStage("personal_context", async () => {
+      if (isLatestLabRequest(body.message)) {
+        const latest = await latestLabContext(userId);
+        if (latest.length > 0) personal = latest;
+      } else {
+        personal = personalContextForRequest(personal, personalLabRequest);
+      }
+    });
     console.info("[chat] retrieval complete", {
       durationMs: Date.now() - retrievalStartedAt,
       queryMethod,
@@ -118,59 +122,62 @@ export async function runCurrentChat(context: ChatExecutionContext): Promise<Cha
   }
 
   // -- Construcción del prompt -------------------------------------------
-  const contextBlock = [
-    personal.length > 0 ? wrapForPrompt(personal) : "",
-    evidence.length > 0 ? wrapForPrompt(evidence) : "",
-  ]
-    .filter(Boolean)
-    .join("\n\n");
+  const { contextBlock, messages } = measureChatStageSync("prompt_preparation", () => {
+    const contextBlock = [
+      personal.length > 0 ? wrapForPrompt(personal) : "",
+      evidence.length > 0 ? wrapForPrompt(evidence) : "",
+    ]
+      .filter(Boolean)
+      .join("\n\n");
 
-  const userContent = contextBlock
-    ? `${contextBlock}\n\n---\n\n${
-        language.answerLocale === "de" ? "Frage des Benutzers" : "Pregunta del usuario"
-      }:\n${body.message}`
-    : body.message;
+    const userContent = contextBlock
+      ? `${contextBlock}\n\n---\n\n${
+          language.answerLocale === "de" ? "Frage des Benutzers" : "Pregunta del usuario"
+        }:\n${body.message}`
+      : body.message;
 
-  const languageInstruction =
-    language.answerLocale === "de"
-      ? "Antworte auf Deutsch, auch wenn einzelne Quellen in einer anderen Sprache vorliegen. Wenn relevante deutsche oder europäische Quellen im Kontext vorhanden sind, bevorzuge sie in der Erklärung; wenn eine wichtige Quelle auf Englisch ist, behandle das transparent."
-      : "Responde en español, aunque alguna fuente esté en otro idioma.";
+    const languageInstruction =
+      language.answerLocale === "de"
+        ? "Antworte auf Deutsch, auch wenn einzelne Quellen in einer anderen Sprache vorliegen. Wenn relevante deutsche oder europäische Quellen im Kontext vorhanden sind, bevorzuge sie in der Erklärung; wenn eine wichtige Quelle auf Englisch ist, behandle das transparent."
+        : "Responde en español, aunque alguna fuente esté en otro idioma.";
 
-  const fallbackInstruction = contentLocaleFallback
-    ? localize(language.answerLocale, {
-        es: "No existe una versión editorial revisada de la tarjeta principal en el idioma solicitado. Traduce fielmente la versión de respaldo: conserva sus límites, fuentes y grado de certeza, y no añadas afirmaciones.",
-        de: "Für die Hauptkarte liegt keine redaktionell geprüfte Fassung in der gewünschten Sprache vor. Übertrage die Fallback-Fassung sinngenau: Bewahre Grenzen, Quellen und Gewissheitsgrad und füge keine Aussagen hinzu.",
-      })
-    : "";
+    const fallbackInstruction = contentLocaleFallback
+      ? localize(language.answerLocale, {
+          es: "No existe una versión editorial revisada de la tarjeta principal en el idioma solicitado. Traduce fielmente la versión de respaldo: conserva sus límites, fuentes y grado de certeza, y no añadas afirmaciones.",
+          de: "Für die Hauptkarte liegt keine redaktionell geprüfte Fassung in der gewünschten Sprache vor. Übertrage die Fallback-Fassung sinngenau: Bewahre Grenzen, Quellen und Gewissheitsgrad und füge keine Aussagen hinzu.",
+        })
+      : "";
 
-  const depthInstruction = localize(language.answerLocale, {
-    es:
-      editorialDepth === "discover"
-        ? "Usa lenguaje cotidiano, frases breves y explica todo término técnico. Conserva las cautelas y no infantilices."
-        : editorialDepth === "deep"
-          ? "Ofrece el mecanismo y los matices metodológicos disponibles en las fuentes, sin extrapolar al caso individual."
-          : "Explica con claridad el término correcto, el mecanismo esencial, el contexto y lo que no permite concluir.",
-    de:
-      editorialDepth === "discover"
-        ? "Verwende Alltagssprache und kurze Sätze und erkläre Fachbegriffe. Bewahre Einschränkungen und vermeide Bevormundung."
-        : editorialDepth === "deep"
-          ? "Erläutere die verfügbaren Mechanismen und methodischen Nuancen, ohne sie auf den Einzelfall zu übertragen."
-          : "Erkläre den korrekten Begriff, den wesentlichen Mechanismus, den Kontext und die Grenzen klar.",
+    const depthInstruction = localize(language.answerLocale, {
+      es:
+        editorialDepth === "discover"
+          ? "Usa lenguaje cotidiano, frases breves y explica todo término técnico. Conserva las cautelas y no infantilices."
+          : editorialDepth === "deep"
+            ? "Ofrece el mecanismo y los matices metodológicos disponibles en las fuentes, sin extrapolar al caso individual."
+            : "Explica con claridad el término correcto, el mecanismo esencial, el contexto y lo que no permite concluir.",
+      de:
+        editorialDepth === "discover"
+          ? "Verwende Alltagssprache und kurze Sätze und erkläre Fachbegriffe. Bewahre Einschränkungen und vermeide Bevormundung."
+          : editorialDepth === "deep"
+            ? "Erläutere die verfügbaren Mechanismen und methodischen Nuancen, ohne sie auf den Einzelfall zu übertragen."
+            : "Erkläre den korrekten Begriff, den wesentlichen Mechanismus, den Kontext und die Grenzen klar.",
+    });
+
+    // Regla educativa opcional: desactivable por configuración para poder
+    // apagar esta función interpretativa antes del piloto real (GUIA-OPERATIVA B-1).
+    const eduGuide =
+      process.env.ASSISTANT_EDU_GUIDE === "true" ? EDU_GUIDE_RULE : "";
+
+    const messages: ChatMessage[] = [
+      {
+        role: "system",
+        content: `${SOCRATIC_SYSTEM_PROMPT}${eduGuide}\n\n${languageInstruction}\n${fallbackInstruction}\n${depthInstruction}`,
+      },
+      ...body.history,
+      { role: "user", content: userContent },
+    ];
+    return { contextBlock, messages };
   });
-
-  // Regla educativa opcional: desactivable por configuración para poder
-  // apagar esta función interpretativa antes del piloto real (GUIA-OPERATIVA B-1).
-  const eduGuide =
-    process.env.ASSISTANT_EDU_GUIDE === "true" ? EDU_GUIDE_RULE : "";
-
-  const messages: ChatMessage[] = [
-    {
-      role: "system",
-      content: `${SOCRATIC_SYSTEM_PROMPT}${eduGuide}\n\n${languageInstruction}\n${fallbackInstruction}\n${depthInstruction}`,
-    },
-    ...body.history,
-    { role: "user", content: userContent },
-  ];
 
   // -- Llamada al LLM principal ------------------------------------------
   let draft: string;

@@ -13,6 +13,7 @@ import path from "node:path";
 import fs from "node:fs/promises";
 import { createStore, type QMDStore } from "@tobilu/qmd";
 import { getEnv } from "./env";
+import { measureChatStage, measureChatStageSync } from "./chat/telemetry";
 import {
   readEvidenceFrontmatter,
   readPersonalFrontmatter,
@@ -421,8 +422,8 @@ export async function queryMemoryAndKB(
   const minScore = opts.minScore ?? 0.3;
 
   const [userStore, kbStore] = await Promise.all([
-    getUserStore(userId),
-    getKbStore(),
+    measureChatStage("memory_store", () => getUserStore(userId)),
+    measureChatStage("kb_store", () => getKbStore()),
   ]);
 
   // Acotación por marcador (flag KB_MARKER_SCOPE, default off). Sin reranking
@@ -448,80 +449,82 @@ export async function queryMemoryAndKB(
   const lensKbSearches = normalizedSearchQueries(expandQueryForLens(query, lens));
 
   const [personalHits, evidenceHits, lensEvidenceHits] = await Promise.all([
-    userStore.search({
+    measureChatStage("memory_search", () => userStore.search({
       queries: userSearches,
       rerank: false,
       limit,
       minScore,
       candidateLimit: 10,
-    }),
-    kbStore.search({
+    })),
+    measureChatStage("kb_search", () => kbStore.search({
       queries: kbSearches,
       rerank: false,
       limit: kbLimit,
       minScore,
       candidateLimit: 10,
-    }),
+    })),
     lensSearchActive
-      ? kbStore.search({
+      ? measureChatStage("kb_lens_search", () => kbStore.search({
           queries: lensKbSearches,
           rerank: false,
           limit: Math.max(limit * 3, 9),
           minScore,
           candidateLimit: 10,
-        })
+        }))
       : Promise.resolve([] as RawHit[]),
   ]);
 
   const [personal, evidence, lensEvidence] = await Promise.all([
-    Promise.all(personalHits.map((h) => mapPersonalHit(userId, h))),
-    Promise.all(evidenceHits.map(mapEvidenceHit)),
-    Promise.all(lensEvidenceHits.map(mapEvidenceHit)),
+    measureChatStage("memory_documents", () => Promise.all(personalHits.map((h) => mapPersonalHit(userId, h)))),
+    measureChatStage("kb_documents", () => Promise.all(evidenceHits.map(mapEvidenceHit))),
+    measureChatStage("kb_lens_documents", () => Promise.all(lensEvidenceHits.map(mapEvidenceHit))),
   ]);
 
-  if (!markerScope) {
-    const contentLocalized = selectEvidenceForContentLocale(evidence, opts.locale);
-    const localizedEvidence = preferEvidenceForLocale(contentLocalized, opts.locale).slice(
-      0,
-      limit,
-    );
-    return { personal, evidence: localizedEvidence };
-  }
+  return measureChatStageSync("evidence_selection", () => {
+    if (!markerScope) {
+      const contentLocalized = selectEvidenceForContentLocale(evidence, opts.locale);
+      const localizedEvidence = preferEvidenceForLocale(contentLocalized, opts.locale).slice(
+        0,
+        limit,
+      );
+      return { personal, evidence: localizedEvidence };
+    }
 
-  // Marcadores en juego: los calcula la ruta de chat (mensaje actual + ventana
-  // corta de mensajes del usuario; ver lib/marker-scope.ts `deriveScope`). La
-  // memoria personal ya no abre el scope. Si el conjunto viene vacío,
-  // filterByMarkers no filtra.
-  const allowed = strongMarkers;
-  const markerFilteredEvidence = filterByMarkers(evidence, allowed);
-  const lateralLensEvidence = lensEvidence.filter((chunk) => matchesLens(chunk, lens));
-  const combinedEvidence = dedupeEvidenceChunks([
-    ...markerFilteredEvidence,
-    ...lateralLensEvidence,
-  ]);
-  // Preferencias suaves: locale -> area_de_salud -> seccion -> lens.
-  // El lente va al final porque, si la persona pide "desde Ayurveda/MTC",
-  // esa perspectiva debe subir incluso cuando el fraseo tambien active
-  // "interpretacion" o "factores".
-  const contentLocalized = selectEvidenceForContentLocale(combinedEvidence, opts.locale);
-  const localizedEvidence = preferEvidenceForLocale(contentLocalized, opts.locale);
-  const areaPreferredEvidence = applyHealthAreaPreference(localizedEvidence, healthAreas);
-  const seccionPreferredEvidence = applySeccionPreference(areaPreferredEvidence, opts.seccion);
-  const scopedEvidence = applyLensPreference(seccionPreferredEvidence, lens).slice(0, limit);
-  console.info("[chat] marker scope", {
-    before: evidence.length,
-    after: scopedEvidence.length,
-    lateralLens: lateralLensEvidence.length,
-    markers: allowed.size,
-    lens: lens.size,
-    healthAreas: healthAreas.size,
-    healthAreaActive,
-    locale: opts.locale,
-    contentLocaleFallbacks: scopedEvidence.filter(
-      (chunk) => chunk.contentLocaleFallback,
-    ).length,
+    // Marcadores en juego: los calcula la ruta de chat (mensaje actual + ventana
+    // corta de mensajes del usuario; ver lib/marker-scope.ts `deriveScope`). La
+    // memoria personal ya no abre el scope. Si el conjunto viene vacío,
+    // filterByMarkers no filtra.
+    const allowed = strongMarkers;
+    const markerFilteredEvidence = filterByMarkers(evidence, allowed);
+    const lateralLensEvidence = lensEvidence.filter((chunk) => matchesLens(chunk, lens));
+    const combinedEvidence = dedupeEvidenceChunks([
+      ...markerFilteredEvidence,
+      ...lateralLensEvidence,
+    ]);
+    // Preferencias suaves: locale -> area_de_salud -> seccion -> lens.
+    // El lente va al final porque, si la persona pide "desde Ayurveda/MTC",
+    // esa perspectiva debe subir incluso cuando el fraseo tambien active
+    // "interpretacion" o "factores".
+    const contentLocalized = selectEvidenceForContentLocale(combinedEvidence, opts.locale);
+    const localizedEvidence = preferEvidenceForLocale(contentLocalized, opts.locale);
+    const areaPreferredEvidence = applyHealthAreaPreference(localizedEvidence, healthAreas);
+    const seccionPreferredEvidence = applySeccionPreference(areaPreferredEvidence, opts.seccion);
+    const scopedEvidence = applyLensPreference(seccionPreferredEvidence, lens).slice(0, limit);
+    console.info("[chat] marker scope", {
+      before: evidence.length,
+      after: scopedEvidence.length,
+      lateralLens: lateralLensEvidence.length,
+      markers: allowed.size,
+      lens: lens.size,
+      healthAreas: healthAreas.size,
+      healthAreaActive,
+      locale: opts.locale,
+      contentLocaleFallbacks: scopedEvidence.filter(
+        (chunk) => chunk.contentLocaleFallback,
+      ).length,
+    });
+    return { personal, evidence: scopedEvidence };
   });
-  return { personal, evidence: scopedEvidence };
 }
 
 export async function reindexUser(userId: string): Promise<void> {
