@@ -14,6 +14,8 @@ import { displayMarker, selectInlineLabSeries } from "../health-map";
 import type { LabSeries } from "../lab-visualization";
 import { isLatestLabRequest, isPersonalLabValueRequest, latestLabContext, personalContextForRequest } from "../personal-context-policy";
 import type { ChatExecutionContext, ChatRunResult } from "./contract";
+import { LlmRateLimitError } from "../llm-errors";
+import { llmRateLimitResult } from "./rate-limit-response";
 
 /** Flujo actual extraído sin cambiar recuperación, prompts ni guardrail.
  * Solo se invoca tras las guardas comunes de /api/chat.
@@ -108,6 +110,7 @@ export async function runCurrentChat(context: ChatExecutionContext): Promise<Cha
       });
     }
   } catch (err) {
+    if (err instanceof LlmRateLimitError) return llmRateLimitResult(err.retryAfterSec);
     // Detalle solo al log del servidor: String(err) puede exponer rutas
     // del filesystem o internals de QMD al cliente.
     console.error("[chat] retrieval_failed", err);
@@ -184,6 +187,7 @@ export async function runCurrentChat(context: ChatExecutionContext): Promise<Cha
       durationMs: Date.now() - generationStartedAt,
     });
   } catch (err) {
+    if (err instanceof LlmRateLimitError) return llmRateLimitResult(err.retryAfterSec);
     console.error("[chat] llm_failed", err);
     return { status: 502, body: { error: "llm_failed" } };
   }
@@ -302,7 +306,8 @@ export async function runCurrentChat(context: ChatExecutionContext): Promise<Cha
         de: "Ich kann auf diese Anfrage keine sichere Antwort geben. Bitte besprich sie mit medizinischem Fachpersonal.",
       });
     }
-  } catch {
+  } catch (err) {
+    if (err instanceof LlmRateLimitError) return llmRateLimitResult(err.retryAfterSec);
     // Si el guardrail falla, fail-closed: bloquear con mensaje neutro.
     verdict = "block";
     finalText = localize(language.answerLocale, {

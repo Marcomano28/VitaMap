@@ -13,10 +13,12 @@
  * por un error de infraestructura disfrazaría una caída de aviso de
  * crisis. La regla conservadora "ante la duda, crisis" aplica a la
  * clasificación, no a los errores. El guardrail diagnóstico de la
- * respuesta sigue siendo fail-closed.
+ * respuesta sigue siendo fail-closed. Un 429 del proveedor se comunica como
+ * indisponibilidad: la ruta detiene el turno sin continuar la generación.
  */
 
 import { chat, type ChatMessage } from "./llm";
+import { LlmRateLimitError } from "./llm-errors";
 
 const CRISIS_TIMEOUT_MS = 8_000;
 const MAX_HISTORY_USER_TURNS = 8;
@@ -52,8 +54,10 @@ interface HistoryMessage {
 
 export interface CrisisDecision {
   crisis: boolean;
-  /** true si la decisión proviene de un error del clasificador (fail-open). */
+  /** true si falló el clasificador; rateLimit exige detener el turno. */
   classifierError: boolean;
+  /** Provider unavailable: the route must stop, not interpret this as no risk. */
+  rateLimit?: { retryAfterSec?: number };
 }
 
 function collectUserText(
@@ -99,6 +103,10 @@ export async function detectCrisis(
     }
     return { crisis: parsed.crisis, classifierError: false };
   } catch (err) {
+    if (err instanceof LlmRateLimitError) {
+      console.warn("[crisis] provider_rate_limited");
+      return { crisis: false, classifierError: true, rateLimit: { retryAfterSec: err.retryAfterSec } };
+    }
     // Error de infraestructura: fail-open con traza (ver cabecera).
     console.error("[crisis] classifier_failed", String(err).slice(0, 200));
     return { crisis: false, classifierError: true };

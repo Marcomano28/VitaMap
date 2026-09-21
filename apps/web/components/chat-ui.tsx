@@ -149,6 +149,10 @@ export function ChatUI({
           window.location.href = "/settings/billing?required=1";
           throw new Error(t.requestFailed);
         }
+        const failure = await res.json().catch(() => null);
+        if (failure?.error === "llm_rate_limited") {
+          throw new Error(t.requestRateLimited);
+        }
         throw new Error(t.requestFailed);
       }
       const json = (await res.json()) as {
@@ -179,7 +183,7 @@ export function ChatUI({
   function readableError(err: unknown): string {
     return err instanceof DOMException && err.name === "AbortError"
       ? t.requestTimedOut
-      : err instanceof Error && err.message === t.requestFailed
+      : err instanceof Error && (err.message === t.requestFailed || err.message === t.requestRateLimited)
         ? err.message
         : t.requestFailed;
   }

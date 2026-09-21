@@ -13,6 +13,7 @@ import { consumeLlmQuota, refundLlmQuota } from "@/lib/llm-quota";
 import { ChatBody, type ChatInput } from "@/lib/chat/request";
 import { resolveChatVariant } from "@/lib/chat/variant";
 import { runCurrentChat } from "@/lib/chat/current";
+import { llmRateLimitResult } from "@/lib/chat/rate-limit-response";
 
 export const runtime = "nodejs"; // @tobilu/qmd y better-sqlite3 son nativos
 
@@ -144,6 +145,10 @@ export async function POST(req: Request) {
   // (ver lib/crisis.ts).
   const crisisStartedAt = Date.now();
   const crisisDecision = await detectCrisis(body.message, body.history);
+  if (crisisDecision.rateLimit) {
+    const result = llmRateLimitResult(crisisDecision.rateLimit.retryAfterSec);
+    return NextResponse.json(result.body, { status: result.status, headers: result.headers });
+  }
   console.info("[chat] crisis check complete", {
     durationMs: Date.now() - crisisStartedAt,
     crisis: crisisDecision.crisis,
@@ -175,5 +180,8 @@ export async function POST(req: Request) {
     deadline,
     startedAt,
   });
-  return NextResponse.json(result.body, { status: result.status });
+  return NextResponse.json(result.body, {
+    status: result.status,
+    headers: "headers" in result ? result.headers : undefined,
+  });
 }

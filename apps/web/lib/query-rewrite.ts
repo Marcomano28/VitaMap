@@ -14,6 +14,7 @@
  */
 
 import { chat } from "./llm";
+import { LlmRateLimitError } from "./llm-errors";
 import { buildRetrievalQuery } from "./conversation-policy";
 
 interface HistoryMessage {
@@ -98,6 +99,8 @@ export async function resolveRetrievalQuery(
     if (!isUsableRewrite(rewritten)) return heuristic();
     return { query: rewritten, method: "llm" };
   } catch (err) {
+    // Do not continue to generation against the same throttled provider.
+    if (err instanceof LlmRateLimitError) throw err;
     // Timeout o error del LLM: degradar en silencio a la heurística.
     console.warn("[chat] query_rewrite_failed", String(err).slice(0, 200));
     return heuristic();

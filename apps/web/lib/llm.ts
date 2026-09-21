@@ -6,6 +6,7 @@
  */
 
 import { getEnv } from "./env";
+import { LlmRateLimitError, parseRetryAfter } from "./llm-errors";
 
 // =====================================================================
 // Tipos
@@ -163,6 +164,10 @@ export async function chat(req: ChatRequest): Promise<string> {
     signal,
   });
 
+  if (res.status === 429) {
+    await res.body?.cancel().catch(() => undefined);
+    throw new LlmRateLimitError(parseRetryAfter(res.headers.get("retry-after")));
+  }
   if (!res.ok) {
     const body = await res.text().catch(() => "");
     throw new Error(`LLM error ${res.status}: ${body.slice(0, 500)}`);
@@ -201,6 +206,10 @@ export async function chatStream(req: ChatRequest): Promise<ReadableStream<strin
     signal: req.signal,
   });
 
+  if (res.status === 429) {
+    await res.body?.cancel().catch(() => undefined);
+    throw new LlmRateLimitError(parseRetryAfter(res.headers.get("retry-after")));
+  }
   if (!res.ok || !res.body) {
     const body = await res.text().catch(() => "");
     throw new Error(`LLM stream error ${res.status}: ${body.slice(0, 500)}`);

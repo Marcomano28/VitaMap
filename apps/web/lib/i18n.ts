@@ -135,6 +135,8 @@ export const copy = {
       sources: "Fuentes consultadas",
       requestFailed:
         "No se pudo obtener una respuesta. Inténtalo de nuevo en unos segundos.",
+      requestRateLimited:
+        "El proveedor de IA ha alcanzado un límite de uso. Espera antes de volver a intentarlo. Si persiste, el administrador debe revisar los límites del proveedor.",
       requestTimedOut:
         "La respuesta tardó demasiado y se canceló. Inténtalo de nuevo con una pregunta más concreta.",
     },
@@ -328,6 +330,8 @@ export const copy = {
       sources: "Genutzte Quellen",
       requestFailed:
         "Es konnte keine Antwort geladen werden. Bitte versuche es in einigen Sekunden erneut.",
+      requestRateLimited:
+        "Der KI-Anbieter hat ein Nutzungslimit erreicht. Bitte warte vor einem erneuten Versuch. Falls das Problem bleibt, muss die Administration die Limits des Anbieters prüfen.",
       requestTimedOut:
         "Die Antwort hat zu lange gedauert und wurde abgebrochen. Versuche es erneut mit einer konkreteren Frage.",
     },

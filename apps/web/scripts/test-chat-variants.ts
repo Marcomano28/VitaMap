@@ -7,6 +7,7 @@ import vm from "node:vm";
 import ts from "typescript";
 import { ChatBody } from "../lib/chat/request";
 import { resolveChatVariant } from "../lib/chat/variant";
+import { llmRateLimitResult } from "../lib/chat/rate-limit-response";
 import { languageContext } from "../lib/language-contract";
 import type { ChatExecutionContext } from "../lib/chat/contract";
 
@@ -27,7 +28,8 @@ function harness(options: {
   killSwitch?: boolean;
   rateLimited?: boolean;
   crisis?: boolean;
-  runnerStatus?: 200 | 500 | 502;
+  providerLimited?: boolean;
+  runnerStatus?: 200 | 500 | 502 | 503;
 } = {}) {
   const events: string[] = [];
   const calls: ChatExecutionContext[] = [];
@@ -51,7 +53,7 @@ function harness(options: {
     } },
     "@/lib/language-contract": { languageContext },
     "@/lib/crisis": {
-      detectCrisis: async () => { events.push("crisis"); return { crisis: !!options.crisis, classifierError: false }; },
+      detectCrisis: async () => { events.push("crisis"); return { crisis: !!options.crisis, classifierError: !!options.providerLimited, ...(options.providerLimited ? { rateLimit: { retryAfterSec: 45 } } : {}) }; },
       crisisResourcesText: () => "Recursos de prueba",
     },
     "@/lib/rate-limit": { checkRateLimit: () => { events.push("rate"); return { allowed: !options.rateLimited, retryAfterSec: 60 }; } },
@@ -61,9 +63,11 @@ function harness(options: {
     },
     "@/lib/chat/request": { ChatBody },
     "@/lib/chat/variant": { resolveChatVariant },
+    "@/lib/chat/rate-limit-response": { llmRateLimitResult },
     "@/lib/chat/current": { runCurrentChat: async (context: ChatExecutionContext) => {
       events.push("runner"); calls.push(context);
       const status = options.runnerStatus ?? 200;
+      if (status === 503) return llmRateLimitResult(45);
       return { status, body: status === 200 ? answer : { error: status === 500 ? "retrieval_failed" : "llm_failed" } };
     } },
   };
@@ -144,6 +148,18 @@ async function main() {
     assert.equal((await h.post({ variant: "jev" })).status, status);
     assert.ok(!h.events.includes("admin-session") && !h.events.includes("runner") && !h.events.includes("crisis"));
   }
+  const limited = harness({ providerLimited: true });
+  const limitedResponse = await limited.post();
+  assert.equal(limitedResponse.status, 503);
+  assert.equal(limitedResponse.headers.get("retry-after"), "45");
+  assert.equal((await limitedResponse.json()).error, "llm_rate_limited");
+  assert.ok(!limited.events.includes("runner"));
+  assert.ok(!limited.events.includes("refund")); // An inference was attempted.
+  const generatedLimit = harness({ runnerStatus: 503 });
+  const generatedResponse = await generatedLimit.post();
+  assert.equal(generatedResponse.status, 503);
+  assert.equal(generatedResponse.headers.get("retry-after"), "45");
+  console.log("ok: provider 429 stops after crisis and propagates Retry-After from any runner stage");
   const crisis = harness({ crisis: true });
   assert.equal((await (await crisis.post()).json()).crisis, true);
   assert.ok(!crisis.events.includes("runner"));

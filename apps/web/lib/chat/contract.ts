@@ -3,6 +3,7 @@ import type { LanguageContext } from "../language-contract";
 import type { RetrievedChunk } from "../qmd";
 import type { LabSeries } from "../lab-visualization";
 import type { ChatInput } from "./request";
+import type { llmRateLimitResult } from "./rate-limit-response";
 
 /** Constructed by the route only after authorization and input safety checks. */
 export interface ChatExecutionContext {
@@ -39,6 +40,7 @@ export interface ChatAnswer {
 }
 
 export type ChatRunResult =
+  | ReturnType<typeof llmRateLimitResult>
   | { status: 200; body: ChatAnswer }
   | { status: 500 | 502; body: { error: "retrieval_failed" | "llm_failed" } };
 
