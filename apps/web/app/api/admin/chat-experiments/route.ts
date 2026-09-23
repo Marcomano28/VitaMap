@@ -6,7 +6,7 @@ import { getEnv } from "@/lib/env";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { consumeLlmQuota, refundLlmQuota, llmDisabled } from "@/lib/llm-quota";
 import { withChatTelemetry, type ChatTelemetry } from "@/lib/chat/telemetry";
-import { CASES, fixture, MAX_EXPERIMENT_CALLS } from "@/lib/chat/experiments/fixtures";
+import { CASES, CASE_IDS, fixture, MAX_EXPERIMENT_CALLS } from "@/lib/chat/experiments/fixtures";
 import { experimentConfigurationId, experimentStore } from "@/lib/chat/experiments/config";
 import { ExperimentStoreError, type ExperimentSession } from "@/lib/chat/experiments/store";
 import { runExperiment } from "@/lib/chat/experiments/runner";
@@ -15,7 +15,7 @@ import { TypeSafeError } from "@/lib/chat/experiments/typesafe";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 const bodySchema = z.discriminatedUnion("action", [
-  z.object({ action: z.literal("create"), caseId: z.enum(["education", "latest", "context", "ambiguous", "insufficient", "crisis"]), locale: z.enum(["es", "de"]), variant: z.enum(["current", "control", "jev"]) }).strict(),
+  z.object({ action: z.literal("create"), caseId: z.enum(CASE_IDS), locale: z.enum(["es", "de"]), variant: z.enum(["current", "control", "jev"]) }).strict(),
   z.object({ action: z.literal("run"), sessionId: z.string().uuid(), step: z.number().int().min(0).max(1) }).strict(),
 ]);
 const json = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: { "Cache-Control": "no-store" } });

@@ -76,6 +76,18 @@ export function ExperimentPanel(props: {
         <p className="font-medium">{session.turns[index].message}</p>
         <p className="whitespace-pre-wrap">{result.answer?.text ?? result.error}</p>
         {result.answer && <p className="text-sm">{result.answer.route} · {result.answer.disposition} · {result.answer.routingSource ?? "current"} · J3: {result.answer.supportMode}</p>}
+        {result.answer?.perspectivePolicy && <p className="text-sm">{de ? "Perspektive" : "Perspectiva"}: {result.answer.perspectivePolicy.selected} · {result.answer.perspectivePolicy.source}</p>}
+        {result.answer?.probe && <div className="space-y-2 rounded border p-3 text-sm">
+          <p className="font-medium">{de ? "Feste Aussage zur Prüfung" : "Afirmación fija para evaluar"}</p>
+          <blockquote>{result.answer.probe.statement}</blockquote>
+          <p>{de ? "Erwartet" : "Resultado esperado"}: <strong>{result.answer.probe.expected}</strong></p>
+          <p>Mistral guardrail: {result.answer.probe.guardrail.verdict} · {de ? "Annahme/Ablehnung korrekt" : "Aceptación/rechazo correcto"}: {result.answer.probe.guardrail.matchesExpectedAcceptance ? "✓" : "✗"}</p>
+          {result.answer.probe.jev && <p>Jev: {result.answer.probe.jev.chosen} · {de ? "Nach Schwellenwert" : "Tras aplicar umbral"}: {result.answer.probe.jev.accepted ?? (de ? "Enthaltung" : "abstención")} · {de ? "Erwartete Kategorie akzeptiert" : "Categoría esperada aceptada"}: {result.answer.probe.jev.matchesExpectedAcceptedLabel ? "✓" : "✗"}</p>}
+          <p>{de ? "A/B prüfen mit Mistral; C prüft denselben Text mit Mistral und Jev. Mistral entscheidet über Freigabe, Jev unterscheidet drei Kategorien." : "A/B revisan con Mistral; C revisa el mismo texto con Mistral y Jev. Mistral decide si lo acepta; Jev distingue tres categorías."}</p>
+        </div>}
+        {result.answer?.observations && <details className="text-sm"><summary>{de ? "Beobachtete Signale (steuern den Ablauf noch nicht)" : "Señales observadas (todavía no cambian el recorrido)"}</summary>
+          <ul>{Object.entries(result.answer.observations).map(([name, signal]) => <li key={name}>{name}: {signal.decision} · {signal.probability.toFixed(2)}</li>)}</ul>
+        </details>}
         {result.metrics && <table className="w-full text-left text-sm"><thead><tr><th>{de ? "Anbieter" : "Proveedor"}</th><th>{de ? "Aufrufe" : "Llamadas"}</th><th>Tokens*</th></tr></thead><tbody>{["external", "local", "typesafe"].map(provider => {
           const calls = result.metrics!.calls.filter(c => c.provider === provider);
           if (!calls.length) return null;

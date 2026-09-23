@@ -822,3 +822,67 @@ fecha, cifra y unidad. La revisión de versión invalida sesiones anteriores: cr
 nuevas tras desplegar. Para probar conexión y decisiones Jev, usar «Ferritina:
 definición y seguimiento», donde J1/J2/J3 siguen siendo observables. La muestra real
 provino del operador; las regresiones locales usan respuestas simuladas.
+
+### 11.7 Laboratorio v3: decisiones más claras y comparación directa
+
+Implementado localmente el 2026-09-24. `synthetic-jev-v3` sustituye la política
+triple descrita anteriormente por `THRESHOLDS`: un umbral por pregunta, inicialmente
+0,8, aplicado a la probabilidad de la opción ganadora. La confianza del proveedor
+se conserva para diagnóstico, pero no constituye un segundo veto. Una probabilidad
+0,65 sigue sin superar 0,8; esta simplificación no pretende hacer pasar esa muestra.
+Los umbrales y las preguntas forman parte de la huella de configuración.
+
+J1 diferencia conocimiento, hechos personales, explicación personal, petición de
+tratamiento y consulta indeterminada, con definiciones y ejemplos ES/DE. Solo la
+incertidumbre de intención o referencia provoca abstención en el enrutamiento.
+La perspectiva no especificada o no concluyente usa biomedical por defecto y deja
+constancia de esa decisión. Una perspectiva tradicional explícita en los casos
+cubiertos por las reglas, o traditional/comparison aceptada por Jev, sigue fuera
+del recorrido soportado. Tratamiento tiene un motivo propio de rechazo. Los
+controles posteriores de evidencia y respuesta mantienen sus decisiones.
+
+J1 y crisis comienzan en paralelo y se esperan ambos resultados antes de continuar.
+Un fallo de J1 no oculta una crisis detectada. La ruta factual estricta sigue
+usando reglas y plantilla: allí no se añade J1. Paralelizar reduce espera potencial,
+no número de llamadas, y puede realizar una llamada Jev que una crisis haga inútil.
+
+La misma petición J1 incorpora cinco preguntas Noul (sí/no): depends_on_history,
+needs_retrieval, asks_treatment_or_dosage, prompt_injection y self_harm_signal.
+Por ahora todas son observacionales: probabilidad ≥0,8 significa sí, ≤0,2 no y el
+resto incertidumbre. No omiten QMD, no activan reescrituras ni sustituyen controles.
+Añadir preguntas evita peticiones HTTP separadas, pero puede aumentar tokens y
+coste; se mide antes de atribuir ahorro.
+
+El banco pasa a doce casos en español y alemán. Añade tratamiento, perspectiva
+tradicional, instrucciones adversarias y tres afirmaciones fijas: fundamentada,
+parcialmente fundamentada y contradictoria. Estas últimas comparan el guardrail de
+Mistral y J3 sobre la misma afirmación y pasajes, sin generación. La etiqueta
+esperada se guarda en el informe pero no se envía a los revisores. A/B ejecutan
+el guardrail; C ejecuta ambos revisores. Sus contratos son distintos: Mistral
+acepta/rechaza, Jev clasifica supported/insufficient/contradicted. Se presentan
+ambas decisiones, el umbral y su coincidencia con lo esperado, sin equiparar las
+métricas. Son comprobaciones iniciales, no una estimación estadística de rigor.
+
+Los ejemplos de los criterios J1 no reutilizan el banco: usan otros marcadores
+(vitamina D, TSH) y otras formulaciones. Si coincidieran con los mensajes de los
+casos, el laboratorio puntuaría frases que Jev ya ha visto y sobrestimaría J1;
+`test:chat-experiments` lo comprueba. Las afirmaciones fijas no contienen un
+mensaje de usuario: omiten detector de crisis y J1, y solo ejecutan los revisores.
+
+**Primera ronda en el VPS tras desplegar:**
+
+1. Crear sesiones nuevas. Ejecutar los tres casos de afirmaciones con C en ES y DE:
+   seis pasos que ya contienen la comparación de ambos revisores.
+2. Ejecutar definición y seguimiento con B y C en cada idioma. Comparar respuesta,
+   abstenciones, decisiones J1, llamadas y tokens por proveedor y tiempo.
+3. Descargar los JSON antes de recargar. Conservar también fallos y abstenciones.
+   «Último resultado» comprueba la plantilla; no demuestra una ventaja de Jev.
+4. Ajustar un umbral o criterio cada vez según errores concretos. Repetir los casos
+   y comprobar después con formulaciones nuevas que no hayan servido para ajustar.
+
+Las regresiones usan distribuciones no perfectas, incluida unspecified=0,7 y la
+muestra del operador (probabilidad 0,65/confianza 0,53). Comprueban el paralelismo,
+la prioridad de crisis ante fallo J1, el carácter observacional de las señales y
+los tres casos de afirmaciones en ambos idiomas. Las llamadas reales y la mejora
+frente a Mistral quedan por medir con la clave del operador. El siguiente cambio
+funcional —usar las señales para ahorrar trabajo— dependerá de esos resultados.

@@ -8,12 +8,26 @@ const choiceSchema = z.object({
   type: z.literal("choice"), choice: z.string(),
   probabilities: z.record(probability), confidence: probability,
 }).strict();
+const answerSchema = z.discriminatedUnion("type", [choiceSchema, z.object({ type: z.literal("noul"), noul: probability }).strict()]);
 const responseSchema = z.object({
-  model: z.string(), answers: z.record(choiceSchema),
+  model: z.string(), answers: z.record(answerSchema),
   usage: z.object({ input_tokens: z.number().int().nonnegative(), output_tokens: z.number().int().nonnegative() }).strict(),
 }).strict();
 export type ChoiceAnswer = z.infer<typeof choiceSchema>;
-export type Questions = Record<string, { type: "choice"; instructions: string; criteria: Record<string, string> }>;
+export type DecisionAnswer = z.infer<typeof answerSchema>;
+export type Questions = Record<string,
+  | { type: "choice"; instructions: string; criteria: Record<string, string> }
+  | { type: "noul"; instructions: string; criteria: { true: string; false: string } }
+>;
+
+// Winning-option probability (Choice), or yes/no probability (Noul).
+// Provisional values: change independently and compare ES/DE before adoption.
+export const THRESHOLDS = {
+  intent: 0.8, reference: 0.8, perspective: 0.8, evidence: 0.8, support: 0.8,
+  depends_on_history: 0.8, needs_retrieval: 0.8, asks_treatment_or_dosage: 0.8,
+  prompt_injection: 0.8, self_harm_signal: 0.8,
+} as const;
+export type ThresholdKey = keyof typeof THRESHOLDS;
 export type Decisions = z.infer<typeof responseSchema>;
 export class TypeSafeError extends Error {
   constructor(readonly code: "not_configured" | "rate_limited" | "unavailable" | "timeout" | "invalid", readonly retryAfterSec?: number) {
@@ -28,6 +42,8 @@ export function validateDecisions(raw: unknown, questions: Questions, model: str
   if (Object.keys(result.answers).sort().join() !== Object.keys(questions).sort().join()) throw new TypeSafeError("invalid");
   for (const [id, question] of Object.entries(questions)) {
     const answer = result.answers[id];
+    if (answer.type !== question.type) throw new TypeSafeError("invalid");
+    if (answer.type === "noul") continue;
     const keys = Object.keys(question.criteria).sort();
     const scores = Object.values(answer.probabilities);
     if (!keys.includes(answer.choice) || keys.join() !== Object.keys(answer.probabilities).sort().join()
@@ -37,10 +53,15 @@ export function validateDecisions(raw: unknown, questions: Questions, model: str
   return result;
 }
 
-/** Provisional experimental thresholds, NOT calibrated clinical confidence. */
-export function acceptedChoice(answer: ChoiceAnswer): string | null {
-  const ranked = Object.values(answer.probabilities).sort((a, b) => b - a);
-  return answer.confidence >= 0.7 && ranked[0] >= 0.8 && ranked[0] - (ranked[1] ?? 0) >= 0.2 ? answer.choice : null;
+/** One acceptance rule per question; confidence and margin remain observable. */
+export function acceptedChoice(answer: DecisionAnswer, question: ThresholdKey): string | null {
+  return answer.type === "choice" && answer.probabilities[answer.choice] >= THRESHOLDS[question] ? answer.choice : null;
+}
+
+export function observedSignal(answer: DecisionAnswer, question: ThresholdKey): { probability: number; decision: "yes" | "no" | "uncertain" } {
+  if (answer.type !== "noul") throw new TypeSafeError("invalid");
+  const threshold = THRESHOLDS[question];
+  return { probability: answer.noul, decision: answer.noul >= threshold ? "yes" : answer.noul <= Number((1 - threshold).toFixed(10)) ? "no" : "uncertain" };
 }
 
 export async function evaluateChoices(
@@ -50,7 +71,7 @@ export async function evaluateChoices(
   const env = getEnv();
   if (!env.TYPESAFE_API_KEY) throw new TypeSafeError("not_configured");
   const body = JSON.stringify({ model: env.TYPESAFE_MODEL, state, questions });
-  if (body.length > 40_000 || Object.keys(questions).length > 6) throw new TypeSafeError("invalid");
+  if (body.length > 40_000 || Object.keys(questions).length > 8) throw new TypeSafeError("invalid");
   const deadline = AbortSignal.any([signal, AbortSignal.timeout(env.TYPESAFE_TIMEOUT_MS)]);
   const finish = beginLlmMeasurement(stage, "typesafe");
   let httpStatus: number | undefined;

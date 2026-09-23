@@ -28,8 +28,10 @@ function load<T>(file: string, dependencies: Record<string, unknown>, extra: Rec
 
 function decision(questions: Questions, choices: Record<string, string> = {}): Decisions {
   return { model: "jev-1.13.0", usage: { input_tokens: 10, output_tokens: 3 }, answers: Object.fromEntries(Object.entries(questions).map(([id, q]) => {
+    if (q.type === "noul") return [id, { type: "noul", noul: 0.08 }];
     const choice = choices[id] ?? Object.keys(q.criteria)[0];
-    return [id, { type: "choice", choice, probabilities: Object.fromEntries(Object.keys(q.criteria).map(key => [key, key === choice ? 1 : 0])), confidence: 1 }];
+    const count = Object.keys(q.criteria).length;
+    return [id, { type: "choice", choice, probabilities: Object.fromEntries(Object.keys(q.criteria).map(key => [key, key === choice ? 0.86 : 0.14 / (count - 1)])), confidence: 0.76 }];
   })) };
 }
 
@@ -54,7 +56,7 @@ async function main() {
   const measurements: telemetry.ChatTelemetry[] = [];
   await telemetry.withChatTelemetry(async () => {
     const result = await provider.evaluateChoices("synthetic-only", questions, "jev_route", new AbortController().signal);
-    assert.equal(provider.acceptedChoice(result.answers.route), "facts");
+    assert.equal(provider.acceptedChoice(result.answers.route, "intent"), "facts");
     return { status: 200 };
   }, s => measurements.push(s), { maxCalls: 1 });
   assert.equal(measurements[0].calls[0].provider, "typesafe");
@@ -68,7 +70,25 @@ async function main() {
     { ...decision(questions), answers: { route: { type: "choice", choice: "facts", probabilities: { facts: 0.2, unclear: 0.8 }, confidence: 1 } } },
   ];
   for (const item of invalid) assert.throws(() => provider.validateDecisions(item, questions, env.TYPESAFE_MODEL), provider.TypeSafeError);
-  assert.equal(provider.acceptedChoice({ type: "choice", choice: "facts", probabilities: { facts: 0.51, unclear: 0.49 }, confidence: 0.5 }), null);
+  assert.equal(provider.acceptedChoice({ type: "choice", choice: "facts", probabilities: { facts: 0.51, unclear: 0.49 }, confidence: 0.5 }, "intent"), null);
+  assert.equal(provider.acceptedChoice({ type: "choice", choice: "facts", probabilities: { facts: 0.8, unclear: 0.2 }, confidence: 0.53 }, "intent"), "facts");
+  assert.equal(provider.acceptedChoice({ type: "choice", choice: "facts", probabilities: { facts: 0.799, unclear: 0.201 }, confidence: 0.99 }, "intent"), null);
+  const mixed: Questions = { ...questions, signal: { type: "noul", instructions: "Signal?", criteria: { true: "present", false: "absent" } } };
+  const mixedResult = decision(mixed);
+  assert.equal(provider.validateDecisions(mixedResult, mixed, env.TYPESAFE_MODEL).answers.signal.type, "noul");
+  for (const value of [-0.1, 1.1, "true", NaN]) {
+    assert.throws(() => provider.validateDecisions({ ...mixedResult, answers: { ...mixedResult.answers, signal: { type: "noul", noul: value } } }, mixed, env.TYPESAFE_MODEL), provider.TypeSafeError);
+  }
+  assert.throws(() => provider.validateDecisions({ ...mixedResult, answers: { ...mixedResult.answers, route: { type: "noul", noul: 0.9 } } }, mixed, env.TYPESAFE_MODEL), provider.TypeSafeError);
+  assert.equal(provider.observedSignal({ type: "noul", noul: 0.8 }, "needs_retrieval").decision, "yes");
+  assert.equal(provider.observedSignal({ type: "noul", noul: 0.2 }, "needs_retrieval").decision, "no");
+  assert.equal(provider.observedSignal({ type: "noul", noul: 0.6 }, "needs_retrieval").decision, "uncertain");
+  const eight: Questions = Object.fromEntries(Array.from({ length: 8 }, (_, i) => [`q${i}`, mixed.signal]));
+  response = decision(eight);
+  await provider.evaluateChoices({}, eight, "jev_route", new AbortController().signal);
+  const afterEight = networkCalls;
+  await assert.rejects(provider.evaluateChoices({}, { ...eight, ninth: mixed.signal }, "jev_route", new AbortController().signal), provider.TypeSafeError);
+  assert.equal(networkCalls, afterEight);
   for (const code of [429, 529, 401, 422]) {
     status = code; response = { message: "synthetic-private-error" };
     await assert.rejects(provider.evaluateChoices({}, questions, "jev_route", new AbortController().signal), (error: unknown) => error instanceof provider.TypeSafeError && !error.message.includes("private"));
@@ -153,26 +173,39 @@ async function main() {
   let intent = "knowledge";
   let observedIntent = false;
   let guardrail = "safe";
+  let perspective = "biomedical";
+  let jevFails = false;
+  let safetyWait: Promise<void> | undefined;
+  let routingWait: Promise<void> | undefined;
   let classifierError = false;
   let crisis = false;
   let invalidDraft = false;
+  const reviewers = {
+    "../../guardrail": { checkResponse: async () => { events.push("guardrail"); return { verdict: guardrail, flags: [] }; } },
+    "./typesafe": { acceptedChoice: provider.acceptedChoice, observedSignal: provider.observedSignal, evaluateChoices: async (_state: unknown, q: Questions, stage: string) => {
+      events.push(stage);
+      if (stage === "jev_route") { await routingWait; if (jevFails) throw new provider.TypeSafeError("unavailable"); }
+      const result = decision(q, stage === "jev_route" ? { intent, perspective, reference: "self_contained" }
+        : stage === "jev_evidence" ? { s1: "direct", s2: "irrelevant", s3: "irrelevant" } : { a1: "contradicted" });
+      if (stage === "jev_route" && perspective === "unspecified") result.answers.perspective = {
+        type: "choice", choice: "unspecified", probabilities: { biomedical: 0.2, unspecified: 0.7, traditional: 0.05, comparison: 0.05 }, confidence: 0.58,
+      };
+      if (stage === "jev_support") assert.ok(!JSON.stringify(_state).includes('"expected"'), "Expected labels never enter model input");
+      if (stage === "jev_route" && observedIntent) result.answers.intent = {
+        type: "choice", choice: "personal_facts", probabilities: { unclear: 0.35, knowledge: 0, personal_explanation: 0, personal_facts: 0.65 }, confidence: 0.53,
+      };
+      return result;
+    } },
+  };
   const runner = load<typeof import("../lib/chat/experiments/runner")>("../lib/chat/experiments/runner.ts", {
     "../../llm": { SOCRATIC_SYSTEM_PROMPT: "test", chat: async (req: { messages: unknown; stage: string }) => {
       events.push(req.stage);
       assert.ok(!JSON.stringify(req.messages).includes("42"), "Personal magnitude excluded from free-text generation");
       return JSON.stringify({ statements: [{ id: "a1", text: "La ferritina almacena hierro.", sourceIds: [invalidDraft ? "s9" : "s1"] }] });
     } },
-    "../../crisis": { detectCrisis: async () => { events.push("crisis"); return { crisis, classifierError }; }, crisisResourcesText: () => "synthetic crisis notice" },
-    "../../guardrail": { checkResponse: async () => { events.push("guardrail"); return { verdict: guardrail, flags: [] }; } },
-    "./typesafe": { acceptedChoice: provider.acceptedChoice, evaluateChoices: async (_state: unknown, q: Questions, stage: string) => {
-      events.push(stage);
-      const result = decision(q, stage === "jev_route" ? { intent, perspective: "biomedical", reference: "self_contained" }
-        : stage === "jev_evidence" ? { s1: "direct", s2: "irrelevant", s3: "irrelevant" } : { a1: "contradicted" });
-      if (stage === "jev_route" && observedIntent) result.answers.intent = {
-        type: "choice", choice: "personal_facts", probabilities: { unclear: 0.35, knowledge: 0, personal_explanation: 0, personal_facts: 0.65 }, confidence: 0.53,
-      };
-      return result;
-    } },
+    "../../crisis": { detectCrisis: async () => { events.push("crisis"); await safetyWait; return { crisis, classifierError }; }, crisisResourcesText: () => "synthetic crisis notice" },
+    ...reviewers,
+    "./support-probe": load("../lib/chat/experiments/support-probe.ts", reviewers),
     "../current": { runCurrentChat: async (_ctx: unknown, services: Record<string, (...args: unknown[]) => Promise<unknown>>) => {
       assert.equal(Object.keys(services).length, 5);
       const data = await services.queryMemoryAndKB("ignored", "ignored") as { personal: unknown[] };
@@ -196,6 +229,61 @@ async function main() {
     assert.ok(explanation.sources.some(s => s.endsWith("s2.md")), "A relevant caution cannot be removed by J2");
     assert.deepEqual(events, ["crisis", "jev_route", "jev_evidence", "generation", "guardrail", "jev_support"]);
   }
+  perspective = "unspecified";
+  const defaultFrame = await run("education");
+  assert.equal(defaultFrame.disposition, "answer");
+  assert.equal(defaultFrame.perspectivePolicy?.source, "default");
+  assert.equal(defaultFrame.perspectivePolicy?.selected, "biomedical");
+  assert.equal(Object.keys(defaultFrame.observations!).length, 5);
+  assert.equal(defaultFrame.observations!.needs_retrieval.decision, "no");
+  assert.ok(defaultFrame.sources.length > 0, "Shadow no-retrieval must not skip evidence selection");
+  assert.equal((await run("traditional")).abstentionReason, "perspective_not_supported");
+  perspective = "comparison";
+  assert.equal((await run("education")).abstentionReason, "perspective_not_supported");
+  perspective = "biomedical";
+  intent = "treatment_request";
+  assert.equal((await run("treatment")).abstentionReason, "treatment_request");
+  intent = "knowledge";
+
+  // Both branches must start before either is released; no downstream work
+  // until both settle. Finite test guard prevents unresolved promises passing.
+  let releaseSafety!: () => void;
+  let releaseRouting!: () => void;
+  safetyWait = new Promise<void>(resolve => { releaseSafety = resolve; });
+  routingWait = new Promise<void>(resolve => { releaseRouting = resolve; });
+  events.length = 0;
+  const parallelRun = run("education");
+  await new Promise(resolve => setImmediate(resolve));
+  assert.deepEqual(events, ["crisis", "jev_route"]);
+  releaseSafety();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.deepEqual(events, ["crisis", "jev_route"]);
+  releaseRouting();
+  await parallelRun;
+  safetyWait = undefined; routingWait = undefined;
+  jevFails = true; crisis = true; events.length = 0;
+  const crisisDespiteFailure = await run("crisis");
+  assert.equal(crisisDespiteFailure.disposition, "crisis");
+  assert.equal(crisisDespiteFailure.diagnosticErrors?.[0].phase, "J1");
+  assert.deepEqual(events, ["crisis", "jev_route"]);
+  crisis = false;
+  await assert.rejects(run("education"), provider.TypeSafeError);
+  jevFails = false;
+
+  for (const locale of ["es", "de"] as const) {
+    for (const caseId of ["support_correct", "support_partial", "support_false"] as const) {
+      events.length = 0;
+      guardrail = "block";
+      const probe = await run(caseId, "jev", locale);
+      assert.equal(probe.disposition, "evaluation");
+      assert.deepEqual(events, ["guardrail", "jev_support"], "Fixed probes skip crisis check and routing");
+      assert.equal(probe.probe?.expected, fixtures.fixture(caseId, locale).supportProbe!.expected);
+      assert.equal(probe.probe?.jev?.matchesExpectedLabel, caseId === "support_false");
+      assert.equal(probe.probe?.guardrail.matchesExpectedAcceptance, caseId !== "support_correct");
+      assert.ok(!probe.text.includes(fixtures.fixture(caseId, locale).supportProbe!.text));
+    }
+  }
+  guardrail = "safe";
   observedIntent = true;
   events.length = 0;
   const lowConfidence = await run("education");
@@ -211,12 +299,20 @@ async function main() {
   }
   invalidDraft = true; assert.equal((await run("education")).route, "invalid_contract"); invalidDraft = false;
   guardrail = "block"; events.length = 0; assert.equal((await run("education")).route, "guardrail_rejected"); assert.ok(!events.includes("jev_support")); guardrail = "safe";
-  classifierError = true; events.length = 0; await assert.rejects(run("education"), /safety_unavailable/); assert.deepEqual(events, ["crisis"]); classifierError = false;
-  crisis = true; events.length = 0; assert.equal((await run("crisis")).disposition, "crisis"); assert.deepEqual(events, ["crisis"]); crisis = false;
+  classifierError = true; events.length = 0; await assert.rejects(run("education"), /safety_unavailable/); assert.deepEqual(events, ["crisis", "jev_route"]); classifierError = false;
+  crisis = true; events.length = 0; assert.equal((await run("crisis")).disposition, "crisis"); assert.deepEqual(events, ["crisis", "jev_route"]); crisis = false;
   assert.equal((await run("education", "current")).route, "current_fixed_sources");
   assert.equal((await run("ambiguous", "control")).disposition, "abstain");
   assert.equal((await run("insufficient", "control")).disposition, "abstain");
   assert.ok(!JSON.stringify(measurements).includes("synthetic-key"));
+  // J1 examples must not reuse the evaluation bank (no leakage into scoring).
+  const { routeQuestions } = await import("../lib/chat/experiments/questions");
+  const shown = JSON.stringify(routeQuestions).toLowerCase();
+  // Naming a frame (e.g. Ayurveda) defines a category; markers are examples.
+  assert.ok(!/ferritin|hierro|eisen|cobre|kupfer/.test(shown), "J1 examples avoid laboratory markers");
+  for (const { id } of fixtures.CASES) for (const locale of ["es", "de"] as const) for (const turn of fixtures.fixture(id, locale).turns) {
+    assert.ok(!shown.includes(turn.message.toLowerCase().replace(/[.?!¿¡]/g, "").trim()), `J1 criteria reuse fixture message: ${turn.message}`);
+  }
   console.log("chat experiments: adapter, budget, sessions, authorization, synthetic-only routing and safety OK");
 }
 
