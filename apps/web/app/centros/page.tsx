@@ -8,12 +8,12 @@ const TEXT = {
     metadata: "Los centros · VitaWende",
     title: "Los centros de salud integral",
     intro:
-      "No son hospitales. No son balnearios. Son un tercer tipo de lugar: el que todavía no existe pero cuya geometría ya está trazada.",
+      "No son hospitales. No son balnearios. Son un tercer tipo de lugar: el que todavía no existe pero cuya geometría ya está trazada. Esta página describe un concepto, no un servicio disponible.",
     conditions: "Dos condiciones deliberadas",
     cards: [
       {
         title: "Infraestructura técnica",
-        body: "Laboratorio completo, marcadores de longevidad, diagnóstico por imagen y diagnóstico funcional. Unidades certificadas de medicina tradicional china y Ayurveda, no como alternativa a la ciencia, sino como marcos que capturan lo que los análisis de sangre no miden.",
+        body: "Laboratorio completo, diagnóstico por imagen y diagnóstico funcional, elegidos según la evidencia y la edad de cada persona. Otros marcos de observación, como la medicina tradicional china o el Ayurveda, podrían tener un lugar opcional, siempre con su nivel de evidencia indicado con claridad.",
       },
       {
         title: "Entorno natural",
@@ -23,27 +23,27 @@ const TEXT = {
     visit: "Una visita",
     steps: [
       "Llegada y entrevista de contexto. Si usas VitaMap, tu historial ya está organizado y puedes compartirlo en ese momento.",
-      "Análisis completo: laboratorio, imagen, diagnóstico funcional y los sistemas de observación tradicional elegidos.",
+      "Análisis completo: laboratorio, imagen, diagnóstico funcional y, si la persona lo desea, marcos de observación complementarios.",
       "Lectura cruzada del equipo interdisciplinar. No para diagnosticar, sino para leer el conjunto desde marcos distintos.",
       "Un informe que te llevas. Los datos vuelven a VitaMap si lo autorizas. Lo que el centro genera en un día, VitaMap lo mantiene los 364 días restantes.",
     ],
     sameProject:
       "VitaMap y los centros son el mismo proyecto visto a distancias distintas.",
     sameProjectBody:
-      "VitaMap es el altar personal: el espacio de reunificación cotidiana con el propio cuerpo. Los centros son el templo mayor que lo rodea y le da escala. Uno sin el otro es incompleto.",
+      "VitaMap es el lugar personal de la relación cotidiana con el propio cuerpo. Los centros le dan a ese lugar un marco y una escala mayores. Uno sin el otro queda incompleto.",
     enter: "Entrar a VitaMap",
-    manifesto: "← Manifiesto",
+    manifesto: "← Por qué VitaMap",
   },
   de: {
     metadata: "Die Zentren · VitaWende",
-    title: "Zentren für ganzheitliche Gesundheit",
+    title: "Zentren für umfassende Vorsorge",
     intro:
-      "Sie sind weder Krankenhäuser noch Wellnessanlagen. Sie bilden eine dritte Art von Ort: noch nicht gebaut, aber in ihrer Grundstruktur bereits erkennbar.",
+      "Sie sind weder Krankenhäuser noch Wellnessanlagen. Sie bilden eine dritte Art von Ort: noch nicht gebaut, aber in ihrer Grundstruktur bereits erkennbar. Diese Seite beschreibt ein Konzept, kein bestehendes Angebot.",
     conditions: "Zwei bewusste Bedingungen",
     cards: [
       {
         title: "Technische Infrastruktur",
-        body: "Umfassendes Labor, Langlebigkeitsmarker, Bildgebung und Funktionsdiagnostik. Zertifizierte Bereiche für Traditionelle Chinesische Medizin und Ayurveda, nicht als Ersatz für Wissenschaft, sondern als zusätzliche Beobachtungsrahmen.",
+        body: "Umfassendes Labor, Bildgebung und Funktionsdiagnostik – ausgewählt nach Evidenz und Lebensalter. Andere Beobachtungsrahmen wie Traditionelle Chinesische Medizin oder Ayurveda könnten optional einen Platz haben, stets mit klar gekennzeichnetem Evidenzstand.",
       },
       {
         title: "Natürliche Umgebung",
@@ -53,7 +53,7 @@ const TEXT = {
     visit: "Ein Besuch",
     steps: [
       "Ankunft und Kontextgespräch. Wenn du VitaMap nutzt, ist deine Geschichte bereits geordnet und kann mit deiner Zustimmung geteilt werden.",
-      "Umfassende Untersuchung: Labor, Bildgebung, Funktionsdiagnostik und die von dir gewählten traditionellen Beobachtungssysteme.",
+      "Umfassende Untersuchung: Labor, Bildgebung, Funktionsdiagnostik und – falls gewünscht – ergänzende Beobachtungsrahmen.",
       "Gemeinsame Betrachtung durch ein interdisziplinäres Team. Nicht um zu diagnostizieren, sondern um das Ganze aus verschiedenen Perspektiven zu lesen.",
       "Ein Bericht, den du mitnimmst. Mit deiner Zustimmung fließen die Daten zurück in VitaMap. Was das Zentrum an einem Tag erzeugt, begleitet VitaMap an den übrigen 364 Tagen.",
     ],
@@ -62,7 +62,7 @@ const TEXT = {
     sameProjectBody:
       "VitaMap ist der persönliche Ort der täglichen Verbindung mit dem eigenen Körper. Die Zentren geben diesem Ort einen größeren Rahmen und Maßstab. Ohne das jeweils andere bleibt beides unvollständig.",
     enter: "VitaMap öffnen",
-    manifesto: "← Manifest",
+    manifesto: "← Warum VitaMap",
   },
 } as const;
 

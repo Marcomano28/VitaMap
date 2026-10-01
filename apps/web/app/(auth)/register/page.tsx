@@ -4,6 +4,10 @@ import { CONSENT_VERSION, getConsentText } from "@/lib/consent";
 import { getLocale } from "@/lib/locale";
 import { localize } from "@/lib/i18n";
 import { registerAction } from "./actions";
+import { demoModeEnabled } from "@/lib/flags";
+import { demoContactEmail } from "@/lib/demo";
+import { getSession } from "@/lib/session";
+import { DemoLockedNotice } from "@/components/demo-notice";
 
 const TEXT = {
   es: {
@@ -22,6 +26,8 @@ const TEXT = {
     consent:
       "Doy mi consentimiento explícito al tratamiento de mis datos de salud conforme al Art. 9.2.a RGPD, en los términos descritos arriba",
     submit: "Validar invitación y crear cuenta",
+    haveCode: "¿Tienes un código de invitación?",
+    showForm: "Abrir el formulario de registro",
   },
   de: {
     title: "Zugang zum Piloten anfragen",
@@ -39,6 +45,8 @@ const TEXT = {
     consent:
       "Ich willige gemäß Art. 9 Abs. 2 lit. a DSGVO ausdrücklich in die Verarbeitung meiner Gesundheitsdaten zu den oben beschriebenen Bedingungen ein",
     submit: "Einladung prüfen und Konto anlegen",
+    haveCode: "Sie haben einen Einladungscode?",
+    showForm: "Registrierungsformular öffnen",
   },
 } as const;
 
@@ -48,13 +56,50 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 interface PageProps {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; invited?: string }>;
 }
 
 export default async function RegisterPage({ searchParams }: PageProps) {
   const sp = await searchParams;
   const locale = await getLocale();
   const t = localize(locale, TEXT);
+
+  // Modo demostración (ADR-020): "la demostración sustituye el formulario de
+  // registro por una explicación honesta y una vía de contacto". El formulario
+  // no desaparece —las invitaciones a colaboradores siguen siendo el único
+  // alta posible— pero deja de ser lo primero que ve un visitante que llega
+  // sin código: se abre con `?invited=1`, que es el enlace que acompaña al
+  // código cuando se envía por el canal privado. La validación del código y
+  // los reconocimientos siguen intactos en `registerAction`; esto solo decide
+  // qué se pinta primero.
+  if (demoModeEnabled() && sp.invited !== "1") {
+    const session = await getSession();
+    if (!session?.user) {
+      return (
+        <div className="space-y-6">
+          <header className="space-y-2">
+            <h1 className="text-2xl font-semibold">{t.title}</h1>
+          </header>
+          <DemoLockedNotice
+            locale={locale}
+            what="account"
+            contactAvailable={demoContactEmail() !== null}
+          />
+          <p className="text-sm text-[var(--color-muted)]">
+            {t.haveCode}{" "}
+            <Link href="/register?invited=1" className="underline">
+              {t.showForm}
+            </Link>
+            . {t.existing}{" "}
+            <Link href="/login" className="underline">
+              {t.login}
+            </Link>
+            .
+          </p>
+        </div>
+      );
+    }
+  }
 
   return (
     <div className="space-y-6">

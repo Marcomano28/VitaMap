@@ -154,7 +154,7 @@ export const copy = {
       crystalSubDemo: "Demostración · Datos ficticios",
       nav: {
         semilla: "La semilla",
-        manifiesto: "Manifiesto",
+        manifiesto: "Por qué VitaMap",
         centros: "Los centros",
       },
     },
@@ -347,7 +347,7 @@ export const copy = {
       crystalSubDemo: "Demonstration · Fiktive Daten",
       nav: {
         semilla: "Der Samen",
-        manifiesto: "Manifest",
+        manifiesto: "Warum VitaMap",
         centros: "Die Zentren",
       },
     },

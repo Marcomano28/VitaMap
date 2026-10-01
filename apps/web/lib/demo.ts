@@ -5,6 +5,9 @@
  * vive en `lib/flags.ts` (`demoModeEnabled`); aquí está el resto.
  */
 
+import { createHmac } from "node:crypto";
+import { getEnv } from "./env";
+
 /**
  * Sujeto de datos de la demostración.
  *
@@ -18,6 +21,20 @@
  * ese script es `.mjs` y no puede importar de aquí.
  */
 export const DEMO_SUBJECT_ID = "demo-public";
+
+/**
+ * Correo de contacto que ve el visitante de la demostración.
+ *
+ * ADR-020 sustituye el registro por "una explicación honesta y una vía de
+ * contacto". Esta es la vía: destinatario de `POST /api/contact`. Solo se usa
+ * en servidor; el visitante nunca ve la dirección. `DEMO_CONTACT_EMAIL` si
+ * está definida; si no, `EMAIL_REPLY_TO`; si tampoco, `null` y la interfaz
+ * omite el formulario en vez de prometer un contacto que no puede cumplirse.
+ */
+export function demoContactEmail(): string | null {
+  const env = getEnv();
+  return env.DEMO_CONTACT_EMAIL ?? env.EMAIL_REPLY_TO ?? null;
+}
 
 /** ¿Es este el sujeto de demostración? Útil para decidir qué NO permitir. */
 export function isDemoSubject(subjectId: string): boolean {
@@ -63,7 +80,8 @@ export function clientIpKey(req: Request): string {
 
 /**
  * Normaliza para que la misma máquina no obtenga varias cuotas por
- * variaciones de formato, y para no guardar la IP en claro como clave.
+ * variaciones de formato. El resultado sigue siendo la IP: quien la persista
+ * debe pasarla antes por `visitorQuotaKey`.
  *
  * IPv6 se recorta al prefijo /64: un proveedor asigna ese bloque entero a un
  * mismo cliente, así que sin recortar bastaría con cambiar de dirección dentro
@@ -90,4 +108,38 @@ function normalizeIp(raw: string): string {
   }
 
   return ip;
+}
+
+/**
+ * Clave de cuota **seudónima** para un visitante sin cuenta.
+ *
+ * La IP es dato personal (TJUE, Breyer C-582/14) y `llm_quota_usage` vive en
+ * `auth.sqlite`, la misma base que se respalda fuera del VPS. Guardarla en
+ * claro contradiría el "nunca datos personales" de `lib/llm-quota.ts`.
+ *
+ * Se deriva `HMAC-SHA256(secret, "visitor:" + día + ":" + ip)`:
+ *
+ *   · Con el secreto, nadie que lea la base puede recuperar la IP ni
+ *     comprobar "¿estuvo esta IP?" sin tener también `MASTER_KEY`.
+ *   · Con el día dentro del mensaje, la misma IP produce claves distintas
+ *     cada jornada: no se puede seguir a un visitante entre días aunque se
+ *     conozca el secreto. La cuota es diaria, así que no se pierde nada.
+ *
+ * Se recorta a 32 hex: suficiente contra colisiones para el tamaño de la
+ * tabla y más corto en disco.
+ *
+ * `secret` y `day` van como parámetros para que la función sea pura y
+ * testable; el llamador de producción pasa `MASTER_KEY` y el día UTC actual
+ * (el mismo calendario que usa `llm-quota.ts` para reiniciar contadores).
+ */
+export function visitorQuotaKey(
+  ipKey: string,
+  secret: string,
+  day: string = new Date().toISOString().slice(0, 10),
+): string {
+  const digest = createHmac("sha256", secret)
+    .update(`visitor:${day}:${ipKey}`)
+    .digest("hex")
+    .slice(0, 32);
+  return `v1:${digest}`;
 }

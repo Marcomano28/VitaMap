@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { NavigationLink } from "@/components/navigation-link";
 import { getSession } from "@/lib/session";
 import { signOutAction } from "@/app/(auth)/login/actions";
 import { copy } from "@/lib/i18n";
@@ -72,12 +73,13 @@ export async function SiteHeader() {
             href="/"
             className="vitamap-logo font-semibold tracking-tight whitespace-nowrap"
           >
-            VitaMap
+            <small>VitaWende</small>
+            <span className="vitamap-logo-title"><span className="vitamap-logo-mark" aria-hidden="true" />VitaMap</span>
           </Link>
           <div className="vitamap-mobile-tools">
             <LanguageSwitcher locale={locale} />
-            <ThemeToggle intent="palette" />
-            <ThemeToggle />
+            <ThemeToggle intent="palette" locale={locale} />
+            <ThemeToggle locale={locale} />
           </div>
         </div>
 
@@ -86,13 +88,13 @@ export async function SiteHeader() {
             <>
               <div className="vitamap-desktop-nav-main">
                 {visibleNav.map((n) => (
-                  <Link
+                  <NavigationLink
                     key={n.href}
                     href={n.href}
                     className="text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
                   >
                     {n.label}
-                  </Link>
+                  </NavigationLink>
                 ))}
                 {admin && (
                   <>
@@ -113,8 +115,8 @@ export async function SiteHeader() {
                   {session!.user.email}
                 </Link>
                 <LanguageSwitcher locale={locale} />
-                <ThemeToggle intent="palette" />
-                <ThemeToggle />
+                <ThemeToggle intent="palette" locale={locale} />
+                <ThemeToggle locale={locale} />
               </div>
               <div className="vitamap-desktop-nav-session">
                 <form action={signOutAction}>
@@ -136,13 +138,13 @@ export async function SiteHeader() {
                   sin él, solo ve la puerta. */}
               {demoActive &&
                 demoNav.map((n) => (
-                  <Link
+                  <NavigationLink
                     key={n.href}
                     href={n.href}
                     className="text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
                   >
                     {n.label}
-                  </Link>
+                  </NavigationLink>
                 ))}
               <Link
                 href="/register"
@@ -151,8 +153,8 @@ export async function SiteHeader() {
                 {t.requestAccess}
               </Link>
               <LanguageSwitcher locale={locale} />
-              <ThemeToggle intent="palette" />
-              <ThemeToggle />
+              <ThemeToggle intent="palette" locale={locale} />
+              <ThemeToggle locale={locale} />
               <Link
                 href="/login"
                 className="rounded-md border border-[var(--color-border)] px-3 py-1 hover:bg-[var(--color-card)]"
@@ -169,16 +171,16 @@ export async function SiteHeader() {
         >
           {authed ? (
             visibleMobileNav.map((n) => (
-              <Link key={n.href} href={n.href}>
+              <NavigationLink key={n.href} href={n.href}>
                 {n.label}
-              </Link>
+              </NavigationLink>
             ))
           ) : demoActive ? (
             <>
               {demoNav.map((n) => (
-                <Link key={n.href} href={n.href}>
+                <NavigationLink key={n.href} href={n.href}>
                   {n.label}
-                </Link>
+                </NavigationLink>
               ))}
               <Link href="/register">{t.requestAccess}</Link>
             </>

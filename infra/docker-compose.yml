@@ -67,6 +67,7 @@ services:
       # Modo demostración pública (ADR-020): muestra con datos sintéticos de
       # solo lectura, sin subida ni registro. Apagado por defecto.
       DEMO_MODE: ${DEMO_MODE:-false}
+      DEMO_CONTACT_EMAIL: ${DEMO_CONTACT_EMAIL:-}
       # Cuota diaria de inferencia (ADR-019). Los defaults del código son los
       # mismos, así que omitirlas en .env no deja el sistema sin techo.
       LLM_DAILY_GLOBAL_MAX: ${LLM_DAILY_GLOBAL_MAX:-300}

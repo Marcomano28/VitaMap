@@ -293,7 +293,7 @@ export function ChatUI({
         className="flex-1 overflow-y-auto space-y-6 pr-1 sm:pr-2"
       >
         {messages.length === 0 && !loading && (
-          <div className="space-y-3 text-sm text-[var(--color-muted)] rounded-md border border-dashed border-[var(--color-border)] p-4">
+          <div className="vm-chat-empty space-y-3 text-sm text-[var(--color-muted)] rounded-md border border-dashed border-[var(--color-border)] p-4">
             <p>{t.empty}</p>
             {curiosityEnabled && <button
               type="button"
@@ -349,7 +349,7 @@ export function ChatUI({
 
       <form
         onSubmit={send}
-        className="mt-4 flex flex-col items-stretch gap-2 border-t border-[var(--color-border)] pt-4 sm:flex-row sm:items-end"
+        className="vm-chat-composer mt-4 flex flex-col items-stretch gap-2 border-t border-[var(--color-border)] pt-4 sm:flex-row sm:items-end"
       >
         <fieldset className="flex shrink-0 gap-1" aria-label={t.depthLabel}>
           {(["discover", "understand", "deep"] as const).map((value) => (

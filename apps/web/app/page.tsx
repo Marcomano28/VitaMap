@@ -1,144 +1,120 @@
 import Link from "next/link";
+import localFont from "next/font/local";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
-import { copy } from "@/lib/i18n";
+import { copy, localize } from "@/lib/i18n";
 import { getLocale } from "@/lib/locale";
 import { demoModeEnabled } from "@/lib/flags";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { SupershapeOrb } from "@/components/supershape-orb";
-import { PenumbraTone } from "@/components/penumbra-tone";
+import { AtmosphereScene } from "@/components/atmosphere-scene";
 
 export const dynamic = "force-dynamic";
+
+// Cursiva de acento del titular. El archivo vive en el repo (licencia OFL en app/fonts):
+// sin peticiones a Google ni en el navegador ni al compilar.
+const accent = localFont({
+  src: "./fonts/playfair-display-latin-400-italic.woff2",
+  style: "italic",
+  weight: "400",
+  variable: "--font-accent",
+  display: "swap",
+});
+
+const TEXT = {
+  es: {
+    eyebrow: "Salud preventiva · Un proyecto en desarrollo",
+    title: "Tu salud merece", titleEnd: "continuidad.",
+    body: "Un proyecto que conecta centros de salud, seguimiento preventivo y conocimiento personal. Para que cuidarte tenga un lugar en tu vida.",
+    proposal: "La propuesta", centers: "Los centros", enter: "Entrar en VitaMap", demo: "Explorar VitaMap",
+    discover: "Conocer la propuesta",
+    imageTitle: "Con tiempo. Con contexto. Contigo.",
+    imageAlt: "Visión arquitectónica de un futuro centro VitaWende: una galería luminosa alrededor de un jardín interior.",
+    imageNote: "Imagen conceptual · No es un centro existente",
+    sections: [
+      { number: "01 / CONTINUIDAD", title: "Tu seguimiento, conectado.", body: "La visión: ciclos de revisión, citas y estudios organizados en un mismo espacio.", link: "De la idea al proyecto", href: "/semilla" },
+      { number: "02 / ATENCIÓN", title: "Centros para conocerte mejor.", body: "Equipos, tecnología y entornos pensados para una atención con tiempo.", link: "La visión de los centros", href: "/centros" },
+      { number: "03 / CONOCIMIENTO", title: "Tu memoria tiene un lugar.", body: "VitaMap reúne tus observaciones y documentos y te ayuda a comprender tu información.", link: "Descubrir VitaMap", href: "entry" },
+    ],
+    footer: "VitaWende / Cuidar con continuidad", status: "Proyecto en desarrollo",
+    nav: "Navegación de VitaWende",
+  },
+  de: {
+    eyebrow: "Präventive Gesundheit · Ein Projekt im Aufbau",
+    title: "Deine Gesundheit braucht", titleEnd: "Kontinuität.",
+    body: "Ein Projekt, das Gesundheitszentren, Vorsorge und persönliches Wissen verbindet. Damit deine Gesundheit einen festen Platz in deinem Leben hat.",
+    proposal: "Die Idee", centers: "Die Zentren", enter: "VitaMap öffnen", demo: "VitaMap erkunden",
+    discover: "Die Idee kennenlernen",
+    imageTitle: "Mit Zeit. Mit Kontext. Mit dir.",
+    imageAlt: "Architektonische Vision eines künftigen VitaWende-Zentrums: eine helle Galerie um einen begrünten Innenhof.",
+    imageNote: "Konzeptbild · Kein bestehendes Zentrum",
+    sections: [
+      { number: "01 / KONTINUITÄT", title: "Deine Vorsorge, verbunden.", body: "Die Vision: Untersuchungszyklen, Termine und Befunde an einem Ort organisieren.", link: "Von der Idee zum Projekt", href: "/semilla" },
+      { number: "02 / BEGLEITUNG", title: "Zentren, die dich kennenlernen.", body: "Teams, Technologie und Räume für eine Betreuung, die sich Zeit nimmt.", link: "Die Vision der Zentren", href: "/centros" },
+      { number: "03 / WISSEN", title: "Deine Geschichte hat einen Ort.", body: "VitaMap sammelt deine Beobachtungen und Dokumente und hilft dir, deine Informationen zu verstehen.", link: "VitaMap entdecken", href: "entry" },
+    ],
+    footer: "VitaWende / Gesundheit mit Kontinuität", status: "Projekt im Aufbau",
+    nav: "VitaWende-Navigation",
+  },
+} as const;
 
 export default async function VitaWendeShell() {
   const session = await getSession();
   if (session?.user) redirect("/memory");
 
   const locale = await getLocale();
-  const t = copy[locale].vitawende;
-
-  // Con el modo demostración encendido (ADR-020) la puerta principal lleva a la
-  // aplicación, no al formulario de acceso: el visitante entra directamente al
-  // escaparate con datos sintéticos. Apagado, se comporta como siempre.
-  //
-  // Destino: `/memory`, el mismo punto de entrada que tiene una persona con
-  // cuenta. Se valoró llevar al mapa (más vistoso) o al chat (más
-  // interactivo), y se descartaron: el visitante debe recorrer el camino real
-  // del producto y explorar desde ahí, no una versión curada para impresionar.
+  const t = localize(locale, TEXT);
+  const legacy = copy[locale].vitawende;
+  // Preserve the real entry route and access policy, including the demo.
   const demo = demoModeEnabled();
   const entryHref = demo ? "/memory" : "/login";
-  const entrySub = demo ? t.crystalSubDemo : t.crystalSub;
+  const entrySub = demo ? legacy.crystalSubDemo : legacy.crystalSub;
 
+  // VitaWende está siempre en penumbra: solo se elige la paleta (cálida o fría).
+  // El día y la noche se eligen dentro de VitaMap.
   return (
-    <div className="vitawende-shell">
-      <PenumbraTone />
-      <div className="vitawende-grid" aria-hidden="true" />
-      <div className="vitawende-light" aria-hidden="true" />
-      <div className="vitawende-floor" aria-hidden="true" />
-      <div className="vitawende-vignette" aria-hidden="true" />
-      <div className="vitawende-dust" aria-hidden="true" />
-      <div className="vitawende-frame" aria-hidden="true" />
+    <div className={`vitawende-shell ${accent.variable}`}>
+      <header className="vwa-nav">
+        <Link href="/" className="vwa-brand"><span className="vwa-brand-mark" aria-hidden="true" />VitaWende</Link>
+        <nav className="vwa-links" aria-label={t.nav}>
+          <Link href="/manifiesto">{t.proposal}</Link>
+          <Link href="/centros">{t.centers}</Link>
+          <Link href={entryHref}>VitaMap</Link>
+        </nav>
+        <div className="vwa-tools">
+          <LanguageSwitcher locale={locale} />
+          <ThemeToggle intent="palette" locale={locale} />
+        </div>
+      </header>
 
-      <div className="vitawende-shell-toggle">
-        <LanguageSwitcher locale={locale} />
-        <ThemeToggle intent="palette" />
-      </div>
-
-      <div className="vitawende-brand" aria-hidden="true">
-        <span className="vitawende-brand-mark" />
-        <span className="vitawende-brand-name">VitaWende</span>
-      </div>
-
-      <div className="vitawende-system-readout" aria-hidden="true">
-        <span>SYS</span>
-        <strong>VITA-7</strong>
-        <span>TEMP</span>
-        <strong>36.7</strong>
-      </div>
-
-      <span className="vitawende-wordmark" aria-hidden="true">
-        VitaWende
-      </span>
-
-      <Link href={entryHref} className="vitawende-crystal">
-        <span className="vitawende-crystal-kicker">01 - VITAL DYNAMICS</span>
-        <span className="vitawende-crystal-title">VitaMap</span>
-        <span className="vitawende-crystal-sub">{entrySub}</span>
-      </Link>
-
-      <div className="vitawende-orb" aria-hidden="true">
-        <SupershapeOrb />
-        <svg
-          className="vitawende-seed-svg"
-          viewBox="0 0 200 240"
-          focusable="false"
-          aria-hidden="true"
-        >
-          <path
-            className="seed-face"
-            d="M100 14 C146 54 174 120 154 178 C140 220 60 220 46 178 C26 120 54 54 100 14Z"
-          />
-          <path
-            className="seed-face-inner"
-            d="M100 18 C91 76 91 156 100 220 C109 156 109 76 100 18Z"
-          />
-          <path
-            className="seed-facet"
-            d="M100 18 C72 86 58 148 46 178 M100 18 C128 86 142 148 154 178"
-          />
-          <path
-            className="seed-facet seed-facet-soft"
-            d="M63 194 C86 176 114 176 137 194 M56 151 C83 134 117 134 144 151 M70 98 C88 86 112 86 130 98"
-          />
-          <path
-            className="seed-rib"
-            d="M46 178 C72 166 128 166 154 178 M64 205 C88 194 112 194 136 205"
-          />
-          <path
-            className="seed-germ-shadow"
-            d="M100 157 C89 170 84 185 91 196 C99 207 116 202 119 188 C121 176 113 164 100 157Z"
-          />
-          <path
-            className="seed-germ"
-            d="M100 157 C89 170 84 185 91 196 C99 207 116 202 119 188 C121 176 113 164 100 157Z"
-          />
-        </svg>
-        <span className="vitawende-orb-glass" />
-      </div>
-
-      <div className="vitawende-readout" aria-hidden="true">
-        <span className="vitawende-readout-title">SPECTRAL READOUT</span>
-        <dl>
-          <div>
-            <dt>Chronotype</dt>
-            <dd>07.4</dd>
+      <section className="vwa-hero" aria-labelledby="vitawende-title">
+        <AtmosphereScene src="/images/vitawende-courtyard.jpg" depthSrc="/images/vitawende-courtyard-depth.png" word="VitaWende" label={t.imageAlt} />
+        <div className="vwa-hero-inner">
+          <div className="vwa-copy">
+            <p className="vwa-eyebrow">{t.eyebrow}</p>
+            <h1 id="vitawende-title">{t.title} <em>{t.titleEnd.replace(/\.$/, "")}</em>.</h1>
+            <p className="vwa-lede">{t.body}</p>
+            <div className="vwa-actions">
+              <Link href="/manifiesto" className="vwa-button">{t.discover}<span aria-hidden="true">→</span></Link>
+              <Link href={entryHref} className="vwa-link">{demo ? t.demo : t.enter}<span aria-hidden="true">↗</span></Link>
+            </div>
+            <p className="vwa-entry-note">VitaMap · {entrySub}</p>
           </div>
-          <div>
-            <dt>Inflammation</dt>
-            <dd>0.18</dd>
-          </div>
-          <div>
-            <dt>Recovery</dt>
-            <dd>82%</dd>
-          </div>
-          <div>
-            <dt>Active Signals</dt>
-            <dd>7 / 9</dd>
-          </div>
-        </dl>
-      </div>
+          <p className="vwa-note"><strong>{t.imageTitle}</strong>{t.imageNote}</p>
+        </div>
+      </section>
 
-      <div className="vitawende-timeline" aria-hidden="true">
-        <span />
-        <p>SIGNALS TIMELINE - VITAMAP DYNAMICS</p>
-      </div>
-
-      <nav className="vitawende-nav" aria-label="VitaWende">
-        <Link href="/semilla">{t.nav.semilla}</Link>
-        <Link href="/manifiesto">{t.nav.manifiesto}</Link>
-        <Link href="/centros">{t.nav.centros}</Link>
-      </nav>
+      <section className="vwa-sections" aria-label={t.proposal}>
+        {t.sections.map((item) => (
+          <article key={item.number}>
+            <p className="vwa-eyebrow">{item.number.split(" / ")[1]}</p>
+            <h2>{item.title}</h2>
+            <p>{item.body}</p>
+            <Link href={item.href === "entry" ? entryHref : item.href} className="vwa-link">{item.link}<span aria-hidden="true">↗</span></Link>
+          </article>
+        ))}
+      </section>
+      <footer className="vwa-footer"><span>{t.status}</span><span>{t.footer}</span></footer>
     </div>
   );
 }

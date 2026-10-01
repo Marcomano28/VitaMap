@@ -97,6 +97,23 @@ en que la ruta de chat solo lee: no escribe memoria y sus eventos de auditoría
 no contienen contenido de la conversación (solo recuentos y veredicto). La
 subida, la exportación y el borrado siguen exigiendo sesión y suscripción.
 
+**Addendum 2026-09-03 · dos correcciones de implementación.** (1) La vía de
+contacto que este ADR prometía no existía: el aviso decía "escríbeme" sin
+dirección y enviaba al formulario de invitación. Ahora hay un **formulario de
+contacto** (`components/contact-form.tsx` → `POST /api/contact`): el visitante
+escribe y deja su correo, el servidor reenvía por Brevo a `DEMO_CONTACT_EMAIL`
+(con `EMAIL_REPLY_TO` como respaldo) poniendo el correo del visitante como
+`Reply-To`. La dirección del operador nunca llega al navegador. Defensas de
+ruta pública: honeypot, 3 envíos por IP y 10 min, 5 por IP y día, mensaje
+acotado a 2.000 caracteres; auditoría `demo.contact` con longitud y hash del
+remitente, sin texto. `/register` en modo demostración pinta primero la
+explicación y el formulario; el alta por invitación sigue disponible con
+`?invited=1`, que acompaña al código cuando se envía por el canal privado. (2) La clave de cuota
+del visitante era la IP en claro dentro de `auth.sqlite`, en contra de lo que
+afirmaban los comentarios; `visitorQuotaKey` la sustituye por
+`HMAC(MASTER_KEY, "visitor:" + día + ":" + ip)`, de modo que la base no guarda
+IPs y una misma IP no es correlacionable entre días.
+
 **Consecuencias.** El checklist de go-live queda marcado como pausado con fecha
 y motivo, sin rebajar ninguna casilla. Reanudar es apagar la variable y seguir
 por la Puerta 0. El riesgo a vigilar es que el modo demostración acumule código

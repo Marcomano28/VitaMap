@@ -48,6 +48,9 @@ const EnvSchema = z.object({
   BREVO_API_KEY: optionalString(z.string().startsWith("xkeysib-")),
   EMAIL_FROM: optionalString(z.string().min(3)),
   EMAIL_REPLY_TO: optionalString(z.string().email()),
+  // Contacto que ve el visitante en modo demostración (ADR-020). Si falta,
+  // lib/demo.ts cae a EMAIL_REPLY_TO; sin ninguno, no se muestra enlace.
+  DEMO_CONTACT_EMAIL: optionalString(z.string().email()),
 
   // App
   ADMIN_EMAILS: z.string().default(""),

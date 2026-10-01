@@ -28,7 +28,7 @@ const TEXT = {
       "VitaWende no convence a nadie de nada. Crea las condiciones para que cada persona llegue a su propia convicción a través de su propia experiencia.",
     tree:
       "La semilla no le explica al árbol cómo crecer. Le da el impulso inicial y confía en que la naturaleza hace el resto.",
-    manifesto: "Manifiesto →",
+    manifesto: "Por qué VitaMap →",
     back: "← Volver",
   },
   de: {
@@ -55,7 +55,7 @@ const TEXT = {
       "VitaWende will niemanden von etwas überzeugen. Es schafft Bedingungen, unter denen Menschen durch ihre eigene Erfahrung zu einer eigenen Überzeugung gelangen können.",
     tree:
       "Der Samen erklärt dem Baum nicht, wie er wachsen soll. Er gibt den ersten Impuls und vertraut darauf, dass die Natur den Rest übernimmt.",
-    manifesto: "Manifest →",
+    manifesto: "Warum VitaMap →",
     back: "← Zurück",
   },
 } as const;

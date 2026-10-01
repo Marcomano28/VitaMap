@@ -158,8 +158,8 @@ function bump(day: string, key: string, delta: number): void {
  * el resto del día siga disponible cuando el problema se corrija.
  *
  * @param actorKey  Identificador estable del actor. Para `user`, el userId;
- *                  para `anon`, la IP normalizada. Nunca datos personales en
- *                  claro más allá de eso.
+ *                  para `anon`, el seudónimo diario de la IP que produce
+ *                  `visitorQuotaKey` (lib/demo.ts). Nunca la IP en claro.
  */
 export function consumeLlmQuota(
   actorKey: string,

@@ -18,7 +18,8 @@ import {
 } from "./data-access";
 import { UnauthorizedError, getSession } from "./session";
 import { demoModeEnabled } from "./flags";
-import { DEMO_SUBJECT_ID, clientIpKey } from "./demo";
+import { DEMO_SUBJECT_ID, clientIpKey, visitorQuotaKey } from "./demo";
+import { getEnv } from "./env";
 import type { QuotaTier } from "./llm-quota";
 
 /**
@@ -169,7 +170,7 @@ export async function requireChatContext(req: Request): Promise<ChatContext> {
         actor: DEMO_SUBJECT_ID,
         subject: DEMO_SUBJECT_ID,
         anonymous: true,
-        quotaKey: clientIpKey(req),
+        quotaKey: visitorQuotaKey(clientIpKey(req), getEnv().MASTER_KEY),
         quotaTier: "anon",
       };
     }

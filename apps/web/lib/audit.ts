@@ -40,6 +40,9 @@ export type AuditAction =
   | "guardrail.block"
   | "guardrail.rewrite"
   | "safety.crisis_detected"
+  // Formulario de contacto del visitante (ADR-020). Sin contenido: solo
+  // longitud y un hash del remitente para poder contar y detectar abuso.
+  | "demo.contact"
   | "kb.draft.create"
   | "kb.draft.update"
   | "kb.draft.delete"

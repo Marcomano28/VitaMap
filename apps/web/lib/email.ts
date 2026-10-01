@@ -21,6 +21,8 @@ interface SendInput {
   to: string;
   subject: string;
   text: string;
+  /** Sustituye a EMAIL_REPLY_TO para este envío (formulario de contacto). */
+  replyTo?: string;
 }
 
 interface BrevoPayload {
@@ -72,7 +74,9 @@ async function sendEmail(input: SendInput): Promise<void> {
       "Content-Type": "application/json",
       Accept: "application/json",
     },
-    body: JSON.stringify(buildBrevoPayload(input, from, env.EMAIL_REPLY_TO)),
+    body: JSON.stringify(
+      buildBrevoPayload(input, from, input.replyTo ?? env.EMAIL_REPLY_TO),
+    ),
     signal: AbortSignal.timeout(SEND_TIMEOUT_MS),
   });
 
@@ -122,4 +126,39 @@ function maskEmail(e: string): string {
   const [user, domain] = e.split("@");
   if (!domain) return "***";
   return `${user.slice(0, 2)}***@${domain}`;
+}
+
+/**
+ * Mensaje de un visitante al operador (formulario de contacto, ADR-020).
+ *
+ * El visitante no ve la dirección del operador: el destinatario sale de
+ * `DEMO_CONTACT_EMAIL` (o `EMAIL_REPLY_TO`) en el servidor. Su propio correo
+ * va como `replyTo`, de modo que responder desde el buzón es un "Responder"
+ * normal, y también en el cuerpo por si el cliente de correo lo pierde.
+ *
+ * No es un email de cuenta: el remitente puede escribir lo que quiera. Por eso
+ * el texto se acota en longitud antes de llegar aquí y no se interpreta.
+ */
+export async function sendContactMessage(input: {
+  to: string;
+  fromEmail: string;
+  message: string;
+  locale: "es" | "de";
+}): Promise<void> {
+  await sendEmail({
+    to: input.to,
+    replyTo: input.fromEmail,
+    subject:
+      input.locale === "de"
+        ? "VitaMap — Nachricht einer Besucherin / eines Besuchers"
+        : "VitaMap — mensaje de un visitante",
+    text: [
+      `De / Von: ${input.fromEmail}`,
+      `Idioma / Sprache: ${input.locale}`,
+      "",
+      "— — —",
+      "",
+      input.message,
+    ].join("\n"),
+  });
 }

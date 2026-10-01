@@ -6,6 +6,7 @@ import { InboxAutoRefresh } from "@/components/inbox-auto-refresh";
 import { discardInboxItemAction, retryInboxExtractionAction } from "./actions";
 import { requireViewSubject } from "@/lib/data-access-guards";
 import { DemoBanner, DemoLockedNotice } from "@/components/demo-notice";
+import { demoContactEmail } from "@/lib/demo";
 import { getLocale } from "@/lib/locale";
 import { localeTag, localize } from "@/lib/i18n";
 
@@ -75,7 +76,11 @@ export default async function UploadPage() {
           <h1 className="text-2xl font-semibold">{t.title}</h1>
           <p className="text-sm text-[var(--color-muted)]">{t.intro}</p>
         </header>
-        <DemoLockedNotice locale={locale} what="upload" />
+        <DemoLockedNotice
+          locale={locale}
+          what="upload"
+          contactAvailable={demoContactEmail() !== null}
+        />
       </div>
     );
   }

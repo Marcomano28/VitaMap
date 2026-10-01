@@ -3,17 +3,23 @@ import type { Metadata } from "next";
 import { getLocale } from "@/lib/locale";
 import { localize } from "@/lib/i18n";
 
+// Texto revisado 2026-09-30: sin afirmaciones rebatibles en el contexto alemán
+// (el Check-up 35 existe y la GKV paga la detección precoz). El centro del
+// argumento es la continuidad y la comprensión de los propios datos.
+const SOURCE_URL =
+  "https://www.aerzteblatt.de/archiv/frueherkennung-jeder-vierte-berechtigte-nutzt-check-up-35-32d26845-c561-4969-96c7-3df2d52563fc";
+
 const TEXT = {
   es: {
-    metadata: "Manifiesto · VitaWende",
-    title: "Manifiesto",
+    metadata: "Por qué construimos VitaMap · VitaWende",
+    title: "Por qué construimos VitaMap",
     lead:
-      "En Alemania, los coches tienen una revisión técnica obligatoria cada dos años. Las personas, no.",
+      "En Alemania, los coches pasan la revisión técnica cada dos años. Para las personas existe el Check-up 35: cada tres años, y lo usa aproximadamente una de cada cuatro.",
     paragraphs: [
-      "No es que sea imposible organizarlo. Es que nadie lo ha propuesto todavía como un derecho concreto, financiado y accesible para todos.",
-      "El sistema sanitario funciona razonablemente bien cuando uno ya está enfermo. Funciona mucho peor cuando uno quiere saber cómo está antes de estarlo.",
-      "VitaMap es la herramienta personal que ya existe hoy. Guarda tu historial cifrado en un servidor bajo tu control. Un asistente lee ese historial y la evidencia científica, responde citando siempre la fuente, y no diagnostica.",
-      "VitaWende es el marco mayor. La promesa de que lo que VitaMap hace para quien lo busca por su cuenta debería existir como derecho para todos, respaldado por centros de salud integral donde cada ciudadano pueda recibir, una vez al año, un mapa real de su estado de salud.",
+      "Y lo que se detecta ahí, en la consulta de cabecera, en el laboratorio o en el hospital, queda disperso en cartas, PDF y carpetas. Rara vez en un lugar donde pueda leerse en conjunto.",
+      "El sistema sanitario es fuerte cuando alguien ya está enfermo. Lo es menos a la hora de acompañar a las personas, a lo largo de los años, para que entiendan su propio estado antes de que ocurra algo.",
+      "VitaMap trabaja justo ahí. Guarda tus propios informes cifrados en un servidor bajo control, los ordena en el tiempo y te ayuda a entenderlos: con fuentes citadas y sin diagnósticos. Para llegar mejor preparado a la próxima consulta.",
+      "Detrás hay una pregunta más amplia: ¿cómo sería una prevención que acompañe a las personas durante años y no en citas aisladas, basada en la evidencia, accesible para todos y con los datos en manos de cada uno? Con el nombre VitaWende pensamos en cómo podrían ser esos lugares. Es una visión, no una oferta.",
     ],
     notTitle: "Lo que VitaWende no es:",
     notItems: [
@@ -23,22 +29,24 @@ const TEXT = {
       "No promete resultados extraordinarios.",
     ],
     question:
-      "Tiene una pregunta concreta: ¿por qué el Estado financia el tratamiento de enfermedades que podrían haberse detectado antes, y no financia la detección?",
+      "Tiene una pregunta concreta: pagamos pruebas de detección precoz, pero ¿quién ayuda a las personas a reunir sus resultados a lo largo de los años y a entenderlos?",
     note:
-      "Quien quiera ir más allá de usar la herramienta encontrará en VitaWende la forma de hacerlo. Quien no quiera, tiene igualmente todo lo que necesita.",
+      "VitaMap funciona con independencia de esa visión. Quien quiera pensar en la pregunta más amplia la encontrará en VitaWende; quien no, tiene en VitaMap todo lo que necesita.",
+    source:
+      "Uso del Check-up 35: análisis de la Techniker Krankenkasse para 2017 (24,8 % de las personas con derecho), publicado en el Deutsches Ärzteblatt.",
     centers: "Los centros →",
     seed: "← La semilla",
   },
   de: {
-    metadata: "Manifest · VitaWende",
-    title: "Manifest",
+    metadata: "Warum wir VitaMap bauen · VitaWende",
+    title: "Warum wir VitaMap bauen",
     lead:
-      "In Deutschland müssen Autos alle zwei Jahre zur Hauptuntersuchung. Menschen nicht.",
+      "Autos müssen alle zwei Jahre zur Hauptuntersuchung. Für Menschen gibt es den Check-up 35 – alle drei Jahre, genutzt von etwa jedem Vierten.",
     paragraphs: [
-      "Nicht weil es unmöglich wäre, dies zu organisieren. Bislang wurde es nur nicht als konkretes, finanziertes und für alle zugängliches Recht vorgeschlagen.",
-      "Das Gesundheitssystem funktioniert vergleichsweise gut, wenn ein Mensch bereits krank ist. Es funktioniert deutlich schlechter, wenn jemand wissen möchte, wie es ihm geht, bevor er krank wird.",
-      "VitaMap ist das persönliche Werkzeug, das schon heute existiert. Es speichert deine Geschichte verschlüsselt auf einem kontrollierten Server. Ein Assistent liest diese Geschichte und wissenschaftliche Evidenz, nennt seine Quellen und stellt keine Diagnosen.",
-      "VitaWende ist der größere Rahmen. Was VitaMap einzelnen Menschen auf eigene Initiative ermöglicht, sollte als Recht für alle bestehen: getragen von Zentren für ganzheitliche Gesundheit, in denen jeder Mensch einmal im Jahr eine wirkliche Karte seines Gesundheitszustands erhalten kann.",
+      "Und was dort, beim Hausarzt, im Labor oder in der Klinik festgestellt wird, liegt verstreut in Briefen, PDFs und Ordnern – selten dort, wo man es im Zusammenhang lesen kann.",
+      "Das Gesundheitssystem ist stark, wenn jemand bereits krank ist. Weniger stark ist es darin, Menschen über die Jahre dabei zu begleiten, ihren eigenen Zustand zu verstehen, bevor etwas geschieht.",
+      "VitaMap setzt genau hier an: Es bewahrt die eigenen Befunde verschlüsselt auf einem kontrollierten Server auf, ordnet sie über die Zeit und hilft, sie zu verstehen – mit Quellenangaben, ohne Diagnosen. Damit man besser vorbereitet ins nächste Arztgespräch geht.",
+      "Dahinter steht eine größere Frage: Wie sähe Vorsorge aus, die Menschen über Jahre begleitet statt in Einzelterminen – evidenzbasiert, für alle zugänglich, mit den Daten in der Hand der Betroffenen? Unter dem Namen VitaWende denken wir darüber nach, wie solche Orte aussehen könnten. Das ist eine Vision, kein Angebot.",
     ],
     notTitle: "Was VitaWende nicht ist:",
     notItems: [
@@ -48,9 +56,11 @@ const TEXT = {
       "Kein Versprechen außergewöhnlicher Ergebnisse.",
     ],
     question:
-      "VitaWende stellt eine konkrete Frage: Warum finanziert der Staat die Behandlung von Krankheiten, die früher hätten erkannt werden können, aber nicht ihre frühzeitige Erkennung?",
+      "VitaWende stellt eine konkrete Frage: Früherkennung wird bezahlt – aber wer hilft Menschen, ihre Befunde über die Jahre zusammenzuführen und zu verstehen?",
     note:
-      "Wer über die Nutzung des Werkzeugs hinausgehen möchte, findet dazu in VitaWende einen Weg. Wer das nicht möchte, erhält mit VitaMap dennoch alles, was er benötigt.",
+      "VitaMap funktioniert unabhängig von dieser Vision. Wer sich für die größere Frage interessiert, findet sie in VitaWende; wer nicht, hat mit VitaMap alles, was er braucht.",
+    source:
+      "Nutzung des Check-up 35: Auswertung der Techniker Krankenkasse für 2017 (24,8 % der Berechtigten), berichtet im Deutschen Ärzteblatt.",
     centers: "Die Zentren →",
     seed: "← Der Samen",
   },
@@ -104,6 +114,11 @@ export default async function ManifiestoPage() {
         <p>{t.question}</p>
         <p className="text-xs text-[var(--color-muted)] italic">
           {t.note}
+        </p>
+        <p className="text-xs text-[var(--color-muted)]">
+          <a href={SOURCE_URL} className="underline underline-offset-2 hover:text-[var(--color-foreground)]" rel="noopener noreferrer" target="_blank">
+            {t.source}
+          </a>
         </p>
       </section>
 

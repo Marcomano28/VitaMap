@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { localize, type Locale } from "@/lib/i18n";
+import { ContactForm } from "./contact-form";
 
 /**
  * Avisos del modo demostración (ADR-020).
@@ -47,10 +48,17 @@ export function DemoBanner({ locale }: { locale: Locale }) {
 export function DemoLockedNotice({
   locale,
   what,
+  contactAvailable,
 }: {
   locale: Locale;
   /** Qué intentaba hacer el visitante, para encabezar el aviso. */
   what: "upload" | "account";
+  /**
+   * Vía de contacto (ADR-020): si el servidor tiene destinatario configurado
+   * se pinta el formulario. La dirección nunca llega al navegador. Sin
+   * destinatario, mejor no prometer un "escríbeme" que no puede cumplirse.
+   */
+  contactAvailable: boolean;
 }) {
   const t = localize(locale, {
     es: {
@@ -103,11 +111,18 @@ export function DemoLockedNotice({
       <p className="text-[var(--color-muted)]">{t.stage}</p>
       <p className="text-[var(--color-muted)]">{t.why}</p>
       <p className="text-[var(--color-muted)]">{t.how}</p>
-      <p>
-        <Link href="/register" className="underline hover:text-[var(--color-foreground)]">
-          {t.cta}
-        </Link>
-      </p>
+      {contactAvailable ? (
+        <div className="relative pt-2">
+          <ContactForm locale={locale} />
+        </div>
+      ) : null}
+      {what === "upload" ? (
+        <p>
+          <Link href="/register" className="underline hover:text-[var(--color-foreground)]">
+            {t.cta}
+          </Link>
+        </p>
+      ) : null}
     </section>
   );
 }
