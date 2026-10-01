@@ -213,12 +213,18 @@ void main(){
   col = mix(vec3(l), col, 1. + .5*near);
   col *= mix(.86, .5, near);
 
-  // Palabra gigante dentro de la escena: queda detrás de lo que está más cerca.
+  // Palabra gigante dentro de la escena, como una ventana en la niebla: dentro
+  // de las letras la niebla se aclara y la imagen se ve algo más nítida y
+  // luminosa; un borde finísimo de luz las dibuja. Lo cercano la tapa.
   vec2 tq = vUv + off*(uTextDepth-.3)*.9;
   float ta = texture2D(uText, tq).a;
+  vec2 px = 1.6 / uRes;
+  float tn = texture2D(uText, tq + vec2(px.x, 0.)).a + texture2D(uText, tq - vec2(px.x, 0.)).a
+           + texture2D(uText, tq + vec2(0., px.y)).a + texture2D(uText, tq - vec2(0., px.y)).a;
   float behind = smoothstep(uTextDepth+.035, uTextDepth-.035, d);
-  col = mix(col, mix(uFog, vec3(.94,.93,.96), .35), ta*behind*.42);
-  float dEff = mix(d, uTextDepth, ta*behind);
+  float win = ta * behind;
+  float rim = clamp(abs(ta*4. - tn), 0., 1.) * behind;
+  float dEff = d;
 
   // Niebla: se acumula con la distancia y hacia arriba; deriva muy despacio.
   float far = 1. - dEff;
@@ -228,8 +234,11 @@ void main(){
   fogA *= .5 + .8*n + .3*(n2-.5);
   fogA += smoothstep(.12, .0, abs(dEff-.42)) * .22 * smoothstep(.3,.7,n2);
   fogA = clamp(fogA, 0., .92);
+  fogA *= 1. - .5*win;
   vec3 fogCol = mix(uFog*.8, uFog*1.18, smoothstep(.2, 1., vUv.y));
   col = mix(col, fogCol, fogA);
+  col = mix(col, col*1.14 + .02, win*.6);
+  col += rim * .11 * mix(vec3(1.), uFog*1.6, .4);
 
   // Los bordes se funden con el fondo de la página.
   float ex = smoothstep(0., .16, vUv.x) * smoothstep(0., .16, 1.-vUv.x);
