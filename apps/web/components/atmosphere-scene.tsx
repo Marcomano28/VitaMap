@@ -72,8 +72,6 @@ export function AtmosphereScene({
       c.textBaseline = "middle";
       c.fillStyle = "#fff";
       if ("letterSpacing" in c) (c as CanvasRenderingContext2D & { letterSpacing: string }).letterSpacing = `${-size * 0.04}px`;
-      // Canto blando: la letra se intuye por la claridad, no por una línea.
-      c.filter = `blur(${Math.max(1, size * 0.012)}px)`;
       c.fillText(word, wordCanvas.width / 2, wordCanvas.height * 0.36);
       uploadTexture(gl, 2, wordCanvas);
     };
@@ -216,8 +214,8 @@ void main(){
   col *= mix(.86, .5, near);
 
   // Palabra gigante dentro de la escena: las letras son ventanas sin niebla.
-  // Dentro se ve la imagen tal cual; el canto es blando (máscara difuminada al
-  // dibujar la palabra), sin contorno ni brillo añadido. Lo cercano la tapa.
+  // Dentro se ve la imagen tal cual; el canto es un recorte limpio, sin
+  // contorno, brillo ni difuminado añadidos. Lo cercano la tapa.
   vec2 tq = vUv + off*(uTextDepth-.3)*.9;
   float ta = texture2D(uText, tq).a;
   float behind = smoothstep(uTextDepth+.035, uTextDepth-.035, d);
