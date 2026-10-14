@@ -211,16 +211,14 @@ void main(){
   float near = smoothstep(.45, 1., d);
   float l = dot(col, vec3(.299,.587,.114));
   col = mix(vec3(l), col, 1. + .5*near);
-  col *= mix(.86, .5, near);
+  col *= mix(.9, .62, near);
 
-  // Palabra gigante dentro de la escena: las letras son ventanas sin niebla.
-  // Dentro se ve la imagen tal cual; el canto es un recorte limpio, sin
-  // contorno, brillo ni difuminado añadidos. Lo cercano la tapa.
+  // Palabra gigante dentro de la escena: queda detrás de lo que está más cerca.
   vec2 tq = vUv + off*(uTextDepth-.3)*.9;
   float ta = texture2D(uText, tq).a;
   float behind = smoothstep(uTextDepth+.035, uTextDepth-.035, d);
-  float win = ta * behind;
-  float dEff = d;
+  col = mix(col, mix(uFog, vec3(.94,.93,.96), .35), ta*behind*.42);
+  float dEff = mix(d, uTextDepth, ta*behind);
 
   // Niebla: se acumula con la distancia y hacia arriba; deriva muy despacio.
   float far = 1. - dEff;
@@ -230,14 +228,16 @@ void main(){
   fogA *= .5 + .8*n + .3*(n2-.5);
   fogA += smoothstep(.12, .0, abs(dEff-.42)) * .22 * smoothstep(.3,.7,n2);
   fogA = clamp(fogA, 0., .92);
-  fogA *= 1. - win;
   vec3 fogCol = mix(uFog*.8, uFog*1.18, smoothstep(.2, 1., vUv.y));
   col = mix(col, fogCol, fogA);
 
   // Los bordes se funden con el fondo de la página.
-  float ex = smoothstep(0., .16, vUv.x) * smoothstep(0., .16, 1.-vUv.x);
-  float eb = smoothstep(0., .42, vUv.y);
-  float et = smoothstep(0., .22, 1.-vUv.y);
+  // Penumbra más abierta: bordes estrechos y una luz suave hacia el centro.
+  float ex = smoothstep(0., .11, vUv.x) * smoothstep(0., .11, 1.-vUv.x);
+  float eb = smoothstep(0., .3, vUv.y);
+  float et = smoothstep(0., .16, 1.-vUv.y);
+  float centre = 1. - smoothstep(.05, .62, length((vUv - vec2(.5, .55)) * vec2(1., 1.25)));
+  col *= 1. + .24*centre;
   col = mix(uBg, col, ex*eb*et);
 
   col += (hash(vUv*uRes + uTime) - .5) / 120.;
